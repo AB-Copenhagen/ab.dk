@@ -67,7 +67,7 @@ export async function fetchCollectionType<T = API.Document[]>(
   try {
     // Bypass cache in draft mode for real-time preview
     if (isDraftMode) {
-      const { data } = await createClient(config)
+      const { data } = await createClient(config, true)
         .collection(collectionName)
         .find({
           ...options,
@@ -124,7 +124,7 @@ export async function fetchSingleType<T = API.Document>(
 
   try {
     if (isDraftMode) {
-      const { data } = await createClient(config)
+      const { data } = await createClient(config, true)
         .single(singleTypeName)
         .find({
           ...options,
@@ -182,7 +182,7 @@ export async function fetchDocument<T = API.Document>(
 
   try {
     if (isDraftMode) {
-      const { data } = await createClient(config)
+      const { data } = await createClient(config, true)
         .collection(collectionName)
         .findOne(documentId, {
           ...options,
