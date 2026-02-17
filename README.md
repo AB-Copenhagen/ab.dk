@@ -12,44 +12,43 @@ This repository contains the following:
 
 Strap yourself in! You can get started with this project on your local machine by following the instructions below, or you can [request a private instance on our website](https://strapi.io/demo)
 
-## 1. Clone Launchpad
+## 1. Clone and Install
 
-To infinity and beyond! 🚀 Before you take off, clone the repo and set it up:
+To infinity and beyond! Clone the repo and install root dependencies:
 
 ```sh
 git clone https://github.com/strapi/launchpad.git
 cd launchpad
-yarn
-yarn run setup
+yarn install
 ```
 
-This will clone the repo, install dependencies in both projects (Strapi and Next.js), and run the `setup` scripts to get you started.
+## 2. Setup
 
-## 2. Start Strapi
-
-Navigate to your `./launchpad/strapi` folder and start the server:
+Run the setup script to install dependencies in both projects (Strapi and Next.js) and copy the environment files:
 
 ```sh
-cd strapi
+yarn setup
+```
+
+## 3. Seed the Data
+
+Populate your Strapi instance with demo content:
+
+```sh
+yarn seed
+```
+
+## 4. Start the Development Servers
+
+Launch both Strapi and Next.js concurrently from the root:
+
+```sh
 yarn dev
 ```
 
-This will install dependencies, sprinkle in some data magic, and run the server.
+This starts the Strapi server first, waits for it to be ready, then starts the Next.js frontend. You're now a spacefaring content master!
 
-## 3. Start Next.js
-
-We're almost ready for lift-off! Next.js is your sleek, futuristic interface for getting all that glorious content out into the world. 🚀
-
-Open a new terminal tab or window to leave Strapi running, and navigate to your `./launchpad/next` and start the server:
-
-```sh
-cd next
-yarn dev
-```
-
-This installs dependencies, builds your project, and starts your server. You’re now a spacefaring content master!
-
-You're all set! Visit http://localhost:1337/admin to create your first Strapi user, and http://localhost:3000 to discover your space rocket website.
+Visit http://localhost:1337/admin to create your first Strapi user, and http://localhost:3000 to discover your space rocket website.
 
 ## Features Overview ✨
 
