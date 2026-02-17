@@ -12,6 +12,20 @@ This repository contains the following:
 
 Strap yourself in! You can get started with this project on your local machine by following the instructions below, or you can [request a private instance on our website](https://strapi.io/demo)
 
+### Prerequisites
+
+- **Node.js** v18 or higher
+- **Yarn** as your package manager (this project uses Yarn internally for its scripts)
+
+> **Don't have Yarn installed?** You can enable it via Node.js Corepack:
+> ```sh
+> corepack enable
+> ```
+> Or install it globally via npm:
+> ```sh
+> npm install -g yarn
+> ```
+
 ## 1. Clone and Install
 
 To infinity and beyond! Clone the repo and install root dependencies:
