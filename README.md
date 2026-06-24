@@ -1,102 +1,174 @@
-# LaunchPad - Official Strapi Demo
+# AB.dk — Akademisk Boldklub
 
-![LaunchPad](./LaunchPad.jpg)
+Official website for [Akademisk Boldklub](https://ab.dk) (AB), a Danish football club founded in 1889.
 
-Welcome aboard **LaunchPad**, the official Strapi demo application, where we launch your content into the stratosphere at the speed of _"we-can't-even-measure-it!"_.
-This repository contains the following:
+## Stack
 
-- A Strapi project with content-types and data already onboard
-- A Next.js client that's primed and ready to fetch the content from Strapi faster than you can say "blast off!"
+| Layer | Technology |
+|---|---|
+| CMS | Strapi 5 |
+| Frontend | Next.js 15 (App Router) |
+| Auth | Descope |
+| Live match data | SportsInnovation API |
+| Storefront | Shopify Embedded (shop.ab.dk) |
+| Translation | DeepL (via strapi-plugin-translate) |
 
-## 🌌 Get started
+## Project structure
 
-Strap yourself in! You can get started with this project on your local machine by following the instructions below, or you can [request a private instance on our website](https://strapi.io/demo)
+```
+ab.dk/
+├── next/        # Next.js 15 frontend
+└── strapi/      # Strapi 5 CMS
+```
 
-### Prerequisites
+## Prerequisites
 
-- **Node.js** v18 or higher
-- **Yarn** as your package manager (this project uses Yarn internally for its scripts)
+- Node.js v18+
+- Yarn (via Corepack: `corepack enable`)
 
-> **Don't have Yarn installed?** You can enable it via Node.js Corepack:
-> ```sh
-> corepack enable
-> ```
-> Or install it globally via npm:
-> ```sh
-> npm install -g yarn
-> ```
+## Local setup
 
-## 1. Clone and Install
-
-To infinity and beyond! Clone the repo and install root dependencies:
+### 1. Clone and install
 
 ```sh
-git clone https://github.com/strapi/launchpad.git
-cd launchpad
+git clone https://github.com/AB-Copenhagen/ab.dk.git
+cd ab.dk
 yarn install
 ```
 
-## 2. Setup
-
-Run the setup script to install dependencies in both projects (Strapi and Next.js) and copy the environment files:
+### 2. Configure environment variables
 
 ```sh
-yarn setup
+cp next/.env.example next/.env.local
+cp strapi/.env.example strapi/.env
 ```
 
-## 3. Seed the Data
+Fill in the required values in both files — see the sections below.
 
-Populate your Strapi instance with demo content:
+### 3. Seed Strapi with content
+
+Start Strapi first, then import the seed data:
 
 ```sh
-yarn seed
+# Terminal 1
+cd strapi && yarn dev
+
+# Terminal 2 (once Strapi is ready at localhost:1337)
+cd strapi && yarn seed
 ```
 
-## 4. Start the Development Servers
+### 4. Start both servers
 
-Launch both Strapi and Next.js concurrently from the root:
+From the repo root:
 
 ```sh
 yarn dev
 ```
 
-This starts the Strapi server first, waits for it to be ready, then starts the Next.js frontend. You're now a spacefaring content master!
+Strapi starts first and waits until ready before launching Next.js.
 
-Visit http://localhost:1337/admin to create your first Strapi user, and http://localhost:3000 to discover your space rocket website.
+| Service | URL |
+|---|---|
+| Next.js frontend | http://localhost:3000 |
+| Strapi admin | http://localhost:1337/admin |
 
-## Features Overview ✨
+## Environment variables
 
-### User
+### `next/.env.local`
 
-<br />
+```env
+# Strapi
+NEXT_PUBLIC_API_URL=http://localhost:1337
 
- - **An intuitive, minimal editor** The editor allows you to pull in dynamic blocks of content. It’s 100% open-source, and it’s fully extensible.<br />
- - **Media Library** Upload images, video or any files and crop and optimize their sizes, without quality loss.<br />
- - **Flexible content management** Build any type of category, section, format or flow to adapt to your needs. <br />
- - **Sort and Filter** Built-in sorting and filtering: you can manage thousands of entries without effort.<br />
- - **User-friendly interface** The most user-friendly open-source interface on the market.<br />
- - **SEO optimized** Easily manage your SEO metadata with a repeatable field and use our Media Library to add captions, notes, and custom filenames to optimize the SEO of media assets.<br /><br />
+# Descope auth
+NEXT_PUBLIC_DESCOPE_PROJECT_ID=          # from Descope console
+DESCOPE_PROJECT_ID=
+DESCOPE_BASE_URL=https://auth.ab.dk
+DESCOPE_MANAGEMENT_KEY=
 
-### Global
+# Shopify Storefront
+SHOPIFY_STORE_DOMAIN=shop.ab.dk
+SHOPIFY_APP_CLIENT_ID=
+SHOPIFY_STOREFRONT_TOKEN=
+SHOPIFY_WEBHOOK_SECRET=
 
-<br />
+# SportsInnovation
+SI_ACCESS_TOKEN=
+AB_TEAM_ID=9805
+```
 
- - [Customizable API](https://strapi.io/features/customizable-api): Automatically build out the schema, models, controllers for your API from the editor. Get REST or GraphQL API out of the box without writing a single line of code.<br />
- - [Media Library](https://strapi.io/features/media-library): The media library allows you to store your images, videos and files in your Strapi admin panel with many ways to visualize and manage them.<br />
- - [Role-Based Access Control (RBAC)](https://strapi.io/features/custom-roles-and-permissions): Role-Based Access Control is a feature available in the Administration Panel settings that let your team members have access rights only to the information they need.<br />
- - [Internationalization (i18n)](https://strapi.io/features/internationalization): Internationalization (i18n) lets you create many content versions, also called locales, in different languages and for different countries.<br />
- - [Audit Logs](https://strapi.io/blog/reasons-and-best-practices-for-using-audit-logs-in-your-application): The Audit Logs section provides a searchable and filterable display of all activities performed by users of the Strapi application<br />
- - [Data transfer](https://strapi.io/blog/importing-exporting-and-transferring-data-with-the-strapi-cli): Streams your data from one Strapi instance to another Strapi instance.<br />
- - [Review Worfklows](https://docs.strapi.io/user-docs/settings/review-workflows): Create and manage any desired review stages for your content, enabling your team to collaborate in the content creation flow from draft to publication. <br />
+### `strapi/.env`
 
-## Resources
+```env
+# App
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS=
+API_TOKEN_SALT=
+ADMIN_JWT_SECRET=
+TRANSFER_TOKEN_SALT=
+JWT_SECRET=
 
-[Docs](https://docs.strapi.io) • [Discord](https://discord.strapi.io) • [YouTube](https://www.youtube.com/c/Strapi/featured) • [Strapi Design System](https://design-system.strapi.io/) • [Marketplace](https://market.strapi.io/) • [Cloud Free Trial](https://cloud.strapi.io)
+CLIENT_URL=http://localhost:3000
+PREVIEW_SECRET=
 
-## Customization
+# SportsInnovation
+SI_ACCESS_TOKEN=
 
-- The Strapi application contains a custom population middlewares in every api route.
+# DeepL auto-translation
+DEEPL_API_KEY=        # from deepl.com/pro-api (free tier available)
+DEEPL_API_FREE=true   # set false for paid DeepL plan
+```
 
-- The Strapi application contains a postinstall script that will regenerate an uuid for the project in order to get some anonymous usage information concerning this demo. You can disable it by removing the uuid inside the `./strapi/packages.json` file.
+## Fonts
 
-- The Strapi application contains a patch for the @strapi/admin package. It is only necessary for the hosted demos since we automatically create the Super Admin users for them when they request this demo on our website.
+The site uses **ABC Camera Plain** (Regular 400, Medium 500, Heavy 800) by ABC Dinamo. Font files are excluded from this repository due to the commercial license. Place them in `next/public/fonts/` before running locally:
+
+```
+next/public/fonts/
+  ABCCameraPlain-Regular.woff2
+  ABCCameraPlain-Medium.woff2
+  ABCCameraPlain-Heavy.woff2
+```
+
+## Brand
+
+| Token | Value | Usage |
+|---|---|---|
+| AB Green | `#006A52` | Primary, CTAs, active states |
+| AB Gold | `#D6A02A` | Headings, accents |
+| AB Beige | `#D3BC8D` | Secondary text |
+| AB Neon | `#00FF1F` | Live match indicator |
+| Rich Black | `#0A0A09` | Page background |
+
+## Content migration
+
+To import existing posts from the WordPress site into Strapi:
+
+```sh
+# Requires Strapi running + a Full Access API token from Strapi admin
+STRAPI_TOKEN=<token> node strapi/scripts/migrate-wp.mjs
+
+# Dry run (no writes)
+DRY_RUN=1 STRAPI_TOKEN=<token> node strapi/scripts/migrate-wp.mjs
+
+# Test with first 5 posts
+LIMIT=5 STRAPI_TOKEN=<token> node strapi/scripts/migrate-wp.mjs
+```
+
+The script fetches 654 published posts and all categories from `ab.dk/wp-json/wp/v2`, downloads featured images, converts HTML to Strapi blocks, and publishes everything under the `da` locale.
+
+## Localization
+
+The site supports Danish (`da`, default) and English (`en`). Content is authored in Danish in Strapi. The DeepL plugin adds a **Translate** button in the content editor to auto-generate English versions for review before publishing.
+
+To add the Danish locale in Strapi: **Settings → Internationalization → Add locale → Danish (da)**.
+
+## Key services
+
+| Service | Purpose | Docs |
+|---|---|---|
+| [Descope](https://descope.com) | Member auth, session management | [SDK docs](https://docs.descope.com/sdk-reference/nextjs) |
+| [SportsInnovation](https://api.superliga.dk) | Live fixtures, standings, scores | Internal access |
+| [Shopify](https://shop.ab.dk) | Club shop (Storefront API) | [Storefront API](https://shopify.dev/docs/api/storefront) |
+| [DeepL](https://deepl.com) | DA→EN auto-translation | [API docs](https://developers.deepl.com/docs) |
