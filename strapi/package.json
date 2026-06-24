@@ -29,6 +29,8 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
+    "strapi-plugin-translate": "2.0.0-next.4",
+    "strapi-provider-translate-deepl": "1.3.0-next.4",
     "styled-components": "^6.0.0",
     "uuid": "^10.0.0"
   },
@@ -36,7 +38,7 @@
     "name": "A Strapi developer"
   },
   "strapi": {
-    "uuid": "LAUNCHPAD"
+    "uuid": "LAUNCHPAD-LOCAL-1d1a74ee-db0c-43e2-8844-99232b517817"
   },
   "engines": {
     "node": ">=18.0.0 <=22.x.x",

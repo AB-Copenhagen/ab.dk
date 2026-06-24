@@ -25,6 +25,15 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.strapiapp.com',
       },
+      // Shopify CDN — product images for shop.ab.dk
+      {
+        protocol: 'https',
+        hostname: 'cdn.shopify.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'shop.ab.dk',
+      },
     ],
   },
   pageExtensions: ['ts', 'tsx'],

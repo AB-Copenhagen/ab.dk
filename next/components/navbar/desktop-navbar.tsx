@@ -1,81 +1,41 @@
 'use client';
 
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-} from 'framer-motion';
+import { useSession } from '@descope/nextjs-sdk/client';
+import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
 import { Link } from 'next-view-transitions';
 import { useState } from 'react';
 
 import { LocaleSwitcher } from '../locale-switcher';
 import { NavbarItem } from './navbar-item';
-import { Button } from '@/components/elements/button';
 import { Logo } from '@/components/logo';
-import { cn } from '@/lib/utils';
 
 type Props = {
-  leftNavbarItems: {
-    URL: string;
-    text: string;
-    target?: string;
-  }[];
-  rightNavbarItems: {
-    URL: string;
-    text: string;
-    target?: string;
-  }[];
+  leftNavbarItems: { URL: string; text: string; target?: string }[];
+  rightNavbarItems: { URL: string; text: string; target?: string }[];
   logo: any;
   locale: string;
 };
 
-export const DesktopNavbar = ({
-  leftNavbarItems,
-  rightNavbarItems,
-  logo,
-  locale,
-}: Props) => {
+export const DesktopNavbar = ({ leftNavbarItems, rightNavbarItems, logo, locale }: Props) => {
   const { scrollY } = useScroll();
+  const [scrolled, setScrolled] = useState(false);
+  const { isAuthenticated } = useSession();
 
-  const [showBackground, setShowBackground] = useState(false);
+  useMotionValueEvent(scrollY, 'change', (v) => setScrolled(v > 60));
 
-  useMotionValueEvent(scrollY, 'change', (value) => {
-    if (value > 100) {
-      setShowBackground(true);
-    } else {
-      setShowBackground(false);
-    }
-  });
   return (
     <motion.div
-      className={cn(
-        'w-full flex relative justify-between px-4 py-3 rounded-md  transition duration-200 bg-transparent mx-auto'
-      )}
+      className="w-full flex items-center justify-between px-6 py-4 transition-colors duration-300"
       animate={{
-        width: showBackground ? '80%' : '100%',
-        background: showBackground ? 'var(--neutral-900)' : 'transparent',
+        background: scrolled ? 'rgba(10,10,9,0.96)' : 'transparent',
+        borderBottom: scrolled ? '1px solid rgba(0,106,82,0.3)' : '1px solid transparent',
       }}
-      transition={{
-        duration: 0.4,
-      }}
+      style={{ backdropFilter: scrolled ? 'blur(12px)' : 'none' }}
     >
-      <AnimatePresence>
-        {showBackground && (
-          <motion.div
-            key={String(showBackground)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{
-              duration: 1,
-            }}
-            className="absolute inset-0 h-full w-full bg-neutral-900 pointer-events-none [mask-image:linear-gradient(to_bottom,white,transparent,white)] rounded-full"
-          />
-        )}
-      </AnimatePresence>
-      <div className="flex flex-row gap-2 items-center">
+      {/* Left — logo + nav links */}
+      <div className="flex items-center gap-6">
         <Logo locale={locale} image={logo?.image} />
-        <div className="flex items-center gap-1.5">
+        <nav className="flex items-center gap-1">
           {leftNavbarItems.map((item) => (
             <NavbarItem
               href={`/${locale}${item.URL}` as never}
@@ -85,23 +45,44 @@ export const DesktopNavbar = ({
               {item.text}
             </NavbarItem>
           ))}
-        </div>
+        </nav>
       </div>
-      <div className="flex space-x-2 items-center">
+
+      {/* Right — locale + auth */}
+      <div className="flex items-center gap-3">
         <LocaleSwitcher currentLocale={locale} />
 
-        {rightNavbarItems.map((item, index) => (
-          <Button
-            key={item.text}
-            variant={
-              index === rightNavbarItems.length - 1 ? 'primary' : 'simple'
-            }
-            as={Link}
-            href={`/${locale}${item.URL}`}
-          >
+        {rightNavbarItems.map((item) => (
+          <NavbarItem href={`/${locale}${item.URL}` as never} key={item.text}>
             {item.text}
-          </Button>
+          </NavbarItem>
         ))}
+
+        {isAuthenticated ? (
+          <Link
+            href={`/${locale}/konto/profil`}
+            className="text-xs font-bold uppercase tracking-widest px-4 py-2 transition-colors"
+            style={{
+              color: 'var(--ab-gold)',
+              letterSpacing: '0.12em',
+              border: '1px solid rgba(214,160,42,0.3)',
+            }}
+          >
+            Min konto
+          </Link>
+        ) : (
+          <Link
+            href={`/${locale}/konto`}
+            className="text-xs font-bold uppercase tracking-widest px-4 py-2 text-white transition-all hover:text-white"
+            style={{
+              letterSpacing: '0.12em',
+              background: 'var(--ab-green)',
+              border: '1px solid var(--ab-green)',
+            }}
+          >
+            {locale === 'da' ? 'Log ind' : 'Sign in'}
+          </Link>
+        )}
       </div>
     </motion.div>
   );

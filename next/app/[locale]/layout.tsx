@@ -1,9 +1,7 @@
 import { Metadata } from 'next';
 import { ViewTransitions } from 'next-view-transitions';
-import { Inter } from 'next/font/google';
 import { draftMode } from 'next/headers';
 import type { PropsWithChildren } from 'react';
-import React from 'react';
 
 import { Banner } from '@/components/banner';
 import { DraftModeBanner } from '@/components/draft-mode-banner';
@@ -12,24 +10,26 @@ import { Navbar } from '@/components/navbar';
 import { AIToast } from '@/components/toast';
 import { CartProvider } from '@/context/cart-context';
 import { generateMetadataObject } from '@/lib/shared/metadata';
-import { fetchSingleType } from '@/lib/strapi';
-import { cn } from '@/lib/utils';
+import { fetchSingleType, StrapiError } from '@/lib/strapi';
 import type { LocaleParamsProps } from '@/types/types';
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
+async function getGlobalData(locale: string) {
+  try {
+    return await fetchSingleType('global', { locale });
+  } catch (e) {
+    if (e instanceof StrapiError) return null;
+    throw e;
+  }
+}
 
 // Default Global SEO for pages without them
 export async function generateMetadata({
   params,
 }: PropsWithChildren<LocaleParamsProps>): Promise<Metadata> {
   const { locale } = await params;
-  const pageData = await fetchSingleType('global', { locale });
+  const pageData = await getGlobalData(locale);
 
-  const seo = pageData.seo;
+  const seo = pageData?.seo;
   const metadata = generateMetadataObject(seo);
   return metadata;
 }
@@ -40,22 +40,17 @@ export default async function LocaleLayout({
 }: PropsWithChildren<LocaleParamsProps>) {
   const { isEnabled: isDraftMode } = await draftMode();
   const { locale } = await params;
-  const pageData = await fetchSingleType('global', { locale });
+  const pageData = await getGlobalData(locale);
   const isDemo = process.env.NEXT_IS_DEMO === 'true';
 
   return (
     <ViewTransitions>
       <CartProvider>
-        <div
-          className={cn(
-            inter.className,
-            'bg-charcoal antialiased h-full w-full'
-          )}
-        >
+        <div className="bg-rich-black antialiased h-full w-full">
           {isDemo && <Banner />}
-          <Navbar data={pageData.navbar} locale={locale} hasBanner={isDemo} />
+          <Navbar data={pageData?.navbar ?? null} locale={locale} hasBanner={isDemo} />
           {children}
-          <Footer data={pageData.footer} locale={locale} />
+          <Footer data={pageData?.footer ?? null} locale={locale} />
           <AIToast />
           {isDraftMode && <DraftModeBanner />}
         </div>

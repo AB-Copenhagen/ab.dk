@@ -14,10 +14,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        charcoal: '#08090A',
-        lightblack: '#1C1C1C',
-        secondary: '#E6E6E6',
-        muted: 'var(--neutral-200)',
+        // ── AB 1889 Brand Palette ──────────────────────────────────
+        'ab-green':   '#006A52',  // primary — shirts, headlines, CTAs
+        'ab-gold':    '#D6A02A',  // accent — highlights, hover states
+        'ab-beige':   '#D3BC8D',  // warm neutral — section backgrounds
+        'ab-neon':    '#00FF1F',  // digital-only — live indicators, active states
+        'rich-black': '#0A0A09',  // near-black background
+        // ── Legacy aliases (keep for existing Launchpad components) ─
+        charcoal:    '#0A0A09',
+        lightblack:  '#141A16',
+        secondary:   '#E6E6E6',
+        muted:       'var(--neutral-200)',
+      },
+      fontFamily: {
+        // ABC Camera Plain — drop woff2 files into /public/fonts/ and
+        // switch the layout to use next/font/local to activate.
+        // Helvetica Neue is the only permitted fallback per brand guidelines.
+        display: ['"ABC Camera Plain"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        sans:    ['"ABC Camera Plain"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
       },
       boxShadow: {
         derek: `0px 0px 0px 1px rgb(0 0 0 / 0.06),

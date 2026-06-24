@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react';
 
+import { i18n } from '@/i18n.config';
 import { useSlugContext } from '@/app/context/SlugContext';
 import { cn } from '@/lib/utils';
 
@@ -11,44 +11,43 @@ export function LocaleSwitcher({ currentLocale }: { currentLocale: string }) {
   const { state } = useSlugContext();
   const { localizedSlugs } = state;
 
-  const pathname = usePathname(); // Current path
-  const segments = pathname.split('/'); // Split path into segments
+  const pathname = usePathname();
+  const segments = pathname.split('/');
 
-  // Generate localized path for each locale
+  // Always iterate i18n.locales (da/en) — never Strapi's localization keys,
+  // which may reflect old seed data (en/fr).
   const generateLocalizedPath = (locale: string): string => {
-    if (!pathname) return `/${locale}`; // Default to root path for the locale
-
-    // Handle homepage (e.g., "/en" -> "/fr")
-    if (segments.length <= 2) {
-      return `/${locale}`;
-    }
-
-    // Handle dynamic paths (e.g., "/en/blog/[slug]")
+    if (!pathname) return `/${locale}`;
+    // Homepage — just swap the locale prefix
+    if (segments.length <= 2) return `/${locale}`;
+    // Deep page with a translated slug from Strapi
     if (localizedSlugs[locale]) {
-      segments[1] = locale; // Replace the locale
-      segments[segments.length - 1] = localizedSlugs[locale]; // Replace slug if available
-      return segments.join('/');
+      const swapped = [...segments];
+      swapped[1] = locale;
+      swapped[swapped.length - 1] = localizedSlugs[locale];
+      return swapped.join('/');
     }
-
-    // Fallback to replace only the locale
-    segments[1] = locale;
-    return segments.join('/');
+    // Fallback — swap locale prefix, keep rest of path unchanged
+    const swapped = [...segments];
+    swapped[1] = locale;
+    return swapped.join('/');
   };
 
   return (
-    <div className="flex gap-2 p-1 rounded-md">
-      {Object.keys(localizedSlugs).map((locale) => (
-        <Link key={locale} href={generateLocalizedPath(locale)}>
-          <div
-            className={cn(
-              'flex cursor-pointer items-center justify-center text-sm leading-[110%] w-8 py-1 rounded-md hover:bg-neutral-800 hover:text-white/80 text-white hover:shadow-[0px_1px_0px_0px_var(--neutral-600)_inset] transition duration-200',
-              locale === currentLocale
-                ? 'bg-neutral-800 text-white shadow-[0px_1px_0px_0px_var(--neutral-600)_inset]'
-                : ''
-            )}
-          >
-            {locale}
-          </div>
+    <div className="flex gap-1">
+      {i18n.locales.map((locale) => (
+        <Link
+          key={locale}
+          href={generateLocalizedPath(locale)}
+          className={cn(
+            'text-xs font-bold uppercase tracking-widest px-2 py-1 transition-colors duration-150',
+            locale === currentLocale
+              ? 'text-ab-gold'
+              : 'text-white/40 hover:text-white/70'
+          )}
+          style={{ letterSpacing: '0.12em' }}
+        >
+          {locale}
         </Link>
       ))}
     </div>

@@ -5,6 +5,15 @@ import type { NextRequest } from 'next/server';
 
 import { i18n } from '@/i18n.config';
 
+// Paths (without locale prefix) that require an active Descope session.
+// Full JWT validation happens server-side in the page via session().
+// Middleware only checks cookie presence as a fast gate.
+const PROTECTED_PATHS = [
+  '/konto/profil',
+  '/konto/ordrer',
+  '/konto/medlemskab',
+];
+
 function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
@@ -18,11 +27,12 @@ function getLocale(request: NextRequest): string | undefined {
 
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // ── i18n redirect ──────────────────────────────────────────────────────────
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
 
-  // Redirect if there is no locale
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
     return NextResponse.redirect(
@@ -32,9 +42,29 @@ export function proxy(request: NextRequest) {
       )
     );
   }
+
+  // ── Descope auth guard ─────────────────────────────────────────────────────
+  const segments = pathname.split('/');
+  const pathWithoutLocale = '/' + segments.slice(2).join('/');
+
+  const isProtected = PROTECTED_PATHS.some(
+    (p) => pathWithoutLocale === p || pathWithoutLocale.startsWith(p + '/')
+  );
+
+  if (isProtected) {
+    // Descope sets cookies prefixed with 'DS' — presence means a session exists.
+    const hasSession = request.cookies.getAll().some((c) => c.name.startsWith('DS'));
+
+    if (!hasSession) {
+      const locale = segments[1];
+      const url = request.nextUrl.clone();
+      url.pathname = `/${locale}/konto`;
+      url.searchParams.set('next', pathname);
+      return NextResponse.redirect(url);
+    }
+  }
 }
 
 export const config = {
-  // Matcher ignoring `/_next/` and `/api/`
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

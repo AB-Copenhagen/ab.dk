@@ -10,6 +10,7 @@
     "clean": "rm -rf .next && rm -rf node_modules && npm i"
   },
   "dependencies": {
+    "@descope/nextjs-sdk": "^0.15.47",
     "@emotion/is-prop-valid": "^1.3.0",
     "@formatjs/intl-localematcher": "^0.5.4",
     "@headlessui/react": "^2.1.2",
@@ -41,6 +42,7 @@
     "react-icons": "^5.2.1",
     "react-wrap-balancer": "^1.1.1",
     "sharp": "^0.33.5",
+    "swr": "^2.4.2",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.168.0",

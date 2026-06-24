@@ -1,5 +1,4 @@
 import { LinkProps } from 'next/link';
-import React from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -21,28 +20,30 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const variantClass =
-    variant === 'simple'
-      ? 'bg-secondary relative z-10 bg-transparent hover:border-secondary/50 hover:bg-secondary/10  border border-transparent text-white text-sm md:text-sm transition font-medium duration-200  rounded-md px-4 py-2  flex items-center justify-center'
+    variant === 'primary'
+      ? 'bg-ab-green hover:bg-ab-green/90 border border-ab-green text-white'
       : variant === 'outline'
-        ? 'bg-white relative z-10 hover:bg-secondary/90 hover:shadow-xl  text-black border border-black hover:text-black text-sm md:text-sm transition font-medium duration-200  rounded-md px-4 py-2  flex items-center justify-center'
-        : variant === 'primary'
-          ? 'bg-secondary relative z-10 hover:bg-secondary/90  border border-secondary text-black text-sm md:text-sm transition font-medium duration-200  rounded-md px-4 py-2  flex items-center justify-center shadow-[0px_-1px_0px_0px_#FFFFFF60_inset,_0px_1px_0px_0px_#FFFFFF60_inset  hover:-translate-y-1 active:-translate-y-0'
+        ? 'bg-transparent hover:bg-ab-green/10 border border-ab-green text-ab-green hover:text-white'
+        : variant === 'simple'
+          ? 'bg-transparent hover:bg-white/5 border border-white/20 text-white'
           : variant === 'muted'
-            ? 'bg-neutral-800 relative z-10 hover:bg-neutral-900  border border-transparent text-white text-sm md:text-sm transition font-medium duration-200  rounded-md px-4 py-2  flex items-center justify-center shadow-[0px_1px_0px_0px_#FFFFFF20_inset]'
+            ? 'bg-white/5 hover:bg-white/10 border border-white/10 text-white/70'
             : '';
+
   const Element = Tag as any;
 
   return (
     <Element
       className={cn(
-        'bg-secondary relative z-10 bg-transparent hover:border-secondary hover:bg-secondary/50  border border-transparent text-white text-sm md:text-sm transition font-medium duration-200  rounded-md px-4 py-2  flex items-center justify-center ',
+        'relative z-10 text-sm font-bold uppercase tracking-widest px-5 py-2.5 transition-all duration-200 flex items-center justify-center hover:-translate-y-px active:translate-y-0',
         variantClass,
         className
       )}
+      style={{ letterSpacing: '0.1em' }}
       {...props}
       suppressHydrationWarning
     >
-      {children ?? `Get Started`}
+      {children ?? 'Kom i gang'}
     </Element>
   );
 };

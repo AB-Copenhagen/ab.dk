@@ -1,94 +1,82 @@
 import { Link } from 'next-view-transitions';
-import React from 'react';
 
 import { Logo } from '@/components/logo';
 
-export const Footer = async ({
-  data,
-  locale,
-}: {
-  data: any;
-  locale: string;
-}) => {
+export const Footer = async ({ data, locale }: { data: any; locale: string }) => {
   return (
-    <div className="relative">
-      <div className="border-t border-neutral-900 px-8 pt-20 pb-32 relative bg-primary">
-        <div className="max-w-7xl mx-auto text-sm text-neutral-500 flex sm:flex-row flex-col justify-between items-start ">
-          <div>
-            <div className="mr-4  md:flex mb-4">
-              {data?.logo?.image && <Logo image={data?.logo?.image} />}
-            </div>
-            <div className="max-w-xs">{data?.description}</div>
-            <div className="mt-4">{data?.copyright}</div>
-            <div className="mt-10">
-              Designed and Developed by{' '}
-              <a className="text-white underline" href="https://aceternity.com">
-                Aceternity
-              </a>{' '}
-              &{' '}
-              <a className="text-white underline" href="https://strapi.io">
-                Strapi
-              </a>
-            </div>
-            <div className="mt-2">
-              built with{' '}
-              <a className="text-white underline" href="https://strapi.io">
-                Strapi
-              </a>
-              ,{' '}
-              <a className="text-white underline" href="https://nextjs.org">
-                Next.js
-              </a>
-              ,{' '}
-              <a
-                className="text-white underline"
-                href="https://tailwindcss.com"
-              >
-                Tailwind CSS
-              </a>
-              ,{' '}
-              <a
-                className="text-white underline"
-                href="https://framer.com/motion"
-              >
-                Motion Animation Lib
-              </a>
-              , and{' '}
-              <a
-                className="text-white underline"
-                href="https://ui.aceternity.com"
-              >
-                Aceternity UI
-              </a>
-            </div>
+    <footer
+      className="relative border-t"
+      style={{ borderColor: 'rgba(0,106,82,0.25)', background: '#080A08' }}
+    >
+      {/* AB Green top accent */}
+      <div className="h-px w-full" style={{ background: 'var(--ab-green)' }} />
+
+      <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+
+          {/* Brand column */}
+          <div className="md:col-span-1">
+            <Logo image={data?.logo?.image} locale={locale} />
+            <p
+              className="mt-5 text-xs leading-relaxed max-w-xs"
+              style={{ color: 'rgba(255,255,255,0.4)', lineHeight: '1.8' }}
+            >
+              {data?.description ?? 'Akademisk Boldklub er en dansk fodboldklub grundlagt i 1889. Vi spiller i 1. division og har hjemmebane på Gladsaxe Stadion.'}
+            </p>
           </div>
-          <div className="grid grid-cols-3 gap-10 items-start mt-10 md:mt-0">
-            <LinkSection links={data?.internal_links} locale={locale} />
-            <LinkSection links={data?.policy_links} locale={locale} />
-            <LinkSection links={data?.social_media_links} locale={locale} />
+
+          {/* Link columns */}
+          <div className="md:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-10">
+            <LinkSection title={locale === 'da' ? 'Klub' : 'Club'} links={data?.internal_links} locale={locale} />
+            <LinkSection title={locale === 'da' ? 'Information' : 'Information'} links={data?.policy_links} locale={locale} />
+            <LinkSection title={locale === 'da' ? 'Følg os' : 'Follow us'} links={data?.social_media_links} locale={locale} />
           </div>
         </div>
+
+        {/* Bottom bar */}
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-8 border-t"
+          style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+        >
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            {data?.copyright ?? `© ${new Date().getFullYear()} Akademisk Boldklub. Alle rettigheder forbeholdes.`}
+          </p>
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.15)', letterSpacing: '0.06em' }}>
+            AB · EST. 1889
+          </p>
+        </div>
       </div>
-    </div>
+    </footer>
   );
 };
 
 const LinkSection = ({
+  title,
   links,
   locale,
 }: {
-  links: { text: string; URL: never | string }[];
+  title: string;
+  links?: { text: string; URL: string }[];
   locale: string;
 }) => (
-  <div className="flex justify-center space-y-4 flex-col mt-4">
-    {links.map((link) => (
-      <Link
-        key={link.text}
-        className="transition-colors hover:text-neutral-400 text-muted text-xs sm:text-sm"
-        href={`${link.URL.startsWith('http') ? '' : `/${locale}`}${link.URL}`}
-      >
-        {link.text}
-      </Link>
-    ))}
+  <div>
+    <p
+      className="text-xs font-bold uppercase tracking-widest mb-5"
+      style={{ color: 'var(--ab-gold)', letterSpacing: '0.14em' }}
+    >
+      {title}
+    </p>
+    <div className="flex flex-col gap-3">
+      {links?.map((link) => (
+        <Link
+          key={link.text}
+          href={`${link.URL.startsWith('http') ? '' : `/${locale}`}${link.URL}`}
+          className="text-xs transition-colors hover:text-white"
+          style={{ color: 'rgba(255,255,255,0.4)' }}
+        >
+          {link.text}
+        </Link>
+      ))}
+    </div>
   </div>
 );
