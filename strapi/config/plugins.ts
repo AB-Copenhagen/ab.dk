@@ -9,6 +9,8 @@ export default ({ env }: { env: (key: string, fallback?: string) => string }) =>
         endpoint: env('WASABI_ENDPOINT', 'https://s3.eu-central-1.wasabisys.com'),
         params: {
           Bucket: env('WASABI_BUCKET'),
+          ACL: 'private',
+          signedUrlExpires: parseInt(env('WASABI_SIGNED_URL_EXPIRES', '604800')), // 7 days
         },
       },
       actionOptions: {
