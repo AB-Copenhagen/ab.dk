@@ -93,7 +93,6 @@ async function uploadFile(localPath, key, mime) {
     Body: stream,
     ContentType: mime || 'application/octet-stream',
     ContentLength: stat.size,
-    ACL: 'public-read',
   }));
 }
 
