@@ -25,6 +25,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.strapiapp.com',
       },
+      // Wasabi object storage — all regions via wildcard
+      {
+        protocol: 'https',
+        hostname: '*.wasabisys.com',
+        pathname: '/**',
+      },
       // Shopify CDN — product images for shop.ab.dk
       {
         protocol: 'https',

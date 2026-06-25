@@ -1,4 +1,24 @@
 export default ({ env }: { env: (key: string, fallback?: string) => string }) => ({
+  upload: {
+    config: {
+      provider: 'aws-s3',
+      providerOptions: {
+        accessKeyId: env('WASABI_ACCESS_KEY_ID'),
+        secretAccessKey: env('WASABI_SECRET_ACCESS_KEY'),
+        region: env('WASABI_REGION', 'eu-central-1'),
+        endpoint: env('WASABI_ENDPOINT', 'https://s3.eu-central-1.wasabisys.com'),
+        params: {
+          Bucket: env('WASABI_BUCKET'),
+          ACL: 'public-read',
+        },
+      },
+      actionOptions: {
+        upload: {},
+        uploadStream: {},
+        delete: {},
+      },
+    },
+  },
   email: {
     config: {
       provider: 'mailgun',
