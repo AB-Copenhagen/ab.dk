@@ -1,0 +1,50 @@
+---
+import Navbar from '@/components/Navbar.astro';
+import Footer from '@/components/Footer.astro';
+import '@/styles/global.css';
+import { fetchSingleType } from '@/lib/strapi/client';
+
+interface Props {
+  title?: string;
+  description?: string;
+  locale?: string;
+  ogImage?: string;
+}
+
+const {
+  title = 'Akademisk Boldklub — AB 1889',
+  description = 'Akademisk Boldklub er en dansk fodboldklub grundlagt i 1889.',
+  locale = 'da',
+  ogImage,
+} = Astro.props;
+
+let globalData: any = null;
+try {
+  globalData = await fetchSingleType('global', { locale });
+} catch {
+  // CMS unavailable — render with fallbacks
+}
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" hreflang="da" href={Astro.url.href.replace('/en', '')} />
+    <link rel="alternate" hreflang="en" href={Astro.url.href.includes('/en') ? Astro.url.href : `/en${Astro.url.pathname}`} />
+  </head>
+  <body class="min-h-screen" style="background:#0A0A09; color:#fff;">
+    <Navbar locale={locale} globalData={globalData} />
+    <main>
+      <slot />
+    </main>
+    <Footer locale={locale} globalData={globalData} />
+  </body>
+</html>
