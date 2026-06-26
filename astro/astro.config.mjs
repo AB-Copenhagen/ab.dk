@@ -3,18 +3,8 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import vercel from '@astrojs/vercel';
 import { fileURLToPath } from 'url';
-import { existsSync } from 'fs';
 
 const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
-
-import { readdirSync } from 'fs';
-import path from 'path';
-
-// Debug: verify paths on build server
-const cwd = process.cwd();
-console.log('[ab] cwd:', cwd);
-try { console.log('[ab] cwd/src/lib:', readdirSync(path.join(cwd, 'src/lib'))); } catch(e) { console.log('[ab] cwd/src/lib ERR:', e.message); }
-try { console.log('[ab] cwd/src/lib/strapi:', readdirSync(path.join(cwd, 'src/lib/strapi'))); } catch(e) { console.log('[ab] cwd/src/lib/strapi ERR:', e.message); }
 
 export default defineConfig({
   output: 'server',
