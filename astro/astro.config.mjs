@@ -3,8 +3,14 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import vercel from '@astrojs/vercel';
 import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 
 const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
+
+// Debug: verify paths on build server
+console.log('[ab] import.meta.url:', import.meta.url);
+console.log('[ab] cwd:', process.cwd());
+console.log('[ab] src/lib/strapi/client.ts exists:', existsSync(src('lib/strapi/client.ts')));
 
 export default defineConfig({
   output: 'server',
