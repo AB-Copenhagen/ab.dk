@@ -3,7 +3,7 @@
 import { format } from 'date-fns';
 import FuzzySearch from 'fuzzy-search';
 import { Link } from 'next-view-transitions';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { truncate } from '@/lib/utils';
 import { Article } from '@/types/types';
@@ -11,39 +11,60 @@ import { Article } from '@/types/types';
 export const BlogPostRows = ({
   articles,
   locale,
+  heading,
+  searchPlaceholder,
 }: {
   articles: Article[];
   locale: string;
+  heading?: string;
+  searchPlaceholder?: string;
 }) => {
   const [search, setSearch] = useState('');
 
-  const searcher = new FuzzySearch(articles, ['title'], {
+  const searcher = new FuzzySearch(articles, ['title', 'description'], {
     caseSensitive: false,
   });
 
   const [results, setResults] = useState(articles);
   useEffect(() => {
-    const results = searcher.search(search);
-    setResults(results);
+    setResults(searcher.search(search));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
+  const defaultHeading = locale === 'da' ? 'Alle nyheder' : 'All articles';
+  const defaultPlaceholder = locale === 'da' ? 'Søg i nyheder…' : 'Search articles…';
+
   return (
-    <div className="w-full py-20">
-      <div className="flex sm:flex-row flex-col justify-between gap-4 items-center mb-10">
-        <p className="text-2xl font-bold text-white">More Posts</p>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search articles"
-          className="text-sm min-w-full sm:min-w-96  p-2 rounded-md bg-neutral-800 border-none  focus:ring-0 focus:outline-none outline-none text-neutral-200 placeholder-neutral-400"
-        />
+    <div className="w-full py-16">
+      <div className="flex sm:flex-row flex-col justify-between gap-4 items-center mb-8 pb-4 border-b" style={{ borderColor: '#1A2018' }}>
+        <p className="text-lg font-bold text-white tracking-tight">
+          {heading ?? defaultHeading}
+        </p>
+        <div className="relative min-w-full sm:min-w-80">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+            width="14" height="14" viewBox="0 0 14 14" fill="none"
+            style={{ color: '#7A9185' }}
+          >
+            <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M9.5 9.5L12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={searchPlaceholder ?? defaultPlaceholder}
+            className="w-full pl-9 pr-3 py-2 text-sm bg-transparent border text-white placeholder-[#7A9185] focus:outline-none focus:border-[#006A52] transition-colors"
+            style={{ borderColor: '#1A2018' }}
+          />
+        </div>
       </div>
 
-      <div className="divide-y divide-neutral-800">
+      <div className="divide-y" style={{ borderColor: '#1A2018' }}>
         {results.length === 0 ? (
-          <p className="text-neutral-400 text-center p-4">No results found</p>
+          <p className="text-center py-10 text-sm" style={{ color: '#7A9185' }}>
+            {locale === 'da' ? 'Ingen resultater fundet' : 'No results found'}
+          </p>
         ) : (
           results.map((article, index) => (
             <BlogPostRow
