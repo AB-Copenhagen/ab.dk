@@ -7,10 +7,16 @@ import { existsSync } from 'fs';
 
 const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
 
+import { readdirSync } from 'fs';
+import path from 'path';
+
 // Debug: verify paths on build server
 console.log('[ab] import.meta.url:', import.meta.url);
 console.log('[ab] cwd:', process.cwd());
-console.log('[ab] src/lib/strapi/client.ts exists:', existsSync(src('lib/strapi/client.ts')));
+try { console.log('[ab] path0:', readdirSync('/vercel/path0')); } catch(e) {}
+try { console.log('[ab] path0/astro:', readdirSync('/vercel/path0/astro')); } catch(e) {}
+try { console.log('[ab] path0/src:', readdirSync('/vercel/path0/src')); } catch(e) { console.log('[ab] path0/src ERR:', e.message); }
+try { console.log('[ab] cwd/src:', readdirSync(path.join(process.cwd(), 'src'))); } catch(e) { console.log('[ab] cwd/src ERR:', e.message); }
 
 export default defineConfig({
   output: 'server',
