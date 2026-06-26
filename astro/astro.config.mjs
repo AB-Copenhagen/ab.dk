@@ -3,30 +3,8 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import vercel from '@astrojs/vercel';
 import { fileURLToPath } from 'url';
-import { existsSync } from 'fs';
-import path from 'path';
 
-const srcDir = fileURLToPath(new URL('./src', import.meta.url));
-const EXTENSIONS = ['.ts', '.tsx', '.astro', '.js', '.jsx', '.json'];
-
-// Resolves @/ aliases with extension inference for Rollup SSR builds.
-// Vite's built-in alias expansion returns extensionless absolute paths
-// which Rollup's load-fallback cannot open; this plugin returns the full path.
-const aliasResolver = {
-  name: 'alias-resolver',
-  enforce: 'pre',
-  resolveId(id) {
-    if (!id.startsWith('@/')) return null;
-    const rel = id.slice(2);
-    const base = path.join(srcDir, rel);
-    if (existsSync(base)) return base;
-    for (const ext of EXTENSIONS) {
-      const full = base + ext;
-      if (existsSync(full)) return full;
-    }
-    return null;
-  },
-};
+const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
 
 export default defineConfig({
   output: 'server',
@@ -43,6 +21,20 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [aliasResolver],
+    resolve: {
+      alias: [
+        // Explicit file-level aliases for extensionless TS/TSX imports.
+        // Vite's directory alias does not infer extensions in Rollup SSR builds.
+        { find: '@/components/islands/ArticleContent', replacement: src('components/islands/ArticleContent.tsx') },
+        { find: '@/components/islands/ArticleSearch',  replacement: src('components/islands/ArticleSearch.tsx') },
+        { find: '@/lib/config/ab',                    replacement: src('lib/config/ab.ts') },
+        { find: '@/lib/nav-config',                   replacement: src('lib/nav-config.ts') },
+        { find: '@/lib/si/client',                    replacement: src('lib/si/client.ts') },
+        { find: '@/lib/strapi/client',                replacement: src('lib/strapi/client.ts') },
+        { find: '@/lib/utils',                        replacement: src('lib/utils.ts') },
+        // Directory alias handles all remaining @/ imports (e.g. *.astro with explicit ext).
+        { find: '@', replacement: src('') },
+      ],
+    },
   },
 });
