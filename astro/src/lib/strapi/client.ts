@@ -1,5 +1,6 @@
 import { strapi } from '@strapi/client';
 import type { API } from '@strapi/client';
+// Strapi v5 REST client
 
 const STRAPI_URL = import.meta.env.STRAPI_URL ?? 'http://localhost:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_API_TOKEN;
