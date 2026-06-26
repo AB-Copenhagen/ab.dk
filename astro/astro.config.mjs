@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import vercel from '@astrojs/vercel';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { fileURLToPath } from 'url';
 
 export default defineConfig({
   output: 'server',
@@ -19,6 +19,11 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [tsconfigPaths()],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.astro', '.json'],
+    },
   },
 });
