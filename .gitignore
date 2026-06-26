@@ -6,6 +6,8 @@ docs
 .claude/settings.local.json
 strapi-export*.tar.gz
 strapi/package-lock.json
+.strapi-updater*.json
+strapi/.strapi-updater*.json
 .pnp.*
 .yarn/*
 !.yarn/patches

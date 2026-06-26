@@ -1,5 +1,11 @@
+import Prism from 'prismjs';
 import type { StrapiApp } from '@strapi/strapi/admin';
 import { Information } from '@strapi/icons';
+
+// Strapi's rich-text editor chunks expect Prism as a global
+if (typeof window !== 'undefined') {
+  (window as any).Prism = Prism;
+}
 
 export default {
   config: {
