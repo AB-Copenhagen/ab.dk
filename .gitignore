@@ -1,6 +1,9 @@
 node_modules
 docs
 .DS_Store
+
+# Proprietary fonts — licensed, not for public distribution
+**/public/fonts/ABCCameraPlain-*
 .vscode
 .env
 .claude/settings.local.json
