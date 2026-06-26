@@ -4,6 +4,8 @@ docs
 .vscode
 .env
 .claude/settings.local.json
+strapi-export*.tar.gz
+strapi/package-lock.json
 .pnp.*
 .yarn/*
 !.yarn/patches

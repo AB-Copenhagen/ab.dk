@@ -3,6 +3,7 @@ export default ({ env }: { env: (key: string, fallback?: string) => string }) =>
     config: {
       provider: 'aws-s3',
       providerOptions: {
+        rootPath: 'uploads',
         accessKeyId: env('WASABI_ACCESS_KEY_ID'),
         secretAccessKey: env('WASABI_SECRET_ACCESS_KEY'),
         region: env('WASABI_REGION', 'eu-central-1'),

@@ -8,6 +8,7 @@ Official website for [Akademisk Boldklub](https://ab.dk) (AB), a Danish football
 |---|---|
 | CMS | Strapi 5 |
 | Frontend | Next.js 15 (App Router) |
+| Database | Supabase (PostgreSQL serverless) |
 | Auth | Descope |
 | Media storage | Wasabi (S3-compatible) |
 | Email | Mailgun |
@@ -120,6 +121,14 @@ JWT_SECRET=
 CLIENT_URL=http://localhost:3000
 PREVIEW_SECRET=
 
+# Database (Supabase PostgreSQL)
+# Connection string from: Supabase → Project Settings → Database → Connection string (URI)
+# Use the session mode pooler (port 5432) — transaction mode (6543) is NOT compatible with Strapi
+DATABASE_CLIENT=postgres
+DATABASE_URL=postgresql://postgres.[project-ref]:[password]@db.[project-ref].supabase.co:5432/postgres
+DATABASE_SSL=true
+DATABASE_SSL_REJECT_UNAUTHORIZED=false
+
 # SportsInnovation
 SI_ACCESS_TOKEN=
 
@@ -197,10 +206,30 @@ The site supports **Danish (`da`, default)** and **English (`en`)**. Content is 
 
 Set Danish as the default locale: **Strapi admin → Settings → Internationalization → Danish → Set as default**.
 
+## Database migration (SQLite → Supabase)
+
+When setting up a fresh environment or migrating an existing SQLite install, use Strapi's built-in export/import. Run all commands from inside `strapi/`:
+
+```sh
+cd strapi
+
+# 1. Export content from SQLite (skips asset binaries — files stay on Wasabi)
+DATABASE_CLIENT=sqlite npx strapi export --no-encrypt --file ../strapi-export --exclude files
+
+# 2. Start Strapi with PostgreSQL to bootstrap the schema, then Ctrl+C once running
+yarn develop
+
+# 3. Import content into PostgreSQL
+npx strapi import --file ../strapi-export.tar.gz --force-yes
+```
+
+> The `--exclude files` flag skips re-downloading media binaries from Wasabi. All file metadata (URLs, hashes) is included in the entity export and imports correctly.
+
 ## Key services
 
 | Service | Purpose | Docs |
 |---|---|---|
+| [Supabase](https://supabase.com) | PostgreSQL serverless database | [Dashboard](https://supabase.com/dashboard) |
 | [Descope](https://descope.com) | Member auth, session management | [SDK docs](https://docs.descope.com/sdk-reference/nextjs) |
 | [Wasabi](https://wasabi.com) | Media object storage (S3-compatible) | [Console](https://console.wasabisys.com) |
 | [Mailgun](https://mailgun.com) | Transactional email from Strapi | [API docs](https://documentation.mailgun.com) |
