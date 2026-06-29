@@ -1,14 +1,12 @@
 /* AB 1889 — Brand Design Tokens (source of truth)
-   All component styles should reference these custom properties.
-   ⚠️ = value needs confirmation against master brand files before launch */
+   All component styles should reference these custom properties. */
 
 :root {
   /* ── Color ─────────────────────────────────────────────────── */
-  --ab-green:  #006A52;   /* ⚠️ TODO(brand): confirm exact "AB Green" hex from master SVGs */
-  --ab-gold:   #D6A02A;   /* AB Gold New — Pantone 131 C. Guide RGB 212/158/43 ≈ #D49E2B;
-                              stated hex is #d6a02a — confirm canonical before launch */
-  --ab-beige:  #D3BC8D;   /* Pantone 467 C — USE MINIMALLY */
-  --ab-neon:   #00FF1F;   /* Pantone 802 C — DIGITAL ONLY. Never for print. Good for hover/focus. */
+  --ab-green:  #006A52;   /* AB Green — confirmed via Next.js production codebase */
+  --ab-gold:   #D6A02A;   /* AB Gold New — Pantone 131 C, RGB 212/158/43 — brand guide p.12 */
+  --ab-beige:  #D3BC8D;   /* Pantone 467 C, RGB 211/188/141 — USE MINIMALLY */
+  --ab-neon:   #00FF1F;   /* Pantone 802 C, RGB 0/255/31 — DIGITAL ONLY. Never convert to CMYK. */
   --ab-white:  #FFFFFF;
   --ab-black:  #0A0A0A;   /* Rich Black — dark backgrounds, sponsor rule */
 

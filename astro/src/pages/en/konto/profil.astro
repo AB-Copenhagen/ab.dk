@@ -1,0 +1,89 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = false;
+
+const sessionToken = Astro.cookies.get('DS')?.value;
+if (!sessionToken) {
+  return Astro.redirect('/en/konto?redirect=/en/konto/profil');
+}
+
+let name = '';
+let email = '';
+let picture = '';
+try {
+  const [, payload] = sessionToken.split('.');
+  if (payload) {
+    const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    name = json.name ?? '';
+    email = json.email ?? '';
+    picture = json.picture ?? '';
+  }
+} catch { /* display with defaults */ }
+
+const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
+---
+
+<Base locale="en" title="My profile | AB 1889">
+  <main class="min-h-screen px-4 py-24" style="background:#060806">
+    <div class="max-w-2xl mx-auto">
+
+      <div class="flex items-center gap-4 mb-10">
+        {picture ? (
+          <img src={picture} alt={name || 'Profile'} class="w-14 h-14 rounded-full object-cover" />
+        ) : (
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-black text-lg" style="background:#006A52">
+            {(name?.charAt(0) || email?.charAt(0) || '?').toUpperCase()}
+          </div>
+        )}
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest mb-0.5" style="color:#D6A02A;letter-spacing:0.14em">
+            Akademisk Boldklub
+          </p>
+          <h1 class="text-xl font-black text-white">{name || email || 'My profile'}</h1>
+        </div>
+      </div>
+
+      <div class="border overflow-hidden" style="border-color:#152214">
+        <div class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest" style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em">
+          Account management
+        </div>
+        <div class="p-2" style="background:#0D1A10">
+          {DESCOPE_PROJECT_ID ? (
+            <div id="descope-profile-container"></div>
+          ) : (
+            <div class="p-8 text-center text-sm" style="color:#8AA898">Profile management requires configuration.</div>
+          )}
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <button id="logout-btn" class="text-xs font-bold uppercase" style="color:#8AA898;letter-spacing:0.12em">Sign out</button>
+      </div>
+
+    </div>
+  </main>
+
+  {DESCOPE_PROJECT_ID && (
+    <script type="module" define:vars={{ DESCOPE_PROJECT_ID }}>
+      import('https://unpkg.com/@descope/web-component@3/dist/index.js').then(() => {
+        const el = document.createElement('descope-user-profile');
+        el.setAttribute('project-id', DESCOPE_PROJECT_ID);
+        el.setAttribute('widget-id', 'user-profile-widget');
+        document.getElementById('descope-profile-container')?.appendChild(el);
+      });
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        document.cookie = 'DS=; Max-Age=0; path=/';
+        location.href = '/en/konto';
+      });
+    </script>
+  )}
+  {!DESCOPE_PROJECT_ID && (
+    <script>
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        document.cookie = 'DS=; Max-Age=0; path=/';
+        location.href = '/en/konto';
+      });
+    </script>
+  )}
+</Base>

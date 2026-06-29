@@ -8,7 +8,7 @@ export const prerender = false;
 const { slug } = Astro.params;
 const locale = 'da';
 
-const T = { border: '#152214', surface: '#0D1A10', green: '#006A52', gold: '#C9941F', muted: '#8AA898' };
+const T = { border: '#152214', surface: '#0D1A10', green: '#006A52', gold: '#D6A02A', muted: '#8AA898' };
 const STRAPI_URL = import.meta.env.STRAPI_URL ?? 'http://localhost:1337';
 
 const results = await fetchCollectionType<any[]>('articles', {
@@ -90,7 +90,7 @@ function formatDate(str: string) {
   .prose a { color: #006A52; text-decoration: underline; text-underline-offset: 3px; }
   .prose strong { color: white; }
   .prose blockquote { border-left-color: #006A52; color: #8AA898; }
-  .prose code { color: #C9941F; background: rgba(201,148,31,0.08); padding: 0.1em 0.3em; border-radius: 2px; }
+  .prose code { color: #D6A02A; background: rgba(214,160,42,0.08); padding: 0.1em 0.3em; border-radius: 2px; }
   .prose pre { background: #0D1A10; border: 1px solid #152214; }
   .prose ul > li::marker { color: #006A52; }
   .prose ol > li::marker { color: #8AA898; }

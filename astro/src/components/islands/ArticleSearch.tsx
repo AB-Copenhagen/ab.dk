@@ -19,7 +19,7 @@ interface Props {
 const T = {
   border:  '#152214',
   green:   '#006A52',
-  gold:    '#C9941F',
+  gold:    '#D6A02A',
   muted:   '#8AA898',
   surface: '#0D1A10',
 };

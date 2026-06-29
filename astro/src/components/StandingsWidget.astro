@@ -53,10 +53,10 @@ const headers = locale === 'da'
               class="transition-colors hover:bg-[#0D1410]"
               style={isAB ? 'background:rgba(0,106,82,0.12)' : ''}
             >
-              <td class="py-2.5 pl-4 pr-2 tabular-nums" style={isAB ? 'color:#C9941F' : 'color:#7A9185'}>
+              <td class="py-2.5 pl-4 pr-2 tabular-nums" style={isAB ? 'color:#D6A02A' : 'color:#7A9185'}>
                 {row.position ?? i + 1}
               </td>
-              <td class="py-2.5 px-2 font-bold" style={isAB ? 'color:#C9941F' : 'color:white'}>
+              <td class="py-2.5 px-2 font-bold" style={isAB ? 'color:#D6A02A' : 'color:white'}>
                 {row.teamName ?? row.team?.name ?? '—'}
                 {isAB && <span class="ml-1.5 text-[0.55rem] uppercase" style="color:#006A52">▲</span>}
               </td>
@@ -65,7 +65,7 @@ const headers = locale === 'da'
               <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.draws ?? '—'}</td>
               <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.losses ?? '—'}</td>
               <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.goalDifference ?? '—'}</td>
-              <td class="py-2.5 pr-4 pl-2 font-bold tabular-nums" style={isAB ? 'color:#C9941F' : 'color:white'}>
+              <td class="py-2.5 pr-4 pl-2 font-bold tabular-nums" style={isAB ? 'color:#D6A02A' : 'color:white'}>
                 {row.points ?? '—'}
               </td>
             </tr>

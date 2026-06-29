@@ -6,7 +6,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.locale = locale;
 
   // Descope session validation for auth-gated routes
-  const GATED_PATHS = ['/profil', '/myab', '/en/profil', '/en/myab'];
+  const GATED_PATHS = ['/konto/profil', '/en/konto/profil'];
   const isGated = GATED_PATHS.some((p) => context.url.pathname.startsWith(p));
 
   if (isGated) {
@@ -15,7 +15,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       context.request.headers.get('authorization')?.replace('Bearer ', '');
 
     if (!sessionToken) {
-      const loginUrl = locale === 'en' ? '/en/login' : '/login';
+      const loginUrl = locale === 'en' ? '/en/konto' : '/konto';
       return context.redirect(`${loginUrl}?redirect=${encodeURIComponent(context.url.pathname)}`);
     }
 
