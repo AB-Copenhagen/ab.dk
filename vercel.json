@@ -1,7 +1,0 @@
-{
-  "framework": "astro",
-  "rootDirectory": "astro",
-  "buildCommand": "npm run build",
-  "outputDirectory": "astro/dist",
-  "installCommand": "npm install"
-}

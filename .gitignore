@@ -1,19 +1,30 @@
 node_modules
 docs
 .DS_Store
+.vscode
 
 # Proprietary fonts — licensed, not for public distribution
 **/public/fonts/ABCCameraPlain-*
-.vscode
+
+# Environment files — .env.example is committed, everything else is not
 .env
+.env.local
+.env.*.local
 .claude/settings.local.json
+
+# Astro build output
+dist
+.astro
+.output
+
+# Strapi
 strapi-export*.tar.gz
-# This is a yarn project — npm lockfiles should not exist at root or in next/
-package-lock.json
-next/package-lock.json
 strapi/package-lock.json
 .strapi-updater*.json
 strapi/.strapi-updater*.json
+.strapi-cloud.json
+
+# Yarn (strapi uses yarn 4 internally)
 .pnp.*
 .yarn/*
 !.yarn/patches
