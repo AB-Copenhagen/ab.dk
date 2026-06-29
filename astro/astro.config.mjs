@@ -1,14 +1,14 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
-import vercel from '@astrojs/vercel';
+import node from '@astrojs/node';
 import { fileURLToPath } from 'url';
 
 const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
 
 export default defineConfig({
   output: 'server',
-  adapter: vercel(),
+  adapter: node({ mode: 'standalone' }),
   integrations: [
     react(),
     tailwind({ applyBaseStyles: false }),
@@ -27,7 +27,12 @@ export default defineConfig({
         // Vite's directory alias does not infer extensions in Rollup SSR builds.
         { find: '@/components/islands/ArticleContent', replacement: src('components/islands/ArticleContent.tsx') },
         { find: '@/components/islands/ArticleSearch',  replacement: src('components/islands/ArticleSearch.tsx') },
+        { find: '@/components/islands/MobileMenu',    replacement: src('components/islands/MobileMenu.tsx') },
+        { find: '@/components/widgets/SiWidget',      replacement: src('components/widgets/SiWidget.tsx') },
         { find: '@/lib/config/ab',                    replacement: src('lib/config/ab.ts') },
+        { find: '@/lib/i18n',                         replacement: src('lib/i18n.ts') },
+        { find: '@/lib/mailgun',                      replacement: src('lib/mailgun.ts') },
+        { find: '@/lib/media',                        replacement: src('lib/media.ts') },
         { find: '@/lib/nav-config',                   replacement: src('lib/nav-config.ts') },
         { find: '@/lib/si/client',                    replacement: src('lib/si/client.ts') },
         { find: '@/lib/strapi/client',                replacement: src('lib/strapi/client.ts') },

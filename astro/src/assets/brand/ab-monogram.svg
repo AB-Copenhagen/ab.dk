@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <!-- TODO(brand): Replace with master AB monogram SVG. NEVER recreate from font. -->
+  <!-- Green variant placeholder -->
+  <rect width="80" height="80" fill="#006A52"/>
+  <text x="40" y="54" font-family="Helvetica,Arial,sans-serif" font-size="32" font-weight="900" fill="white" text-anchor="middle" letter-spacing="-2">AB</text>
+</svg>

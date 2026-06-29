@@ -1,5 +1,7 @@
 ---
 import MobileMenu from './islands/MobileMenu';
+import LangSwitch from '@/components/layout/LangSwitch.astro';
+import Logo from '@/components/brand/Logo.astro';
 import { getNavConfig } from '@/lib/nav-config';
 
 interface Props {
@@ -25,31 +27,26 @@ const enPrefix = locale === 'en' ? '/en' : '';
             class={[
               'text-[0.65rem] font-bold uppercase tracking-widest transition-colors',
               item.highlight
-                ? 'text-ab-gold hover:text-yellow-300'
+                ? 'hover:text-yellow-300'
                 : 'text-white/40 hover:text-white/80',
             ].join(' ')}
+            style={item.highlight ? 'color:#D6A02A' : undefined}
           >
             {item.label}
           </a>
         ))}
       </div>
-      <!-- Locale switcher -->
-      <a
-        href={locale === 'da' ? '/en' : '/'}
-        class="text-[0.65rem] font-bold uppercase tracking-widest text-white/30 hover:text-white/70 transition-colors"
-      >
-        {locale === 'da' ? 'EN' : 'DA'}
-      </a>
+      <LangSwitch locale={locale as 'da' | 'en'} />
     </div>
   </div>
 
   <!-- Primary nav -->
   <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
-    <!-- Logo -->
-    <a href={enPrefix + '/'} class="flex items-center gap-2 shrink-0">
+    <!-- Logo — always render master SVG, never from font -->
+    <a href={enPrefix + '/'} class="flex items-center gap-2 shrink-0" aria-label="AB 1889 — hjem">
       {globalData?.favicon?.url
-        ? <img src={globalData.favicon.url} alt="AB" class="h-8 w-8 object-contain" />
-        : <span class="font-black text-xl text-white" style="letter-spacing:-0.04em">AB</span>
+        ? <img src={globalData.favicon.url} alt="AB 1889" class="h-8 w-auto object-contain" />
+        : <Logo variant="white" size={32} />
       }
     </a>
 

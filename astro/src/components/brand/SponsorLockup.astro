@@ -1,0 +1,43 @@
+---
+interface Props {
+  theme?: 'dark' | 'light';
+  size?: number;
+  class?: string;
+}
+
+const { theme = 'dark', size = 32, class: cls = '' } = Astro.props;
+
+const ruleColor = theme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(10,10,10,0.25)';
+const textColor = theme === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(10,10,10,0.6)';
+const logoVariant = theme === 'dark' ? 'white' : 'green';
+---
+
+<!-- Sponsor lockup: AB 1889 primary, Datum secondary. Side-by-side, vertical rule. -->
+<div
+  class={`inline-flex items-center ${cls}`}
+  style={`gap:${Math.round(size * 0.75)}px`}
+>
+  <!-- AB primary logo — always equal or larger than sponsor -->
+  <a href="/" aria-label="AB 1889 — hjem">
+    <!-- TODO(brand): swap in Logo.astro once master SVG is confirmed -->
+    <span
+      class="font-black"
+      style={`font-size:${size}px;color:${theme === 'dark' ? '#FFFFFF' : '#006A52'};letter-spacing:-0.04em;line-height:1;font-family:Helvetica,Arial,sans-serif`}
+    >AB</span>
+  </a>
+
+  <!-- Vertical rule: height = full logomark height -->
+  <div
+    aria-hidden="true"
+    style={`width:1px;height:${size}px;background:${ruleColor};flex-shrink:0`}
+  ></div>
+
+  <!-- Datum sponsor wordmark -->
+  <a
+    href="https://datum.net"
+    target="_blank"
+    rel="noreferrer"
+    aria-label="Datum — official partner"
+    style={`color:${textColor};font-size:${Math.round(size * 0.55)}px;font-family:Helvetica,Arial,sans-serif;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none`}
+  >Datum</a>
+</div>

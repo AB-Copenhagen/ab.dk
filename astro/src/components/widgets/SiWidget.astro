@@ -1,0 +1,90 @@
+---
+interface Props {
+  widget: string;
+  params: Record<string, string | number | undefined>;
+  minHeight?: number;
+  label?: string;
+}
+
+const { widget, params, minHeight = 400, label } = Astro.props;
+
+// Build query string — skip undefined values and never inject width (handled by CSS)
+const qs = new URLSearchParams();
+qs.set('nopadding', 'true');
+qs.set('transparent', 'true');
+for (const [key, val] of Object.entries(params)) {
+  if (val !== undefined && val !== null && String(val) !== '') {
+    qs.set(key, String(val));
+  }
+}
+
+const widgetUrl = `https://dash.si-ab.com/widgets/${widget}?${qs.toString()}`;
+const uid = `siw-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  class="si-widget-wrapper"
+  style={`position:relative;width:100%;min-height:${minHeight}px;overflow:hidden;`}
+  data-uid={uid}
+>
+  {/* Green shimmer placeholder shown until IntersectionObserver fires */}
+  <div
+    class="si-widget-shimmer"
+    aria-hidden="true"
+    style="position:absolute;inset:0;background:linear-gradient(90deg,#0D1A10 25%,#122718 50%,#0D1A10 75%);background-size:200% 100%;animation:siShimmer 1.6s ease-in-out infinite;"
+  ></div>
+
+  <iframe
+    id={uid}
+    data-src={widgetUrl}
+    width="100%"
+    height="100%"
+    frameborder="0"
+    scrolling="no"
+    allowfullscreen
+    aria-label={label ?? widget}
+    style={`position:relative;z-index:1;display:block;min-height:${minHeight}px;border:0;`}
+    title={label ?? widget}
+  ></iframe>
+</div>
+
+<style>
+  @keyframes siShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
+
+<script define:vars={{ uid, widgetUrl }}>
+  (function () {
+    var iframe = document.getElementById(uid);
+    if (!iframe) return;
+
+    var wrapper = iframe.closest('.si-widget-wrapper');
+    var shimmer = wrapper ? wrapper.querySelector('.si-widget-shimmer') : null;
+
+    function load() {
+      if (iframe.src) return; // already loaded
+      iframe.src = widgetUrl;
+      iframe.addEventListener('load', function () {
+        if (shimmer) shimmer.style.display = 'none';
+      }, { once: true });
+    }
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(
+        function (entries) {
+          if (entries[0].isIntersecting) {
+            load();
+            observer.disconnect();
+          }
+        },
+        { rootMargin: '200px' }
+      );
+      observer.observe(iframe);
+    } else {
+      // Fallback for browsers without IntersectionObserver
+      load();
+    }
+  })();
+</script>

@@ -1,0 +1,212 @@
+---
+import Base from '@/layouts/Base.astro';
+import SiWidget from '@/components/widgets/SiWidget.astro';
+import { fetchPlayerProfile } from '@/lib/si/client';
+import type { SIPlayerProfile } from '@/lib/si/client';
+
+export const prerender = false;
+
+const T = {
+  ground: '#060806',
+  surface: '#0D1A10',
+  border: '#152214',
+  green: '#006A52',
+  gold: '#C9941F',
+  muted: '#8AA898',
+};
+
+// Slug format: {playerId}-{name}  e.g. "987654-mikkel-hansen"
+const { slug } = Astro.params;
+const playerId = slug ? parseInt(slug.split('-')[0], 10) : NaN;
+
+if (isNaN(playerId)) {
+  return Astro.redirect('/hold');
+}
+
+let player: SIPlayerProfile | null = null;
+
+try {
+  player = await fetchPlayerProfile(playerId, 'da');
+} catch {
+  // fall through to redirect
+}
+
+if (!player) {
+  return Astro.redirect('/hold');
+}
+
+const { name, position, nationality, dateOfBirth, stats } = player;
+
+const pageTitle = `${name} | AB 1889`;
+
+const dob = dateOfBirth
+  ? new Date(dateOfBirth).toLocaleDateString('da-DK', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  : null;
+
+// Widget ID config
+const WIDGET_TEAM_ID = 10202;
+const WIDGET_SEASON_ID = 16387;
+---
+
+<Base locale="da" title={pageTitle}>
+  {/* ── Page hero / back nav ──────────────────────────────────────────────── */}
+  <div class="border-b" style={`border-color:${T.border}`}>
+    <div class="max-w-7xl mx-auto px-5 md:px-12">
+      <div class="pt-10 pb-6">
+        <a
+          href="/hold"
+          class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8"
+          style={`color:${T.muted};letter-spacing:0.15em`}
+        >
+          ← Alle spillere
+        </a>
+        <p class="text-xs font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+          {position}
+          {nationality && ` · ${nationality}`}
+        </p>
+        <h1
+          class="font-black text-white"
+          style="font-size:clamp(2.5rem,7vw,5rem);letter-spacing:-0.03em;line-height:0.92"
+        >
+          {name}
+        </h1>
+        {dob && (
+          <p class="mt-3 text-sm" style={`color:${T.muted}`}>Født {dob}</p>
+        )}
+        {stats && (
+          <div class="flex flex-wrap gap-6 mt-5">
+            {[
+              { label: 'Kampe', value: stats.appearances },
+              { label: 'Mål', value: stats.goals },
+              { label: 'Assists', value: stats.assists },
+              { label: 'Gule kort', value: stats.yellowCards },
+              { label: 'Røde kort', value: stats.redCards },
+            ].map(({ label, value }) => (
+              <div>
+                <p class="text-2xl font-black tabular-nums" style={`color:${T.gold}`}>{value}</p>
+                <p class="text-[0.6rem] font-bold uppercase" style={`color:${T.muted};letter-spacing:0.15em`}>{label}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        <div class="mt-6 h-0.5 w-12" style={`background:${T.green}`}></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14 space-y-14">
+
+    {/* ── 1. Player profile widget ──────────────────────────────────────────── */}
+    <section>
+      <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+        <SiWidget
+          widget="SPDKPlayerProfile"
+          params={{ playerId, card: 'true', showTShirt: 'true', teamId: WIDGET_TEAM_ID }}
+          minHeight={360}
+          label={`${name} — profil`}
+        />
+      </div>
+    </section>
+
+    {/* ── 2. Season stats summary ───────────────────────────────────────────── */}
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+        Sæsonstatistik
+      </p>
+      <h2
+        class="font-black text-white mb-6"
+        style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+      >
+        Sæsonen
+      </h2>
+      <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+        <SiWidget
+          widget="SPDKPlayerSeasonStats"
+          params={{ playerId, card: 'true', nopadding: 'true', teamId: WIDGET_TEAM_ID, seasonId: WIDGET_SEASON_ID }}
+          minHeight={280}
+          label="Sæsonstatistik oversigt"
+        />
+      </div>
+    </section>
+
+    {/* ── 3. Stats grid ─────────────────────────────────────────────────────── */}
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+        Detaljeret
+      </p>
+      <h2
+        class="font-black text-white mb-6"
+        style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+      >
+        Statistik
+      </h2>
+      <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+        <SiWidget
+          widget="SPDKPlayerStatsGrid"
+          params={{ playerId, nopadding: 'false', transparent: 'true', teamId: WIDGET_TEAM_ID, seasonId: WIDGET_SEASON_ID }}
+          minHeight={400}
+          label="Statistik grid"
+        />
+      </div>
+    </section>
+
+    {/* ── 4. Goals highlights (shown always — widget handles no-content case) ─ */}
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+        Video
+      </p>
+      <h2
+        class="font-black text-white mb-6"
+        style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+      >
+        Mål i sæsonen
+      </h2>
+      <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+        <SiWidget
+          widget="SPDKGoalsHighlights"
+          params={{
+            type: 'VIDEO_BY_PLAYER',
+            viewList: 'VIEW_SLIDER',
+            viewCard: 'PLAYER_MIN_MATCH_INFO',
+            playerId,
+            seasonId: WIDGET_SEASON_ID,
+            teamId: WIDGET_TEAM_ID,
+          }}
+          minHeight={300}
+          label="Mål highlights"
+        />
+      </div>
+    </section>
+
+    {/* ── 5. Radar comparison ───────────────────────────────────────────────── */}
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+        Sammenligning
+      </p>
+      <h2
+        class="font-black text-white mb-6"
+        style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+      >
+        Radar
+      </h2>
+      <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+        <SiWidget
+          widget="PlayerH2HSeasonRadarStatsOPTA"
+          params={{
+            playerId1: playerId,
+            seasonId1: WIDGET_SEASON_ID,
+            teamId: WIDGET_TEAM_ID,
+            // playerId2 intentionally omitted — the user picks a comparison player in the widget
+          }}
+          minHeight={480}
+          label="Radar sammenligning"
+        />
+      </div>
+    </section>
+
+  </div>
+</Base>

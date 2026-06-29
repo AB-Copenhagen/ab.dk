@@ -1,0 +1,35 @@
+---
+interface Props {
+  size?: number;
+  color?: 'white' | 'green' | 'gold';
+  class?: string;
+}
+
+const { size = 48, color = 'white', class: cls = '' } = Astro.props;
+
+const fills: Record<string, string> = {
+  white: '#FFFFFF',
+  green: '#006A52',
+  gold:  '#D6A02A',
+};
+const stroke = fills[color] ?? '#FFFFFF';
+---
+
+<!--
+  TODO(brand): Replace with the master AB crest SVG (owl, single-color outlines).
+  Usage: white-on-dark. For archival image overlays use flat AB Green or AB Gold.
+  NEVER use the crest and AB monogram together in a sponsor lockup.
+-->
+<svg
+  viewBox="0 0 60 80"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-label="AB 1889 crest"
+  role="img"
+  class={cls}
+  style={`height:${size}px;width:auto`}
+>
+  <rect width="60" height="80" rx="3" fill="none" stroke={stroke} stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="30" y="44" font-family="Helvetica,Arial,sans-serif" font-size="10" fill={stroke} text-anchor="middle" opacity="0.5">CREST</text>
+  <text x="30" y="60" font-family="Helvetica,Arial,sans-serif" font-size="9" fill={stroke} text-anchor="middle" opacity="0.35">1889</text>
+</svg>

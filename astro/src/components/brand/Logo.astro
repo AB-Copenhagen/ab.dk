@@ -1,0 +1,43 @@
+---
+interface Props {
+  variant?: 'green' | 'white' | 'gold';
+  size?: number;
+  class?: string;
+}
+
+const { variant = 'white', size = 40, class: cls = '' } = Astro.props;
+
+const fills: Record<string, string> = {
+  green: '#006A52',
+  white: '#FFFFFF',
+  gold:  '#D6A02A',
+};
+const fill = fills[variant] ?? '#FFFFFF';
+---
+
+<!--
+  TODO(brand): Replace this placeholder with the inline master SVG once the
+  licensed AB monogram file is available. NEVER recreate the wordmark from
+  ABC Camera Plain or any other typeface.
+-->
+<svg
+  viewBox="0 0 80 80"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-label="AB 1889"
+  role="img"
+  class={cls}
+  style={`height:${size}px;width:auto`}
+>
+  {variant === 'green' && <rect width="80" height="80" fill="#006A52"/>}
+  <text
+    x="40"
+    y="54"
+    font-family="Helvetica,Arial,sans-serif"
+    font-size="32"
+    font-weight="900"
+    fill={variant === 'green' ? '#FFFFFF' : fill}
+    text-anchor="middle"
+    letter-spacing="-2"
+  >AB</text>
+</svg>

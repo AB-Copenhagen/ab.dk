@@ -1,7 +1,14 @@
+/* Brand token layer — source of truth */
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Font faces ─────────────────────────────────────────────────────────
+   ABC Camera Plain web license required for self-hosting.
+   TODO(brand): confirm web license before launch — ship Helvetica fallback until then.
+   ─────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'ABC Camera Plain';
   src: url('/fonts/ABCCameraPlain-Regular.woff2') format('woff2'),
@@ -27,15 +34,35 @@
   font-display: swap;
 }
 
-:root {
-  --ab-green:   #006A52;
-  --ab-gold:    #D6A02A;
-  --ab-beige:   #D3BC8D;
-  --rich-black: #0A0A09;
+/* ── Base document ──────────────────────────────────────────────────── */
+html {
+  background: var(--surface-ground);
+  color: var(--ab-white);
+  font-family: var(--font-body);
 }
 
-html {
-  background: var(--rich-black);
-  color: #fff;
-  font-family: 'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+/* ── Typography defaults ────────────────────────────────────────────── */
+/* Headlines uppercase, left-aligned (centred only for hero moments).  */
+h1, h2, h3, h4, h5, h6 {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-head);
+  font-weight: 900;
+  text-align: left;
+}
+
+/* Body copy: always mixed-case, never justified. */
+p, li, td, th {
+  letter-spacing: var(--tracking-body);
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface-ground); }
+::-webkit-scrollbar-thumb { background: var(--surface-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ab-green); }
+
+/* ── Focus ring ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--ab-neon);
+  outline-offset: 2px;
 }

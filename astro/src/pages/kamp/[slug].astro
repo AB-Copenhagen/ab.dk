@@ -1,0 +1,319 @@
+---
+import Base from '@/layouts/Base.astro';
+import SiWidget from '@/components/widgets/SiWidget.astro';
+import { fetchEvent } from '@/lib/si/client';
+import type { SIEvent } from '@/lib/si/client';
+
+export const prerender = false;
+
+const T = {
+  ground: '#060806',
+  surface: '#0D1A10',
+  border: '#152214',
+  green: '#006A52',
+  gold: '#C9941F',
+  muted: '#8AA898',
+};
+
+// Slug format: {eventId}-{teams}  e.g. "1234567-ab-vs-fc-nordsjaelland"
+const { slug } = Astro.params;
+const eventId = slug ? parseInt(slug.split('-')[0], 10) : NaN;
+
+if (isNaN(eventId)) {
+  return Astro.redirect('/kampe');
+}
+
+let event: SIEvent | null = null;
+let fetchError = '';
+
+try {
+  event = await fetchEvent(eventId, 'da');
+} catch (err) {
+  fetchError = err instanceof Error ? err.message : 'Ukendt fejl';
+}
+
+if (!event) {
+  return Astro.redirect('/kampe');
+}
+
+const { homeName, awayName, startDate, statusType, score, tournamentName } = event;
+
+const pageTitle = `${homeName} vs ${awayName} | AB 1889`;
+const matchDate = new Date(startDate).toLocaleDateString('da-DK', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+const isLive = statusType === 'inprogress';
+const isFinished = statusType === 'finished';
+
+// Widget ID config
+const WIDGET_TEAM_ID = 10202;
+const WIDGET_TOURNAMENT_ID = 46;
+const WIDGET_SEASON_ID = 16387;
+---
+
+<Base locale="da" title={pageTitle}>
+  {/* ── Page hero / back nav ──────────────────────────────────────────────── */}
+  <div class="border-b" style={`border-color:${T.border}`}>
+    <div class="max-w-7xl mx-auto px-5 md:px-12">
+      <div class="pt-10 pb-4">
+        <a
+          href="/kampe"
+          class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8"
+          style={`color:${T.muted};letter-spacing:0.15em`}
+        >
+          ← Alle kampe
+        </a>
+        <p class="text-xs font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+          {tournamentName}
+        </p>
+        <h1
+          class="font-black text-white"
+          style="font-size:clamp(2rem,6vw,4rem);letter-spacing:-0.03em;line-height:0.95"
+        >
+          {homeName} <span style={`color:${T.green}`}>vs</span> {awayName}
+        </h1>
+        <p class="mt-3 text-sm" style={`color:${T.muted}`}>{matchDate}</p>
+        {score && (
+          <p
+            class="mt-3 text-2xl font-black tabular-nums"
+            style={`color:${isLive ? '#00FF1F' : T.gold}`}
+          >
+            {score}
+            {isLive && (
+              <span class="ml-3 inline-flex items-center gap-1.5 text-sm font-bold uppercase" style="color:#00FF1F;letter-spacing:0.1em">
+                <span class="w-2 h-2 rounded-full bg-current animate-pulse"></span>
+                LIVE
+              </span>
+            )}
+          </p>
+        )}
+        <div class="mt-5 h-0.5 w-12" style={`background:${T.green}`}></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14 space-y-16">
+
+    {/* ── 1. Match header widget ────────────────────────────────────────────── */}
+    <section>
+      <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+        <SiWidget
+          widget="SPDKMatchPageHeader"
+          params={{ eventId, showTicketBtn: 'true', provider: 'unibet', teamId: WIDGET_TEAM_ID }}
+          minHeight={280}
+          label="Kampheader"
+        />
+      </div>
+    </section>
+
+    {/* ── 2. Pre-match section ──────────────────────────────────────────────── */}
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+        Analyse
+      </p>
+      <h2
+        class="font-black text-white mb-8"
+        style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+      >
+        Før kampen
+      </h2>
+
+      <div class="space-y-6">
+        {/* Form guide */}
+        <div>
+          <h3 class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.muted};letter-spacing:0.18em`}>
+            Formguide
+          </h3>
+          <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+            <SiWidget
+              widget="MTSFormH2HSnap"
+              params={{ eventId, acrossAllTournaments: 'true', teamId: WIDGET_TEAM_ID }}
+              minHeight={200}
+              label="Formguide"
+            />
+          </div>
+        </div>
+
+        {/* H2H */}
+        <div>
+          <h3 class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.muted};letter-spacing:0.18em`}>
+            Indbyrdes opgør
+          </h3>
+          <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+            <SiWidget
+              widget="H2HTeams"
+              params={{ eventId, teamId: WIDGET_TEAM_ID }}
+              minHeight={260}
+              label="Indbyrdes opgør"
+            />
+          </div>
+        </div>
+
+        {/* Table snippet */}
+        <div>
+          <h3 class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.muted};letter-spacing:0.18em`}>
+            Stilling
+          </h3>
+          <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+            <SiWidget
+              widget="SPDKTournamentTable"
+              params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, teamId: WIDGET_TEAM_ID }}
+              minHeight={420}
+              label="Stilling"
+            />
+          </div>
+        </div>
+
+        {/* Fun stats */}
+        <div>
+          <h3 class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.muted};letter-spacing:0.18em`}>
+            Sjove statistikker
+          </h3>
+          <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+            <SiWidget
+              widget="EventTeamFunStats"
+              params={{ eventId, fault: 2, limit: 10, teamId: WIDGET_TEAM_ID }}
+              minHeight={300}
+              label="Sjove statistikker"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ── 3. Line-up section ────────────────────────────────────────────────── */}
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+        Hold
+      </p>
+      <h2
+        class="font-black text-white mb-8"
+        style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+      >
+        Opstilling
+      </h2>
+      <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+        <SiWidget
+          widget="SPDKLineup"
+          params={{ eventId, teamId: WIDGET_TEAM_ID }}
+          minHeight={520}
+          label="Opstilling"
+        />
+      </div>
+    </section>
+
+    {/* ── 4. Live section ───────────────────────────────────────────────────── */}
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+        {isLive ? 'Live nu' : isFinished ? 'Kampreferat' : 'Under kampen'}
+      </p>
+      <h2
+        class="font-black text-white mb-8"
+        style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+      >
+        {isLive ? (
+          <span class="inline-flex items-center gap-3">
+            Live
+            <span class="w-3 h-3 rounded-full" style="background:#00FF1F;box-shadow:0 0 8px #00FF1F;animation:pulse 1.5s ease-in-out infinite"></span>
+          </span>
+        ) : 'Statistik'}
+      </h2>
+
+      <div class="space-y-6">
+        {/* Match momentum */}
+        <div>
+          <h3 class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.muted};letter-spacing:0.18em`}>
+            Momentum
+          </h3>
+          <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+            <SiWidget
+              widget="MatchMomentum"
+              params={{ eventId, teamId: WIDGET_TEAM_ID }}
+              minHeight={220}
+              label="Momentum"
+            />
+          </div>
+        </div>
+
+        {/* Incidents */}
+        <div>
+          <h3 class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.muted};letter-spacing:0.18em`}>
+            Hændelser
+          </h3>
+          <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+            <SiWidget
+              widget="IncidentListOpta"
+              params={{ eventId, header: 'true', card: 'true', initialCollapse: 'false', teamId: WIDGET_TEAM_ID }}
+              minHeight={320}
+              label="Hændelser"
+            />
+          </div>
+        </div>
+
+        {/* Live stats */}
+        <div>
+          <h3 class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.muted};letter-spacing:0.18em`}>
+            Kampstatistik
+          </h3>
+          <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+            <SiWidget
+              widget="LivePostMatchStatsOpta"
+              params={{ eventId, header: 'false', teamId: WIDGET_TEAM_ID }}
+              minHeight={360}
+              label="Kampstatistik"
+            />
+          </div>
+        </div>
+
+        {/* xGoals pitch */}
+        <div>
+          <h3 class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.muted};letter-spacing:0.18em`}>
+            xG — Forventede mål
+          </h3>
+          <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+            <SiWidget
+              widget="TwoTeamsXGoalsPitch"
+              params={{
+                eventId,
+                tournamentId: WIDGET_TOURNAMENT_ID,
+                dotSize: 32.5,
+                header: 'true',
+                teamId: WIDGET_TEAM_ID,
+              }}
+              minHeight={480}
+              label="xG bane"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ── 5. Highlights ────────────────────────────────────────────────────── */}
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>
+        Video
+      </p>
+      <h2
+        class="font-black text-white mb-8"
+        style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+      >
+        Højdepunkter
+      </h2>
+      <div class="border overflow-hidden" style={`border-color:${T.border};background:${T.surface}`}>
+        <SiWidget
+          widget="SPDKMatchVideo"
+          params={{ eventId, teamId: WIDGET_TEAM_ID, seasonId: WIDGET_SEASON_ID }}
+          minHeight={400}
+          label="Kampvideo"
+        />
+      </div>
+    </section>
+
+  </div>
+</Base>
