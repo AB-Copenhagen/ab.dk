@@ -1,5 +1,12 @@
 node_modules
 dist
 .astro
+
+# Environment files — .env.example is committed, everything else is not
 .env
+.env.local
+.env.*.local
+
+# Build/deploy artifacts
 .vercel
+.output

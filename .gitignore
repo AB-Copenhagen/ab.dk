@@ -8,6 +8,9 @@ docs
 .env
 .claude/settings.local.json
 strapi-export*.tar.gz
+# This is a yarn project — npm lockfiles should not exist at root or in next/
+package-lock.json
+next/package-lock.json
 strapi/package-lock.json
 .strapi-updater*.json
 strapi/.strapi-updater*.json
