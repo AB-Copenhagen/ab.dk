@@ -32,3 +32,6 @@ strapi/.strapi-updater*.json
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Strapi response cache
+.cache/
