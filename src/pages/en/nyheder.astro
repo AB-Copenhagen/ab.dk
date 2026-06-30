@@ -43,7 +43,7 @@ const [featured, ...rest] = allArticles;
               {truncate(featured.description, 160)}
             </p>
           )}
-          <a href={`/en/blog/${featured.slug}`} class="news-hero-cta inline-block px-6 py-3 text-sm font-bold text-white transition-colors" style="border:1.5px solid rgba(255,255,255,0.55)">
+          <a href={`/en/blog/${featured.slug}`} class="inline-flex items-center px-8 py-3 text-sm font-bold text-black rounded-full transition-opacity hover:opacity-90" style="background:#D3BC8D; letter-spacing:-0.02em;">
             Read More
           </a>
         </div>
@@ -57,7 +57,7 @@ const [featured, ...rest] = allArticles;
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-12">
           {rest.map((article: any) => (
             <a href={`/en/blog/${article.slug}`} class="group block">
-              <div class="overflow-hidden mb-4" style="aspect-ratio:1/1;background:#F3F4F6">
+              <div class="overflow-hidden mb-4" style="aspect-ratio:4/3;background:#F3F4F6">
                 {article.image?.url ? (
                   <img
                     src={strapiMediaUrl(article.image.url)}

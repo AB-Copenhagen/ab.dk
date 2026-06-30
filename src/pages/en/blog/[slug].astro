@@ -41,53 +41,42 @@ function formatDate(str: string) {
 
 <Base locale="en" title={`${article.title} | Akademisk Boldklub`}>
   <article>
-    <div class="grid md:grid-cols-2" style="min-height:clamp(280px,38vw,500px)">
-      <div class="relative overflow-hidden" style="min-height:280px">
-        {article.image?.url ? (
-          <img
-            src={strapiMediaUrl(article.image.url)}
-            alt={article.title}
-            loading="eager"
-            class="absolute inset-0 w-full h-full object-cover object-center"
-          />
-        ) : (
-          <div class="absolute inset-0 flex items-center justify-center font-black" style="background:#0D1A10;font-size:5rem;color:rgba(0,106,82,0.15)">AB</div>
-        )}
-      </div>
-      <div class="flex flex-col justify-center px-10 md:px-14 lg:px-20 py-12" style="background:#006A52">
-        {article.categories?.[0] && (
-          <p class="text-xs font-bold uppercase mb-4" style="color:rgba(255,255,255,0.55);letter-spacing:0.2em">
-            {article.categories[0].name}
-          </p>
-        )}
-        <h1 class="font-black text-white leading-tight mb-5" style="font-size:clamp(1.5rem,3.2vw,2.6rem);letter-spacing:-0.025em">
-          {article.title}
-        </h1>
-        <time class="text-sm" style="color:rgba(255,255,255,0.55);font-variant-numeric:tabular-nums">
-          {formatDate(article.publishedAt)}
-        </time>
-      </div>
+    <!-- Full-width hero image -->
+    <div class="relative w-full overflow-hidden" style="height:clamp(260px,38vw,480px);">
+      {article.image?.url ? (
+        <img
+          src={strapiMediaUrl(article.image.url)}
+          alt={article.title}
+          loading="eager"
+          class="absolute inset-0 w-full h-full object-cover object-center"
+        />
+      ) : (
+        <div class="absolute inset-0" style="background:#006A52;"></div>
+      )}
+      <div class="absolute inset-0" style="background:linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.45) 100%);"></div>
     </div>
 
-    <div style="background:#fff">
+    <!-- White body -->
+    <div style="background:#fff;">
       <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 md:py-14">
-        <div class="flex items-center gap-6 mb-10 pb-8 border-b border-gray-200 text-xs font-bold">
+
+        <!-- Prev / Next breadcrumb -->
+        <div class="flex items-center justify-between mb-10 pb-6 border-b border-gray-100 text-xs font-bold">
           {prevArticle ? (
-            <a href={`/en/blog/${prevArticle.slug}`} class="hover:underline" style="color:#006A52">
-              ← Previous post
-            </a>
+            <a href={`/en/blog/${prevArticle.slug}`} class="hover:underline" style="color:#006A52;">← Previous post</a>
           ) : <span />}
-          {nextArticle && (
-            <a href={`/en/blog/${nextArticle.slug}`} class="ml-auto hover:underline" style="color:#006A52">
-              Next post →
-            </a>
-          )}
+          {nextArticle ? (
+            <a href={`/en/blog/${nextArticle.slug}`} class="hover:underline" style="color:#006A52;">Next post →</a>
+          ) : <span />}
         </div>
 
-        <div class="grid md:grid-cols-[1fr_340px] lg:grid-cols-[1fr_360px] gap-12 lg:gap-16 items-start">
+        <!-- Two-column: body left, title+sidebar right -->
+        <div class="grid md:grid-cols-[1fr_340px] lg:grid-cols-[1fr_380px] gap-12 lg:gap-16 items-start">
+
+          <!-- Left: body -->
           <div>
             {article.description && (
-              <p class="text-base leading-relaxed mb-8 font-medium" style="color:#374151">
+              <p class="text-base leading-relaxed mb-8 font-medium" style="color:#374151;">
                 {truncate(article.description, 300)}
               </p>
             )}
@@ -96,44 +85,62 @@ function formatDate(str: string) {
                 <ArticleContent content={article.content} strapiUrl={STRAPI_URL} client:load />
               </div>
             )}
+
+            <!-- Share -->
             <div class="flex items-center gap-4 mt-10 pt-8 border-t border-gray-200">
-              <span class="text-xs font-bold uppercase tracking-widest" style="color:#9CA3AF">Share this:</span>
+              <span class="text-xs font-bold uppercase tracking-widest" style="color:#9CA3AF;">Share this:</span>
               <a href="https://www.instagram.com/abkobenhavn" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="share-icon transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-                </svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
               </a>
               <a href="https://www.facebook.com/abkobenhavn" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="share-icon transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               </a>
             </div>
           </div>
 
-          <aside class="space-y-6 sticky top-6">
+          <!-- Right: sticky sidebar with title + widgets -->
+          <aside class="space-y-8 sticky top-6">
+            <!-- Title block -->
             <div>
-              <h3 class="text-xs font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.15em">Fixtures</h3>
-              <div style="background:#060806;border:1px solid #152214">
+              {article.categories?.[0] && (
+                <p class="text-xs font-bold uppercase mb-3" style="color:#006A52; letter-spacing:0.18em;">
+                  {article.categories[0].name}
+                </p>
+              )}
+              <h1 class="font-black leading-tight mb-3" style="font-size:clamp(1.5rem,2.8vw,2.4rem); letter-spacing:-0.035em; color:#111;">
+                {article.title}
+              </h1>
+              <time class="text-sm" style="color:#9CA3AF; font-variant-numeric:tabular-nums;">
+                {formatDate(article.publishedAt)}
+              </time>
+            </div>
+
+            <!-- Fixtures -->
+            <div>
+              <h3 class="text-xs font-bold uppercase mb-3" style="color:#9CA3AF; letter-spacing:0.15em;">Fixtures</h3>
+              <div style="background:#060806; border:1px solid #152214;">
                 <FixturesWidget locale="en" limit={8} />
               </div>
             </div>
+
+            <!-- Standings -->
             <div>
-              <h3 class="text-xs font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.15em">Standings</h3>
-              <div style="background:#060806;border:1px solid #152214">
+              <h3 class="text-xs font-bold uppercase mb-3" style="color:#9CA3AF; letter-spacing:0.15em;">Standings</h3>
+              <div style="background:#060806; border:1px solid #152214;">
                 <StandingsWidget locale="en" />
               </div>
             </div>
           </aside>
         </div>
 
+        <!-- Related articles -->
         {related.length > 0 && (
           <div class="mt-16 pt-10 border-t border-gray-200">
-            <h2 class="font-black text-lg mb-8" style="color:#111;letter-spacing:-0.02em">Related News</h2>
+            <h2 class="font-black text-xl mb-8" style="color:#111; letter-spacing:-0.03em;">Related News</h2>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
               {related.map((a: any) => (
                 <a href={`/en/blog/${a.slug}`} class="group block">
-                  <div class="overflow-hidden mb-4" style="aspect-ratio:1/1;background:#F3F4F6">
+                  <div class="overflow-hidden mb-4" style="aspect-ratio:4/3; background:#F3F4F6;">
                     {a.image?.url ? (
                       <img
                         src={strapiMediaUrl(a.image.url)}
@@ -142,13 +149,13 @@ function formatDate(str: string) {
                         class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:rgba(0,106,82,0.15)">AB</div>
+                      <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:rgba(0,106,82,0.15);">AB</div>
                     )}
                   </div>
-                  <p class="text-xs font-bold uppercase mb-1" style="color:#006A52;letter-spacing:0.16em">
+                  <p class="text-xs font-bold uppercase mb-1" style="color:#006A52; letter-spacing:0.16em;">
                     {a.categories?.[0]?.name ?? 'News'}
                   </p>
-                  <h3 class="font-bold text-sm leading-snug group-hover:underline" style="color:#111">
+                  <h3 class="font-bold text-sm leading-snug group-hover:underline" style="color:#111;">
                     {a.title}
                   </h3>
                 </a>
@@ -178,4 +185,5 @@ function formatDate(str: string) {
   .prose ul > li::marker { color: #006A52; }
   .prose ol > li::marker { color: #9CA3AF; }
   .prose hr { border-color: #E5E7EB; margin: 2em 0; }
+  .prose img { border-radius: 2px; max-width: 100%; }
 </style>
