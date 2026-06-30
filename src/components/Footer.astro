@@ -1,6 +1,4 @@
 ---
-import SponsorLockup from '@/components/brand/SponsorLockup.astro';
-
 interface Props {
   locale?: string;
   globalData?: any;
@@ -16,9 +14,24 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
 ---
 
 <!-- Sponsor row (white bg) -->
-<div style="background:#fff; border-top:1px solid #e5e7eb; padding:40px 0;">
+<div style="background:#fff; border-top:1px solid #e5e7eb; padding:48px 0;">
   <div class="max-w-7xl mx-auto px-8">
-    <SponsorLockup theme="light" size={24} />
+    <div class="flex flex-wrap items-center justify-center gap-12 lg:gap-20">
+      {[
+        { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg' },
+        { src: '/images/sponsors/datum.png', alt: 'Datum' },
+        { src: '/images/sponsors/myriad360.png', alt: 'Myriad360' },
+        { src: '/images/sponsors/select-sport.png', alt: 'Select Sport' },
+        { src: '/images/sponsors/plane.png', alt: 'Plane' },
+      ].map(({ src, alt }) => (
+        <img
+          src={src}
+          alt={alt}
+          style="height:36px; width:auto; object-fit:contain; filter:grayscale(100%); opacity:0.55; transition:filter 0.3s, opacity 0.3s;"
+          class="sponsor-logo"
+        />
+      ))}
+    </div>
   </div>
 </div>
 
@@ -125,9 +138,9 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
         <img
           src="/images/ab-crest.svg"
           alt="AB 1889"
-          width="140"
-          height="140"
-          style="opacity:0.18;"
+          width="160"
+          height="160"
+          style="opacity:0.35;"
         />
       </div>
     </div>
@@ -140,3 +153,7 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
     </div>
   </div>
 </footer>
+
+<style>
+  .sponsor-logo:hover { filter: grayscale(0%) !important; opacity: 1 !important; }
+</style>
