@@ -43,6 +43,39 @@ const matchTimeStr = nextMatch
   : null;
 const venue = nextMatch?.properties?.venue ?? null;
 
+// Calendar widget
+const _now = new Date();
+const calYear = _now.getFullYear();
+const calMonth = _now.getMonth();
+const calToday = _now.getDate();
+const calDaysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+const _firstDow = new Date(calYear, calMonth, 1).getDay();
+const calBlanks = _firstDow === 0 ? 6 : _firstDow - 1;
+const calMonthName = new Date(calYear, calMonth, 1).toLocaleDateString(
+  locale === 'da' ? 'da-DK' : 'en-GB',
+  { month: 'long', year: 'numeric' }
+);
+const calDayLabels = locale === 'da'
+  ? ['M', 'T', 'O', 'T', 'F', 'L', 'S']
+  : ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const calMatchDays = new Set<number>(
+  events
+    .filter((e: any) => {
+      const d = new Date(e.startDate);
+      return d.getFullYear() === calYear && d.getMonth() === calMonth;
+    })
+    .map((e: any) => new Date(e.startDate).getDate() as number)
+);
+const calTotalCells = Math.ceil((calBlanks + calDaysInMonth) / 7) * 7;
+const calCells = Array.from({ length: calTotalCells }, (_, i) => {
+  const day = i - calBlanks + 1;
+  const valid = day >= 1 && day <= calDaysInMonth;
+  return { day, valid, isToday: valid && day === calToday, hasMatch: valid && calMatchDays.has(day) };
+});
+const calRows = [...events]
+  .sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+  .slice(0, 7);
+
 function articlePath(slug: string) {
   return locale === 'en' ? `/en/blog/${slug}` : `/blog/${slug}`;
 }
@@ -92,10 +125,10 @@ const sponsors = [
   .article-card:hover .article-img { transform: scale(1.04); }
   .product-img { transition: transform 0.45s ease; }
   .product-card:hover .product-img { transform: scale(1.03); }
-  .hexbg {
-    background-color: #060E06;
-    background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zM28 100L0 84V66l28 16 28-16v18L28 100z' fill='none' stroke='%23006A52' stroke-opacity='0.2' stroke-width='1'/%3E%3C/svg%3E");
+  .blobbg {
+    background-color: #D6A02A;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='240'%3E%3Cellipse cx='62' cy='52' rx='72' ry='58' fill='%23006A52'/%3E%3Cellipse cx='205' cy='18' rx='58' ry='52' fill='%23006A52'/%3E%3Cellipse cx='305' cy='88' rx='62' ry='52' fill='%23006A52'/%3E%3Cellipse cx='28' cy='178' rx='52' ry='62' fill='%23006A52'/%3E%3Cellipse cx='178' cy='192' rx='78' ry='56' fill='%23006A52'/%3E%3Cellipse cx='315' cy='205' rx='56' ry='58' fill='%23006A52'/%3E%3C/svg%3E");
+    background-size: 320px 240px;
   }
   .sponsor-img { filter: grayscale(100%); opacity: 0.65; transition: filter 0.3s, opacity 0.3s; }
   .sponsor-img:hover { filter: grayscale(0%); opacity: 1; }
@@ -282,77 +315,162 @@ const sponsors = [
 )}
 
 <!-- ── Join Team AB ──────────────────────────────────────── -->
-<div class="hexbg relative overflow-hidden" style="padding:80px 0;">
-  <div class="relative max-w-[1680px] mx-auto px-8 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
-    <div>
-      <p class="text-xs font-black uppercase mb-3" style="color:#006A52; letter-spacing:0.22em;">MyAB</p>
-      <h2 class="font-black text-white leading-none mb-2" style="font-size:clamp(2.5rem,6vw,5rem); letter-spacing:-0.05em;">
-        {locale === 'da' ? 'Join Team AB' : 'Join Team AB'}
-      </h2>
-      <p class="text-sm" style="color:rgba(255,255,255,0.45); max-width:440px; letter-spacing:0.02em;">
-        {locale === 'da'
-          ? 'Bliv en del af fællesskabet. Tilmeld dig MyAB og få adgang til eksklusive fordele.'
-          : 'Stay in the Game. Sign up for MyAB and get exclusive member benefits.'}
-      </p>
+<a href={localPath('/bliv-involveret/myab')} class="block relative overflow-hidden" style="min-height:clamp(120px,16vw,200px); text-decoration:none;">
+  <div class="blobbg absolute inset-0"></div>
+  <div class="relative h-full flex flex-col md:flex-row items-center justify-between gap-6 px-8 md:px-14 py-10 md:py-0" style="min-height:inherit;">
+    <h2 class="font-black text-white leading-none" style="font-size:clamp(2.8rem,7vw,6.5rem); letter-spacing:-0.05em; text-wrap:balance;">
+      {locale === 'da' ? 'Join Team AB' : 'Join Team AB'}
+    </h2>
+    <p class="font-bold text-white shrink-0 hidden md:block" style="max-width:260px; font-size:clamp(0.9rem,1.5vw,1.1rem); opacity:0.9; line-height:1.4;">
+      {locale === 'da'
+        ? 'Bliv en del af fællesskabet. Tilmeld dig MyAB og få eksklusive fordele.'
+        : 'Stay in the Game. Sign up for MyAB and get exclusive member benefits.'}
+    </p>
+  </div>
+</a>
+
+<!-- ── App + ABTV ─────────────────────────────────────────── -->
+<div class="grid md:grid-cols-2">
+  <!-- Download App: bright green, ghost AB, 1889 gold, player photo -->
+  <div class="relative overflow-hidden flex flex-col justify-end p-8 md:p-10" style="min-height:clamp(360px,42vw,520px); background:#006A52;">
+    <!-- Ghost AB watermark -->
+    <span class="absolute font-black text-white select-none pointer-events-none" style="font-size:clamp(10rem,22vw,18rem); letter-spacing:-0.08em; line-height:0.82; opacity:0.13; top:-0.05em; left:-0.05em;">AB</span>
+    <!-- 1889 gold -->
+    <span class="absolute font-black select-none pointer-events-none" style="font-size:clamp(4rem,9vw,7.5rem); letter-spacing:-0.04em; line-height:1; color:#D6A02A; bottom:7rem; left:1.8rem; opacity:0.92;">1889</span>
+    <!-- Player photo right side -->
+    <div class="absolute right-0 bottom-0 h-full pointer-events-none" style="width:58%;">
+      <img src="/images/squad-banner.png" alt="AB player" loading="lazy" class="w-full h-full object-cover object-top" />
+      <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,106,82,0.85) 0%, rgba(0,106,82,0.2) 60%, transparent 100%);"></div>
     </div>
-    <div class="shrink-0">
+    <!-- Content -->
+    <div class="relative z-10">
+      <h2 class="font-black text-white leading-none mb-4" style="font-size:clamp(1.6rem,3vw,2.4rem); letter-spacing:-0.04em; max-width:220px;">
+        {locale === 'da' ? 'Download appen' : 'Download the App'}
+      </h2>
       <a
-        href={localPath('/bliv-involveret/myab')}
-        class="inline-flex items-center px-8 py-4 font-black text-sm rounded-full transition-opacity hover:opacity-90"
-        style="background:#00FF1F; color:#006A52; letter-spacing:-0.02em;"
+        href="#"
+        class="inline-flex items-center px-6 py-2.5 font-black text-sm rounded-full transition-opacity hover:opacity-80"
+        style="background:rgba(0,0,0,0.75); color:#fff; letter-spacing:-0.01em;"
       >
-        {locale === 'da' ? 'Tilmeld MyAB →' : 'Join MyAB →'}
+        {locale === 'da' ? 'Download' : 'Download'}
+      </a>
+    </div>
+  </div>
+
+  <!-- ABTV: full bleed photo, giant "Watch Live", ABTV chip bottom -->
+  <div class="relative overflow-hidden flex flex-col justify-end p-8 md:p-10" style="min-height:clamp(360px,42vw,520px);">
+    <div class="absolute inset-0">
+      <img src="/images/watch-live.png" alt="ABTV" loading="lazy" class="w-full h-full object-cover object-center" />
+      <div class="absolute inset-0" style="background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.1) 100%);"></div>
+    </div>
+    <div class="relative z-10">
+      <h2 class="font-black text-white leading-none mb-2" style="font-size:clamp(2.8rem,7vw,5.5rem); letter-spacing:-0.05em; text-wrap:balance;">
+        {locale === 'da' ? 'Watch Live' : 'Watch Live'}
+      </h2>
+      <p class="text-white mb-5" style="font-size:clamp(0.85rem,1.5vw,1rem); opacity:0.8; max-width:300px; line-height:1.4;">
+        {locale === 'da' ? 'Live, highlights & eksklusivt indhold' : 'Live, Recaps & Exclusive Content'}
+      </p>
+      <a
+        href={localPath('/abtv')}
+        class="inline-flex items-center px-5 py-2 font-black text-sm rounded-full transition-opacity hover:opacity-80"
+        style="background:#006A52; color:#fff; letter-spacing:-0.01em;"
+      >
+        ABTV
       </a>
     </div>
   </div>
 </div>
 
-<!-- ── App + ABTV ─────────────────────────────────────────── -->
-<div class="grid md:grid-cols-2" style="background:#0A0A09;">
-  <!-- Download App -->
-  <div class="relative overflow-hidden flex flex-col justify-between p-8 md:p-12" style="min-height:420px;">
-    <div class="relative z-10">
-      <img src="/images/ab-logo.svg" alt="AB" width="60" height="62" class="mb-6 opacity-90" />
-      <p class="text-xs font-black uppercase mb-3" style="color:#006A52; letter-spacing:0.22em;">
-        {locale === 'da' ? 'AB Appen' : 'AB App'}
-      </p>
-      <h2 class="font-black text-white leading-none mb-5" style="font-size:clamp(1.8rem,3.5vw,3rem); letter-spacing:-0.04em;">
-        {locale === 'da' ? 'Download appen' : 'Download the App'}
-      </h2>
-      <a
-        href="#"
-        class="inline-flex items-center px-6 py-3 font-black text-sm rounded-full border transition-colors hover:bg-white hover:text-black"
-        style="border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.85); letter-spacing:-0.01em;"
-      >
-        {locale === 'da' ? 'Download →' : 'Download →'}
-      </a>
-    </div>
-    <div class="absolute bottom-0 right-0 w-2/3 pointer-events-none" style="max-width:340px;">
-      <img src="/images/app-composite.jpg" alt="AB App" loading="lazy" class="w-full object-cover object-top" style="border-radius:12px 0 0 0;" />
-    </div>
-    <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.85) 30%,rgba(0,0,0,0.2) 100%)"></div>
-  </div>
+<!-- ── Calendar + Mini-Calendar ───────────────────────────── -->
+<div style="background:#F5F5F0; border-top:1px solid #E5E7EB;">
+  <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 md:py-14">
+    <div class="grid lg:grid-cols-[1fr_320px] gap-8">
 
-  <!-- ABTV -->
-  <div class="relative overflow-hidden flex flex-col justify-between p-8 md:p-12" style="min-height:420px; border-left:1px solid rgba(255,255,255,0.06);">
-    <div class="absolute inset-0">
-      <img src="/images/watch-live.png" alt="ABTV" loading="lazy" class="w-full h-full object-cover object-center" />
-      <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 100%)"></div>
-    </div>
-    <div class="relative z-10 flex flex-col h-full justify-between">
-      <div>
-        <p class="text-xs font-black uppercase mb-3" style="color:#D6A02A; letter-spacing:0.22em;">ABTV</p>
-        <h2 class="font-black text-white leading-none mb-3" style="font-size:clamp(1.8rem,3.5vw,3rem); letter-spacing:-0.04em; text-wrap:balance;">
-          {locale === 'da' ? 'Live, highlights & eksklusivt indhold' : 'Live, Recaps & Exclusive Content'}
-        </h2>
+      <!-- Left: Calendar list -->
+      <div class="overflow-hidden" style="border-radius:4px; border:1px solid #E5E7EB;">
+        <div class="px-6 py-3 text-center" style="background:#006A52;">
+          <span class="font-black text-white text-sm" style="letter-spacing:-0.02em;">
+            {locale === 'da' ? 'Kalender' : 'Calendar'}
+          </span>
+        </div>
+        <div class="grid font-black text-xs py-2 px-3 gap-2" style="background:#00FF1F; color:#006A52; grid-template-columns:110px 1fr 100px 1fr 80px 1fr 64px; letter-spacing:0.02em;">
+          <span>{locale === 'da' ? 'Dato' : 'Date'}</span>
+          <span>{locale === 'da' ? 'Hjemme' : 'Home'}</span>
+          <span class="text-center">{locale === 'da' ? 'Tid/Res.' : 'Time/Results'}</span>
+          <span>{locale === 'da' ? 'Ude' : 'Away'}</span>
+          <span>{locale === 'da' ? 'Sæson' : 'Season'}</span>
+          <span>{locale === 'da' ? 'Bane' : 'Ground'}</span>
+          <span class="text-right">{locale === 'da' ? 'Artikel' : 'Article'}</span>
+        </div>
+        {calRows.map((event: any, i: number) => {
+          const isHome = event.homeId === 9805;
+          const d = new Date(event.startDate);
+          const dateStr = d.toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          const timeStr = d.toLocaleTimeString(locale === 'da' ? 'da-DK' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+          const scoreOrTime = event.statusType === 'finished' && event.score ? event.score : timeStr;
+          const evtVenue = event.properties?.venue ?? (isHome ? 'Gladsaxe Stadion' : '');
+          const season = event.tournamentYear ?? '—';
+          return (
+            <div class="grid items-center px-3 py-2.5 text-xs gap-2" style={`grid-template-columns:110px 1fr 100px 1fr 80px 1fr 64px; background:${i % 2 === 0 ? '#fff' : '#F9F9F6'}; border-top:1px solid #EBEBEB;`}>
+              <span style="color:#333;">{dateStr}</span>
+              <div class="flex items-center gap-1.5">
+                {isHome
+                  ? <img src="/images/ab-crest.svg" alt="AB" width="18" height="18" />
+                  : <span class="inline-flex w-5 h-5 rounded-full items-center justify-center text-[0.45rem] font-black" style="background:#E5E7EB; color:#555;">{event.homeName?.slice(0,2)}</span>
+                }
+                <span class="font-bold truncate" style="color:#111;">{event.homeName}</span>
+              </div>
+              <span class="font-black text-center" style="color:#006A52;">{scoreOrTime}</span>
+              <div class="flex items-center gap-1.5">
+                {!isHome
+                  ? <img src="/images/ab-crest.svg" alt="AB" width="18" height="18" />
+                  : <span class="inline-flex w-5 h-5 rounded-full items-center justify-center text-[0.45rem] font-black" style="background:#E5E7EB; color:#555;">{event.awayName?.slice(0,2)}</span>
+                }
+                <span class="font-bold truncate" style="color:#111;">{event.awayName}</span>
+              </div>
+              <span style="color:#888;">{season}</span>
+              <span class="truncate" style="color:#888;">{evtVenue}</span>
+              {event.statusType === 'finished'
+                ? <a href={localPath('/kampe')} class="text-right font-bold" style="color:#006A52; text-decoration:none;">{locale === 'da' ? 'Referat' : 'Recap'}</a>
+                : <span class="text-right" style="color:#bbb;">—</span>
+              }
+            </div>
+          );
+        })}
       </div>
-      <a
-        href={localPath('/abtv')}
-        class="self-start inline-flex items-center px-6 py-3 font-black text-sm rounded-full transition-opacity hover:opacity-90"
-        style="background:#D6A02A; color:#111; letter-spacing:-0.01em;"
-      >
-        {locale === 'da' ? 'Se nu →' : 'Watch Now →'}
-      </a>
+
+      <!-- Right: Mini-calendar -->
+      <div class="overflow-hidden" style="border-radius:4px; border:1px solid #E5E7EB;">
+        <div class="px-4 py-3 flex items-center justify-between" style="background:#006A52;">
+          <span class="text-white/50 text-sm font-bold px-1">‹</span>
+          <span class="font-black text-white text-sm capitalize" style="letter-spacing:-0.02em;">{calMonthName}</span>
+          <span class="text-white/50 text-sm font-bold px-1">›</span>
+        </div>
+        <div class="grid grid-cols-7 text-center py-2" style="background:#00FF1F;">
+          {calDayLabels.map((lbl: string) => (
+            <span class="text-xs font-black" style="color:#006A52;">{lbl}</span>
+          ))}
+        </div>
+        <div class="grid grid-cols-7 bg-white">
+          {calCells.map((cell: any) => (
+            <div
+              class="flex items-center justify-center text-xs relative"
+              style={`aspect-ratio:1; color:${!cell.valid ? 'transparent' : cell.isToday ? '#111' : cell.hasMatch ? '#006A52' : '#444'}; font-weight:${cell.isToday || cell.hasMatch ? '900' : '400'}; background:${cell.isToday ? '#F0F7F4' : 'transparent'};`}
+            >
+              {cell.valid ? cell.day : ''}
+              {cell.hasMatch && !cell.isToday && (
+                <span class="absolute" style="bottom:3px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#00FF1F; display:block;"></span>
+              )}
+            </div>
+          ))}
+        </div>
+        <div class="text-center py-3" style="border-top:1px solid #E5E7EB;">
+          <a href={localPath('/kampe')} class="text-xs font-bold underline" style="color:#006A52;">
+            {locale === 'da' ? 'Se alle kampe' : 'View all matches'}
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

@@ -116,15 +116,17 @@ export interface FetchEventsParams {
 export async function fetchABEvents(
   params: FetchEventsParams = {}
 ): Promise<SIEvent[]> {
-  return siFetch<SIEvent[]>('/events-v2', {
+  // API returns { events: SIEvent[] }
+  const data = await siFetch<{ events: SIEvent[] }>('/events-v2', {
     teamId: abConfig.teamId,
     tournamentId: abConfig.tournamentId ?? undefined,
     seasonId: abConfig.seasonId ?? undefined,
-    sportId: 1, // Soccer
+    sportId: 1,
     limit: 100,
     locale: params.locale ?? 'da',
     ...params,
   });
+  return data.events ?? [];
 }
 
 /** Fetch a single event by ID. */
@@ -132,11 +134,11 @@ export async function fetchEvent(
   eventId: number,
   locale: Locale = 'da'
 ): Promise<SIEvent> {
-  const events = await siFetch<SIEvent[]>('/events-v2', {
+  const data = await siFetch<{ events: SIEvent[] }>('/events-v2', {
     eventId,
     locale,
   });
-  const event = events[0];
+  const event = (data.events ?? [])[0];
   if (!event) throw new Error(`Event ${eventId} not found`);
   return event;
 }
