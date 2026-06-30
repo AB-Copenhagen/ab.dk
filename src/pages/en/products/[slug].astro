@@ -4,15 +4,6 @@ import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 
 export const prerender = false;
 
-const T = {
-  ground:  '#060806',
-  surface: '#0D1A10',
-  border:  '#152214',
-  green:   '#006A52',
-  gold:    '#D6A02A',
-  muted:   '#8AA898',
-};
-
 const { slug } = Astro.params;
 
 let product: any = null;
@@ -36,71 +27,85 @@ const gallery: any[] = product.gallery ?? [];
 ---
 
 <Base locale="en" title={`${name} | AB 1889`}>
-
-  <div class="border-b" style={`border-color:${T.border}`}>
-    <div class="max-w-7xl mx-auto px-5 md:px-12 pt-10 pb-6">
-      <a
-        href="/en/products"
-        class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8"
-        style={`color:${T.muted};letter-spacing:0.15em`}
-      >
-        ← All products
-      </a>
+  <div style="background:#fff">
+    <div class="border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-5 md:px-12 pt-10 pb-6">
+        <a
+          href="/en/products"
+          class="inline-flex items-center gap-2 text-xs font-bold uppercase hover:underline"
+          style="color:#006A52;letter-spacing:0.15em"
+        >
+          ← All products
+        </a>
+      </div>
     </div>
-  </div>
 
-  <div class="max-w-7xl mx-auto px-5 md:px-12 py-12">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-12">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
 
-      <div class="space-y-3">
-        <div class="aspect-square overflow-hidden border" style={`border-color:${T.border};background:${T.surface}`}>
-          {imageUrl ? (
-            <img src={imageUrl} alt={name} class="w-full h-full object-cover" />
-          ) : (
-            <div class="w-full h-full flex items-center justify-center font-black text-6xl" style="color:rgba(0,106,82,0.15)">AB</div>
+        <div class="space-y-3">
+          <div class="aspect-square overflow-hidden border border-gray-200" style="background:#F3F4F6">
+            {imageUrl ? (
+              <img src={imageUrl} alt={name} class="w-full h-full object-cover" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center font-black text-6xl" style="color:rgba(0,106,82,0.15)">AB</div>
+            )}
+          </div>
+          {gallery.length > 0 && (
+            <div class="grid grid-cols-4 gap-2">
+              {gallery.slice(0, 4).map((img: any) => (
+                <div class="aspect-square overflow-hidden border border-gray-200">
+                  <img src={strapiMediaUrl(img.url)} alt="" class="w-full h-full object-cover" loading="lazy" />
+                </div>
+              ))}
+            </div>
           )}
         </div>
-        {gallery.length > 0 && (
-          <div class="grid grid-cols-4 gap-2">
-            {gallery.slice(0, 4).map((img: any) => (
-              <div class="aspect-square overflow-hidden border" style={`border-color:${T.border}`}>
-                <img src={strapiMediaUrl(img.url)} alt="" class="w-full h-full object-cover" loading="lazy" />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      <div class="flex flex-col justify-start pt-2">
-        {category && (
-          <p class="text-[0.6rem] font-bold uppercase mb-3" style={`color:${T.gold};letter-spacing:0.2em`}>{category}</p>
-        )}
-        <h1 class="font-black text-white mb-4" style="font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-0.03em;line-height:0.95">
-          {name}
-        </h1>
-        {price && (
-          <p class="text-3xl font-black tabular-nums mb-8" style={`color:${T.gold}`}>{price}</p>
-        )}
-        {description && (
-          <div class="mb-8">
-            <div class="h-px mb-6" style={`background:${T.border}`}></div>
-            <p class="text-sm leading-relaxed" style={`color:${T.muted}`}>{description}</p>
-          </div>
-        )}
-        {buyLink && (
-          <a
-            href={buyLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center px-8 py-4 font-black text-sm uppercase tracking-widest text-black transition-all"
-            style={`background:${T.gold};letter-spacing:0.15em`}
+        <div class="flex flex-col justify-start pt-2">
+          {category && (
+            <p class="text-[0.6rem] font-bold uppercase mb-3" style="color:#006A52;letter-spacing:0.2em">
+              {category}
+            </p>
+          )}
+          <h1
+            class="font-black mb-4"
+            style="font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-0.03em;line-height:0.95;color:#111"
           >
-            Buy now →
-          </a>
-        )}
-        <div class="mt-8 h-0.5 w-12" style={`background:${T.green}`}></div>
-      </div>
+            {name}
+          </h1>
 
+          {price && (
+            <p class="text-3xl font-black tabular-nums mb-8" style="color:#D6A02A">
+              {price}
+            </p>
+          )}
+
+          {description && (
+            <div class="mb-8">
+              <div class="h-px mb-6 bg-gray-200"></div>
+              <p class="text-sm leading-relaxed" style="color:#374151">
+                {description}
+              </p>
+            </div>
+          )}
+
+          {buyLink && (
+            <a
+              href={buyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center px-8 py-4 font-black text-sm uppercase tracking-widest text-black transition-all hover:opacity-90"
+              style="background:#D6A02A;letter-spacing:0.15em"
+            >
+              Buy now →
+            </a>
+          )}
+
+          <div class="mt-8 h-0.5 w-12" style="background:#006A52"></div>
+        </div>
+
+      </div>
     </div>
   </div>
 </Base>

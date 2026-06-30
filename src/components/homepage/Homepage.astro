@@ -13,11 +13,8 @@ const { locale } = Astro.props;
 
 const T = {
   ground:  '#060806',
-  surface: '#0D1A10',
-  border:  '#152214',
   green:   '#006A52',
   gold:    '#D6A02A',
-  muted:   '#8AA898',
 };
 
 const [articles, events] = await Promise.all([
@@ -97,7 +94,6 @@ function formatDate(str: string) {
 
 <!-- ── Hero ──────────────────────────────────────────────── -->
 <section class="ab-hero ab-hero-lines relative min-h-[calc(100svh-104px)] flex flex-col justify-end overflow-hidden px-5 md:px-12 pb-14 md:pb-20">
-  <!-- Ghost monogram -->
   <span
     aria-hidden="true"
     class="pointer-events-none select-none absolute bottom-[-8vw] right-[-3vw] font-black leading-none"
@@ -185,21 +181,20 @@ function formatDate(str: string) {
 )}
 
 <!-- ── News + Sidebar ─────────────────────────────────────── -->
-<div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16 grid lg:grid-cols-[1fr_296px] gap-8 items-start" style={`background:${T.ground}`}>
+<div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16 grid lg:grid-cols-[1fr_296px] gap-8 items-start" style="background:#fff">
 
   <!-- News column -->
   <div>
-    <div class="flex items-center gap-3 mb-5 text-xs font-bold uppercase" style={`color:${T.muted};letter-spacing:0.22em`}>
+    <div class="flex items-center gap-3 mb-5 text-xs font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.22em">
       <span>{locale === 'da' ? 'Seneste fra klubben' : 'Latest from the club'}</span>
-      <div class="flex-1 h-px" style={`background:${T.border}`}></div>
+      <div class="flex-1 h-px bg-gray-200"></div>
     </div>
 
     <!-- Featured article -->
     {featured && (
       <a
         href={articlePath(featured.slug)}
-        class="article-card group grid md:grid-cols-2 border mb-px"
-        style={`border-color:${T.border}`}
+        class="article-card group grid md:grid-cols-2 border border-gray-200 mb-px"
       >
         <div class="relative overflow-hidden" style="min-height:260px">
           {featured.image?.url ? (
@@ -213,25 +208,25 @@ function formatDate(str: string) {
           ) : (
             <div
               class="h-full w-full flex items-center justify-center font-black"
-              style={`min-height:260px;background:linear-gradient(135deg,${T.surface} 0%,#091208 100%);font-size:3rem;color:rgba(0,106,82,0.18);letter-spacing:-0.04em`}
+              style="min-height:260px;background:#F3F4F6;font-size:3rem;color:rgba(0,106,82,0.18);letter-spacing:-0.04em"
             >AB</div>
           )}
         </div>
-        <div class="p-6 md:p-8 flex flex-col" style={`background:${T.surface}`}>
+        <div class="p-6 md:p-8 flex flex-col bg-white">
           {featured.categories?.[0] && (
-            <p class="text-xs font-bold uppercase mb-2" style={`color:${T.green};letter-spacing:0.18em`}>
+            <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.18em">
               {featured.categories[0].name}
             </p>
           )}
-          <h2 class="font-bold text-white leading-tight mb-3" style="font-size:clamp(1.1rem,2.4vw,1.55rem);letter-spacing:-0.02em">
+          <h2 class="font-bold leading-tight mb-3" style="font-size:clamp(1.1rem,2.4vw,1.55rem);letter-spacing:-0.02em;color:#111">
             {featured.title}
           </h2>
           {featured.description && (
-            <p class="text-sm leading-relaxed mb-4" style={`color:${T.muted}`}>
+            <p class="text-sm leading-relaxed mb-4" style="color:#6B7280">
               {truncate(featured.description, 160)}
             </p>
           )}
-          <p class="text-xs mt-auto pt-3" style="color:rgba(138,168,152,0.5);font-variant-numeric:tabular-nums">
+          <p class="text-xs mt-auto pt-3" style="color:#9CA3AF;font-variant-numeric:tabular-nums">
             {formatDate(featured.publishedAt)}
           </p>
         </div>
@@ -240,9 +235,9 @@ function formatDate(str: string) {
 
     <!-- Article grid -->
     {gridArticles.length > 0 && (
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px" style={`background:${T.border}`}>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-gray-200">
         {gridArticles.map((article: any) => (
-          <a href={articlePath(article.slug)} class="article-card group flex flex-col" style={`background:${T.surface}`}>
+          <a href={articlePath(article.slug)} class="article-card group flex flex-col bg-white">
             <div class="relative overflow-hidden" style="aspect-ratio:16/9">
               {article.image?.url ? (
                 <img
@@ -254,20 +249,20 @@ function formatDate(str: string) {
               ) : (
                 <div
                   class="h-full w-full flex items-center justify-center font-black"
-                  style={`background:linear-gradient(135deg,${T.surface} 0%,#091208 100%);font-size:3rem;color:rgba(0,106,82,0.18);letter-spacing:-0.04em`}
+                  style="background:#F3F4F6;font-size:3rem;color:rgba(0,106,82,0.18);letter-spacing:-0.04em"
                 >AB</div>
               )}
             </div>
             <div class="p-4 flex flex-col flex-1">
               {article.categories?.[0] && (
-                <p class="text-xs font-bold uppercase mb-2" style={`color:${T.green};letter-spacing:0.18em`}>
+                <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.18em">
                   {article.categories[0].name}
                 </p>
               )}
-              <h3 class="text-sm font-bold text-white leading-snug" style="letter-spacing:-0.01em">
+              <h3 class="text-sm font-bold leading-snug" style="color:#111;letter-spacing:-0.01em">
                 {article.title}
               </h3>
-              <p class="text-xs mt-auto pt-3" style="color:rgba(138,168,152,0.5);font-variant-numeric:tabular-nums">
+              <p class="text-xs mt-auto pt-3" style="color:#9CA3AF;font-variant-numeric:tabular-nums">
                 {formatDate(article.publishedAt)}
               </p>
             </div>
@@ -277,7 +272,7 @@ function formatDate(str: string) {
     )}
 
     {!featured && !gridArticles.length && (
-      <p class="py-16 text-sm text-center" style={`color:${T.muted}`}>
+      <p class="py-16 text-sm text-center" style="color:#9CA3AF">
         {locale === 'da' ? 'Ingen artikler endnu.' : 'No articles yet.'}
       </p>
     )}
@@ -285,7 +280,7 @@ function formatDate(str: string) {
     <a
       href={localPath('/nyheder')}
       class="inline-flex items-center gap-1 mt-5 text-xs font-bold uppercase transition-opacity hover:opacity-70"
-      style={`color:${T.green};letter-spacing:0.12em`}
+      style="color:#006A52;letter-spacing:0.12em"
     >
       {locale === 'da' ? 'Se alle nyheder' : 'All news'} →
     </a>
@@ -294,22 +289,24 @@ function formatDate(str: string) {
   <!-- Sidebar -->
   <aside class="flex flex-col gap-5">
     <!-- Standings -->
-    <div class="border" style={`border-color:${T.border};background:${T.surface}`}>
-      <div class="flex items-center justify-between px-4 py-2.5 border-b text-xs font-bold uppercase" style={`border-color:${T.border};color:${T.muted};letter-spacing:0.18em`}>
+    <div class="border border-gray-200">
+      <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 text-xs font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.18em">
         <span>{locale === 'da' ? '1. Division' : '1st Division'}</span>
-        <a href={localPath('/kampe')} class="text-xs transition-opacity hover:opacity-70" style={`color:${T.green};letter-spacing:0.08em`}>
+        <a href={localPath('/kampe')} class="text-xs transition-opacity hover:opacity-70" style="color:#006A52;letter-spacing:0.08em">
           {locale === 'da' ? 'Se tabel →' : 'Full table →'}
         </a>
       </div>
-      <StandingsWidget locale={locale} />
+      <div style="background:#060806">
+        <StandingsWidget locale={locale} />
+      </div>
     </div>
 
     <!-- Recent results -->
     {recentResults.length > 0 && (
-      <div class="border" style={`border-color:${T.border};background:${T.surface}`}>
-        <div class="flex items-center justify-between px-4 py-2.5 border-b text-xs font-bold uppercase" style={`border-color:${T.border};color:${T.muted};letter-spacing:0.18em`}>
+      <div class="border border-gray-200">
+        <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 text-xs font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.18em">
           <span>{locale === 'da' ? 'Seneste resultater' : 'Recent results'}</span>
-          <a href={localPath('/kampe')} class="text-xs" style={`color:${T.green};letter-spacing:0.08em`}>
+          <a href={localPath('/kampe')} class="text-xs" style="color:#006A52;letter-spacing:0.08em">
             {locale === 'da' ? 'Se alle →' : 'All →'}
           </a>
         </div>
@@ -318,17 +315,17 @@ function formatDate(str: string) {
             const isHome = event.homeId === 9805;
             const opp = isHome ? event.awayName : event.homeName;
             return (
-              <li class="flex items-center justify-between px-4 py-3 border-b last:border-b-0 gap-3" style="border-color:rgba(21,34,20,0.5)">
-                <span class="text-xs font-semibold text-white truncate">
+              <li class="flex items-center justify-between px-4 py-3 border-b border-gray-100 last:border-b-0 gap-3">
+                <span class="text-xs font-semibold truncate" style="color:#111">
                   {isHome ? `AB — ${opp}` : `${opp} — AB`}
                 </span>
                 <div class="flex items-center gap-2 shrink-0">
                   {event.score && (
-                    <span class="text-sm font-black" style={`color:${T.gold};font-variant-numeric:tabular-nums`}>
+                    <span class="text-sm font-black" style="color:#D6A02A;font-variant-numeric:tabular-nums">
                       {event.score}
                     </span>
                   )}
-                  <span class="text-[0.6rem] font-bold uppercase" style="color:rgba(138,168,152,0.4);letter-spacing:0.1em">FT</span>
+                  <span class="text-[0.6rem] font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.1em">FT</span>
                 </div>
               </li>
             );
@@ -340,33 +337,32 @@ function formatDate(str: string) {
     <!-- Squad link -->
     <a
       href={localPath('/hold')}
-      class="group border flex items-center justify-between px-4 py-4 transition-colors duration-200 hover:border-[#006A52]"
-      style={`border-color:${T.border};background:${T.surface}`}
+      class="group border border-gray-200 flex items-center justify-between px-4 py-4 transition-colors duration-200 hover:border-gray-400 bg-white"
     >
       <div>
-        <p class="text-xs font-bold uppercase mb-1" style={`color:${T.muted};letter-spacing:0.18em`}>
+        <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF;letter-spacing:0.18em">
           {locale === 'da' ? 'Holdet' : 'The Squad'}
         </p>
-        <p class="text-sm font-bold text-white" style="letter-spacing:-0.01em">
+        <p class="text-sm font-bold" style="color:#111;letter-spacing:-0.01em">
           {locale === 'da' ? 'Se spillertruppen' : 'View the squad'}
         </p>
       </div>
-      <span class="text-lg font-bold transition-transform group-hover:translate-x-1" style={`color:${T.green}`}>→</span>
+      <span class="text-lg font-bold transition-transform group-hover:translate-x-1" style="color:#006A52">→</span>
     </a>
   </aside>
 </div>
 
 <!-- ── Join MyAB strip ────────────────────────────────────── -->
-<div class="border-t" style={`border-color:${T.border};background:${T.surface}`}>
+<div class="border-t border-gray-200" style="background:#F9FAFB">
   <div class="max-w-7xl mx-auto px-5 md:px-12 py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
     <div class="max-w-xl">
-      <p class="text-xs font-bold uppercase mb-2" style={`color:${T.gold};letter-spacing:0.2em`}>MyAB Membership</p>
-      <h2 class="font-black text-white mb-3" style="font-size:clamp(1.5rem,4vw,2.4rem);letter-spacing:-0.03em;line-height:1.05">
+      <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">MyAB Membership</p>
+      <h2 class="font-black mb-3" style="font-size:clamp(1.5rem,4vw,2.4rem);letter-spacing:-0.03em;line-height:1.05;color:#111">
         {locale === 'da'
           ? <Fragment>Bliv en del<br />af klubben.</Fragment>
           : <Fragment>Be part of<br />the club.</Fragment>}
       </h2>
-      <p class="text-sm leading-relaxed" style={`color:${T.muted}`}>
+      <p class="text-sm leading-relaxed" style="color:#6B7280">
         {locale === 'da'
           ? 'Eksklusiv adgang til sæsonkort, merchandise-rabatter, fan-events og alt der sker bag kulisserne.'
           : 'Exclusive access to season tickets, merchandise discounts, fan events and everything happening behind the scenes.'}
@@ -375,7 +371,7 @@ function formatDate(str: string) {
     <a
       href={localPath('/bliv-involveret')}
       class="shrink-0 inline-flex items-center gap-2 font-bold text-white uppercase text-xs px-7 py-4 transition-opacity hover:opacity-80"
-      style={`background:${T.green};letter-spacing:0.15em`}
+      style="background:#006A52;letter-spacing:0.15em"
     >
       {locale === 'da' ? 'Tilmeld MyAB' : 'Join MyAB'} →
     </a>

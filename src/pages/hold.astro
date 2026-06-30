@@ -5,7 +5,6 @@ import { fetchABSquad } from '@/lib/si/client';
 export const prerender = false;
 
 const locale = 'da' as const;
-const T = { border: '#152214', gold: '#D6A02A', green: '#006A52', muted: '#8AA898' };
 
 const POSITION_GROUPS = {
   goalkeeper: 'Målmænd',
@@ -41,44 +40,46 @@ for (const p of players) {
 ---
 
 <Base locale="da" title="Holdet | Akademisk Boldklub">
-  <div class="border-b" style={`border-color:${T.border}`}>
-    <div class="max-w-7xl mx-auto px-5 md:px-12">
-      <div class="py-14 md:py-20">
-        <p class="text-xs font-bold uppercase mb-3" style={`color:${T.gold};letter-spacing:0.2em`}>Sæson 2024/25</p>
-        <h1 class="font-black text-white" style="font-size:clamp(3rem,8vw,5rem);letter-spacing:-0.03em;line-height:0.95">Holdet</h1>
-        {players.length > 0 && (
-          <p class="mt-2 text-sm" style={`color:${T.muted}`}>{players.length} spillere</p>
-        )}
-        <div class="mt-5 h-0.5 w-12" style={`background:${T.green}`}></div>
+  <div style="background:#fff">
+    <div class="border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-5 md:px-12">
+        <div class="py-14 md:py-20">
+          <p class="text-xs font-bold uppercase mb-3" style="color:#006A52;letter-spacing:0.2em">Sæson 2024/25</p>
+          <h1 class="font-black" style="font-size:clamp(3rem,8vw,5rem);letter-spacing:-0.03em;line-height:0.95;color:#111">Holdet</h1>
+          {players.length > 0 && (
+            <p class="mt-2 text-sm" style="color:#6B7280">{players.length} spillere</p>
+          )}
+          <div class="mt-5 h-0.5 w-12" style="background:#006A52"></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14">
-    {players.length === 0 ? (
-      <p class="text-center py-24 text-sm" style={`color:${T.muted}`}>
-        Holdoplysninger er ikke tilgængelige i øjeblikket.
-      </p>
-    ) : (
-      GROUP_ORDER.map((key) => {
-        const group = groups.get(key);
-        if (!group?.length) return null;
-        return (
-          <section class="mb-14">
-            <div class="flex items-baseline gap-3 mb-6 pb-3 border-b" style={`border-color:${T.border}`}>
-              <h2 class="text-xs font-bold uppercase" style={`color:${T.gold};letter-spacing:0.18em`}>
-                {POSITION_GROUPS[key]}
-              </h2>
-              <span class="text-xs" style={`color:${T.muted}`}>({group.length})</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-              {group.map((player: any) => (
-                <PlayerCard player={player} locale="da" />
-              ))}
-            </div>
-          </section>
-        );
-      })
-    )}
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14">
+      {players.length === 0 ? (
+        <p class="text-center py-24 text-sm" style="color:#9CA3AF">
+          Holdoplysninger er ikke tilgængelige i øjeblikket.
+        </p>
+      ) : (
+        GROUP_ORDER.map((key) => {
+          const group = groups.get(key);
+          if (!group?.length) return null;
+          return (
+            <section class="mb-14">
+              <div class="flex items-baseline gap-3 mb-6 pb-3 border-b border-gray-200">
+                <h2 class="text-xs font-bold uppercase" style="color:#006A52;letter-spacing:0.18em">
+                  {POSITION_GROUPS[key]}
+                </h2>
+                <span class="text-xs" style="color:#9CA3AF">({group.length})</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                {group.map((player: any) => (
+                  <PlayerCard player={player} locale="da" />
+                ))}
+              </div>
+            </section>
+          );
+        })
+      )}
+    </div>
   </div>
 </Base>

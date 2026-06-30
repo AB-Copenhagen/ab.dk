@@ -2,13 +2,10 @@
 import Base from '@/layouts/Base.astro';
 import { fetchCollectionType } from '@/lib/strapi/client';
 import { strapiMediaUrl } from '@/lib/strapi/client';
-import { truncate } from '@/lib/utils';
 export const prerender = false;
 
 const { slug } = Astro.params;
 const locale = 'da';
-
-const T = { border: '#152214', surface: '#0D1A10', green: '#006A52', gold: '#D6A02A', muted: '#8AA898', ground: '#060806' };
 
 const results = await fetchCollectionType<any[]>('pages', {
   locale,
@@ -24,7 +21,6 @@ if (!page) {
 const title = page.seo?.metaTitle ?? page.title ?? 'Akademisk Boldklub';
 const description = page.seo?.metaDescription ?? page.description ?? '';
 
-// Render dynamic zone blocks
 const blocks: any[] = page.dynamic_zone ?? [];
 
 function renderHeroBlock(block: any) {
@@ -39,32 +35,34 @@ function renderHeroBlock(block: any) {
 
 <Base locale="da" title={`${title} | Akademisk Boldklub`} description={description}>
   {blocks.length === 0 ? (
-    <!-- Simple text page fallback -->
-    <div class="max-w-3xl mx-auto px-5 md:px-8 py-16">
-      <p class="text-xs font-bold uppercase mb-3" style={`color:${T.gold};letter-spacing:0.2em`}>
-        Akademisk Boldklub
-      </p>
-      <h1 class="font-black text-white mb-6" style="font-size:clamp(2rem,6vw,4rem);letter-spacing:-0.03em">
-        {page.title}
-      </h1>
-      {page.description && (
-        <p class="text-base leading-relaxed" style={`color:${T.muted}`}>{page.description}</p>
-      )}
+    <div style="background:#fff">
+      <div class="border-b border-gray-200">
+        <div class="max-w-3xl mx-auto px-5 md:px-8 py-16">
+          <p class="text-xs font-bold uppercase mb-3" style="color:#006A52;letter-spacing:0.2em">
+            Akademisk Boldklub
+          </p>
+          <h1 class="font-black mb-6" style="font-size:clamp(2rem,6vw,4rem);letter-spacing:-0.03em;color:#111">
+            {page.title}
+          </h1>
+          {page.description && (
+            <p class="text-base leading-relaxed" style="color:#374151">{page.description}</p>
+          )}
+        </div>
+      </div>
     </div>
   ) : (
-    <div>
+    <div style="background:#fff">
       {blocks.map((block: any) => {
         const type = block.__component ?? '';
 
-        // Hero block
         if (type === 'dynamic-zone.hero') {
           const h = renderHeroBlock(block);
           return (
-            <section class="relative min-h-[60vh] flex flex-col justify-end overflow-hidden px-5 md:px-12 pb-16" style={`background:${T.ground}`}>
+            <section class="relative min-h-[60vh] flex flex-col justify-end overflow-hidden px-5 md:px-12 pb-16" style="background:#060806">
               {h.image?.url && (
                 <div class="absolute inset-0">
-                  <img src={strapiMediaUrl(h.image.url)} alt="" class="w-full h-full object-cover opacity-30" />
-                  <div class="absolute inset-0" style={`background:linear-gradient(to top,${T.ground},transparent 60%)`}></div>
+                  <img src={strapiMediaUrl(h.image.url)} alt="" class="w-full h-full object-cover opacity-40" />
+                  <div class="absolute inset-0" style="background:linear-gradient(to top,#060806 0%,transparent 60%)"></div>
                 </div>
               )}
               <div class="relative z-10 max-w-4xl">
@@ -72,10 +70,10 @@ function renderHeroBlock(block: any) {
                   {h.heading}
                 </h1>
                 {h.subheading && (
-                  <p class="text-base leading-relaxed max-w-xl" style={`color:${T.muted}`}>{h.subheading}</p>
+                  <p class="text-base leading-relaxed max-w-xl" style="color:rgba(255,255,255,0.6)">{h.subheading}</p>
                 )}
                 {h.cta && (
-                  <a href={h.cta.href ?? h.cta.url ?? '#'} class="inline-flex items-center gap-2 mt-6 font-bold text-white uppercase text-xs px-6 py-3" style={`background:${T.green};letter-spacing:0.15em`}>
+                  <a href={h.cta.href ?? h.cta.url ?? '#'} class="inline-flex items-center gap-2 mt-6 font-bold text-white uppercase text-xs px-6 py-3" style="background:#006A52;letter-spacing:0.15em">
                     {h.cta.label ?? h.cta.text ?? 'Læs mere'} →
                   </a>
                 )}
@@ -84,21 +82,20 @@ function renderHeroBlock(block: any) {
           );
         }
 
-        // CTA block
         if (type === 'dynamic-zone.cta') {
           return (
-            <section class="border-y py-16 px-5 md:px-12" style={`border-color:${T.border};background:${T.surface}`}>
+            <section class="border-y border-gray-200 py-16 px-5 md:px-12" style="background:#F9FAFB">
               <div class="max-w-3xl mx-auto text-center">
                 {block.heading && (
-                  <h2 class="font-black text-white mb-4" style="font-size:clamp(1.5rem,4vw,2.5rem);letter-spacing:-0.03em">
+                  <h2 class="font-black mb-4" style="font-size:clamp(1.5rem,4vw,2.5rem);letter-spacing:-0.03em;color:#111">
                     {block.heading}
                   </h2>
                 )}
                 {block.description && (
-                  <p class="text-sm leading-relaxed mb-8" style={`color:${T.muted}`}>{block.description}</p>
+                  <p class="text-sm leading-relaxed mb-8" style="color:#6B7280">{block.description}</p>
                 )}
                 {block.cta && (
-                  <a href={block.cta.href ?? block.cta.url ?? '#'} class="inline-flex items-center gap-2 font-bold text-white uppercase text-xs px-7 py-4" style={`background:${T.green};letter-spacing:0.15em`}>
+                  <a href={block.cta.href ?? block.cta.url ?? '#'} class="inline-flex items-center gap-2 font-bold text-white uppercase text-xs px-7 py-4" style="background:#006A52;letter-spacing:0.15em">
                     {block.cta.label ?? block.cta.text ?? 'Læs mere'} →
                   </a>
                 )}
@@ -107,24 +104,23 @@ function renderHeroBlock(block: any) {
           );
         }
 
-        // FAQ block
         if (type === 'dynamic-zone.faq') {
           const items: any[] = block.faqs ?? block.items ?? [];
           return (
             <section class="max-w-3xl mx-auto px-5 md:px-8 py-16">
               {block.heading && (
-                <h2 class="font-black text-white mb-8" style="font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-0.02em">
+                <h2 class="font-black mb-8" style="font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-0.02em;color:#111">
                   {block.heading}
                 </h2>
               )}
-              <div class="divide-y" style={`border-color:${T.border}`}>
+              <div class="divide-y divide-gray-200">
                 {items.map((item: any) => (
                   <details class="py-5 group">
-                    <summary class="flex items-center justify-between cursor-pointer text-sm font-bold text-white" style="letter-spacing:-0.01em">
+                    <summary class="flex items-center justify-between cursor-pointer text-sm font-bold" style="color:#111;letter-spacing:-0.01em">
                       {item.question ?? item.title}
-                      <span class="text-lg transition-transform group-open:rotate-45" style={`color:${T.green}`}>+</span>
+                      <span class="text-lg transition-transform group-open:rotate-45" style="color:#006A52">+</span>
                     </summary>
-                    <p class="mt-3 text-sm leading-relaxed" style={`color:${T.muted}`}>
+                    <p class="mt-3 text-sm leading-relaxed" style="color:#374151">
                       {item.answer ?? item.content}
                     </p>
                   </details>
@@ -134,23 +130,22 @@ function renderHeroBlock(block: any) {
           );
         }
 
-        // Features block
         if (type === 'dynamic-zone.features') {
           const items: any[] = block.features ?? block.items ?? [];
           return (
             <section class="max-w-7xl mx-auto px-5 md:px-12 py-16">
               {block.heading && (
-                <h2 class="font-black text-white mb-10 text-center" style="font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-0.02em">
+                <h2 class="font-black mb-10 text-center" style="font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-0.02em;color:#111">
                   {block.heading}
                 </h2>
               )}
               <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {items.map((item: any) => (
-                  <div class="border p-6" style={`border-color:${T.border};background:${T.surface}`}>
-                    <h3 class="text-sm font-bold text-white mb-2" style="letter-spacing:-0.01em">
+                  <div class="border border-gray-200 p-6 bg-white">
+                    <h3 class="text-sm font-bold mb-2" style="color:#111;letter-spacing:-0.01em">
                       {item.title ?? item.heading}
                     </h3>
-                    <p class="text-xs leading-relaxed" style={`color:${T.muted}`}>
+                    <p class="text-xs leading-relaxed" style="color:#6B7280">
                       {item.description ?? item.content}
                     </p>
                   </div>
@@ -160,7 +155,6 @@ function renderHeroBlock(block: any) {
           );
         }
 
-        // Default: skip unknown blocks silently
         return null;
       })}
     </div>
