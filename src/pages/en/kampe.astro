@@ -181,24 +181,4 @@ function fmtTime(d: string) {
     </div>
   </div>
 
-  <!-- Sponsors -->
-  <div style="background:#fff; border-top:1px solid #E5E7EB; padding:40px 0;">
-    <div class="max-w-7xl mx-auto px-8">
-      <div class="flex flex-wrap items-center justify-center gap-10 lg:gap-16">
-        {[
-          { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg' },
-          { src: '/images/sponsors/datum.png', alt: 'Datum' },
-          { src: '/images/sponsors/myriad360.png', alt: 'Myriad360' },
-          { src: '/images/sponsors/select-sport.png', alt: 'Select Sport' },
-          { src: '/images/sponsors/plane.png', alt: 'Plane' },
-        ].map(({ src, alt }) => (
-          <img src={src} alt={alt} height="28" style="height:28px; width:auto; object-fit:contain; filter:grayscale(100%); opacity:0.6; transition:filter 0.3s, opacity 0.3s;" class="sponsor-img" />
-        ))}
-      </div>
-    </div>
-  </div>
 </Base>
-
-<style>
-  .sponsor-img:hover { filter: grayscale(0%) !important; opacity: 1 !important; }
-</style>

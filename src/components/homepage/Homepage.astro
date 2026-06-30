@@ -479,22 +479,3 @@ const sponsors = [
   </div>
 </section>
 
-<!-- ── Sponsors ───────────────────────────────────────────── -->
-<div style="background:#fff; border-top:1px solid #E5E7EB; border-bottom:1px solid #E5E7EB; padding:40px 0;">
-  <div class="max-w-[1680px] mx-auto px-8 md:px-12">
-    <p class="text-center text-xs font-black uppercase mb-8" style="color:#D1D5DB; letter-spacing:0.28em;">
-      {locale === 'da' ? 'Vores sponsorer' : 'Our partners'}
-    </p>
-    <div class="flex flex-wrap items-center justify-center gap-10 md:gap-16">
-      {sponsors.map((s) => (
-        <img
-          src={s.img}
-          alt={s.name}
-          loading="lazy"
-          class="sponsor-img"
-          style="height:36px; width:auto; max-width:120px; object-fit:contain;"
-        />
-      ))}
-    </div>
-  </div>
-</div>
