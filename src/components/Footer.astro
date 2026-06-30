@@ -18,16 +18,16 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
   <div class="max-w-7xl mx-auto px-8">
     <div class="flex flex-nowrap items-center justify-between gap-8">
       {[
-        { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg' },
-        { src: '/images/sponsors/datum.png', alt: 'Datum' },
-        { src: '/images/sponsors/myriad360.png', alt: 'Myriad360' },
-        { src: '/images/sponsors/select-sport.png', alt: 'Select Sport' },
-        { src: '/images/sponsors/plane.png', alt: 'Plane' },
-      ].map(({ src, alt }) => (
+        { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg', h: '40px' },
+        { src: '/images/sponsors/datum.png', alt: 'Datum', h: '36px' },
+        { src: '/images/sponsors/myriad360.png', alt: 'Myriad360', h: '32px' },
+        { src: '/images/sponsors/select-sport.png', alt: 'Unisport', h: '40px' },
+        { src: '/images/sponsors/plane.png', alt: 'Plane', h: '30px' },
+      ].map(({ src, alt, h }) => (
         <img
           src={src}
           alt={alt}
-          style="height:36px; width:auto; object-fit:contain; filter:grayscale(100%); opacity:0.55; transition:filter 0.3s, opacity 0.3s;"
+          style={`height:${h}; width:auto; object-fit:contain; transition:opacity 0.2s;`}
           class="sponsor-logo"
         />
       ))}
@@ -155,5 +155,5 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
 </footer>
 
 <style>
-  .sponsor-logo:hover { filter: grayscale(0%) !important; opacity: 1 !important; }
+  .sponsor-logo:hover { opacity: 0.75; }
 </style>

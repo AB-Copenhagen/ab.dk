@@ -148,12 +148,27 @@ export async function fetchEventIncidents(eventId: number): Promise<SIIncident[]
 
 // ── Standings ─────────────────────────────────────────────────────────────────
 
+export interface SIStandingRow {
+  rank: number;
+  teamId: number;
+  teamName: string;
+  teamShortName: string;
+  matchesPlayed: number;
+  matchesWon: number;
+  matchesDraw: number;
+  matchesLost: number;
+  points: number;
+  goalsScored: number;
+  goalsConceded: number;
+}
+
 /** Fetch the current 1.division standings table. */
-export async function fetchStandings(locale: Locale = 'da') {
+export async function fetchStandings(locale: Locale = 'da'): Promise<SIStandingRow[]> {
   if (!abConfig.tournamentId) {
     throw new Error('AB_TOURNAMENT_ID is not set — standings unavailable');
   }
-  return siFetch(`/tournaments/${abConfig.tournamentId}/season`, { locale });
+  // /tournaments/:id/standings returns a flat array of rows directly
+  return siFetch<SIStandingRow[]>(`/tournaments/${abConfig.tournamentId}/standings`, { locale });
 }
 
 // ── Teams ─────────────────────────────────────────────────────────────────────

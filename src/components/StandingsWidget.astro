@@ -11,15 +11,9 @@ let rows: any[] = [];
 let error = '';
 
 try {
-  const data = await fetchStandings(locale);
-  rows = data?.standings ?? data?.data ?? [];
+  rows = await fetchStandings(locale);
 } catch (err) {
-  const msg = err instanceof Error ? err.message : '';
-  error = msg.includes('AB_TOURNAMENT_ID')
-    ? 'Stilling ikke tilgængelig — AB_TOURNAMENT_ID mangler'
-    : locale === 'da'
-    ? 'Stilling ikke tilgængelig'
-    : 'Standings unavailable';
+  error = locale === 'da' ? 'Stilling ikke tilgængelig' : 'Standings unavailable';
 }
 
 const headers = locale === 'da'
@@ -30,8 +24,8 @@ const headers = locale === 'da'
 {error ? (
   <div class="text-xs py-4 text-center" style="color:#7A9185">{error}</div>
 ) : !rows.length ? (
-  <div class="text-xs py-4 text-center" style="color:#7A9185">
-    {locale === 'da' ? 'Ingen data' : 'No data'}
+  <div class="text-xs py-6 text-center" style="color:#7A9185">
+    {locale === 'da' ? 'Sæsonen er endnu ikke startet' : 'Season has not started yet'}
   </div>
 ) : (
   <div class="overflow-x-auto">
@@ -46,27 +40,29 @@ const headers = locale === 'da'
         </tr>
       </thead>
       <tbody class="divide-y divide-[#1A2018]">
-        {rows.map((row: any, i: number) => {
-          const isAB = row.teamId === 9805 || row.team?.id === 9805;
+        {rows.map((row: any) => {
+          const isAB = row.teamId === 9805;
+          const gd = (row.goalsScored ?? 0) - (row.goalsConceded ?? 0);
+          const gdStr = gd > 0 ? `+${gd}` : String(gd);
           return (
             <tr
               class="transition-colors hover:bg-[#0D1410]"
               style={isAB ? 'background:rgba(0,106,82,0.12)' : ''}
             >
               <td class="py-2.5 pl-4 pr-2 tabular-nums" style={isAB ? 'color:#D6A02A' : 'color:#7A9185'}>
-                {row.position ?? i + 1}
+                {row.rank}
               </td>
               <td class="py-2.5 px-2 font-bold" style={isAB ? 'color:#D6A02A' : 'color:white'}>
-                {row.teamName ?? row.team?.name ?? '—'}
+                {row.teamName ?? '—'}
                 {isAB && <span class="ml-1.5 text-[0.55rem] uppercase" style="color:#006A52">▲</span>}
               </td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.played ?? '—'}</td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.wins ?? '—'}</td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.draws ?? '—'}</td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.losses ?? '—'}</td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.goalDifference ?? '—'}</td>
+              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.matchesPlayed}</td>
+              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.matchesWon}</td>
+              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.matchesDraw}</td>
+              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{row.matchesLost}</td>
+              <td class="py-2.5 px-2 tabular-nums" style="color:#7A9185">{gdStr}</td>
               <td class="py-2.5 pr-4 pl-2 font-bold tabular-nums" style={isAB ? 'color:#D6A02A' : 'color:white'}>
-                {row.points ?? '—'}
+                {row.points}
               </td>
             </tr>
           );
