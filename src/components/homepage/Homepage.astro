@@ -1,6 +1,6 @@
 ---
 import { fetchCollectionType } from '@/lib/strapi/client';
-import { fetchABEvents } from '@/lib/si/client';
+import { fetchABEvents, fetchABPlayers, type SIPlayer } from '@/lib/si/client';
 import { strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate } from '@/lib/utils';
 import StandingsWidget from '@/components/StandingsWidget.astro';
@@ -11,7 +11,7 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const [articles, events] = await Promise.all([
+const [articles, events, players] = await Promise.all([
   fetchCollectionType<any[]>('articles', {
     locale,
     sort: ['publishedAt:desc'],
@@ -19,7 +19,13 @@ const [articles, events] = await Promise.all([
     pagination: { pageSize: 8 },
   }).catch(() => [] as any[]),
   fetchABEvents({ locale, limit: 20 }).catch(() => [] as any[]),
+  fetchABPlayers(locale).catch((): SIPlayer[] => []),
 ]);
+
+const positionOrder: Record<string, number> = { keeper: 0, defender: 1, midfielder: 2, forward: 3 };
+const sortedPlayers = [...players].sort(
+  (a, b) => (positionOrder[a.position] ?? 4) - (positionOrder[b.position] ?? 4)
+);
 
 const [featured, ...rest] = articles;
 
@@ -513,35 +519,103 @@ const sponsors = [
   </div>
 </div>
 
-<!-- ── Squad Banner ──────────────────────────────────────── -->
-<div class="relative overflow-hidden" style="height:clamp(260px,28vw,420px);">
-  <img
-    src="/images/squad-banner.png"
-    alt="AB 1889 Squad"
-    loading="lazy"
-    class="w-full h-full object-cover object-top"
-  />
-  <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 60%)"></div>
-  <div class="absolute inset-0 flex items-center px-8 md:px-12">
-    <div>
-      <h2 class="font-black text-white leading-none mb-4" style="font-size:clamp(2rem,4vw,3.5rem); letter-spacing:-0.04em;">
-        {locale === 'da' ? 'Shop AB Store' : 'Shop the AB Store'}
+<!-- ── The Squad ──────────────────────────────────────────────── -->
+<section style="background:#071410;">
+  <!-- Hero -->
+  <div class="relative overflow-hidden" style="height:clamp(280px,32vw,500px);">
+    <img src="/images/squad-banner.png" alt="AB 1889 Squad" loading="lazy" class="w-full h-full object-cover object-top" />
+    <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(4,14,10,0.82) 0%,rgba(4,14,10,0.12) 70%)"></div>
+    <div class="absolute bottom-8 left-8 md:left-12">
+      <p class="font-black uppercase mb-2" style="color:#00FF1F; font-size:0.65rem; letter-spacing:0.28em;">AB 1889</p>
+      <h2 class="font-black text-white leading-none" style="font-size:clamp(3.5rem,8vw,7rem); letter-spacing:-0.04em;">
+        {locale === 'da' ? 'Holdet' : 'The Squad'}
       </h2>
-      <a
-        href="https://shop.ab.dk"
-        target="_blank"
-        rel="noreferrer"
-        class="inline-flex items-center px-7 py-3 font-black text-sm rounded-full"
-        style="background:#D3BC8D; color:#111; letter-spacing:-0.02em;"
-      >
-        {locale === 'da' ? 'Gå til butikken →' : 'Visit the store →'}
-      </a>
     </div>
   </div>
-</div>
+
+  <!-- Players -->
+  <div class="max-w-[1680px] mx-auto px-5 md:px-10 pt-8 pb-14 md:pt-10 md:pb-20">
+    <!-- Position filter pills -->
+    <div class="flex gap-2 md:gap-3 overflow-x-auto pb-3 mb-8" style="scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+      <button data-filter="all" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:#00FF1F; color:#071410; letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Alle' : 'All'}
+      </button>
+      <button data-filter="keeper" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.55); letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Målmand' : 'Keeper'}
+      </button>
+      <button data-filter="defender" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.55); letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Forsvar' : 'Defender'}
+      </button>
+      <button data-filter="midfielder" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.55); letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Midtbane' : 'Midfielder'}
+      </button>
+      <button data-filter="forward" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.55); letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Angriber' : 'Forward'}
+      </button>
+    </div>
+
+    <!-- Player grid -->
+    {sortedPlayers.length > 0 ? (
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4" id="squad-grid">
+        {sortedPlayers.map(player => {
+          const nameParts = player.name.split(' ');
+          const firstName = nameParts[0];
+          const lastName = nameParts.slice(1).join(' ');
+          const posLabel = player.position === 'keeper'
+            ? (locale === 'da' ? 'Målmand' : 'Keeper')
+            : player.position === 'defender'
+            ? (locale === 'da' ? 'Forsvarer' : 'Defender')
+            : player.position === 'midfielder'
+            ? (locale === 'da' ? 'Midtbane' : 'Midfielder')
+            : (locale === 'da' ? 'Angriber' : 'Forward');
+          return (
+            <div class="squad-card relative overflow-hidden rounded-xl" data-position={player.position} style="background:#0D2318; aspect-ratio:2/3;">
+              {player.shirtNumber !== null ? (
+                <span class="absolute select-none font-black leading-none pointer-events-none" style="font-size:clamp(5rem,11vw,8rem); color:rgba(0,255,31,0.055); bottom:-0.05em; right:-0.05em; line-height:1;">
+                  {player.shirtNumber}
+                </span>
+              ) : null}
+              <div class="absolute inset-0 flex flex-col justify-between p-3 md:p-4">
+                <div>
+                  <p class="font-black uppercase mb-2" style="font-size:0.58rem; color:#00FF1F; letter-spacing:0.2em;">{posLabel}</p>
+                  {player.shirtNumber !== null ? (
+                    <p class="font-black leading-none" style="font-size:clamp(1.2rem,2.2vw,1.6rem); color:rgba(255,255,255,0.16); letter-spacing:-0.03em;">#{player.shirtNumber}</p>
+                  ) : null}
+                </div>
+                <div>
+                  <p class="font-black leading-snug text-white" style="font-size:clamp(0.82rem,1.4vw,1rem); letter-spacing:-0.02em;">{firstName}</p>
+                  {lastName ? (
+                    <p class="font-black leading-snug" style="font-size:clamp(0.82rem,1.4vw,1rem); letter-spacing:-0.02em; color:rgba(255,255,255,0.6);">{lastName}</p>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    ) : null}
+  </div>
+</section>
+
+<script>
+  (document.querySelectorAll('.squad-filter') as NodeListOf<HTMLElement>).forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pos = (btn as HTMLElement).dataset.filter;
+      (document.querySelectorAll('.squad-filter') as NodeListOf<HTMLElement>).forEach(b => {
+        b.style.background = 'rgba(255,255,255,0.07)';
+        b.style.color = 'rgba(255,255,255,0.55)';
+      });
+      (btn as HTMLElement).style.background = '#00FF1F';
+      (btn as HTMLElement).style.color = '#071410';
+      (document.querySelectorAll('.squad-card') as NodeListOf<HTMLElement>).forEach(card => {
+        card.style.display = (pos === 'all' || card.dataset.position === pos) ? '' : 'none';
+      });
+    });
+  });
+</script>
 
 <!-- ── News — Inside the club ─────────────────────────────── -->
-<section style="background:#EBEBEB;">
+<section style="background:#fff;">
   <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-14 md:py-20">
     <div class="text-center mb-10 md:mb-14">
       <h2 class="font-black leading-none mb-3" style="font-size:clamp(3rem,8vw,7rem); letter-spacing:-0.05em; color:#111; text-wrap:balance;">
@@ -556,7 +630,7 @@ const sponsors = [
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
         {rest.slice(0, 4).map((article: any) => (
           <a href={articlePath(article.slug)} class="article-card group block">
-            <div class="overflow-hidden mb-4" style="aspect-ratio:4/5; background:#D1D5DB; border-radius:6px;">
+            <div class="overflow-hidden mb-4" style="aspect-ratio:16/9; background:#D1D5DB; border-radius:6px;">
               {article.image?.url ? (
                 <img
                   src={strapiMediaUrl(article.image.url)}

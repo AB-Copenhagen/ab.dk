@@ -192,21 +192,29 @@ export async function fetchAllTeams(locale: Locale = 'da'): Promise<SITeam[]> {
 
 // ── Players ───────────────────────────────────────────────────────────────────
 
+export type PlayerPosition = 'keeper' | 'defender' | 'midfielder' | 'forward';
+
+export interface SIPlayer {
+  id: number;
+  name: string;
+  position: PlayerPosition;
+  shirtNumber: number | null;
+  birthDate: string | null;
+  country?: { id: number; name: string } | null;
+}
+
+/** Fetch all registered AB players for the current team. */
+export async function fetchABPlayers(locale: Locale = 'da'): Promise<SIPlayer[]> {
+  if (!abConfig.teamId) return [];
+  return siFetch<SIPlayer[]>('/players', { teamId: abConfig.teamId, locale });
+}
+
 /** Fetch a player's full profile and stats. */
 export async function fetchPlayerProfile(
   playerId: number,
   locale: Locale = 'da'
 ): Promise<SIPlayerProfile> {
   return siFetch<SIPlayerProfile>(`/player/${playerId}/profile`, { locale });
-}
-
-/** Fetch all players for the current AB season. */
-export async function fetchABPlayers(locale: Locale = 'da') {
-  return siFetch('/players', {
-    ttId: abConfig.tournamentId ?? undefined,
-    seasonId: abConfig.seasonId ?? undefined,
-    locale,
-  });
 }
 
 // ── Highlights ────────────────────────────────────────────────────────────────
