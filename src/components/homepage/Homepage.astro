@@ -143,44 +143,28 @@ const sponsors = [
 
 <!-- ── Hero ─────────────────────────────────────────────── -->
 <section class="relative w-full overflow-hidden" style="height:clamp(480px,58vw,760px)">
-  {featured?.image?.url ? (
-    <img
-      src={strapiMediaUrl(featured.image.url)}
-      alt={decodeHtml(featured.title)}
-      loading="eager"
-      class="absolute inset-0 w-full h-full object-cover object-center"
-    />
-  ) : (
-    <img
-      src="/images/hero.jpg"
-      alt="AB 1889"
-      loading="eager"
-      class="absolute inset-0 w-full h-full object-cover object-center"
-    />
-  )}
+  <img
+    src="/images/hero.jpg"
+    alt="AB 1889"
+    loading="eager"
+    class="absolute inset-0 w-full h-full object-cover object-center"
+  />
   <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.45) 55%,rgba(0,0,0,0.1) 100%)"></div>
   <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.35) 0%,transparent 50%)"></div>
   <div class="relative h-full max-w-7xl mx-auto px-8 md:px-12 flex flex-col justify-end pb-16 md:pb-20">
     <div style="max-width:580px">
-      {featured?.categories?.[0] && (
-        <p class="text-xs font-black uppercase mb-4" style="color:#00FF1F; letter-spacing:0.2em;">
-          {featured.categories[0].name}
-        </p>
-      )}
+      <p class="text-xs font-black uppercase mb-4" style="color:#00FF1F; letter-spacing:0.2em;">
+        {locale === 'da' ? 'Siden 1889' : 'Est. 1889'}
+      </p>
       <h1 class="font-black text-white mb-5 leading-none" style="font-size:clamp(2.2rem,5.5vw,4.8rem); letter-spacing:-0.04em; text-wrap:balance;">
-        {featured ? decodeHtml(featured.title) : 'Akademisk Boldklub'}
+        Akademisk Boldklub
       </h1>
-      {featured?.description && (
-        <p class="text-sm leading-relaxed mb-8" style="color:rgba(255,255,255,0.72); max-width:440px;">
-          {truncate(decodeHtml(featured.description), 140)}
-        </p>
-      )}
       <a
-        href={featured ? articlePath(featured.slug) : localPath('/nyheder')}
+        href={localPath('/billetter')}
         class="inline-flex items-center px-8 py-3.5 font-black text-sm rounded-full hover:opacity-90 transition-opacity"
         style="background:#D3BC8D; color:#111; letter-spacing:-0.02em;"
       >
-        {locale === 'da' ? 'Læs mere' : 'Read More'}
+        {locale === 'da' ? 'Køb billetter' : 'Buy tickets'}
       </a>
     </div>
   </div>
@@ -626,9 +610,9 @@ const sponsors = [
       </p>
     </div>
 
-    {rest.length > 0 ? (
+    {articles.length > 0 ? (
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
-        {rest.slice(0, 4).map((article: any) => (
+        {articles.slice(0, 4).map((article: any) => (
           <a href={articlePath(article.slug)} class="article-card group block">
             <div class="overflow-hidden mb-4" style="aspect-ratio:16/9; background:#D1D5DB; border-radius:6px;">
               {article.image?.url ? (
