@@ -2,7 +2,7 @@
 import { fetchCollectionType } from '@/lib/strapi/client';
 import { fetchABEvents, fetchABPlayers, type SIPlayer } from '@/lib/si/client';
 import { strapiMediaUrl } from '@/lib/strapi/client';
-import { truncate } from '@/lib/utils';
+import { truncate, decodeHtml } from '@/lib/utils';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 
 interface Props {
@@ -146,7 +146,7 @@ const sponsors = [
   {featured?.image?.url ? (
     <img
       src={strapiMediaUrl(featured.image.url)}
-      alt={featured.title ?? ''}
+      alt={decodeHtml(featured.title)}
       loading="eager"
       class="absolute inset-0 w-full h-full object-cover object-center"
     />
@@ -168,11 +168,11 @@ const sponsors = [
         </p>
       )}
       <h1 class="font-black text-white mb-5 leading-none" style="font-size:clamp(2.2rem,5.5vw,4.8rem); letter-spacing:-0.04em; text-wrap:balance;">
-        {featured?.title ?? 'Akademisk Boldklub'}
+        {featured ? decodeHtml(featured.title) : 'Akademisk Boldklub'}
       </h1>
       {featured?.description && (
         <p class="text-sm leading-relaxed mb-8" style="color:rgba(255,255,255,0.72); max-width:440px;">
-          {truncate(featured.description, 140)}
+          {truncate(decodeHtml(featured.description), 140)}
         </p>
       )}
       <a
@@ -634,7 +634,7 @@ const sponsors = [
               {article.image?.url ? (
                 <img
                   src={strapiMediaUrl(article.image.url)}
-                  alt={article.title}
+                  alt={decodeHtml(article.title)}
                   loading="lazy"
                   class="article-img w-full h-full object-cover"
                 />
@@ -648,7 +648,7 @@ const sponsors = [
               </p>
             )}
             <h3 class="font-bold leading-snug" style="font-size:clamp(0.9rem,1.5vw,1.05rem); letter-spacing:-0.02em; color:#111;">
-              {article.title}
+              {decodeHtml(article.title)}
             </h3>
           </a>
         ))}
