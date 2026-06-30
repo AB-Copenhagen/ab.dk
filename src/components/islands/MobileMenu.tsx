@@ -31,8 +31,8 @@ export default function MobileMenu({ nav, locale, enPrefix }: Props) {
 
       {open && (
         <div
-          className="fixed inset-0 top-[88px] z-40 overflow-y-auto"
-          style={{ background: '#080A08', borderTop: '1px solid rgba(0,106,82,0.2)' }}
+          className="fixed inset-0 top-[92px] z-40 overflow-y-auto"
+          style={{ background: '#006A52', borderTop: '3px solid #D3BC8D' }}
         >
           <nav className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-1">
             {nav.preHeader.left.map((item) => (

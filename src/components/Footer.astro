@@ -10,70 +10,128 @@ const { locale = 'da', globalData } = Astro.props;
 const d = globalData;
 const year = new Date().getFullYear();
 
-const sections = [
-  {
-    title: locale === 'da' ? 'Klub' : 'Club',
-    links: d?.internal_links as { text: string; URL: string }[] | undefined,
-  },
-  {
-    title: 'Information',
-    links: d?.policy_links as { text: string; URL: string }[] | undefined,
-  },
-  {
-    title: locale === 'da' ? 'Følg os' : 'Follow us',
-    links: d?.social_media_links as { text: string; URL: string }[] | undefined,
-  },
-];
+const contactLinks = d?.internal_links as { text: string; URL: string }[] | undefined;
+const resourceLinks = d?.policy_links as { text: string; URL: string }[] | undefined;
+const socialLinks = d?.social_media_links as { text: string; URL: string }[] | undefined;
 ---
 
-<footer class="border-t" style="border-color:rgba(0,106,82,0.25); background:#080A08;">
-  <div class="h-px w-full" style="background:#006A52;" />
+<!-- Sponsor row (white bg) -->
+<div style="background:#fff; border-top:1px solid #e5e7eb; padding:40px 0;">
+  <div class="max-w-7xl mx-auto px-8">
+    <SponsorLockup theme="light" size={24} />
+  </div>
+</div>
 
-  <div class="max-w-7xl mx-auto px-6 pt-16 pb-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-      <!-- Brand -->
-      <div class="md:col-span-1">
-        <a href={locale === 'en' ? '/en' : '/'} class="font-black text-white text-2xl" style="letter-spacing:-0.04em;">AB</a>
-        <p class="mt-5 text-xs leading-relaxed max-w-xs" style="color:rgba(255,255,255,0.4); line-height:1.8;">
-          {d?.description ?? 'Akademisk Boldklub er en dansk fodboldklub grundlagt i 1889. Vi spiller i 1. division og har hjemmebane på Gladsaxe Stadion.'}
-        </p>
+<!-- Footer -->
+<footer style="background:#0A0A09;">
+  <div class="max-w-7xl mx-auto px-8 py-16 lg:py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-16 items-start">
+
+      <!-- Left: AB 1889 gold text -->
+      <div class="shrink-0">
+        <div class="font-black leading-none" style="color:#D6A02A; font-size:clamp(4rem,10vw,7rem); letter-spacing:-0.06em; line-height:0.88;">AB</div>
+        <div class="font-black" style="color:#D6A02A; font-size:clamp(1.2rem,3vw,2.2rem); letter-spacing:-0.04em; margin-top:4px;">1889</div>
       </div>
 
-      <!-- Link columns -->
-      <div class="md:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-10">
-        {sections.map((section) => (
-          <div>
-            <p class="text-xs font-bold uppercase mb-4" style="color:rgba(255,255,255,0.25); letter-spacing:0.18em;">
-              {section.title}
-            </p>
-            {section.links?.length ? (
-              <ul class="flex flex-col gap-2.5">
-                {section.links.map((link) => (
-                  <li>
-                    <a
-                      href={link.URL}
-                      class="text-xs hover:text-white transition-colors"
-                      style="color:rgba(255,255,255,0.45);"
-                    >
-                      {link.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p class="text-xs" style="color:rgba(255,255,255,0.2);">—</p>
-            )}
-          </div>
-        ))}
+      <!-- Center: link columns -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-10">
+        <!-- Contact / Club -->
+        <div>
+          <p class="text-xs font-black uppercase mb-4" style="color:rgba(255,255,255,0.35); letter-spacing:0.18em;">
+            {locale === 'da' ? 'Klub' : 'Contact'}
+          </p>
+          {contactLinks?.length ? (
+            <ul class="flex flex-col gap-2.5">
+              {contactLinks.map((link) => (
+                <li>
+                  <a href={link.URL} class="text-xs font-bold hover:text-white transition-colors" style="color:rgba(255,255,255,0.5); text-decoration:none; letter-spacing:-0.01em;">
+                    {link.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul class="flex flex-col gap-2.5">
+              <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">info@ab.dk</span></li>
+              <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">+45 39 62 09 00</span></li>
+              <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">Gladsaxevej 202, 2860</span></li>
+              <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">Søborg, Danmark</span></li>
+            </ul>
+          )}
+        </div>
+
+        <!-- Social Media -->
+        <div>
+          <p class="text-xs font-black uppercase mb-4" style="color:rgba(255,255,255,0.35); letter-spacing:0.18em;">
+            Social Media
+          </p>
+          {socialLinks?.length ? (
+            <ul class="flex flex-col gap-2.5">
+              {socialLinks.map((link) => (
+                <li>
+                  <a href={link.URL} target="_blank" rel="noreferrer" class="text-xs font-bold hover:text-white transition-colors" style="color:rgba(255,255,255,0.5); text-decoration:none; letter-spacing:-0.01em;">
+                    {link.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul class="flex flex-col gap-2.5">
+              {['Instagram', 'LinkedIn', 'Facebook', 'YouTube', 'TikTok'].map((s) => (
+                <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">{s}</span></li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <!-- Resources -->
+        <div>
+          <p class="text-xs font-black uppercase mb-4" style="color:rgba(255,255,255,0.35); letter-spacing:0.18em;">
+            Resources
+          </p>
+          {resourceLinks?.length ? (
+            <ul class="flex flex-col gap-2.5">
+              {resourceLinks.map((link) => (
+                <li>
+                  <a href={link.URL} class="text-xs font-bold hover:text-white transition-colors" style="color:rgba(255,255,255,0.5); text-decoration:none; letter-spacing:-0.01em;">
+                    {link.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul class="flex flex-col gap-2.5">
+              {[
+                locale === 'da' ? 'Køb billetter' : 'Buy tickets',
+                locale === 'da' ? 'Book event' : 'Book an event',
+                locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor',
+                locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy',
+                locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy',
+              ].map((label) => (
+                <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">{label}</span></li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      <!-- Right: AB crest (logo) -->
+      <div class="hidden lg:block shrink-0 self-center">
+        <img
+          src="/images/ab-logo.svg"
+          alt="AB 1889"
+          width="80"
+          height="82"
+          style="opacity:0.3;"
+        />
       </div>
     </div>
 
     <!-- Bottom bar -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-8 border-t" style="border-color:rgba(255,255,255,0.06);">
-      <p class="text-xs" style="color:rgba(255,255,255,0.25);">
-        {d?.copyright ?? `© ${year} Akademisk Boldklub. Alle rettigheder forbeholdes.`}
+    <div class="mt-16 pt-6 border-t" style="border-color:rgba(255,255,255,0.08);">
+      <p class="text-xs" style="color:rgba(255,255,255,0.25); letter-spacing:-0.01em;">
+        {d?.copyright ?? `© ${year} AB Akademisk Boldklub. Alle rettigheder forbeholdes.`}
       </p>
-      <SponsorLockup theme="dark" size={20} />
     </div>
   </div>
 </footer>

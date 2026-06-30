@@ -27,7 +27,6 @@ const [articles, events] = await Promise.all([
 ]);
 
 const [featured, ...rest] = articles;
-const gridArticles = rest.slice(0, 6);
 
 const nextMatch = events.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
@@ -92,55 +91,50 @@ function formatDate(str: string) {
   .article-card:hover .article-img { transform: scale(1.05); }
 </style>
 
-<!-- ── Hero ──────────────────────────────────────────────── -->
-<section class="ab-hero ab-hero-lines relative min-h-[calc(100svh-104px)] flex flex-col justify-end overflow-hidden px-5 md:px-12 pb-14 md:pb-20">
-  <span
-    aria-hidden="true"
-    class="pointer-events-none select-none absolute bottom-[-8vw] right-[-3vw] font-black leading-none"
-    style="font-size:58vw;color:rgba(0,106,82,0.055);letter-spacing:-0.06em"
-  >AB</span>
+<!-- ── Featured hero ──────────────────────────────────────── -->
+<section class="relative w-full overflow-hidden" style="height:clamp(420px,55vw,680px)">
+  {featured?.image?.url ? (
+    <img
+      src={strapiMediaUrl(featured.image.url)}
+      alt={featured.title ?? ''}
+      loading="eager"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  ) : (
+    <img
+      src="/images/hero.png"
+      alt="AB 1889"
+      loading="eager"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  )}
 
-  <div class="absolute inset-x-0 bottom-0 h-40 pointer-events-none" style="background:linear-gradient(to top,#060806,transparent)"></div>
+  <!-- Dark gradient overlay (left side dark, fading right) -->
+  <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.45) 50%,rgba(0,0,0,0.15) 100%)"></div>
+  <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.3) 0%,transparent 50%)"></div>
 
-  <div class="ab-fade-up relative z-10 max-w-5xl">
-    <div class="flex items-center gap-3 mb-7">
-      <div class="h-px w-8" style={`background:${T.gold}`}></div>
-      <span class="text-xs font-bold uppercase" style={`color:${T.gold};letter-spacing:0.22em`}>
-        Akademisk Boldklub &middot; Siden 1889
-      </span>
-    </div>
-
-    <h1
-      class="font-black text-white uppercase"
-      style="font-size:clamp(5rem,15vw,13rem);letter-spacing:-0.04em;line-height:0.88;text-wrap:balance"
-    >
-      {locale === 'da' ? <Fragment>Vær<br />med.</Fragment> : <Fragment>Be<br />part.</Fragment>}
-    </h1>
-
-    <div class="mt-6 mb-6 h-0.5 w-12" style={`background:${T.green}`}></div>
-
-    <p class="text-sm mb-8 max-w-[36ch] leading-relaxed" style="color:rgba(255,255,255,0.45);letter-spacing:0.01em">
-      {locale === 'da'
-        ? 'Bliv en del af historien. Følg holdet, køb billetter og støt din klub hjemme og ude.'
-        : 'Be part of the story. Follow the squad, buy tickets and support your club home and away.'}
-    </p>
-
-    <div class="flex flex-wrap gap-3">
-      <a
-        href="https://billetter.ab.dk"
-        target="_blank"
-        rel="noreferrer"
-        class="inline-flex items-center gap-2 font-bold text-white uppercase text-xs px-6 py-3"
-        style={`background:${T.green};letter-spacing:0.15em`}
+  <div class="relative h-full max-w-7xl mx-auto px-8 md:px-12 flex flex-col justify-end pb-16 md:pb-20">
+    <div style="max-width:640px">
+      <p class="text-sm font-black uppercase mb-5" style="color:rgba(255,255,255,0.7); letter-spacing:0.12em;">
+        {featured?.categories?.[0]?.name ?? 'FEATURE'}
+      </p>
+      <h1
+        class="font-black text-white mb-5 leading-none"
+        style="font-size:clamp(2rem,5.5vw,4.5rem); letter-spacing:-0.04em; text-wrap:balance;"
       >
-        {locale === 'da' ? 'Køb billetter' : 'Buy tickets'} →
-      </a>
+        {featured?.title ?? (locale === 'da' ? 'Akademisk Boldklub' : 'Akademisk Boldklub')}
+      </h1>
+      {featured?.description && (
+        <p class="text-base leading-relaxed mb-8" style="color:rgba(255,255,255,0.75); max-width:480px;">
+          {truncate(featured.description, 160)}
+        </p>
+      )}
       <a
-        href={localPath('/nyheder')}
-        class="inline-flex items-center gap-2 font-bold uppercase text-xs px-6 py-3 border transition-colors duration-200 hover:border-white/50 hover:text-white"
-        style="border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.65);letter-spacing:0.15em"
+        href={featured ? articlePath(featured.slug) : localPath('/nyheder')}
+        class="inline-flex items-center px-8 py-3.5 font-black text-sm text-black rounded-full transition-opacity hover:opacity-90"
+        style="background:#D3BC8D; letter-spacing:-0.02em;"
       >
-        {locale === 'da' ? 'Se nyheder' : 'Read news'}
+        {locale === 'da' ? 'Læs mere' : 'Read More'}
       </a>
     </div>
   </div>
@@ -190,88 +184,35 @@ function formatDate(str: string) {
       <div class="flex-1 h-px bg-gray-200"></div>
     </div>
 
-    <!-- Featured article -->
-    {featured && (
-      <a
-        href={articlePath(featured.slug)}
-        class="article-card group grid md:grid-cols-2 border border-gray-200 mb-px"
-      >
-        <div class="relative overflow-hidden" style="min-height:260px">
-          {featured.image?.url ? (
-            <img
-              src={strapiMediaUrl(featured.image.url)}
-              alt={featured.title}
-              loading="lazy"
-              class="article-img h-full w-full object-cover object-top"
-              style="min-height:260px"
-            />
-          ) : (
-            <div
-              class="h-full w-full flex items-center justify-center font-black"
-              style="min-height:260px;background:#F3F4F6;font-size:3rem;color:rgba(0,106,82,0.18);letter-spacing:-0.04em"
-            >AB</div>
-          )}
-        </div>
-        <div class="p-6 md:p-8 flex flex-col bg-white">
-          {featured.categories?.[0] && (
-            <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.18em">
-              {featured.categories[0].name}
-            </p>
-          )}
-          <h2 class="font-bold leading-tight mb-3" style="font-size:clamp(1.1rem,2.4vw,1.55rem);letter-spacing:-0.02em;color:#111">
-            {featured.title}
-          </h2>
-          {featured.description && (
-            <p class="text-sm leading-relaxed mb-4" style="color:#6B7280">
-              {truncate(featured.description, 160)}
-            </p>
-          )}
-          <p class="text-xs mt-auto pt-3" style="color:#9CA3AF;font-variant-numeric:tabular-nums">
-            {formatDate(featured.publishedAt)}
-          </p>
-        </div>
-      </a>
-    )}
-
-    <!-- Article grid -->
-    {gridArticles.length > 0 && (
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-gray-200">
-        {gridArticles.map((article: any) => (
-          <a href={articlePath(article.slug)} class="article-card group flex flex-col bg-white">
-            <div class="relative overflow-hidden" style="aspect-ratio:16/9">
+    <!-- News grid (3 cols, square thumbnails — featured shown in hero above) -->
+    {rest.length > 0 ? (
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+        {rest.slice(0, 9).map((article: any) => (
+          <a href={articlePath(article.slug)} class="article-card group block">
+            <div class="relative overflow-hidden mb-4" style="aspect-ratio:1/1; background:#F3F4F6;">
               {article.image?.url ? (
                 <img
                   src={strapiMediaUrl(article.image.url)}
                   alt={article.title}
                   loading="lazy"
-                  class="article-img h-full w-full object-cover"
+                  class="article-img w-full h-full object-cover"
                 />
               ) : (
-                <div
-                  class="h-full w-full flex items-center justify-center font-black"
-                  style="background:#F3F4F6;font-size:3rem;color:rgba(0,106,82,0.18);letter-spacing:-0.04em"
-                >AB</div>
+                <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:rgba(0,106,82,0.18)">AB</div>
               )}
             </div>
-            <div class="p-4 flex flex-col flex-1">
-              {article.categories?.[0] && (
-                <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.18em">
-                  {article.categories[0].name}
-                </p>
-              )}
-              <h3 class="text-sm font-bold leading-snug" style="color:#111;letter-spacing:-0.01em">
-                {article.title}
-              </h3>
-              <p class="text-xs mt-auto pt-3" style="color:#9CA3AF;font-variant-numeric:tabular-nums">
-                {formatDate(article.publishedAt)}
+            {article.categories?.[0] && (
+              <p class="text-xs font-bold uppercase mb-2" style="color:#006A52; letter-spacing:0.16em;">
+                {article.categories[0].name}
               </p>
-            </div>
+            )}
+            <h2 class="font-black leading-snug" style="font-size:clamp(1rem,1.8vw,1.2rem); letter-spacing:-0.03em; color:#111;">
+              {article.title}
+            </h2>
           </a>
         ))}
       </div>
-    )}
-
-    {!featured && !gridArticles.length && (
+    ) : (
       <p class="py-16 text-sm text-center" style="color:#9CA3AF">
         {locale === 'da' ? 'Ingen artikler endnu.' : 'No articles yet.'}
       </p>

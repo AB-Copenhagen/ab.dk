@@ -1,7 +1,6 @@
 ---
 import MobileMenu from './islands/MobileMenu';
 import LangSwitch from '@/components/layout/LangSwitch.astro';
-import Logo from '@/components/brand/Logo.astro';
 import { getNavConfig } from '@/lib/nav-config';
 
 interface Props {
@@ -12,88 +11,119 @@ interface Props {
 const { locale = 'da', globalData } = Astro.props;
 const nav = getNavConfig(locale);
 const enPrefix = locale === 'en' ? '/en' : '';
+const currentPath = Astro.url.pathname;
+const daPath = currentPath.replace(/^\/en/, '') || '/';
+const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
 ---
 
-<header class="sticky top-0 z-50 border-b" style="background:#080A08; border-color:rgba(0,106,82,0.2);">
-  <!-- Pre-header -->
-  <div class="border-b hidden md:block" style="border-color:rgba(255,255,255,0.06); background:#060806;">
-    <div class="max-w-7xl mx-auto px-6 h-8 flex items-center justify-between">
-      <div class="flex items-center gap-5">
-        {nav.preHeader.left.map((item) => (
-          <a
-            href={item.href}
-            target={item.external ? '_blank' : undefined}
-            rel={item.external ? 'noreferrer' : undefined}
-            class={[
-              'text-[0.65rem] font-bold uppercase tracking-widest transition-colors',
-              item.highlight
-                ? 'hover:text-yellow-300'
-                : 'text-white/40 hover:text-white/80',
-            ].join(' ')}
-            style={item.highlight ? 'color:#D6A02A' : undefined}
-          >
-            {item.label}
-          </a>
-        ))}
-      </div>
-      <LangSwitch locale={locale as 'da' | 'en'} />
-    </div>
-  </div>
-
-  <!-- Primary nav -->
-  <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
-    <!-- Logo — always render master SVG, never from font -->
-    <a href={enPrefix + '/'} class="flex items-center gap-2 shrink-0" aria-label="AB 1889 — hjem">
-      {globalData?.favicon?.url
-        ? <img src={globalData.favicon.url} alt="AB 1889" class="h-8 w-auto object-contain" />
-        : <Logo variant="white" size={32} />
-      }
+<header class="sticky top-0 z-50">
+  <!-- Utility bar: 45px, black -->
+  <div class="hidden md:flex items-center" style="background:#0A0A09; height:45px;">
+    <!-- Neon "Join MyAB" block -->
+    <a
+      href={enPrefix + '/bliv-involveret/myab'}
+      class="flex items-center justify-center shrink-0 h-full font-black"
+      style="background:#00FF1F; width:171px; color:#006A52; text-decoration:none; font-size:15px; letter-spacing:-0.04em;"
+    >
+      Join MyAB
     </a>
-
-    <!-- Desktop nav links -->
-    <nav class="hidden lg:flex items-center gap-1">
-      {nav.primary.map((item) => (
-        <div class="relative group">
-          <a
-            href={enPrefix + item.href}
-            class="px-3 py-1.5 text-sm font-semibold text-white/70 hover:text-white transition-colors uppercase tracking-wide"
-            style="letter-spacing:0.06em; font-size:0.72rem;"
-          >
-            {item.label}
-          </a>
-          {item.children && (
-            <div
-              class="absolute top-full left-0 hidden group-hover:block z-50 min-w-[180px] border py-1"
-              style="background:#0D1A10; border-color:#152214;"
-            >
-              {item.children.map((child) => (
-                <a
-                  href={enPrefix + child.href}
-                  class="block px-4 py-2 text-xs text-white/60 hover:text-white hover:bg-white/5 transition-colors"
-                  style="letter-spacing:0.04em;"
-                >
-                  {child.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </nav>
-
-    <!-- Right: tickets + mobile menu -->
-    <div class="flex items-center gap-3">
-      <a
-        href="https://billetter.ab.dk"
-        target="_blank"
-        rel="noreferrer"
-        class="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold uppercase px-4 py-2 text-white transition-colors hover:opacity-80"
-        style="background:#006A52; letter-spacing:0.12em;"
+    <!-- Utility links -->
+    <div class="flex items-center gap-8 px-8 flex-1">
+      <a href="https://billetter.ab.dk" target="_blank" rel="noreferrer"
+        class="font-black hover:opacity-70 transition-opacity"
+        style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;"
       >
         {locale === 'da' ? 'Billetter' : 'Tickets'}
       </a>
+      <a href="https://shop.ab.dk" target="_blank" rel="noreferrer"
+        class="font-black hover:opacity-70 transition-opacity"
+        style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;"
+      >Shop</a>
+      <a href="https://abtv.ab.dk" target="_blank" rel="noreferrer"
+        class="font-black hover:opacity-70 transition-opacity"
+        style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;"
+      >ABTV</a>
+    </div>
+    <!-- Login + lang -->
+    <div class="flex items-center gap-5 px-6">
+      <a href={enPrefix + '/konto'}
+        class="flex items-center gap-1.5 font-black hover:opacity-70 transition-opacity"
+        style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M2 13c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        {locale === 'da' ? 'Log ind' : 'Login'}
+      </a>
+      <div class="flex items-center gap-2">
+        <a href={daPath} class="hover:opacity-100 transition-opacity" style={`text-decoration:none; font-size:14px; opacity:${locale === 'da' ? '1' : '0.45'};`}>🇩🇰</a>
+        <span style="color:rgba(255,255,255,0.3); font-size:12px;">/</span>
+        <a href={enPath} class="hover:opacity-100 transition-opacity" style={`text-decoration:none; font-size:14px; opacity:${locale === 'en' ? '1' : '0.45'};`}>🇬🇧</a>
+      </div>
+    </div>
+  </div>
 
-      <!-- Mobile menu island -->
+  <!-- Main nav: ~92px, dark green -->
+  <div class="flex items-center px-8 lg:px-12" style="background:#006A52; height:92px;">
+    <!-- Logo -->
+    <a href={enPrefix + '/'} aria-label="AB 1889 — hjem" class="shrink-0 mr-8 lg:mr-16">
+      <img
+        src="/images/ab-logo.svg"
+        alt="AB 1889"
+        width="62"
+        height="64"
+        style="display:block;"
+      />
+    </a>
+
+    <!-- Desktop nav links (centered) -->
+    <nav class="hidden lg:flex items-center gap-8 xl:gap-12 flex-1 justify-center">
+      {nav.primary.map((item) => {
+        const isActive = currentPath === (enPrefix + item.href) || (item.href !== '/' && currentPath.startsWith(enPrefix + item.href));
+        return (
+          <div class="relative group">
+            <a
+              href={enPrefix + item.href}
+              class="font-black transition-colors"
+              style={`text-decoration:none; font-size:16px; letter-spacing:-0.04em; color:${isActive ? '#D3BC8D' : '#fff'};`}
+            >
+              {item.label}
+            </a>
+            {isActive && (
+              <div style="position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); width:40px; height:3px; background:#D3BC8D;" />
+            )}
+            {item.children && (
+              <div class="absolute top-full left-0 hidden group-hover:block z-50 min-w-[200px] shadow-2xl" style="background:#004A3A; border-top:3px solid #D3BC8D; margin-top:12px;">
+                {item.children.map((child) => (
+                  <a
+                    href={enPrefix + child.href}
+                    class="block px-5 py-3 font-black text-sm hover:bg-white/10 transition-colors"
+                    style="color:rgba(255,255,255,0.8); text-decoration:none; letter-spacing:-0.02em;"
+                  >
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </nav>
+
+    <!-- Right: Search + Mobile -->
+    <div class="flex items-center gap-3 ml-auto">
+      <button
+        class="hidden lg:flex items-center gap-2 font-black text-sm"
+        style="background:rgba(15,148,118,0.5); color:#fff; border:none; border-radius:22px; padding:10px 20px; cursor:pointer; letter-spacing:-0.03em;"
+        aria-label={locale === 'da' ? 'Søg' : 'Search'}
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M10 10l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        {locale === 'da' ? 'Søg' : 'Search'}
+      </button>
       <MobileMenu client:load nav={nav} locale={locale} enPrefix={enPrefix} />
     </div>
   </div>
