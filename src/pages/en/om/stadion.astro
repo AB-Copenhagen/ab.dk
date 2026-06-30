@@ -1,0 +1,154 @@
+---
+import Base from '@/layouts/Base.astro';
+export const prerender = true;
+
+const facilities = [
+  { label: 'Capacity', value: '9,000 fans' },
+  { label: 'Home since', value: '1930' },
+  { label: 'Surface', value: 'Artificial grass (Cat A)' },
+  { label: 'Seated', value: '3,500' },
+];
+---
+
+<Base locale="en" title="Stadium Info | AB 1889">
+  <!-- Hero -->
+  <div class="relative overflow-hidden" style="height:clamp(260px,36vw,420px);">
+    <img
+      src="/images/hero.jpg"
+      alt="Gladsaxe Stadium"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      style="filter:brightness(0.5) saturate(0.6);"
+    />
+    <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 70%);"></div>
+    <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
+      <h1 class="font-black text-white" style="font-size:clamp(3rem,9vw,7rem);letter-spacing:-0.04em;line-height:0.9;">Stadium Info</h1>
+    </div>
+  </div>
+
+  <!-- Tab breadcrumb -->
+  <div style="background:#fff; border-bottom:1px solid #E5E7EB;">
+    <div class="max-w-7xl mx-auto px-8 flex items-center gap-6" style="height:48px;">
+      <a href="/en/kampe" class="text-sm font-bold" style="color:#555; text-decoration:none; letter-spacing:-0.02em;">← Matches</a>
+      <span style="color:#DDD;">/</span>
+      <span class="text-sm font-bold" style="color:#006A52; letter-spacing:-0.02em;">Stadium Info</span>
+    </div>
+  </div>
+
+  <!-- Info grid -->
+  <section style="background:#fff; padding: clamp(40px,6vw,72px) 0;">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+
+        <!-- Left: details -->
+        <div>
+          <span class="inline-block font-black text-xs px-3 py-1 mb-6" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">HOME GROUND</span>
+          <h2 class="font-black mb-4" style="font-size:clamp(2rem,5vw,3.5rem); letter-spacing:-0.05em; line-height:0.95; color:#111;">Gladsaxe Stadium</h2>
+          <p class="text-sm leading-relaxed mb-8" style="color:#555; max-width:44ch;">
+            AB's home ground since 1930. Gladsaxe Stadium is a modern facility with an artificial grass pitch and room for 9,000 fans. The stadium is set in a green and peaceful environment in Gladsaxe, easily accessible by public transport.
+          </p>
+
+          <!-- Fact grid -->
+          <div class="grid grid-cols-2 gap-4 mb-8">
+            {facilities.map(({ label, value }) => (
+              <div style="border:1px solid #E5E7EB; padding:16px 20px;">
+                <p class="text-xs uppercase mb-1" style="color:#999; letter-spacing:0.12em;">{label}</p>
+                <p class="font-black text-lg" style="color:#111; letter-spacing:-0.04em;">{value}</p>
+              </div>
+            ))}
+          </div>
+
+          <!-- Address -->
+          <div style="border-left:3px solid #006A52; padding-left:16px;">
+            <p class="text-xs uppercase mb-2" style="color:#999; letter-spacing:0.12em;">Address</p>
+            <p class="text-sm font-bold" style="color:#111;">Gladsaxevej 202</p>
+            <p class="text-sm" style="color:#555;">2860 Søborg, Denmark</p>
+          </div>
+
+          <div class="flex gap-3 mt-8">
+            <a
+              href="https://maps.google.com/?q=Gladsaxevej+202,+2860+Søborg"
+              target="_blank"
+              rel="noreferrer"
+              class="font-black text-sm px-5 py-3"
+              style="background:#006A52; color:#fff; text-decoration:none; letter-spacing:-0.02em;"
+            >
+              Open in Google Maps
+            </a>
+            <a
+              href="https://billetter.ab.dk"
+              target="_blank"
+              rel="noreferrer"
+              class="font-black text-sm px-5 py-3"
+              style="background:#00FF1F; color:#006A52; text-decoration:none; letter-spacing:-0.02em;"
+            >
+              Buy tickets
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: map placeholder -->
+        <div class="rounded overflow-hidden" style="background:#EBEBEB; aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; border:1px solid #E5E7EB;">
+          <div class="text-center px-8">
+            <img src="/images/ab-crest.svg" alt="AB 1889" width="80" height="80" style="opacity:0.12; margin:0 auto 16px;" />
+            <p class="text-sm font-bold" style="color:#999;">Gladsaxe Stadium</p>
+            <p class="text-xs mt-1" style="color:#BBB;">Gladsaxevej 202, 2860 Søborg</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Getting there -->
+  <section style="background:#EBEBEB; padding: clamp(40px,6vw,64px) 0;">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16">
+      <h2 class="font-black mb-10" style="font-size:clamp(1.5rem,4vw,2.5rem); letter-spacing:-0.04em; color:#111;">Getting to the stadium</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        {[
+          {
+            icon: '🚇',
+            title: 'Metro / S-Train',
+            desc: 'Take the S-train to Buddinge St. (5 min walk), or bus 200S from Lyngby/Glostrup.',
+          },
+          {
+            icon: '🚗',
+            title: 'By car',
+            desc: 'Free parking available at the stadium. Follow signs from Ring 2 / Gladsaxevej.',
+          },
+          {
+            icon: '🚲',
+            title: 'By bike',
+            desc: 'Cycle paths along Gladsaxevej. Secure bike parking at all entrances.',
+          },
+        ].map(({ icon, title, desc }) => (
+          <div style="background:#fff; padding:24px; border:1px solid #E5E7EB;">
+            <span style="font-size:2rem;">{icon}</span>
+            <h3 class="font-black mt-3 mb-2" style="font-size:1.1rem; letter-spacing:-0.03em; color:#111;">{title}</h3>
+            <p class="text-sm leading-relaxed" style="color:#555;">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Sponsors -->
+  <div style="background:#fff; border-top:1px solid #E5E7EB; padding:40px 0;">
+    <div class="max-w-7xl mx-auto px-8">
+      <div class="flex flex-wrap items-center justify-center gap-10 lg:gap-16">
+        {[
+          { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg' },
+          { src: '/images/sponsors/datum.png', alt: 'Datum' },
+          { src: '/images/sponsors/myriad360.png', alt: 'Myriad360' },
+          { src: '/images/sponsors/select-sport.png', alt: 'Select Sport' },
+          { src: '/images/sponsors/plane.png', alt: 'Plane' },
+        ].map(({ src, alt }) => (
+          <img src={src} alt={alt} height="28" style="height:28px; width:auto; object-fit:contain; filter:grayscale(100%); opacity:0.6; transition:filter 0.3s, opacity 0.3s;" class="sponsor-img" />
+        ))}
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .sponsor-img:hover { filter: grayscale(0%) !important; opacity: 1 !important; }
+</style>

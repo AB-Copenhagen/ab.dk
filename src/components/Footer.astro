@@ -27,10 +27,15 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
   <div class="max-w-7xl mx-auto px-8 py-16 lg:py-20">
     <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-16 items-start">
 
-      <!-- Left: AB 1889 gold text -->
+      <!-- Left: AB 1889 wordmark SVG -->
       <div class="shrink-0">
-        <div class="font-black leading-none" style="color:#D6A02A; font-size:clamp(4rem,10vw,7rem); letter-spacing:-0.06em; line-height:0.88;">AB</div>
-        <div class="font-black" style="color:#D6A02A; font-size:clamp(1.2rem,3vw,2.2rem); letter-spacing:-0.04em; margin-top:4px;">1889</div>
+        <img
+          src="/images/ab-logo-wordmark.svg"
+          alt="AB 1889"
+          width="220"
+          height="221"
+          style="width:clamp(140px,14vw,220px); height:auto; opacity:0.92;"
+        />
       </div>
 
       <!-- Center: link columns -->
@@ -115,14 +120,14 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
         </div>
       </div>
 
-      <!-- Right: AB crest (logo) -->
+      <!-- Right: AB circular crest (decorative) -->
       <div class="hidden lg:block shrink-0 self-center">
         <img
-          src="/images/ab-logo.svg"
+          src="/images/ab-crest.svg"
           alt="AB 1889"
-          width="80"
-          height="82"
-          style="opacity:0.3;"
+          width="140"
+          height="140"
+          style="opacity:0.18;"
         />
       </div>
     </div>

@@ -1,0 +1,139 @@
+---
+import Base from '@/layouts/Base.astro';
+export const prerender = true;
+
+const milestones = [
+  {
+    year: '1883',
+    heading: 'AB's famous colors — green and white.',
+    body: 'When the Præstedan and Latin School merged in 1883, they needed to agree on colors. Students from both schools held a meeting and landed on a solution that has endured to this day: Akademisk Boldklub's colors are green and white. This simple decision had a profound impact on the club's identity and sense of belonging.',
+    img: '/images/squad-banner.png',
+    imgAlt: 'AB 1883',
+    layout: 'text-left',
+    bg: '#fff',
+  },
+  {
+    year: '1887',
+    heading: 'Admitted to FSK in 1887',
+    body: 'Gradually in 1887, the game of football was adopted by the FSK. The cooperative editor Globalt became a decisive voice and one of the most influential representatives of the association. On 25 February 1889, the cooperative was reformed as Akademisk Boldklub — a dramatic move that saw much younger players recruited into the club.',
+    img: '/images/player-featured.png',
+    imgAlt: 'AB 1887',
+    layout: 'img-left',
+    bg: '#EBEBEB',
+  },
+  {
+    year: '1889',
+    heading: 'Contingency of 50 ØRE per month in 1889',
+    body: 'In 1889 the newly formed club set a monthly membership fee of 50 øre. In June 1889 AB played their first game on the Frederiksberg meadow. The pitch was open and the team could move freely around the space. The result of AB's first ever match has not survived history, but the enthusiasm was palpable.',
+    subHeading: 'One of the greatest personalities in AB',
+    subBody: 'Most of the oldest personalities in the history of the club played for AB and formed a genuinely important part of the club. Baumann created a tournament-famous football club that was not yet complete for all positions at the time. He carried the club in a tremendously important way in the 1890s. After he made his name as a footballer, he took on the role of administrator for many years.',
+    img: '/images/ab-crest.svg',
+    imgAlt: 'AB crest 1889',
+    layout: 'two-col',
+    bg: '#fff',
+  },
+  {
+    year: '1894',
+    heading: 'Establishment of junior department in 1894',
+    body: 'When the professional section suffered from a lack of recruitment in 1894, AB chose to establish a junior department in the 1893–94 season. The junior section provided an opportunity to recruit and nurture new talent, which would shape the next chapter of AB\'s glorious history and help maintain the academic tradition upon which the club was proudly founded.',
+    img: null,
+    imgAlt: '',
+    layout: 'text-only',
+    bg: '#EBEBEB',
+  },
+];
+---
+
+<Base locale="en" title="History | AB 1889">
+  <!-- Hero -->
+  <div class="relative overflow-hidden" style="height:clamp(280px,40vw,480px);">
+    <img
+      src="/images/squad-banner.png"
+      alt="AB 1889 History"
+      class="absolute inset-0 w-full h-full object-cover object-top"
+      style="filter:brightness(0.35) saturate(0.4);"
+    />
+    <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%);"></div>
+    <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
+      <h1 class="font-black text-white" style="font-size:clamp(4rem,10vw,8rem);letter-spacing:-0.05em;line-height:0.88;">History</h1>
+    </div>
+  </div>
+
+  <!-- Timeline sections -->
+  {milestones.map((m) => (
+    <section style={`background:${m.bg}; padding: clamp(48px,7vw,80px) 0;`}>
+      <div class="max-w-7xl mx-auto px-6 lg:px-16">
+        {m.layout === 'text-left' && (
+          <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div>
+              <span class="inline-block font-black text-xs px-3 py-1 mb-5" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">{m.year}</span>
+              <h2 class="font-black mb-5" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#111;">{m.heading}</h2>
+              <p class="text-sm leading-relaxed" style="color:#555; max-width:48ch;">{m.body}</p>
+            </div>
+            <div class="rounded overflow-hidden aspect-[4/3]">
+              <img src={m.img!} alt={m.imgAlt} class="w-full h-full object-cover" />
+            </div>
+          </div>
+        )}
+
+        {m.layout === 'img-left' && (
+          <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div class="rounded overflow-hidden aspect-[4/3] order-2 lg:order-1">
+              <img src={m.img!} alt={m.imgAlt} class="w-full h-full object-cover object-top" />
+            </div>
+            <div class="order-1 lg:order-2">
+              <span class="inline-block font-black text-xs px-3 py-1 mb-5" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">{m.year}</span>
+              <h2 class="font-black mb-5" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#111;">{m.heading}</h2>
+              <p class="text-sm leading-relaxed" style="color:#555; max-width:48ch;">{m.body}</p>
+            </div>
+          </div>
+        )}
+
+        {m.layout === 'two-col' && (
+          <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+            <div>
+              <span class="inline-block font-black text-xs px-3 py-1 mb-5" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">{m.year}</span>
+              <h2 class="font-black mb-5" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#111;">{m.heading}</h2>
+              <p class="text-sm leading-relaxed mb-10" style="color:#555;">{m.body}</p>
+              <div class="flex items-end gap-6">
+                <img src="/images/ab-crest.svg" alt="AB 1889 crest" width="120" height="120" style="opacity:0.15;" />
+              </div>
+            </div>
+            <div>
+              <h3 class="font-black mb-4" style="font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.04em; line-height:1.1; color:#111;">{m.subHeading}</h3>
+              <p class="text-sm leading-relaxed" style="color:#555;">{m.subBody}</p>
+            </div>
+          </div>
+        )}
+
+        {m.layout === 'text-only' && (
+          <div class="max-w-3xl">
+            <span class="inline-block font-black text-xs px-3 py-1 mb-5" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">{m.year}</span>
+            <h2 class="font-black mb-5" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#111;">{m.heading}</h2>
+            <p class="text-sm leading-relaxed" style="color:#555;">{m.body}</p>
+          </div>
+        )}
+      </div>
+    </section>
+  ))}
+
+  <!-- Dark interlude: Board of directors -->
+  <section style="background:#0A0A09; padding: clamp(48px,7vw,80px) 0;">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div class="rounded overflow-hidden aspect-video">
+          <img src="/images/hero.jpg" alt="AB 1889 board" class="w-full h-full object-cover" style="filter:saturate(0.4);" />
+        </div>
+        <div>
+          <h2 class="font-black mb-6" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#fff;">AB's new board of directors</h2>
+          <p class="text-sm leading-relaxed mb-6" style="color:rgba(255,255,255,0.6);">AB's board works diligently to lead the club into a new era focused on sporting success and strong community roots.</p>
+          <ul class="flex flex-col gap-2">
+            {['Jens Andersen — Chairman', 'Lars Nielsen — Vice Chairman', 'Sofie Larsen', 'Michael Christensen', 'Anna Pedersen'].map((name) => (
+              <li class="text-sm" style="color:rgba(255,255,255,0.5);">{name}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

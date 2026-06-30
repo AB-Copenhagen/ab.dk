@@ -11,19 +11,14 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const T = {
-  ground:  '#060806',
-  green:   '#006A52',
-  gold:    '#D6A02A',
-};
-
 const [articles, events] = await Promise.all([
   fetchCollectionType<any[]>('articles', {
     locale,
     sort: ['publishedAt:desc'],
-    pagination: { pageSize: 7 },
+    populate: ['image', 'categories'],
+    pagination: { pageSize: 8 },
   }).catch(() => [] as any[]),
-  fetchABEvents({ locale, limit: 15 }).catch(() => [] as any[]),
+  fetchABEvents({ locale, limit: 20 }).catch(() => [] as any[]),
 ]);
 
 const [featured, ...rest] = articles;
@@ -31,14 +26,15 @@ const [featured, ...rest] = articles;
 const nextMatch = events.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
 );
-const recentResults = events.filter((e: any) => e.statusType === 'finished').slice(0, 3);
+const recentResults = events.filter((e: any) => e.statusType === 'finished').slice(0, 5);
 
 const abHome = nextMatch ? nextMatch.homeId === 9805 : false;
 const opponent = nextMatch ? (abHome ? nextMatch.awayName : nextMatch.homeName) : null;
+const oppLogo = nextMatch ? (abHome ? nextMatch.awayLogo : nextMatch.homeLogo) : null;
 const matchDateStr = nextMatch
   ? new Date(nextMatch.startDate).toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-GB', {
-      weekday: 'short', day: 'numeric', month: 'short',
-    }).toUpperCase()
+      weekday: 'long', day: 'numeric', month: 'long',
+    })
   : null;
 const matchTimeStr = nextMatch
   ? new Date(nextMatch.startDate).toLocaleTimeString(locale === 'da' ? 'da-DK' : 'en-GB', {
@@ -53,46 +49,61 @@ function articlePath(slug: string) {
 function localPath(path: string) {
   return locale === 'en' ? `/en${path}` : path;
 }
-
 function formatDate(str: string) {
   try {
     return new Date(str).toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-GB', {
-      day: 'numeric', month: 'short', year: 'numeric',
+      day: 'numeric', month: 'short',
     });
   } catch { return ''; }
 }
+
+const products = [
+  {
+    name: locale === 'da' ? 'Grøn AB T-Shirt' : 'Green AB T-Shirt',
+    price: 'DKK 89',
+    originalPrice: 'DKK 169',
+    img: '/images/product-1.png',
+  },
+  {
+    name: locale === 'da' ? 'Grøn Akademisk Fodboldklub Sweatshirt' : 'Green Academic Football Club Sweatshirt',
+    price: 'DKK 129',
+    originalPrice: 'DKK 249',
+    img: '/images/product-2.png',
+  },
+  {
+    name: locale === 'da' ? 'Grå Sweater med AB Logo' : 'Grey Sweater with AB Logo',
+    price: 'DKK 219',
+    originalPrice: 'DKK 429',
+    img: '/images/product-3.png',
+  },
+];
+
+const sponsors = [
+  { name: 'Plane', img: '/images/sponsors/plane.png' },
+  { name: 'Myriad360', img: '/images/sponsors/myriad360.png' },
+  { name: 'Datum', img: '/images/sponsors/datum.png' },
+  { name: 'Select Sport', img: '/images/sponsors/select-sport.png' },
+  { name: 'Carlsberg', img: '/images/sponsors/carlsberg.png' },
+];
 ---
 
 <style>
-  .ab-hero {
-    background:
-      radial-gradient(ellipse 90% 55% at 50% -10%, rgba(0,106,82,0.18) 0%, transparent 65%),
-      radial-gradient(ellipse 50% 35% at 15% 110%, rgba(0,106,82,0.10) 0%, transparent 55%),
-      #060806;
-  }
-  .ab-hero-lines::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      repeating-linear-gradient(0deg,   rgba(0,106,82,0.025) 0, rgba(0,106,82,0.025) 1px, transparent 1px, transparent 72px),
-      repeating-linear-gradient(90deg,  rgba(0,106,82,0.015) 0, rgba(0,106,82,0.015) 1px, transparent 1px, transparent 120px);
-    pointer-events: none;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .ab-fade-up { animation: ab-rise 0.8s cubic-bezier(0.16,1,0.3,1) both; }
-    .ab-fade-up-d { animation: ab-rise 0.8s 0.15s cubic-bezier(0.16,1,0.3,1) both; }
-    @keyframes ab-rise {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  }
   .article-img { transition: transform 0.5s ease; }
-  .article-card:hover .article-img { transform: scale(1.05); }
+  .article-card:hover .article-img { transform: scale(1.04); }
+  .product-img { transition: transform 0.45s ease; }
+  .product-card:hover .product-img { transform: scale(1.03); }
+  .hexbg {
+    background-color: #060E06;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zM28 100L0 84V66l28 16 28-16v18L28 100z' fill='none' stroke='%23006A52' stroke-opacity='0.2' stroke-width='1'/%3E%3C/svg%3E");
+  }
+  .sponsor-img { filter: grayscale(100%); opacity: 0.65; transition: filter 0.3s, opacity 0.3s; }
+  .sponsor-img:hover { filter: grayscale(0%); opacity: 1; }
+  .result-row:nth-child(odd) { background: #F9FAFB; }
 </style>
 
-<!-- ── Featured hero ──────────────────────────────────────── -->
-<section class="relative w-full overflow-hidden" style="height:clamp(420px,55vw,680px)">
+<!-- ── Hero ─────────────────────────────────────────────── -->
+<section class="relative w-full overflow-hidden" style="height:clamp(480px,58vw,760px)">
   {featured?.image?.url ? (
     <img
       src={strapiMediaUrl(featured.image.url)}
@@ -102,37 +113,33 @@ function formatDate(str: string) {
     />
   ) : (
     <img
-      src="/images/hero.png"
+      src="/images/hero.jpg"
       alt="AB 1889"
       loading="eager"
       class="absolute inset-0 w-full h-full object-cover object-center"
     />
   )}
-
-  <!-- Dark gradient overlay (left side dark, fading right) -->
-  <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.45) 50%,rgba(0,0,0,0.15) 100%)"></div>
-  <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.3) 0%,transparent 50%)"></div>
-
+  <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.45) 55%,rgba(0,0,0,0.1) 100%)"></div>
+  <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.35) 0%,transparent 50%)"></div>
   <div class="relative h-full max-w-7xl mx-auto px-8 md:px-12 flex flex-col justify-end pb-16 md:pb-20">
-    <div style="max-width:640px">
-      <p class="text-sm font-black uppercase mb-5" style="color:rgba(255,255,255,0.7); letter-spacing:0.12em;">
-        {featured?.categories?.[0]?.name ?? 'FEATURE'}
-      </p>
-      <h1
-        class="font-black text-white mb-5 leading-none"
-        style="font-size:clamp(2rem,5.5vw,4.5rem); letter-spacing:-0.04em; text-wrap:balance;"
-      >
-        {featured?.title ?? (locale === 'da' ? 'Akademisk Boldklub' : 'Akademisk Boldklub')}
+    <div style="max-width:580px">
+      {featured?.categories?.[0] && (
+        <p class="text-xs font-black uppercase mb-4" style="color:#00FF1F; letter-spacing:0.2em;">
+          {featured.categories[0].name}
+        </p>
+      )}
+      <h1 class="font-black text-white mb-5 leading-none" style="font-size:clamp(2.2rem,5.5vw,4.8rem); letter-spacing:-0.04em; text-wrap:balance;">
+        {featured?.title ?? 'Akademisk Boldklub'}
       </h1>
       {featured?.description && (
-        <p class="text-base leading-relaxed mb-8" style="color:rgba(255,255,255,0.75); max-width:480px;">
-          {truncate(featured.description, 160)}
+        <p class="text-sm leading-relaxed mb-8" style="color:rgba(255,255,255,0.72); max-width:440px;">
+          {truncate(featured.description, 140)}
         </p>
       )}
       <a
         href={featured ? articlePath(featured.slug) : localPath('/nyheder')}
-        class="inline-flex items-center px-8 py-3.5 font-black text-sm text-black rounded-full transition-opacity hover:opacity-90"
-        style="background:#D3BC8D; letter-spacing:-0.02em;"
+        class="inline-flex items-center px-8 py-3.5 font-black text-sm rounded-full hover:opacity-90 transition-opacity"
+        style="background:#D3BC8D; color:#111; letter-spacing:-0.02em;"
       >
         {locale === 'da' ? 'Læs mere' : 'Read More'}
       </a>
@@ -140,56 +147,298 @@ function formatDate(str: string) {
   </div>
 </section>
 
-<!-- ── Next match bar ────────────────────────────────────── -->
-{nextMatch && opponent && (
-  <div class="ab-fade-up-d border-y" style={`background:${T.green};border-color:rgba(0,0,0,0.25)`}>
-    <div class="max-w-7xl mx-auto px-5 md:px-12 h-14 flex items-center justify-between gap-4">
-      <span class="text-xs font-bold uppercase hidden sm:block shrink-0" style="color:rgba(255,255,255,0.5);letter-spacing:0.2em">
-        {locale === 'da' ? 'Næste kamp' : 'Next fixture'}
-      </span>
+<!-- ── Player + Standings ────────────────────────────────── -->
+<div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 md:py-14" style="background:#fff">
+  <div class="grid lg:grid-cols-[380px_1fr] xl:grid-cols-[460px_1fr] gap-8 xl:gap-12 items-start">
 
-      <div class="flex items-center gap-3 font-black text-white uppercase text-sm" style="letter-spacing:-0.01em">
-        <span>AB</span>
-        <span class="text-xs font-bold opacity-40" style="letter-spacing:0.1em">vs</span>
-        <span>{opponent}</span>
+    <!-- Left: Player photo + next match + buy tickets -->
+    <div class="flex flex-col gap-5">
+      <div class="relative overflow-hidden" style="border-radius:12px; aspect-ratio:3/4; background:#0a0a09;">
+        <img
+          src="/images/player-featured.png"
+          alt="AB 1889 Player"
+          loading="lazy"
+          class="w-full h-full object-cover object-top"
+        />
+        <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 50%)"></div>
+        <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+          <a
+            href="https://billetter.ab.dk"
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center px-5 py-2.5 font-black text-xs rounded-full"
+            style="background:#D3BC8D; color:#111; letter-spacing:-0.01em;"
+          >
+            {locale === 'da' ? 'Køb billetter' : 'Buy Tickets'}
+          </a>
+        </div>
       </div>
 
-      <div class="hidden md:flex items-center gap-2 text-xs shrink-0" style="color:rgba(255,255,255,0.6);letter-spacing:0.06em">
-        {matchDateStr && <span>{matchDateStr}</span>}
-        <span style="opacity:0.35">·</span>
-        {matchTimeStr && <span class="font-bold" style="font-variant-numeric:tabular-nums">{matchTimeStr}</span>}
-        {venue && <><span style="opacity:0.35">·</span><span>{venue}</span></>}
-      </div>
+      <!-- Next match card -->
+      {nextMatch && opponent && (
+        <div class="rounded-xl border border-gray-200 overflow-hidden">
+          <div class="px-4 py-2.5 text-xs font-black uppercase" style="background:#006A52; color:rgba(255,255,255,0.6); letter-spacing:0.18em;">
+            {locale === 'da' ? 'Næste kamp' : 'Next Fixture'}
+          </div>
+          <div class="px-4 py-4 bg-white">
+            {matchDateStr && (
+              <p class="text-xs mb-3" style="color:#9CA3AF; letter-spacing:0.06em;">{matchDateStr} · {matchTimeStr}</p>
+            )}
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex flex-col items-center gap-1.5">
+                <img src="/images/ab-crest.svg" alt="AB" width="44" height="44" style="opacity:0.85;" />
+                <span class="text-xs font-black" style="color:#111;">AB</span>
+              </div>
+              <span class="text-2xl font-black" style="color:#D6A02A; letter-spacing:-0.04em;">VS</span>
+              <div class="flex flex-col items-center gap-1.5">
+                {oppLogo ? (
+                  <img src={oppLogo} alt={opponent} width="44" height="44" class="object-contain" />
+                ) : (
+                  <div class="w-11 h-11 rounded-full flex items-center justify-center text-xs font-black" style="background:#F3F4F6; color:#6B7280;">{opponent.slice(0,2).toUpperCase()}</div>
+                )}
+                <span class="text-xs font-black text-center" style="color:#111; max-width:80px; line-height:1.2;">{opponent}</span>
+              </div>
+            </div>
+            {venue && (
+              <p class="text-xs mt-3 text-center" style="color:#9CA3AF;">{venue}</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
 
-      <a
-        href="https://billetter.ab.dk"
-        target="_blank"
-        rel="noreferrer"
-        class="shrink-0 text-xs font-bold uppercase px-3 py-1.5 border transition-colors hover:bg-white/10"
-        style="border-color:rgba(255,255,255,0.35);color:rgba(255,255,255,0.9);letter-spacing:0.12em"
-      >
-        {locale === 'da' ? 'Billetter →' : 'Tickets →'}
-      </a>
+    <!-- Right: Standings -->
+    <div class="overflow-hidden" style="border-radius:12px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <!-- Header -->
+      <div class="px-5 py-4 flex items-center justify-between" style="background:#006A52;">
+        <div>
+          <p class="text-xs font-black uppercase mb-0.5" style="color:rgba(255,255,255,0.5); letter-spacing:0.18em;">
+            {locale === 'da' ? '2. Division' : '2nd Division'}
+          </p>
+          <p class="text-lg font-black text-white" style="letter-spacing:-0.03em;">
+            {locale === 'da' ? 'Stillingen' : 'Standings'}
+          </p>
+        </div>
+        <div class="text-right">
+          <a href={localPath('/kampe')} class="text-xs font-bold px-3 py-1.5 rounded-full border border-white/30 text-white/70 hover:text-white hover:border-white/70 transition-colors">
+            {locale === 'da' ? 'Se alle →' : 'All →'}
+          </a>
+        </div>
+      </div>
+      <div>
+        <StandingsWidget locale={locale} />
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Recent Results ──────────────────────────────────── -->
+{recentResults.length > 0 && (
+  <div style="background:#fff; border-top:1px solid #F3F4F6;">
+    <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10">
+      <div class="flex items-center gap-3 mb-5">
+        <p class="text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.22em;">
+          {locale === 'da' ? 'Seneste resultater' : 'Recent Results'}
+        </p>
+        <div class="flex-1 h-px bg-gray-200"></div>
+        <a href={localPath('/kampe')} class="text-xs font-bold" style="color:#006A52;">
+          {locale === 'da' ? 'Se alle →' : 'All →'}
+        </a>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr style="border-bottom:2px solid #F3F4F6;">
+              <th class="text-left pb-2 text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.14em; width:220px;">{locale === 'da' ? 'Dato' : 'Date'}</th>
+              <th class="text-left pb-2 text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.14em;">{locale === 'da' ? 'Hjemme' : 'Home'}</th>
+              <th class="text-center pb-2 text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.14em; width:80px;">{locale === 'da' ? 'Resultat' : 'Score'}</th>
+              <th class="text-right pb-2 text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.14em;">{locale === 'da' ? 'Ude' : 'Away'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recentResults.map((event: any) => {
+              const isHome = event.homeId === 9805;
+              return (
+                <tr class="result-row border-b border-gray-100">
+                  <td class="py-3 text-xs" style="color:#9CA3AF; font-variant-numeric:tabular-nums;">
+                    {new Date(event.startDate).toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-GB', {
+                      weekday: 'short', day: 'numeric', month: 'short',
+                    })}
+                  </td>
+                  <td class="py-3 text-sm font-bold" style={`color:${isHome ? '#006A52' : '#111'};`}>{event.homeName}</td>
+                  <td class="py-3 text-sm font-black text-center" style="color:#D6A02A; font-variant-numeric:tabular-nums; letter-spacing:0.04em;">
+                    {event.score ?? '–'}
+                  </td>
+                  <td class="py-3 text-sm font-bold text-right" style={`color:${!isHome ? '#006A52' : '#111'};`}>{event.awayName}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 )}
 
-<!-- ── News + Sidebar ─────────────────────────────────────── -->
-<div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16 grid lg:grid-cols-[1fr_296px] gap-8 items-start" style="background:#fff">
+<!-- ── Join Team AB ──────────────────────────────────────── -->
+<div class="hexbg relative overflow-hidden" style="padding:80px 0;">
+  <div class="relative max-w-[1680px] mx-auto px-8 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
+    <div>
+      <p class="text-xs font-black uppercase mb-3" style="color:#006A52; letter-spacing:0.22em;">MyAB</p>
+      <h2 class="font-black text-white leading-none mb-2" style="font-size:clamp(2.5rem,6vw,5rem); letter-spacing:-0.05em;">
+        {locale === 'da' ? 'Join Team AB' : 'Join Team AB'}
+      </h2>
+      <p class="text-sm" style="color:rgba(255,255,255,0.45); max-width:440px; letter-spacing:0.02em;">
+        {locale === 'da'
+          ? 'Bliv en del af fællesskabet. Tilmeld dig MyAB og få adgang til eksklusive fordele.'
+          : 'Stay in the Game. Sign up for MyAB and get exclusive member benefits.'}
+      </p>
+    </div>
+    <div class="shrink-0">
+      <a
+        href={localPath('/bliv-involveret/myab')}
+        class="inline-flex items-center px-8 py-4 font-black text-sm rounded-full transition-opacity hover:opacity-90"
+        style="background:#00FF1F; color:#006A52; letter-spacing:-0.02em;"
+      >
+        {locale === 'da' ? 'Tilmeld MyAB →' : 'Join MyAB →'}
+      </a>
+    </div>
+  </div>
+</div>
 
-  <!-- News column -->
-  <div>
-    <div class="flex items-center gap-3 mb-5 text-xs font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.22em">
-      <span>{locale === 'da' ? 'Seneste fra klubben' : 'Latest from the club'}</span>
-      <div class="flex-1 h-px bg-gray-200"></div>
+<!-- ── App + ABTV ─────────────────────────────────────────── -->
+<div class="grid md:grid-cols-2" style="background:#0A0A09;">
+  <!-- Download App -->
+  <div class="relative overflow-hidden flex flex-col justify-between p-8 md:p-12" style="min-height:420px;">
+    <div class="relative z-10">
+      <img src="/images/ab-logo.svg" alt="AB" width="60" height="62" class="mb-6 opacity-90" />
+      <p class="text-xs font-black uppercase mb-3" style="color:#006A52; letter-spacing:0.22em;">
+        {locale === 'da' ? 'AB Appen' : 'AB App'}
+      </p>
+      <h2 class="font-black text-white leading-none mb-5" style="font-size:clamp(1.8rem,3.5vw,3rem); letter-spacing:-0.04em;">
+        {locale === 'da' ? 'Download appen' : 'Download the App'}
+      </h2>
+      <a
+        href="#"
+        class="inline-flex items-center px-6 py-3 font-black text-sm rounded-full border transition-colors hover:bg-white hover:text-black"
+        style="border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.85); letter-spacing:-0.01em;"
+      >
+        {locale === 'da' ? 'Download →' : 'Download →'}
+      </a>
+    </div>
+    <div class="absolute bottom-0 right-0 w-2/3 pointer-events-none" style="max-width:340px;">
+      <img src="/images/app-composite.jpg" alt="AB App" loading="lazy" class="w-full object-cover object-top" style="border-radius:12px 0 0 0;" />
+    </div>
+    <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.85) 30%,rgba(0,0,0,0.2) 100%)"></div>
+  </div>
+
+  <!-- ABTV -->
+  <div class="relative overflow-hidden flex flex-col justify-between p-8 md:p-12" style="min-height:420px; border-left:1px solid rgba(255,255,255,0.06);">
+    <div class="absolute inset-0">
+      <img src="/images/watch-live.png" alt="ABTV" loading="lazy" class="w-full h-full object-cover object-center" />
+      <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 100%)"></div>
+    </div>
+    <div class="relative z-10 flex flex-col h-full justify-between">
+      <div>
+        <p class="text-xs font-black uppercase mb-3" style="color:#D6A02A; letter-spacing:0.22em;">ABTV</p>
+        <h2 class="font-black text-white leading-none mb-3" style="font-size:clamp(1.8rem,3.5vw,3rem); letter-spacing:-0.04em; text-wrap:balance;">
+          {locale === 'da' ? 'Live, highlights & eksklusivt indhold' : 'Live, Recaps & Exclusive Content'}
+        </h2>
+      </div>
+      <a
+        href={localPath('/abtv')}
+        class="self-start inline-flex items-center px-6 py-3 font-black text-sm rounded-full transition-opacity hover:opacity-90"
+        style="background:#D6A02A; color:#111; letter-spacing:-0.01em;"
+      >
+        {locale === 'da' ? 'Se nu →' : 'Watch Now →'}
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Matchday Gear / Shop ──────────────────────────────── -->
+<div style="background:#fff; border-top:1px solid #F3F4F6;">
+  <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-12 md:py-16">
+    <div class="mb-8">
+      <p class="text-xs font-black uppercase mb-2" style="color:#9CA3AF; letter-spacing:0.22em;">
+        {locale === 'da' ? 'AB Store' : 'AB Store'}
+      </p>
+      <div class="flex items-end justify-between gap-4">
+        <h2 class="font-black leading-none" style="font-size:clamp(2rem,5vw,4rem); letter-spacing:-0.04em; color:#111;">
+          {locale === 'da' ? 'Matchday gear' : 'Matchday gear'}
+        </h2>
+        <a href="https://shop.ab.dk" target="_blank" rel="noreferrer" class="shrink-0 text-sm font-bold" style="color:#006A52;">
+          {locale === 'da' ? 'Se alle produkter →' : 'Shop all →'}
+        </a>
+      </div>
+      <p class="mt-2 text-sm" style="color:#9CA3AF;">
+        {locale === 'da' ? 'Alt du har brug for til kampdag' : 'Everything you need for kickoff'}
+      </p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {products.map((p) => (
+        <a href="https://shop.ab.dk" target="_blank" rel="noreferrer" class="product-card group block">
+          <div class="overflow-hidden mb-3" style="aspect-ratio:3/4; background:#F3F4F6; border-radius:8px;">
+            <img src={p.img} alt={p.name} loading="lazy" class="product-img w-full h-full object-cover object-top" />
+          </div>
+          <div class="flex items-start justify-between gap-2">
+            <p class="text-sm font-bold leading-snug" style="color:#111; letter-spacing:-0.01em;">{p.name}</p>
+            <div class="shrink-0 text-right">
+              <p class="text-sm font-black" style="color:#006A52;">{p.price}</p>
+              <p class="text-xs line-through" style="color:#9CA3AF;">{p.originalPrice}</p>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</div>
+
+<!-- ── Squad Banner ──────────────────────────────────────── -->
+<div class="relative overflow-hidden" style="height:clamp(260px,28vw,420px);">
+  <img
+    src="/images/squad-banner.png"
+    alt="AB 1889 Squad"
+    loading="lazy"
+    class="w-full h-full object-cover object-top"
+  />
+  <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 60%)"></div>
+  <div class="absolute inset-0 flex items-center px-8 md:px-12">
+    <div>
+      <h2 class="font-black text-white leading-none mb-4" style="font-size:clamp(2rem,4vw,3.5rem); letter-spacing:-0.04em;">
+        {locale === 'da' ? 'Shop AB Store' : 'Shop the AB Store'}
+      </h2>
+      <a
+        href="https://shop.ab.dk"
+        target="_blank"
+        rel="noreferrer"
+        class="inline-flex items-center px-7 py-3 font-black text-sm rounded-full"
+        style="background:#D3BC8D; color:#111; letter-spacing:-0.02em;"
+      >
+        {locale === 'da' ? 'Gå til butikken →' : 'Visit the store →'}
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── News — Inside the club ─────────────────────────────── -->
+<section style="background:#EBEBEB;">
+  <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-14 md:py-20">
+    <div class="text-center mb-10 md:mb-14">
+      <h2 class="font-black leading-none mb-3" style="font-size:clamp(3rem,8vw,7rem); letter-spacing:-0.05em; color:#111; text-wrap:balance;">
+        {locale === 'da' ? 'Inde i klubben' : 'Inside the club'}
+      </h2>
+      <p class="text-sm" style="color:#6B7280;">
+        {locale === 'da' ? 'Seneste nyheder og opdateringer fra AB Fodbold.' : 'Latest news and updates from AB Football.'}
+      </p>
     </div>
 
-    <!-- News grid (3 cols, square thumbnails — featured shown in hero above) -->
     {rest.length > 0 ? (
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-        {rest.slice(0, 9).map((article: any) => (
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
+        {rest.slice(0, 4).map((article: any) => (
           <a href={articlePath(article.slug)} class="article-card group block">
-            <div class="relative overflow-hidden mb-4" style="aspect-ratio:1/1; background:#F3F4F6;">
+            <div class="overflow-hidden mb-4" style="aspect-ratio:4/5; background:#D1D5DB; border-radius:6px;">
               {article.image?.url ? (
                 <img
                   src={strapiMediaUrl(article.image.url)}
@@ -198,123 +447,54 @@ function formatDate(str: string) {
                   class="article-img w-full h-full object-cover"
                 />
               ) : (
-                <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:rgba(0,106,82,0.18)">AB</div>
+                <div class="w-full h-full flex items-center justify-center font-black text-5xl" style="color:rgba(0,106,82,0.15);">AB</div>
               )}
             </div>
             {article.categories?.[0] && (
-              <p class="text-xs font-bold uppercase mb-2" style="color:#006A52; letter-spacing:0.16em;">
+              <p class="text-xs font-black uppercase mb-2" style="color:#006A52; letter-spacing:0.16em;">
                 {article.categories[0].name}
               </p>
             )}
-            <h2 class="font-black leading-snug" style="font-size:clamp(1rem,1.8vw,1.2rem); letter-spacing:-0.03em; color:#111;">
+            <h3 class="font-bold leading-snug" style="font-size:clamp(0.9rem,1.5vw,1.05rem); letter-spacing:-0.02em; color:#111;">
               {article.title}
-            </h2>
+            </h3>
           </a>
         ))}
       </div>
     ) : (
-      <p class="py-16 text-sm text-center" style="color:#9CA3AF">
-        {locale === 'da' ? 'Ingen artikler endnu.' : 'No articles yet.'}
+      <p class="text-center py-12 text-sm" style="color:#9CA3AF;">
+        {locale === 'da' ? 'Ingen nyheder endnu.' : 'No news yet.'}
       </p>
     )}
 
-    <a
-      href={localPath('/nyheder')}
-      class="inline-flex items-center gap-1 mt-5 text-xs font-bold uppercase transition-opacity hover:opacity-70"
-      style="color:#006A52;letter-spacing:0.12em"
-    >
-      {locale === 'da' ? 'Se alle nyheder' : 'All news'} →
-    </a>
+    <div class="mt-10 text-center">
+      <a
+        href={localPath('/nyheder')}
+        class="inline-flex items-center px-8 py-3.5 font-black text-sm rounded-full border-2 transition-colors hover:bg-black hover:border-black hover:text-white"
+        style="border-color:#111; color:#111; letter-spacing:-0.02em;"
+      >
+        {locale === 'da' ? 'Se alle nyheder →' : 'See More News →'}
+      </a>
+    </div>
   </div>
+</section>
 
-  <!-- Sidebar -->
-  <aside class="flex flex-col gap-5">
-    <!-- Standings -->
-    <div class="border border-gray-200">
-      <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 text-xs font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.18em">
-        <span>{locale === 'da' ? '1. Division' : '1st Division'}</span>
-        <a href={localPath('/kampe')} class="text-xs transition-opacity hover:opacity-70" style="color:#006A52;letter-spacing:0.08em">
-          {locale === 'da' ? 'Se tabel →' : 'Full table →'}
-        </a>
-      </div>
-      <div style="background:#060806">
-        <StandingsWidget locale={locale} />
-      </div>
+<!-- ── Sponsors ───────────────────────────────────────────── -->
+<div style="background:#fff; border-top:1px solid #E5E7EB; border-bottom:1px solid #E5E7EB; padding:40px 0;">
+  <div class="max-w-[1680px] mx-auto px-8 md:px-12">
+    <p class="text-center text-xs font-black uppercase mb-8" style="color:#D1D5DB; letter-spacing:0.28em;">
+      {locale === 'da' ? 'Vores sponsorer' : 'Our partners'}
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-10 md:gap-16">
+      {sponsors.map((s) => (
+        <img
+          src={s.img}
+          alt={s.name}
+          loading="lazy"
+          class="sponsor-img"
+          style="height:36px; width:auto; max-width:120px; object-fit:contain;"
+        />
+      ))}
     </div>
-
-    <!-- Recent results -->
-    {recentResults.length > 0 && (
-      <div class="border border-gray-200">
-        <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 text-xs font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.18em">
-          <span>{locale === 'da' ? 'Seneste resultater' : 'Recent results'}</span>
-          <a href={localPath('/kampe')} class="text-xs" style="color:#006A52;letter-spacing:0.08em">
-            {locale === 'da' ? 'Se alle →' : 'All →'}
-          </a>
-        </div>
-        <ul>
-          {recentResults.map((event: any) => {
-            const isHome = event.homeId === 9805;
-            const opp = isHome ? event.awayName : event.homeName;
-            return (
-              <li class="flex items-center justify-between px-4 py-3 border-b border-gray-100 last:border-b-0 gap-3">
-                <span class="text-xs font-semibold truncate" style="color:#111">
-                  {isHome ? `AB — ${opp}` : `${opp} — AB`}
-                </span>
-                <div class="flex items-center gap-2 shrink-0">
-                  {event.score && (
-                    <span class="text-sm font-black" style="color:#D6A02A;font-variant-numeric:tabular-nums">
-                      {event.score}
-                    </span>
-                  )}
-                  <span class="text-[0.6rem] font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.1em">FT</span>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    )}
-
-    <!-- Squad link -->
-    <a
-      href={localPath('/hold')}
-      class="group border border-gray-200 flex items-center justify-between px-4 py-4 transition-colors duration-200 hover:border-gray-400 bg-white"
-    >
-      <div>
-        <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF;letter-spacing:0.18em">
-          {locale === 'da' ? 'Holdet' : 'The Squad'}
-        </p>
-        <p class="text-sm font-bold" style="color:#111;letter-spacing:-0.01em">
-          {locale === 'da' ? 'Se spillertruppen' : 'View the squad'}
-        </p>
-      </div>
-      <span class="text-lg font-bold transition-transform group-hover:translate-x-1" style="color:#006A52">→</span>
-    </a>
-  </aside>
-</div>
-
-<!-- ── Join MyAB strip ────────────────────────────────────── -->
-<div class="border-t border-gray-200" style="background:#F9FAFB">
-  <div class="max-w-7xl mx-auto px-5 md:px-12 py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-    <div class="max-w-xl">
-      <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">MyAB Membership</p>
-      <h2 class="font-black mb-3" style="font-size:clamp(1.5rem,4vw,2.4rem);letter-spacing:-0.03em;line-height:1.05;color:#111">
-        {locale === 'da'
-          ? <Fragment>Bliv en del<br />af klubben.</Fragment>
-          : <Fragment>Be part of<br />the club.</Fragment>}
-      </h2>
-      <p class="text-sm leading-relaxed" style="color:#6B7280">
-        {locale === 'da'
-          ? 'Eksklusiv adgang til sæsonkort, merchandise-rabatter, fan-events og alt der sker bag kulisserne.'
-          : 'Exclusive access to season tickets, merchandise discounts, fan events and everything happening behind the scenes.'}
-      </p>
-    </div>
-    <a
-      href={localPath('/bliv-involveret')}
-      class="shrink-0 inline-flex items-center gap-2 font-bold text-white uppercase text-xs px-7 py-4 transition-opacity hover:opacity-80"
-      style="background:#006A52;letter-spacing:0.15em"
-    >
-      {locale === 'da' ? 'Tilmeld MyAB' : 'Join MyAB'} →
-    </a>
   </div>
 </div>
