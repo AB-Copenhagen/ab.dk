@@ -18,8 +18,7 @@
 }
 
 /* ── Font faces ─────────────────────────────────────────────────────────
-   ABC Camera Plain web license required for self-hosting.
-   TODO(brand): confirm web license before launch — ship Helvetica fallback until then.
+   ABC Camera Plain — licensed, files gitignored, served from /fonts/.
    ─────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'ABC Camera Plain';
