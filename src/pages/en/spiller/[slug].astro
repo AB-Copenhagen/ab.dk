@@ -66,11 +66,44 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
 
 <Base locale="en" title={pageTitle}>
   <!-- ── Hero ───────────────────────────────────────────────────────── -->
-  <div class="w-full overflow-hidden flex" style="background:#006A52; min-height:clamp(460px,36vw,560px);">
+  <div class="relative w-full overflow-hidden"
+       style="background:linear-gradient(135deg, #004A38 0%, #006A52 55%, #007A5E 100%); min-height:clamp(460px,36vw,560px);">
 
-    <!-- Left: name / position / number -->
-    <div class="flex-none flex flex-col justify-center relative z-20"
-         style="width:clamp(260px,38vw,500px); padding:3.5rem max(1.5rem,5vw) 3.5rem max(1.5rem,8vw);">
+    <!-- "AB" + "1889" watermark behind photo -->
+    <div class="absolute hidden md:block pointer-events-none select-none"
+         style="left:38%; top:50%; transform:translate(-50%,-54%); z-index:1;
+                font-family:Helvetica,Arial,sans-serif; font-weight:900;
+                font-size:clamp(14rem,26vw,34rem); color:rgba(0,0,0,0.18);
+                letter-spacing:-0.08em; line-height:0.85;">
+      AB
+    </div>
+    <div class="absolute hidden md:block pointer-events-none select-none"
+         style="left:42%; top:78%; transform:translate(-50%,-50%); z-index:1;
+                font-family:Helvetica,Arial,sans-serif; font-weight:900;
+                font-size:clamp(5rem,9vw,12rem); color:rgba(0,0,0,0.18);
+                letter-spacing:-0.04em; line-height:1;">
+      1889
+    </div>
+
+    <!-- Circular crest overlay (right side) -->
+    <div class="absolute hidden lg:block pointer-events-none"
+         style="right:-4%; top:50%; transform:translateY(-50%);
+                width:clamp(280px,38vw,480px); z-index:1; opacity:0.22;">
+      <img src="/images/ab-crest.svg" alt="" aria-hidden="true"
+           style="width:100%; height:auto; filter:brightness(0) invert(1);" />
+    </div>
+
+    <!-- Player photo (no side gradients) -->
+    {photoUrl && (
+      <div class="absolute inset-0 flex items-end justify-center pointer-events-none" style="z-index:2;">
+        <img src={photoUrl} alt={name} loading="eager" class="h-full w-auto max-w-none" />
+      </div>
+    )}
+
+    <!-- Left: text content -->
+    <div class="relative flex flex-col justify-center"
+         style="z-index:10; width:clamp(260px,38vw,500px); min-height:clamp(460px,36vw,560px);
+                padding:3.5rem max(1.5rem,5vw) 3.5rem max(1.5rem,8vw);">
       <a href="/en/hold"
          class="inline-flex items-center gap-1 text-xs font-bold uppercase mb-8 hover:opacity-100 transition-opacity"
          style="color:rgba(255,255,255,0.6); letter-spacing:0.16em;">
@@ -94,77 +127,45 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
       )}
     </div>
 
-    <!-- Center: player photo -->
-    <div class="flex-1 relative overflow-hidden" style="min-width:0;">
-      {photoUrl && (
-        <>
-          <img
-            src={photoUrl}
-            alt={name}
-            loading="eager"
-            class="absolute bottom-0 h-full w-auto max-w-none"
-            style="left:50%; transform:translateX(-50%);"
-          />
-          <div class="absolute inset-0 pointer-events-none"
-               style="background:linear-gradient(to right, #006A52 0%, transparent 25%);"></div>
-          <div class="absolute inset-0 pointer-events-none"
-               style="background:linear-gradient(to left, #006A52 0%, transparent 25%);"></div>
-        </>
-      )}
-    </div>
-
-    <!-- Right: AB crest badge watermark (desktop only) -->
-    <div class="hidden lg:flex flex-none items-center justify-center"
-         style="width:clamp(200px,30vw,400px); padding:2.5rem max(2rem,5vw) 2.5rem 0;">
-      <img
-        src="/images/ab-crest.svg"
-        alt=""
-        aria-hidden="true"
-        style="width:100%; max-width:360px; opacity:0.12; filter:brightness(0) invert(1);"
-      />
-    </div>
-
   </div>
 
-  <!-- ── Metadata bar ───────────────────────────────────────────────── -->
+  <!-- ── Metadata bar (full-width, equal cells) ─────────────────────── -->
   <div style="background:#fff; border-bottom:1px solid #E5E7EB;">
-    <div class="max-w-7xl mx-auto px-5 md:px-12">
-      <div class="flex overflow-x-auto divide-x divide-gray-200">
-        <div class="py-5 pr-8 flex-none text-center">
-          <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Position</p>
-          <p class="font-black" style="font-size:0.9rem; color:#111;">{posLabel}</p>
-        </div>
-        {cmsPlayer?.nickname && (
-          <div class="py-5 px-8 flex-none text-center">
-            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Nickname</p>
-            <p class="font-black" style="font-size:0.9rem; color:#111;">{cmsPlayer.nickname}</p>
-          </div>
-        )}
-        {cmsPlayer?.formerClubs && (
-          <div class="py-5 px-8 flex-none text-center">
-            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Former Clubs</p>
-            <p class="font-black" style="font-size:0.9rem; color:#111;">{cmsPlayer.formerClubs}</p>
-          </div>
-        )}
-        {countryName && (
-          <div class="py-5 px-8 flex-none text-center">
-            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Nationality</p>
-            <p class="font-black" style="font-size:0.9rem; color:#111;">{countryName}</p>
-          </div>
-        )}
-        {height && (
-          <div class="py-5 px-8 flex-none text-center">
-            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Height</p>
-            <p class="font-black" style="font-size:0.9rem; color:#111;">{height} cm</p>
-          </div>
-        )}
-        {dob && (
-          <div class="py-5 px-8 flex-none text-center">
-            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Birthday</p>
-            <p class="font-black" style="font-size:0.9rem; color:#111;">{dob}</p>
-          </div>
-        )}
+    <div class="flex overflow-x-auto divide-x divide-gray-200">
+      <div class="py-5 px-6 flex-1 text-center" style="min-width:90px;">
+        <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Position</p>
+        <p class="font-black" style="font-size:0.9rem; color:#111;">{posLabel}</p>
       </div>
+      {cmsPlayer?.nickname && (
+        <div class="py-5 px-6 flex-1 text-center" style="min-width:90px;">
+          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Nickname</p>
+          <p class="font-black" style="font-size:0.9rem; color:#111;">{cmsPlayer.nickname}</p>
+        </div>
+      )}
+      {cmsPlayer?.formerClubs && (
+        <div class="py-5 px-6 flex-1 text-center" style="min-width:110px;">
+          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Former Clubs</p>
+          <p class="font-black" style="font-size:0.9rem; color:#111;">{cmsPlayer.formerClubs}</p>
+        </div>
+      )}
+      {countryName && (
+        <div class="py-5 px-6 flex-1 text-center" style="min-width:90px;">
+          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Nationality</p>
+          <p class="font-black" style="font-size:0.9rem; color:#111;">{countryName}</p>
+        </div>
+      )}
+      {height && (
+        <div class="py-5 px-6 flex-1 text-center" style="min-width:80px;">
+          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Height</p>
+          <p class="font-black" style="font-size:0.9rem; color:#111;">{height} cm</p>
+        </div>
+      )}
+      {dob && (
+        <div class="py-5 px-6 flex-1 text-center" style="min-width:110px;">
+          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Birthday</p>
+          <p class="font-black" style="font-size:0.9rem; color:#111;">{dob}</p>
+        </div>
+      )}
     </div>
   </div>
 
