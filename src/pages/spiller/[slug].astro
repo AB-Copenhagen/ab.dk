@@ -27,7 +27,7 @@ if (!player) {
   return Astro.redirect('/hold');
 }
 
-const { name, position, countryName, birthDate } = player;
+const { name, position, countryName, birthDate, height } = player;
 
 // Get jersey number from the squad list
 const squadPlayers = await fetchABPlayers('da').catch(() => []);
@@ -60,69 +60,90 @@ const WIDGET_SEASON_ID = 16387;
 
 <Base locale="da" title={pageTitle}>
   <!-- ── Hero ───────────────────────────────────────────────────────── -->
-  <div class="relative overflow-hidden" style="background:#006A52; min-height:clamp(360px,42vw,520px);">
-    <!-- "AB" watermark -->
-    <div class="absolute right-0 inset-y-0 flex items-center justify-end pr-8 pointer-events-none select-none overflow-hidden" aria-hidden="true">
-      <span class="font-black text-white opacity-[0.06]" style="font-size:clamp(16rem,34vw,26rem); letter-spacing:-0.06em; line-height:1;">AB</span>
-    </div>
+  <div class="w-full overflow-hidden flex" style="background:#006A52; min-height:clamp(460px,36vw,560px);">
 
-    <!-- Player photo (right side, overflowing) -->
-    {photoUrl && (
-      <div class="absolute right-0 bottom-0 overflow-hidden" style="width:clamp(220px,38vw,480px); height:110%;">
-        <img
-          src={photoUrl}
-          alt={name}
-          loading="eager"
-          class="absolute inset-0 w-full h-full object-cover object-top"
-        />
-        <div class="absolute inset-0" style="background:linear-gradient(to right, #006A52 0%, transparent 35%);"></div>
-      </div>
-    )}
-
-    <!-- Text -->
-    <div class="relative z-10 max-w-7xl mx-auto px-5 md:px-12 py-14 md:py-20">
-      <a href="/hold" class="inline-flex items-center gap-1 text-xs font-bold uppercase mb-8 opacity-70 hover:opacity-100 transition-opacity" style="color:#fff; letter-spacing:0.16em;">
+    <!-- Left: name / position / number -->
+    <div class="flex-none flex flex-col justify-center relative z-20"
+         style="width:clamp(260px,38vw,500px); padding:3.5rem max(1.5rem,5vw) 3.5rem max(1.5rem,8vw);">
+      <a href="/hold"
+         class="inline-flex items-center gap-1 text-xs font-bold uppercase mb-8 hover:opacity-100 transition-opacity"
+         style="color:rgba(255,255,255,0.6); letter-spacing:0.16em;">
         ← Holdet
       </a>
-      <p class="font-bold uppercase mb-3" style="font-size:0.6rem; color:rgba(255,255,255,0.55); letter-spacing:0.24em;">
+      <p class="font-bold uppercase mb-3" style="font-size:0.6rem; color:rgba(255,255,255,0.45); letter-spacing:0.24em;">
         Akademisk Boldklub 1889
       </p>
-      <h1 class="font-black text-white leading-none mb-3" style="font-size:clamp(2.2rem,6vw,5.5rem); letter-spacing:-0.04em;">
+      <h1 class="font-black text-white leading-none mb-3"
+          style="font-size:clamp(2rem,4.5vw,4.5rem); letter-spacing:-0.04em;">
         {name}
       </h1>
-      <p class="font-medium text-base" style="color:rgba(255,255,255,0.65);">{posLabel}</p>
+      <p class="text-white mb-10" style="font-size:clamp(1rem,1.4vw,1.25rem); opacity:0.7;">
+        {posLabel}
+      </p>
       {shirtNumber != null && (
-        <p class="font-black text-white leading-none mt-8 select-none" style="font-size:clamp(4rem,10vw,8rem); letter-spacing:-0.05em; opacity:0.9;">
+        <p class="font-black text-white leading-none select-none"
+           style="font-size:clamp(5rem,10.5vw,11rem); letter-spacing:-0.05em; opacity:0.85;">
           {shirtNumber}
         </p>
       )}
     </div>
+
+    <!-- Center: player photo -->
+    <div class="flex-1 relative overflow-hidden" style="min-width:0;">
+      {photoUrl && (
+        <>
+          <img
+            src={photoUrl}
+            alt={name}
+            loading="eager"
+            class="absolute bottom-0 h-full w-auto max-w-none"
+            style="left:50%; transform:translateX(-50%);"
+          />
+          <div class="absolute inset-0 pointer-events-none"
+               style="background:linear-gradient(to right, #006A52 0%, transparent 25%);"></div>
+          <div class="absolute inset-0 pointer-events-none"
+               style="background:linear-gradient(to left, #006A52 0%, transparent 25%);"></div>
+        </>
+      )}
+    </div>
+
+    <!-- Right: AB crest badge watermark (desktop only) -->
+    <div class="hidden lg:flex flex-none items-center justify-center"
+         style="width:clamp(200px,30vw,400px); padding:2.5rem max(2rem,5vw) 2.5rem 0;">
+      <img
+        src="/images/ab-crest.svg"
+        alt=""
+        aria-hidden="true"
+        style="width:100%; max-width:360px; opacity:0.12; filter:brightness(0) invert(1);"
+      />
+    </div>
+
   </div>
 
-  <!-- ── Metadata strip ─────────────────────────────────────────────── -->
-  <div style="background:#fff; border-bottom:1px solid #E5E7EB;">
+  <!-- ── Metadata bar ───────────────────────────────────────────────── -->
+  <div style="background:#fff; border-top:1px solid #E5E7EB; border-bottom:1px solid #E5E7EB;">
     <div class="max-w-7xl mx-auto px-5 md:px-12">
-      <div class="flex flex-wrap divide-x" style="divide-color:#E5E7EB;">
-        <div class="py-5 pr-8">
-          <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Position</p>
-          <p class="font-black text-sm" style="color:#111;">{posLabel}</p>
+      <div class="flex overflow-x-auto divide-x divide-gray-200">
+        <div class="py-5 pr-8 flex-none text-center">
+          <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Position</p>
+          <p class="font-black" style="font-size:0.9rem; color:#111;">{posLabel}</p>
         </div>
         {countryName && (
-          <div class="py-5 px-8">
-            <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Nationalitet</p>
-            <p class="font-black text-sm" style="color:#111;">{countryName}</p>
+          <div class="py-5 px-8 flex-none text-center">
+            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Nationalitet</p>
+            <p class="font-black" style="font-size:0.9rem; color:#111;">{countryName}</p>
+          </div>
+        )}
+        {height && (
+          <div class="py-5 px-8 flex-none text-center">
+            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Højde</p>
+            <p class="font-black" style="font-size:0.9rem; color:#111;">{height} cm</p>
           </div>
         )}
         {dob && (
-          <div class="py-5 px-8">
-            <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Fødselsdato</p>
-            <p class="font-black text-sm" style="color:#111;">{dob}</p>
-          </div>
-        )}
-        {shirtNumber != null && (
-          <div class="py-5 pl-8">
-            <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Trøjenummer</p>
-            <p class="font-black text-sm" style="color:#111;">#{shirtNumber}</p>
+          <div class="py-5 px-8 flex-none text-center">
+            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Fødselsdato</p>
+            <p class="font-black" style="font-size:0.9rem; color:#111;">{dob}</p>
           </div>
         )}
       </div>
