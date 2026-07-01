@@ -125,6 +125,33 @@ const sponsors = [
   { name: 'Select Sport', img: '/images/sponsors/select-sport.png' },
   { name: 'Carlsberg', img: '/images/sponsors/carlsberg.png' },
 ];
+
+const heroSlides = [
+  {
+    img: '/images/hero.jpg',
+    alt: 'AB 1889',
+    headline: locale === 'da' ? 'Vær en del af det.' : 'Be part of it.',
+    subtitle: locale === 'da' ? 'Få den nyeste trøje' : 'Get the latest kit',
+    ctaLabel: locale === 'da' ? 'Shop nu' : 'Shop Now',
+    ctaUrl: 'https://shop.ab.dk',
+  },
+  {
+    img: '/images/matches-header-bg.png',
+    alt: locale === 'da' ? 'AB Kampe' : 'AB Matches',
+    headline: locale === 'da' ? 'Næste kamp venter.' : 'Next match awaits.',
+    subtitle: locale === 'da' ? 'Se kampprogram og køb billetter' : 'View fixtures and buy tickets',
+    ctaLabel: locale === 'da' ? 'Kampe' : 'Matches',
+    ctaUrl: localPath('/kampe'),
+  },
+  {
+    img: '/images/join-team-ab-bg.png',
+    alt: locale === 'da' ? 'Bliv en del af AB' : 'Join AB',
+    headline: locale === 'da' ? 'Bliv en del af AB.' : 'Join the family.',
+    subtitle: locale === 'da' ? 'Meld dig ind og støt holdet' : 'Become a member and support the club',
+    ctaLabel: locale === 'da' ? 'Meld dig ind' : 'Join now',
+    ctaUrl: localPath('/om/bliv-medlem'),
+  },
+];
 ---
 
 <style>
@@ -135,36 +162,108 @@ const sponsors = [
   .sponsor-img { filter: grayscale(100%); opacity: 0.65; transition: filter 0.3s, opacity 0.3s; }
   .sponsor-img:hover { filter: grayscale(0%); opacity: 1; }
   .result-row:nth-child(odd) { background: #F9FAFB; }
+  @keyframes dot-fill { from { transform:scaleX(0) } to { transform:scaleX(1) } }
 </style>
 
-<!-- ── Hero ─────────────────────────────────────────────── -->
-<section class="relative w-full overflow-hidden" style="height:clamp(480px,58vw,760px)">
-  <img
-    src="/images/hero.jpg"
-    alt="AB 1889"
-    loading="eager"
-    class="absolute inset-0 w-full h-full object-cover object-center"
-  />
-  <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.45) 55%,rgba(0,0,0,0.1) 100%)"></div>
-  <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.35) 0%,transparent 50%)"></div>
-  <div class="relative h-full max-w-7xl mx-auto px-8 md:px-12 flex flex-col justify-end pb-16 md:pb-20">
-    <div style="max-width:580px">
-      <p class="text-xs font-black uppercase mb-4" style="color:#00FF1F; letter-spacing:0.2em;">
-        {locale === 'da' ? 'Siden 1889' : 'Est. 1889'}
-      </p>
-      <h1 class="font-black text-white mb-5 leading-none" style="font-size:clamp(2.2rem,5.5vw,4.8rem); letter-spacing:-0.04em; text-wrap:balance;">
-        Akademisk Boldklub
-      </h1>
-      <a
-        href={localPath('/billetter')}
-        class="inline-flex items-center px-8 py-3.5 font-black text-sm rounded-full hover:opacity-90 transition-opacity"
-        style="background:#D3BC8D; color:#111; letter-spacing:-0.02em;"
-      >
-        {locale === 'da' ? 'Køb billetter' : 'Buy tickets'}
-      </a>
+<!-- ── Hero Slider ───────────────────────────────────────── -->
+<section id="hero-slider" class="relative w-full overflow-hidden" style="height:60svh; min-height:560px; max-height:960px;">
+
+  <!-- Slide images -->
+  {heroSlides.map((slide, i) => (
+    <div class="hero-slide absolute inset-0" style={`opacity:${i === 0 ? 1 : 0}; transition:opacity 1s ease;`} data-slide={i}>
+      <img src={slide.img} alt={slide.alt}
+           loading={i === 0 ? 'eager' : 'lazy'}
+           class="w-full h-full object-cover object-center" />
     </div>
+  ))}
+
+  <!-- Overlay -->
+  <div class="absolute inset-0 z-10" style="background:rgba(0,0,0,0.20);"></div>
+
+  <!-- Centered content -->
+  <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+    {heroSlides.map((slide, i) => (
+      <div class="hero-content absolute inset-0 flex flex-col items-center justify-center px-6"
+           style={`opacity:${i === 0 ? 1 : 0}; transition:opacity 1s ease;`}
+           data-content={i}>
+        <h1 class="font-black text-white leading-none"
+            style="font-size:clamp(4rem,11vw,10rem); letter-spacing:-0.04em; text-wrap:balance;">
+          {slide.headline}
+        </h1>
+        <p class="font-bold text-white mt-8 mb-5" style="font-size:clamp(0.85rem,1.4vw,1rem);">
+          {slide.subtitle}
+        </p>
+        <a href={slide.ctaUrl}
+           class="inline-flex items-center px-8 py-3 font-black text-sm rounded-full hover:opacity-90 transition-opacity"
+           style="background:#D3BC8D; color:#111; letter-spacing:-0.02em;">
+          {slide.ctaLabel}
+        </a>
+      </div>
+    ))}
+  </div>
+
+  <!-- Timer dot indicators -->
+  <div class="absolute bottom-8 left-0 right-0 z-30 flex justify-center items-center gap-2">
+    {heroSlides.map((_, i) => (
+      <button
+        class="hero-dot relative overflow-hidden"
+        style={`height:4px; border-radius:2px; border:none; padding:0; cursor:pointer; transition:width 0.3s ease; background:rgba(255,255,255,0.35); ${i === 0 ? 'width:48px;' : 'width:16px;'}`}
+        data-dot={i}
+        aria-label={`Slide ${i + 1}`}
+      >
+        <div class="hero-dot-fill"
+             style={`position:absolute; inset:0; background:#fff; transform-origin:left; transform:scaleX(0); ${i === 0 ? 'animation:dot-fill 5s linear forwards;' : ''}`}>
+        </div>
+      </button>
+    ))}
   </div>
 </section>
+
+<script>
+  const DURATION = 5000;
+  const slides   = Array.from(document.querySelectorAll<HTMLElement>('.hero-slide'));
+  const contents = Array.from(document.querySelectorAll<HTMLElement>('.hero-content'));
+  const dots     = Array.from(document.querySelectorAll<HTMLElement>('.hero-dot'));
+  const fills    = dots.map(d => d.querySelector<HTMLElement>('.hero-dot-fill')!);
+  const total    = slides.length;
+  let current    = 0;
+  let timer: ReturnType<typeof setInterval>;
+
+  function activateDot(i: number) {
+    dots.forEach((dot, j) => {
+      const fill = fills[j];
+      if (j === i) {
+        dot.style.width = '48px';
+        fill.style.animation = 'none';
+        void fill.offsetWidth; // force reflow to restart
+        fill.style.animation = `dot-fill ${DURATION}ms linear forwards`;
+      } else {
+        dot.style.width = '16px';
+        fill.style.animation = 'none';
+        fill.style.transform = 'scaleX(0)';
+      }
+    });
+  }
+
+  function goTo(n: number) {
+    slides[current].style.opacity   = '0';
+    contents[current].style.opacity = '0';
+    current = (n + total) % total;
+    slides[current].style.opacity   = '1';
+    contents[current].style.opacity = '1';
+    activateDot(current);
+  }
+
+  timer = setInterval(() => goTo(current + 1), DURATION);
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      clearInterval(timer);
+      goTo(i);
+      timer = setInterval(() => goTo(current + 1), DURATION);
+    });
+  });
+</script>
 
 <!-- ── Player + Standings ────────────────────────────────── -->
 <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 md:py-14" style="background:#fff">
@@ -464,44 +563,42 @@ const sponsors = [
 <!-- ── Matchday Gear / Shop ──────────────────────────────── -->
 <div style="background:#fff; border-top:1px solid #F3F4F6;">
   <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-12 md:py-16">
-    <div class="mb-8">
-      <p class="text-xs font-black uppercase mb-2" style="color:#9CA3AF; letter-spacing:0.22em;">
-        {locale === 'da' ? 'AB Store' : 'AB Store'}
-      </p>
-      <div class="flex items-end justify-between gap-4">
-        <h2 class="font-black leading-none" style="font-size:clamp(2rem,5vw,4rem); letter-spacing:-0.04em; color:#111;">
-          {locale === 'da' ? 'Matchday gear' : 'Matchday gear'}
-        </h2>
-        <a href="https://shop.ab.dk" target="_blank" rel="noreferrer" class="shrink-0 text-sm font-bold" style="color:#006A52;">
-          {locale === 'da' ? 'Se alle produkter →' : 'Shop all →'}
-        </a>
-      </div>
-      <p class="mt-2 text-sm" style="color:#9CA3AF;">
+    <!-- Heading block: centered, large -->
+    <div class="text-center mb-10">
+      <h2 class="font-black leading-none mb-4" style="font-size:clamp(3.5rem,9vw,8rem); letter-spacing:-0.04em; color:#111; text-transform:none; text-align:center;">
+        {locale === 'da' ? 'Matchday gear' : 'Matchday gear'}
+      </h2>
+      <p class="font-bold" style="font-size:clamp(0.95rem,1.5vw,1.1rem); color:#111;">
         {locale === 'da' ? 'Alt du har brug for til kampdag' : 'Everything you need for kickoff'}
       </p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
       {products.map((p) => (
         <a href="https://shop.ab.dk" target="_blank" rel="noreferrer" class="product-card group block">
-          <div class="overflow-hidden mb-3" style="aspect-ratio:3/4; background:#F3F4F6; border-radius:8px;">
+          <div class="overflow-hidden mb-3" style="aspect-ratio:3/4; background:#F3F4F6;">
             <img src={p.img} alt={p.name} loading="lazy" class="product-img w-full h-full object-cover object-top" />
           </div>
-          <div class="flex items-start justify-between gap-2">
-            <p class="text-sm font-bold leading-snug" style="color:#111; letter-spacing:-0.01em;">{p.name}</p>
-            <div class="shrink-0 text-right">
-              <p class="text-sm font-black" style="color:#006A52;">{p.price}</p>
-              <p class="text-xs line-through" style="color:#9CA3AF;">{p.originalPrice}</p>
-            </div>
+          <div class="flex items-baseline gap-2 mb-1">
+            <p class="text-sm font-black" style="color:#006A52;">{p.price}</p>
+            <p class="text-xs line-through" style="color:#9CA3AF;">{p.originalPrice}</p>
           </div>
+          <p class="font-black leading-snug" style="font-size:clamp(1rem,1.6vw,1.2rem); color:#111; letter-spacing:-0.02em;">{p.name}</p>
         </a>
       ))}
+    </div>
+    <div class="text-center mt-10">
+      <a href="https://shop.ab.dk" target="_blank" rel="noreferrer"
+         class="text-sm font-bold underline underline-offset-4"
+         style="color:#006A52;">
+        {locale === 'da' ? 'Shop AB Store' : 'Shop the AB Store'}
+      </a>
     </div>
   </div>
 </div>
 
 <!-- ── The Squad ──────────────────────────────────────────────── -->
-<section style="background:#071410;">
-  <!-- Hero -->
+<section style="background:#fff;">
+  <!-- Hero banner -->
   <div class="w-full">
     <img src="/images/squad-banner.png" alt="AB 1889 Squad" loading="lazy" class="w-full h-auto block" />
   </div>
@@ -510,20 +607,20 @@ const sponsors = [
   <div class="max-w-[1680px] mx-auto px-5 md:px-10 pt-8 pb-14 md:pt-10 md:pb-20">
     <!-- Position filter pills -->
     <div class="flex gap-2 md:gap-3 overflow-x-auto pb-3 mb-8" style="scrollbar-width:none; -webkit-overflow-scrolling:touch;">
-      <button data-filter="all" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:#00FF1F; color:#071410; letter-spacing:-0.02em;">
-        {locale === 'da' ? 'Alle' : 'All'}
+      <button data-filter="keeper" class="squad-filter squad-filter-active shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Målmand' : 'Goalkeeper'}
       </button>
-      <button data-filter="keeper" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.55); letter-spacing:-0.02em;">
-        {locale === 'da' ? 'Målmand' : 'Keeper'}
+      <button data-filter="defender" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Forsvar' : 'Defense'}
       </button>
-      <button data-filter="defender" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.55); letter-spacing:-0.02em;">
-        {locale === 'da' ? 'Forsvar' : 'Defender'}
+      <button data-filter="midfielder" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Midtbane' : 'Midfield'}
       </button>
-      <button data-filter="midfielder" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.55); letter-spacing:-0.02em;">
-        {locale === 'da' ? 'Midtbane' : 'Midfielder'}
+      <button data-filter="forward" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Angriber' : 'Attack'}
       </button>
-      <button data-filter="forward" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.55); letter-spacing:-0.02em;">
-        {locale === 'da' ? 'Angriber' : 'Forward'}
+      <button data-filter="coach" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+        {locale === 'da' ? 'Trænerstab' : 'Coaching'}
       </button>
     </div>
 
@@ -535,34 +632,66 @@ const sponsors = [
         ))}
       </div>
     ) : null}
+
+    <!-- See Full Squad link -->
+    <div class="text-center mt-10">
+      <a href={localPath('/hold')} class="text-sm font-bold underline underline-offset-4" style="color:#006A52;">
+        {locale === 'da' ? 'Se hele holdet' : 'See Full Squad'}
+      </a>
+    </div>
   </div>
 </section>
 
+<style>
+  .squad-filter {
+    background: #F3F4F6;
+    color: #374151;
+    border: 1.5px solid transparent;
+  }
+  .squad-filter-active {
+    background: #006A52 !important;
+    color: #fff !important;
+  }
+</style>
+
 <script>
-  (document.querySelectorAll('.squad-filter') as NodeListOf<HTMLElement>).forEach(btn => {
-    btn.addEventListener('click', () => {
-      const pos = (btn as HTMLElement).dataset.filter;
-      (document.querySelectorAll('.squad-filter') as NodeListOf<HTMLElement>).forEach(b => {
-        b.style.background = 'rgba(255,255,255,0.07)';
-        b.style.color = 'rgba(255,255,255,0.55)';
+  (function() {
+    const filters = document.querySelectorAll('.squad-filter') as NodeListOf<HTMLElement>;
+    const cards = document.querySelectorAll('.squad-card') as NodeListOf<HTMLElement>;
+
+    function setActive(btn: HTMLElement) {
+      filters.forEach(b => b.classList.remove('squad-filter-active'));
+      btn.classList.add('squad-filter-active');
+    }
+
+    function filterCards(pos: string) {
+      cards.forEach(card => {
+        card.style.display = card.dataset.position === pos ? '' : 'none';
       });
-      (btn as HTMLElement).style.background = '#00FF1F';
-      (btn as HTMLElement).style.color = '#071410';
-      (document.querySelectorAll('.squad-card') as NodeListOf<HTMLElement>).forEach(card => {
-        card.style.display = (pos === 'all' || card.dataset.position === pos) ? '' : 'none';
+    }
+
+    // Apply default: keeper
+    const defaultFilter = 'keeper';
+    filterCards(defaultFilter);
+
+    filters.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pos = btn.dataset.filter!;
+        setActive(btn);
+        filterCards(pos);
       });
     });
-  });
+  })();
 </script>
 
 <!-- ── News — Inside the club ─────────────────────────────── -->
 <section style="background:#fff;">
   <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-14 md:py-20">
     <div class="text-center mb-10 md:mb-14">
-      <h2 class="font-black leading-none mb-3" style="font-size:clamp(3rem,8vw,7rem); letter-spacing:-0.05em; color:#111; text-wrap:balance;">
+      <h2 class="font-black leading-none mb-4" style="font-size:clamp(3.5rem,9vw,8rem); letter-spacing:-0.05em; color:#111; text-transform:none; text-align:center;">
         {locale === 'da' ? 'Inde i klubben' : 'Inside the club'}
       </h2>
-      <p class="text-sm" style="color:#6B7280;">
+      <p class="font-bold" style="color:#111; font-size:clamp(0.95rem,1.5vw,1.1rem);">
         {locale === 'da' ? 'Seneste nyheder og opdateringer fra AB Fodbold.' : 'Latest news and updates from AB Football.'}
       </p>
     </div>
@@ -571,7 +700,7 @@ const sponsors = [
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
         {articles.slice(0, 4).map((article: any) => (
           <a href={articlePath(article.slug)} class="article-card group block">
-            <div class="overflow-hidden mb-4" style="aspect-ratio:16/9; background:#D1D5DB; border-radius:6px;">
+            <div class="overflow-hidden mb-4" style="aspect-ratio:3/2; background:#D1D5DB;">
               {article.image?.url ? (
                 <img
                   src={strapiMediaUrl(article.image.url)}
@@ -584,11 +713,11 @@ const sponsors = [
               )}
             </div>
             {article.categories?.[0] && (
-              <p class="text-xs font-black uppercase mb-2" style="color:#006A52; letter-spacing:0.16em;">
+              <p class="font-bold mb-2 underline underline-offset-2" style="font-size:0.8rem; color:#006A52;">
                 {article.categories[0].name}
               </p>
             )}
-            <h3 class="font-bold leading-snug" style="font-size:clamp(0.9rem,1.5vw,1.05rem); letter-spacing:-0.02em; color:#111;">
+            <h3 class="font-black leading-snug" style="font-size:clamp(1.05rem,1.8vw,1.4rem); letter-spacing:-0.03em; color:#111;">
               {decodeHtml(article.title)}
             </h3>
           </a>
@@ -600,13 +729,11 @@ const sponsors = [
       </p>
     )}
 
-    <div class="mt-10 text-center">
-      <a
-        href={localPath('/nyheder')}
-        class="inline-flex items-center px-8 py-3.5 font-black text-sm rounded-full border-2 transition-colors hover:bg-black hover:border-black hover:text-white"
-        style="border-color:#111; color:#111; letter-spacing:-0.02em;"
-      >
-        {locale === 'da' ? 'Se alle nyheder →' : 'See More News →'}
+    <div class="mt-12 text-center">
+      <a href={localPath('/nyheder')}
+         class="text-sm font-bold underline underline-offset-4"
+         style="color:#006A52;">
+        {locale === 'da' ? 'Se alle nyheder' : 'See More News'}
       </a>
     </div>
   </div>

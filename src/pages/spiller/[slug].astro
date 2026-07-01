@@ -73,14 +73,14 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
     <!-- AB 1889 logo watermark behind photo -->
     <img src="/images/logo-behind-player.svg" alt="" aria-hidden="true"
          class="absolute hidden md:block pointer-events-none select-none"
-         style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:1;
-                width:clamp(320px,44vw,580px); height:auto; opacity:0.45;" />
+         style="left:40%; top:50%; transform:translate(-50%,-50%); z-index:1;
+                width:clamp(320px,33vw,580px); height:auto; opacity:1;" />
 
     <!-- Circular crest — right side, visible against bright green -->
     <img src="/images/crest-behind-player.svg" alt="" aria-hidden="true"
          class="absolute hidden lg:block pointer-events-none select-none"
-         style="right:-5%; top:50%; transform:translateY(-50%); z-index:1;
-                width:clamp(280px,40vw,500px); height:auto; opacity:0.45;" />
+         style="right:1%; top:50%; transform:translateY(-50%); z-index:1;
+                width:clamp(280px,29vw,500px); height:auto; opacity:0.45;" />
 
     <!-- Player photo (no side gradients) -->
     {photoUrl && (

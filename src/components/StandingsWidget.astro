@@ -22,16 +22,16 @@ const headers = locale === 'da'
 ---
 
 {error ? (
-  <div class="text-xs py-4 text-center" style="color:#7A9185">{error}</div>
+  <div class="text-xs py-4 text-center" style="color:#888">{error}</div>
 ) : !rows.length ? (
-  <div class="text-xs py-6 text-center" style="color:#7A9185">
+  <div class="text-xs py-6 text-center" style="color:#888">
     {locale === 'da' ? 'Sæsonen er endnu ikke startet' : 'Season has not started yet'}
   </div>
 ) : (
   <div class="overflow-x-auto">
-    <table class="w-full text-xs">
+    <table class="w-full text-sm">
       <thead>
-        <tr class="border-b border-[#1A2018]">
+        <tr class="border-b border-[#E5E7EB]">
           {headers.map((h) => (
             <th class="py-2 px-2 text-left font-bold uppercase first:pl-4 last:pr-4" style="color:#7A9185;font-size:0.6rem;letter-spacing:0.12em">
               {h}
@@ -39,7 +39,7 @@ const headers = locale === 'da'
           ))}
         </tr>
       </thead>
-      <tbody class="divide-y divide-[#E8ECEB]">
+      <tbody class="divide-y divide-[#E5E7EB]">
         {rows.map((row: any) => {
           const isAB = row.teamId === 9805;
           const gd = (row.goalsScored ?? 0) - (row.goalsConceded ?? 0);

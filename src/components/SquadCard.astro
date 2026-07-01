@@ -29,6 +29,11 @@ const positionLabels: Record<string, { da: string; en: string }> = {
 const pos = (player.position ?? '').toLowerCase();
 const posLabel = (positionLabels[pos]?.[locale] ?? player.position ?? '');
 
+const isKeeper = pos === 'keeper';
+const cardBg    = isKeeper ? '#D3BC8D' : '#006A52';
+const textColor = isKeeper ? '#111'    : '#fff';
+const textMuted = isKeeper ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)';
+
 const nameParts = player.name.trim().split(' ');
 const firstName = nameParts[0];
 const lastName  = nameParts.slice(1).join(' ');
@@ -54,10 +59,10 @@ const playerHref = href ?? (locale === 'da' ? `/spiller/${playerSlug}` : `/en/sp
   data-position={player.position}
   style="aspect-ratio:593/503;"
 >
-  <!-- AB-green background rectangle (bottom 84% of card frame) -->
+  <!-- Position-coloured background rectangle (bottom 84% of card frame) -->
   <div
     class="absolute inset-x-0 bottom-0 rounded-xl transition-all duration-300 group-hover:brightness-110"
-    style="height:84.1%; background:#006A52;"
+    style={`height:84.1%; background:${cardBg};`}
   ></div>
 
   <!-- Player photo: right 51%, full height of card frame -->
@@ -81,12 +86,12 @@ const playerHref = href ?? (locale === 'da' ? `/spiller/${playerSlug}` : `/en/sp
     <!-- Name + position -->
     <div>
       <p
-        class="font-black text-white leading-tight"
-        style="font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance;"
+        class="font-black leading-tight"
+        style={`font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance; color:${textColor};`}
       >
         {firstName}<br />{lastName}
       </p>
-      <p class="text-xs mt-1 font-medium" style="color:rgba(255,255,255,0.6);">
+      <p class="text-xs mt-1 font-medium" style={`color:${textMuted};`}>
         {posLabel}
       </p>
     </div>
@@ -94,8 +99,8 @@ const playerHref = href ?? (locale === 'da' ? `/spiller/${playerSlug}` : `/en/sp
     <!-- Jersey number -->
     {number != null ? (
       <p
-        class="font-black text-white leading-none select-none"
-        style="font-size:clamp(2.5rem,6.5vw,6.5rem); letter-spacing:-0.04em;"
+        class="font-black leading-none select-none"
+        style={`font-size:clamp(2.5rem,6.5vw,6.5rem); letter-spacing:-0.04em; color:${textColor};`}
       >
         {number}
       </p>

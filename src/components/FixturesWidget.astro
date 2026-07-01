@@ -4,9 +4,16 @@ import { fetchABEvents } from '@/lib/si/client';
 interface Props {
   locale: 'da' | 'en';
   limit?: number;
+  theme?: 'dark' | 'light';
 }
 
-const { locale, limit = 20 } = Astro.props;
+const { locale, limit = 20, theme = 'dark' } = Astro.props;
+const dark = theme === 'dark';
+
+const dateColor = dark ? '#7A9185' : '#888';
+const nameColor = dark ? '#fff'    : '#111';
+const divider   = dark ? '#1A2018' : '#E5E7EB';
+const hoverBg   = dark ? '#0D1410' : '#F5FAF8';
 
 let events: any[] = [];
 let error = '';
@@ -26,52 +33,58 @@ function formatDate(dateStr: string) {
 ---
 
 {error ? (
-  <div class="text-xs py-4 text-center" style="color:#7A9185">{error}</div>
+  <div class="text-xs py-4 text-center" style={`color:${dateColor}`}>{error}</div>
 ) : !events.length ? (
-  <div class="text-xs py-4 text-center" style="color:#7A9185">
+  <div class="text-xs py-4 text-center" style={`color:${dateColor}`}>
     {locale === 'da' ? 'Ingen kampe fundet' : 'No fixtures found'}
   </div>
 ) : (
-  <div class="divide-y divide-[#1A2018]">
+  <div>
     {events.slice(0, limit).map((event: any) => {
       const isABHome = event.homeId === 9805;
       const opponent = isABHome ? event.awayName : event.homeName;
       const isFinished = event.statusType === 'finished';
       const isLive = event.statusType === 'inprogress';
+      const home = isABHome ? 'AB' : (opponent ?? '—');
+      const away = isABHome ? (opponent ?? '—') : 'AB';
       return (
-        <div class="flex items-center justify-between py-3 px-4 gap-4 hover:bg-[#0D1410] transition-colors">
-          <div class="min-w-[130px]">
-            <span class="text-xs" style="color:#7A9185">{formatDate(event.startDate)}</span>
-          </div>
+        <div class="py-3 px-4 transition-colors"
+             style={`border-bottom:1px solid ${divider};`}
+             onmouseenter={`this.style.background='${hoverBg}'`}
+             onmouseleave={`this.style.background='transparent'`}>
 
-          <div class="flex-1 flex items-center gap-2 min-w-0">
-            <span class="text-xs font-bold uppercase text-white truncate" style="letter-spacing:0.04em">
-              {isABHome ? 'AB' : opponent}
+          <!-- Date row -->
+          <p class="text-xs mb-1" style={`color:${dateColor}`}>{formatDate(event.startDate)}</p>
+
+          <!-- Teams row -->
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-black uppercase flex-1 text-right" style={`color:${nameColor}; letter-spacing:0.03em`}>
+              {home}
             </span>
+
             {(isFinished || isLive) && event.score ? (
-              <span
-                class="text-sm font-bold tabular-nums px-2 py-0.5"
-                style={isLive
-                  ? 'color:#00FF1F;background:rgba(0,255,31,0.08)'
-                  : 'color:#D6A02A;background:rgba(214,160,42,0.08)'}
-              >{event.score}</span>
+              <span class="font-bold tabular-nums px-2 py-0.5 shrink-0"
+                    style={`font-size:0.9rem; ${isLive
+                      ? 'color:#00FF1F;background:rgba(0,255,31,0.08)'
+                      : 'color:#D6A02A;background:rgba(214,160,42,0.08)'}`}>
+                {event.score}
+              </span>
             ) : (
-              <span class="text-xs" style="color:#7A9185">vs</span>
+              <span class="text-sm shrink-0 font-bold" style={`color:${dateColor}`}>vs</span>
             )}
-            <span class="text-xs font-bold uppercase text-white truncate" style="letter-spacing:0.04em">
-              {isABHome ? opponent : 'AB'}
-            </span>
-          </div>
 
-          <div class="min-w-[40px] text-right">
+            <span class="text-sm font-black uppercase flex-1" style={`color:${nameColor}; letter-spacing:0.03em`}>
+              {away}
+            </span>
+
             {isLive && (
-              <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase" style="color:#00FF1F;letter-spacing:0.1em">
+              <span class="inline-flex items-center gap-1 text-xs font-bold uppercase shrink-0" style="color:#00FF1F;letter-spacing:0.1em">
                 <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
                 LIVE
               </span>
             )}
             {isFinished && (
-              <span class="text-xs uppercase" style="color:#7A9185;letter-spacing:0.1em">FT</span>
+              <span class="text-xs uppercase shrink-0" style={`color:${dateColor};letter-spacing:0.1em`}>FT</span>
             )}
           </div>
         </div>

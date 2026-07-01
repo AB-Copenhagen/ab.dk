@@ -37,20 +37,12 @@ for (const p of players) {
 
 <Base locale="en" title="The Squad | Akademisk Boldklub">
   <div style="background:#fff">
-    <div class="border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-5 md:px-12">
-        <div class="py-14 md:py-20">
-          <p class="text-xs font-bold uppercase mb-3" style="color:#006A52;letter-spacing:0.2em">Season 2024/25</p>
-          <h1 class="font-black" style="font-size:clamp(3rem,8vw,5rem);letter-spacing:-0.03em;line-height:0.95;color:#111">The Squad</h1>
-          {players.length > 0 && (
-            <p class="mt-2 text-sm" style="color:#6B7280">{players.length} players</p>
-          )}
-          <div class="mt-5 h-0.5 w-12" style="background:#006A52"></div>
-        </div>
-      </div>
+    <!-- Squad banner (image with embedded title) -->
+    <div class="w-full">
+      <img src="/images/squad-banner.png" alt="AB 1889 The Squad" class="w-full h-auto block" loading="eager" />
     </div>
 
-    <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14">
+    <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 lg:py-14">
       {players.length === 0 ? (
         <p class="text-center py-24 text-sm" style="color:#9CA3AF">
           Squad information is currently unavailable.
@@ -61,12 +53,9 @@ for (const p of players) {
           if (!group?.length) return null;
           return (
             <section class="mb-14">
-              <div class="flex items-baseline gap-3 mb-6 pb-3 border-b border-gray-200">
-                <h2 class="text-xs font-bold uppercase" style="color:#006A52;letter-spacing:0.18em">
-                  {POSITION_GROUPS[key]}
-                </h2>
-                <span class="text-xs" style="color:#9CA3AF">({group.length})</span>
-              </div>
+              <h2 class="font-black mb-6" style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; color:#111; text-transform:none;">
+                {POSITION_GROUPS[key]}
+              </h2>
               <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
                 {group.map((player) => (
                   <SquadCard player={player} locale="en" />

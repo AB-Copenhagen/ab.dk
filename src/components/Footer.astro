@@ -37,66 +37,64 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
 
 <!-- Footer -->
 <footer style="background:#0A0A09;">
-  <div class="max-w-7xl mx-auto px-8 py-16 lg:py-20">
-    <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-16 items-start">
+  <div class="max-w-[1680px] mx-auto px-8 py-16 lg:py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-20 items-center">
 
-      <!-- Left: AB 1889 wordmark SVG -->
+      <!-- Left: AB 1889 wordmark SVG — large -->
       <div class="shrink-0">
         <img
           src="/images/ab-logo-wordmark.svg"
           alt="AB 1889"
-          width="220"
-          height="221"
-          style="width:clamp(140px,14vw,220px); height:auto; opacity:0.92;"
+          style="width:clamp(180px,18vw,300px); height:auto;"
         />
       </div>
 
       <!-- Center: link columns -->
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-10">
-        <!-- Contact / Club -->
+        <!-- Contact -->
         <div>
-          <p class="text-xs font-black uppercase mb-4" style="color:rgba(255,255,255,0.35); letter-spacing:0.18em;">
-            {locale === 'da' ? 'Klub' : 'Contact'}
+          <p class="font-black mb-5" style="color:#fff; font-size:0.95rem;">
+            {locale === 'da' ? 'Kontakt' : 'Contact'}
           </p>
           {contactLinks?.length ? (
-            <ul class="flex flex-col gap-2.5">
+            <ul class="flex flex-col gap-3">
               {contactLinks.map((link) => (
                 <li>
-                  <a href={link.URL} class="text-xs font-bold hover:text-white transition-colors" style="color:rgba(255,255,255,0.5); text-decoration:none; letter-spacing:-0.01em;">
+                  <a href={link.URL} class="footer-link text-sm hover:opacity-70 transition-opacity" style="color:#fff; text-decoration:none;">
                     {link.text}
                   </a>
                 </li>
               ))}
             </ul>
           ) : (
-            <ul class="flex flex-col gap-2.5">
-              <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">info@ab.dk</span></li>
-              <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">+45 39 62 09 00</span></li>
-              <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">Gladsaxevej 202, 2860</span></li>
-              <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">Søborg, Danmark</span></li>
+            <ul class="flex flex-col gap-3">
+              <li><span class="text-sm" style="color:#fff;">info@ab.dk</span></li>
+              <li><span class="text-sm" style="color:#fff;">+45 60399901</span></li>
+              <li><span class="text-sm" style="color:#fff;">Gladsaxevej 202, 2860</span></li>
+              <li><span class="text-sm" style="color:#fff;">{locale === 'da' ? 'Søborg Danmark' : 'Søborg Denmark'}</span></li>
             </ul>
           )}
         </div>
 
         <!-- Social Media -->
         <div>
-          <p class="text-xs font-black uppercase mb-4" style="color:rgba(255,255,255,0.35); letter-spacing:0.18em;">
+          <p class="font-black mb-5" style="color:#fff; font-size:0.95rem;">
             Social Media
           </p>
           {socialLinks?.length ? (
-            <ul class="flex flex-col gap-2.5">
+            <ul class="flex flex-col gap-3">
               {socialLinks.map((link) => (
                 <li>
-                  <a href={link.URL} target="_blank" rel="noreferrer" class="text-xs font-bold hover:text-white transition-colors" style="color:rgba(255,255,255,0.5); text-decoration:none; letter-spacing:-0.01em;">
+                  <a href={link.URL} target="_blank" rel="noreferrer" class="text-sm hover:opacity-70 transition-opacity" style="color:#fff; text-decoration:none;">
                     {link.text}
                   </a>
                 </li>
               ))}
             </ul>
           ) : (
-            <ul class="flex flex-col gap-2.5">
+            <ul class="flex flex-col gap-3">
               {['Instagram', 'LinkedIn', 'Facebook', 'YouTube', 'TikTok'].map((s) => (
-                <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">{s}</span></li>
+                <li><span class="text-sm" style="color:#fff;">{s}</span></li>
               ))}
             </ul>
           )}
@@ -104,53 +102,51 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
 
         <!-- Resources -->
         <div>
-          <p class="text-xs font-black uppercase mb-4" style="color:rgba(255,255,255,0.35); letter-spacing:0.18em;">
+          <p class="font-black mb-5" style="color:#fff; font-size:0.95rem;">
             Resources
           </p>
           {resourceLinks?.length ? (
-            <ul class="flex flex-col gap-2.5">
+            <ul class="flex flex-col gap-3">
               {resourceLinks.map((link) => (
                 <li>
-                  <a href={link.URL} class="text-xs font-bold hover:text-white transition-colors" style="color:rgba(255,255,255,0.5); text-decoration:none; letter-spacing:-0.01em;">
+                  <a href={link.URL} class="text-sm hover:opacity-70 transition-opacity" style="color:#fff; text-decoration:none;">
                     {link.text}
                   </a>
                 </li>
               ))}
             </ul>
           ) : (
-            <ul class="flex flex-col gap-2.5">
+            <ul class="flex flex-col gap-3">
               {[
-                locale === 'da' ? 'Køb billetter' : 'Buy tickets',
-                locale === 'da' ? 'Book event' : 'Book an event',
-                locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor',
-                locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy',
-                locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy',
-              ].map((label) => (
-                <li><span class="text-xs" style="color:rgba(255,255,255,0.25);">{label}</span></li>
+                [locale === 'da' ? 'Køb billetter' : 'Buy tickets', '#'],
+                [locale === 'da' ? 'Book event' : 'Book an event', '#'],
+                [locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor', '#'],
+                [locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', '#'],
+                [locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', '#'],
+              ].map(([label]) => (
+                <li><span class="text-sm" style="color:#fff;">{label}</span></li>
               ))}
             </ul>
           )}
         </div>
       </div>
 
-      <!-- Right: AB circular crest (decorative) -->
+      <!-- Right: AB circular crest -->
       <div class="hidden lg:block shrink-0 self-center">
         <img
           src="/images/ab-crest.svg"
           alt="AB 1889"
-          width="160"
-          height="160"
-          style="opacity:0.55;"
+          style="width:clamp(120px,12vw,180px); height:auto; opacity:0.85;"
         />
       </div>
     </div>
+  </div>
 
-    <!-- Bottom bar -->
-    <div class="mt-16 pt-6 border-t" style="border-color:rgba(255,255,255,0.08);">
-      <p class="text-xs" style="color:rgba(255,255,255,0.25); letter-spacing:-0.01em;">
-        {d?.copyright ?? `© ${year} AB Akademisk Boldklub. Alle rettigheder forbeholdes.`}
-      </p>
-    </div>
+  <!-- Neon green copyright strip -->
+  <div style="background:#00FF1F; padding:1rem 2rem; text-align:center;">
+    <p class="text-sm font-bold" style="color:#0A0A09;">
+      {d?.copyright ?? `© ${year} AB Gladsaxe. All rights reserved.`}
+    </p>
   </div>
 </footer>
 

@@ -28,16 +28,16 @@ function fmtTime(d: string) {
 
 <Base locale={locale} title="Kampe | Akademisk Boldklub">
   <!-- Hero -->
-  <div class="relative overflow-hidden" style="height:clamp(240px,36vw,420px);">
+  <div class="relative w-full">
     <img
-      src="/images/hero.jpg"
-      alt="AB 1889 kampe"
-      class="absolute inset-0 w-full h-full object-cover object-center"
-      style="filter:brightness(0.45) saturate(0.7);"
+      src="/images/matches-header-bg.png"
+      alt="AB 1889 Kampe"
+      class="w-full h-auto block"
+      loading="eager"
     />
-    <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 60%);"></div>
-    <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-10 max-w-7xl mx-auto">
-      <h1 class="font-black text-white" style="font-size:clamp(3.5rem,9vw,7rem);letter-spacing:-0.04em;line-height:0.9;">Kampe</h1>
+    <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 55%, transparent 100%);"></div>
+    <div class="absolute inset-0 flex items-end px-8 lg:px-16 pb-10">
+      <h1 class="font-black text-white leading-none" style="font-size:clamp(3.5rem,10vw,8rem); letter-spacing:-0.04em; text-transform:none;">Kampe</h1>
     </div>
   </div>
 
