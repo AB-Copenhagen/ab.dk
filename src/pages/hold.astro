@@ -1,39 +1,35 @@
 ---
 import Base from '@/layouts/Base.astro';
 import PlayerCard from '@/components/PlayerCard.astro';
-import { fetchABSquad } from '@/lib/si/client';
+import { fetchABPlayers, type SIPlayer } from '@/lib/si/client';
 export const prerender = false;
 
 const locale = 'da' as const;
 
 const POSITION_GROUPS = {
-  goalkeeper: 'Målmænd',
+  keeper:     'Målmænd',
   defender:   'Forsvarsspillere',
   midfielder: 'Midtbanespillere',
   forward:    'Angribere',
-  other:      'Øvrige',
 } as const;
 type PositionKey = keyof typeof POSITION_GROUPS;
-const GROUP_ORDER: PositionKey[] = ['goalkeeper', 'defender', 'midfielder', 'forward', 'other'];
+const GROUP_ORDER: PositionKey[] = ['keeper', 'defender', 'midfielder', 'forward'];
 
-function classifyPosition(position?: string): PositionKey {
-  const p = (position ?? '').toLowerCase();
-  if (p.includes('goal') || p.includes('keeper') || p.includes('målm')) return 'goalkeeper';
-  if (p.includes('defend') || p.includes('back') || p.includes('forsvar')) return 'defender';
-  if (p.includes('mid') || p.includes('midtb')) return 'midfielder';
-  if (p.includes('forward') || p.includes('striker') || p.includes('wing') || p.includes('angr')) return 'forward';
-  return 'other';
-}
-
-let players: any[] = [];
+let players: SIPlayer[] = [];
 try {
-  const raw = await fetchABSquad(locale);
-  players = Array.isArray(raw) ? raw : (raw as any)?.members ?? (raw as any)?.data ?? [];
+  players = await fetchABPlayers(locale);
 } catch { /* SI unavailable */ }
 
-const groups = new Map<PositionKey, any[]>();
+players.sort((a, b) => {
+  const ai = GROUP_ORDER.indexOf(a.position as PositionKey);
+  const bi = GROUP_ORDER.indexOf(b.position as PositionKey);
+  if (ai !== bi) return ai - bi;
+  return (a.shirtNumber ?? 99) - (b.shirtNumber ?? 99);
+});
+
+const groups = new Map<PositionKey, SIPlayer[]>();
 for (const p of players) {
-  const key = classifyPosition(p.position ?? p.role);
+  const key = p.position as PositionKey;
   if (!groups.has(key)) groups.set(key, []);
   groups.get(key)!.push(p);
 }
@@ -72,8 +68,8 @@ for (const p of players) {
                 <span class="text-xs" style="color:#9CA3AF">({group.length})</span>
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {group.map((player: any) => (
-                  <PlayerCard player={player} locale="da" />
+                {group.map((player) => (
+                  <PlayerCard player={{ ...player, jerseyNumber: player.shirtNumber ?? undefined }} locale="da" />
                 ))}
               </div>
             </section>

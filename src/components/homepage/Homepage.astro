@@ -1,6 +1,7 @@
 ---
 import { fetchCollectionType } from '@/lib/strapi/client';
 import { fetchABEvents, fetchABPlayers, type SIPlayer } from '@/lib/si/client';
+import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
 import { strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate, decodeHtml } from '@/lib/utils';
 import StandingsWidget from '@/components/StandingsWidget.astro';
@@ -552,17 +553,32 @@ const sponsors = [
             : player.position === 'midfielder'
             ? (locale === 'da' ? 'Midtbane' : 'Midfielder')
             : (locale === 'da' ? 'Angriber' : 'Forward');
+          const photoUrl = getPlayerPhotoUrl(player.name);
           return (
             <div class="squad-card relative overflow-hidden rounded-xl" data-position={player.position} style="background:#0D2318; aspect-ratio:2/3;">
+              {/* Player photo */}
+              {photoUrl ? (
+                <img
+                  src={photoUrl}
+                  alt={player.name}
+                  loading="lazy"
+                  class="absolute inset-0 w-full h-full object-cover object-top"
+                  onerror="this.style.display='none'"
+                />
+              ) : null}
+              {/* Bottom gradient for readability */}
+              <div class="absolute inset-0" style="background:linear-gradient(to top, rgba(4,14,10,0.92) 0%, rgba(4,14,10,0.4) 45%, transparent 70%);"></div>
+              {/* Jersey number watermark */}
               {player.shirtNumber !== null ? (
                 <span class="absolute select-none font-black leading-none pointer-events-none" style="font-size:clamp(5rem,11vw,8rem); color:rgba(0,255,31,0.055); bottom:-0.05em; right:-0.05em; line-height:1;">
                   {player.shirtNumber}
                 </span>
               ) : null}
+              {/* Card content overlay */}
               <div class="absolute inset-0 flex flex-col justify-between p-3 md:p-4">
                 <div>
                   <p class="font-black uppercase mb-2" style="font-size:0.58rem; color:#00FF1F; letter-spacing:0.2em;">{posLabel}</p>
-                  {player.shirtNumber !== null ? (
+                  {!photoUrl && player.shirtNumber !== null ? (
                     <p class="font-black leading-none" style="font-size:clamp(1.2rem,2.2vw,1.6rem); color:rgba(255,255,255,0.16); letter-spacing:-0.03em;">#{player.shirtNumber}</p>
                   ) : null}
                 </div>
