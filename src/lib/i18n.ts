@@ -82,7 +82,8 @@ export const t: Record<Locale, Record<string, string>> = {
     newsletter: 'Newsletter',
     subscribeSuccess: 'Thanks! You are now subscribed to our newsletter.',
     subscribeError: 'Something went wrong. Please try again.',
-    contactSuccess: 'Thank you for your message! We will get back to you shortly.',
+    contactSuccess:
+      'Thank you for your message! We will get back to you shortly.',
     contactError: 'Something went wrong. Please try again.',
     firstName: 'First name',
     lastName: 'Last name',

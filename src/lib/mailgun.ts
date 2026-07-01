@@ -1,6 +1,7 @@
 const MAILGUN_API_KEY = import.meta.env.MAILGUN_API_KEY ?? '';
 const MAILGUN_DOMAIN = import.meta.env.MAILGUN_DOMAIN ?? '';
-const MAILGUN_FROM = import.meta.env.MAILGUN_FROM ?? `AB 1889 <no-reply@${MAILGUN_DOMAIN}>`;
+const MAILGUN_FROM =
+  import.meta.env.MAILGUN_FROM ?? `AB 1889 <no-reply@${MAILGUN_DOMAIN}>`;
 const MAILGUN_API_BASE = `https://api.eu.mailgun.net/v3/${MAILGUN_DOMAIN}`;
 
 interface SendParams {
@@ -13,7 +14,9 @@ interface SendParams {
 
 export async function sendMail(params: SendParams): Promise<void> {
   if (!MAILGUN_API_KEY || !MAILGUN_DOMAIN) {
-    throw new Error('Mailgun not configured — MAILGUN_API_KEY and MAILGUN_DOMAIN required');
+    throw new Error(
+      'Mailgun not configured — MAILGUN_API_KEY and MAILGUN_DOMAIN required'
+    );
   }
 
   const body = new URLSearchParams({

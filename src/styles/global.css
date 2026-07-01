@@ -1,9 +1,21 @@
-/* Brand token layer — source of truth */
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 @import './tokens.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+  --color-ab-green: #006a52;
+  --color-ab-gold: #d6a02a;
+  --color-ab-beige: #d3bc8d;
+  --color-ab-neon: #00ff1f;
+  --color-rich-black: #0a0a0a;
+  --color-charcoal: #0a0a0a;
+  --color-lightblack: #141a16;
+
+  --font-display:
+    'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-sans:
+    'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
 
 /* ── Font faces ─────────────────────────────────────────────────────────
    ABC Camera Plain web license required for self-hosting.
@@ -11,24 +23,27 @@
    ─────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/fonts/ABCCameraPlain-Regular.woff2') format('woff2'),
-       url('/fonts/ABCCameraPlain-Regular.otf') format('opentype');
+  src:
+    url('/fonts/ABCCameraPlain-Regular.woff2') format('woff2'),
+    url('/fonts/ABCCameraPlain-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/fonts/ABCCameraPlain-Medium.woff2') format('woff2'),
-       url('/fonts/ABCCameraPlain-Medium.otf') format('opentype');
+  src:
+    url('/fonts/ABCCameraPlain-Medium.woff2') format('woff2'),
+    url('/fonts/ABCCameraPlain-Medium.otf') format('opentype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/fonts/ABCCameraPlain-Heavy.woff2') format('woff2'),
-       url('/fonts/ABCCameraPlain-Heavy.otf') format('opentype');
+  src:
+    url('/fonts/ABCCameraPlain-Heavy.woff2') format('woff2'),
+    url('/fonts/ABCCameraPlain-Heavy.otf') format('opentype');
   font-weight: 700 900;
   font-style: normal;
   font-display: swap;
@@ -43,7 +58,12 @@ html {
 
 /* ── Typography defaults ────────────────────────────────────────────── */
 /* Headlines uppercase, left-aligned (centred only for hero moments).  */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   text-transform: uppercase;
   letter-spacing: var(--tracking-head);
   font-weight: 900;
@@ -51,15 +71,28 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Body copy: always mixed-case, never justified. */
-p, li, td, th {
+p,
+li,
+td,
+th {
   letter-spacing: var(--tracking-body);
 }
 
 /* ── Scrollbar ──────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--surface-ground); }
-::-webkit-scrollbar-thumb { background: var(--surface-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--ab-green); }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface-ground);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ab-green);
+}
 
 /* ── Focus ring ─────────────────────────────────────────────────────── */
 :focus-visible {

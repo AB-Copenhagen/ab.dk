@@ -1,5 +1,5 @@
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { APIRoute } from 'astro';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 
 export const prerender = false;
 
@@ -32,7 +32,8 @@ export const GET: APIRoute = async ({ params }) => {
     };
     if (res.ContentType) headers['Content-Type'] = res.ContentType;
     if (res.ETag) headers['ETag'] = res.ETag;
-    if (res.ContentLength) headers['Content-Length'] = String(res.ContentLength);
+    if (res.ContentLength)
+      headers['Content-Length'] = String(res.ContentLength);
 
     return new Response(res.Body as ReadableStream, { status: 200, headers });
   } catch {

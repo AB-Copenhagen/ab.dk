@@ -1,7 +1,8 @@
 const WASABI_BUCKET = import.meta.env.WASABI_BUCKET ?? '';
 const WASABI_REGION = import.meta.env.WASABI_REGION ?? 'eu-central-1';
-const WASABI_ENDPOINT = import.meta.env.WASABI_ENDPOINT
-  ?? `https://s3.${WASABI_REGION}.wasabisys.com`;
+const WASABI_ENDPOINT =
+  import.meta.env.WASABI_ENDPOINT ??
+  `https://s3.${WASABI_REGION}.wasabisys.com`;
 
 export function mediaUrl(key: string): string {
   if (!key) return '';

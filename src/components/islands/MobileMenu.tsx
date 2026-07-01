@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import type { NavConfig } from '@/lib/nav-config';
 
 interface Props {
@@ -20,11 +21,21 @@ export default function MobileMenu({ nav, locale, enPrefix }: Props) {
       >
         {open ? (
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <path
+              d="M5 5L15 15M15 5L5 15"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
         ) : (
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <path
+              d="M3 6h14M3 10h14M3 14h14"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
         )}
       </button>
@@ -60,12 +71,21 @@ export default function MobileMenu({ nav, locale, enPrefix }: Props) {
                 {item.children ? (
                   <>
                     <button
-                      onClick={() => setExpanded(expanded === item.href ? null : item.href)}
+                      onClick={() =>
+                        setExpanded(expanded === item.href ? null : item.href)
+                      }
                       className="w-full flex items-center justify-between py-3 text-sm font-bold text-white uppercase"
                       style={{ letterSpacing: '0.06em' }}
                     >
                       {item.label}
-                      <span style={{ color: '#006A52', transform: expanded === item.href ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                      <span
+                        style={{
+                          color: '#006A52',
+                          transform:
+                            expanded === item.href ? 'rotate(180deg)' : 'none',
+                          transition: 'transform 0.2s',
+                        }}
+                      >
                         ▾
                       </span>
                     </button>
@@ -76,7 +96,10 @@ export default function MobileMenu({ nav, locale, enPrefix }: Props) {
                             key={child.href}
                             href={enPrefix + child.href}
                             className="py-2 text-xs"
-                            style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: '0.04em' }}
+                            style={{
+                              color: 'rgba(255,255,255,0.5)',
+                              letterSpacing: '0.04em',
+                            }}
                             onClick={() => setOpen(false)}
                           >
                             {child.label}
@@ -102,7 +125,10 @@ export default function MobileMenu({ nav, locale, enPrefix }: Props) {
               <a
                 href={locale === 'da' ? '/en' : '/'}
                 className="text-xs font-bold uppercase"
-                style={{ color: 'rgba(255,255,255,0.3)', letterSpacing: '0.18em' }}
+                style={{
+                  color: 'rgba(255,255,255,0.3)',
+                  letterSpacing: '0.18em',
+                }}
                 onClick={() => setOpen(false)}
               >
                 {locale === 'da' ? 'Switch to English' : 'Skift til dansk'}

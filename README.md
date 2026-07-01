@@ -2,24 +2,24 @@
 
 Website for [Akademisk Boldklub](https://ab.dk) — Denmark's oldest football club, founded 1889.
 
-Built with Astro 5 + Strapi, deployed as a Docker container on datum-cloud/compute.
+Built with Astro 7 + Strapi, deployed as a Docker container on datum-cloud/compute.
 
 ---
 
 ## Stack
 
-| Concern | Choice |
-|---|---|
-| Framework | Astro 5, TypeScript, `output: 'server'` (hybrid) |
-| Adapter | `@astrojs/node` standalone — runs in the Docker container |
-| Styling | Tailwind v3 + CSS custom property token layer (`src/styles/tokens.css`) |
-| CMS | Strapi v5 (`strapi/`) — articles, pages, products, global config |
-| Auth | Descope — web component login flow, session cookie `DS` |
-| League data | Sports Innovation (`dash.si-ab.com`) widget embeds |
-| Email | Mailgun EU REST API — newsletter subscribe + contact |
-| Media | Wasabi S3-compatible object storage |
-| Shop | Shopify (`shop.ab.dk`) — outbound links, optional Storefront API |
-| i18n | Astro built-in — `da` default (no prefix), `en` secondary (`/en/`) |
+| Concern     | Choice                                                                   |
+| ----------- | ------------------------------------------------------------------------ |
+| Framework   | Astro 7, TypeScript, `output: 'server'` (hybrid)                         |
+| Adapter     | `@astrojs/node` standalone — runs in the Docker container                |
+| Styling     | Tailwind v4 (`@tailwindcss/vite`) + CSS tokens (`src/styles/tokens.css`) |
+| CMS         | Strapi v5 (`strapi/`) — articles, pages, products, global config         |
+| Auth        | Descope — web component login flow, session cookie `DS`                  |
+| League data | Sports Innovation (`dash.si-ab.com`) widget embeds                       |
+| Email       | Mailgun EU REST API — newsletter subscribe + contact                     |
+| Media       | Wasabi S3-compatible object storage                                      |
+| Shop        | Shopify (`shop.ab.dk`) — outbound links, optional Storefront API         |
+| i18n        | Astro built-in — `da` default (no prefix), `en` secondary (`/en/`)       |
 
 ---
 
@@ -45,14 +45,13 @@ Built with Astro 5 + Strapi, deployed as a Docker container on datum-cloud/compu
 │   ├── pages/               # File-based routing (da at root, en/ prefix)
 │   └── styles/
 │       ├── tokens.css        # Brand design tokens — source of truth
-│       └── global.css
+│       └── global.css        # Tailwind v4 entry (@import, @theme, @plugin)
 ├── public/
 │   └── fonts/               # ABC Camera Plain web files (licensed — not committed)
 ├── strapi/                  # Strapi CMS (separate Node process)
 ├── Dockerfile               # Two-stage Node 22 alpine build for datum-cloud
 ├── .env.example             # All required environment variables documented
 ├── astro.config.mjs
-├── tailwind.config.mjs
 └── tsconfig.json
 ```
 
@@ -104,8 +103,8 @@ See `.env.example` for the full list with descriptions. Required at minimum:
 STRAPI_URL=http://localhost:1337
 STRAPI_API_TOKEN=          # Generate in Strapi admin → Settings → API Tokens
 
-SI_API_BASE=               # Sports Innovation API base URL
-SI_API_KEY=                # Sports Innovation API key
+SI_API_BASE_URL=           # Sports Innovation API base URL
+SI_ACCESS_TOKEN=           # Sports Innovation API access token
 
 DESCOPE_PROJECT_ID=        # Descope project ID — enables login/profile pages
 ```
@@ -136,15 +135,16 @@ The container entrypoint is `node ./dist/server/entry.mjs` (Astro Node standalon
 
 Design tokens live in `src/styles/tokens.css` and are the single source of truth for all colour and typography decisions.
 
-| Token | Value | Note |
-|---|---|---|
-| `--ab-green` | `#006A52` | Primary — shirts, headlines, CTAs |
-| `--ab-gold` | `#D6A02A` | Pantone 131 C — accents, numerals |
-| `--ab-beige` | `#D3BC8D` | Pantone 467 C — use minimally |
-| `--ab-neon` | `#00FF1F` | Pantone 802 C — **digital only**, never print |
-| `--font-display` | ABC Camera Plain → Helvetica | Web license required to self-host |
+| Token            | Value                        | Note                                          |
+| ---------------- | ---------------------------- | --------------------------------------------- |
+| `--ab-green`     | `#006A52`                    | Primary — shirts, headlines, CTAs             |
+| `--ab-gold`      | `#D6A02A`                    | Pantone 131 C — accents, numerals             |
+| `--ab-beige`     | `#D3BC8D`                    | Pantone 467 C — use minimally                 |
+| `--ab-neon`      | `#00FF1F`                    | Pantone 802 C — **digital only**, never print |
+| `--font-display` | ABC Camera Plain → Helvetica | Web license required to self-host             |
 
 **Hard rules:**
+
 - Never recreate the AB monogram or `1889` numeral from a typeface — always use `src/assets/brand/`
 - Neon green is for on-screen accents only (focus rings, live indicators)
 - Sponsor lockup: AB 1889 always primary, vertical rule separator, side-by-side only
