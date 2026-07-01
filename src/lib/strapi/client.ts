@@ -80,8 +80,15 @@ export async function fetchDocument<T = unknown>(
   return result as T;
 }
 
+const WASABI_HOST_RE = /^https?:\/\/[^/]*wasabisys\.com\//;
+
 export function strapiMediaUrl(url: string | null | undefined): string {
   if (!url) return '';
+  // Route private Wasabi objects through the server-side proxy
+  if (WASABI_HOST_RE.test(url)) {
+    const key = url.replace(WASABI_HOST_RE, '');
+    return `/api/media/${key}`;
+  }
   if (url.startsWith('http')) return url;
   return `${STRAPI_URL}${url}`;
 }
