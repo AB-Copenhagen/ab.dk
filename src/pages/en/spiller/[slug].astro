@@ -1,8 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro';
 import SiWidget from '@/components/widgets/SiWidget.astro';
-import { fetchPlayerProfile } from '@/lib/si/client';
+import { fetchPlayerProfile, fetchABPlayers } from '@/lib/si/client';
 import type { SIPlayerProfile } from '@/lib/si/client';
+import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
 
 export const prerender = false;
 
@@ -27,7 +28,22 @@ if (!player) {
 
 const { name, position, nationality, dateOfBirth, stats } = player;
 
-const pageTitle = `${name} | AB 1889`;
+// Get jersey number from the squad list
+const squadPlayers = await fetchABPlayers('en').catch(() => []);
+const squadPlayer = squadPlayers.find(p => p.id === playerId);
+const shirtNumber = squadPlayer?.shirtNumber;
+
+const photoUrl = getPlayerPhotoUrl(name);
+
+const posLabels: Record<string, string> = {
+  keeper:     'Goalkeeper',
+  defender:   'Defender',
+  midfielder: 'Midfielder',
+  forward:    'Forward',
+};
+const posLabel = posLabels[position?.toLowerCase() ?? ''] ?? position;
+
+const pageTitle = `${name} | Akademisk Boldklub`;
 
 const dob = dateOfBirth
   ? new Date(dateOfBirth).toLocaleDateString('en-GB', {
@@ -42,51 +58,78 @@ const WIDGET_SEASON_ID = 16387;
 ---
 
 <Base locale="en" title={pageTitle}>
-  <div style="background:#fff">
-    <div class="border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-5 md:px-12">
-        <div class="pt-10 pb-8">
-          <a
-            href="/en/hold"
-            class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8 hover:underline"
-            style="color:#006A52;letter-spacing:0.15em"
-          >
-            ← All players
-          </a>
-          <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
-            {position}
-            {nationality && ` · ${nationality}`}
-          </p>
-          <h1
-            class="font-black"
-            style="font-size:clamp(2.5rem,7vw,5rem);letter-spacing:-0.03em;line-height:0.92;color:#111"
-          >
-            {name}
-          </h1>
-          {dob && (
-            <p class="mt-3 text-sm" style="color:#6B7280">Born {dob}</p>
-          )}
-          {stats && (
-            <div class="flex flex-wrap gap-6 mt-6">
-              {[
-                { label: 'Appearances', value: stats.appearances },
-                { label: 'Goals', value: stats.goals },
-                { label: 'Assists', value: stats.assists },
-                { label: 'Yellow cards', value: stats.yellowCards },
-                { label: 'Red cards', value: stats.redCards },
-              ].map(({ label, value }) => (
-                <div>
-                  <p class="text-2xl font-black tabular-nums" style="color:#D6A02A">{value}</p>
-                  <p class="text-[0.6rem] font-bold uppercase" style="color:#9CA3AF;letter-spacing:0.15em">{label}</p>
-                </div>
-              ))}
-            </div>
-          )}
-          <div class="mt-6 h-0.5 w-12" style="background:#006A52"></div>
-        </div>
-      </div>
+  <!-- ── Hero ───────────────────────────────────────────────────────── -->
+  <div class="relative overflow-hidden" style="background:#006A52; min-height:clamp(360px,42vw,520px);">
+    <!-- "AB" watermark -->
+    <div class="absolute right-0 inset-y-0 flex items-center justify-end pr-8 pointer-events-none select-none overflow-hidden" aria-hidden="true">
+      <span class="font-black text-white opacity-[0.06]" style="font-size:clamp(16rem,34vw,26rem); letter-spacing:-0.06em; line-height:1;">AB</span>
     </div>
 
+    <!-- Player photo (right side, overflowing) -->
+    {photoUrl && (
+      <div class="absolute right-0 bottom-0 overflow-hidden" style="width:clamp(220px,38vw,480px); height:110%;">
+        <img
+          src={photoUrl}
+          alt={name}
+          loading="eager"
+          class="absolute inset-0 w-full h-full object-cover object-top"
+        />
+        <div class="absolute inset-0" style="background:linear-gradient(to right, #006A52 0%, transparent 35%);"></div>
+      </div>
+    )}
+
+    <!-- Text -->
+    <div class="relative z-10 max-w-7xl mx-auto px-5 md:px-12 py-14 md:py-20">
+      <a href="/en/hold" class="inline-flex items-center gap-1 text-xs font-bold uppercase mb-8 opacity-70 hover:opacity-100 transition-opacity" style="color:#fff; letter-spacing:0.16em;">
+        ← The Squad
+      </a>
+      <p class="font-bold uppercase mb-3" style="font-size:0.6rem; color:rgba(255,255,255,0.55); letter-spacing:0.24em;">
+        Akademisk Boldklub 1889
+      </p>
+      <h1 class="font-black text-white leading-none mb-3" style="font-size:clamp(2.2rem,6vw,5.5rem); letter-spacing:-0.04em;">
+        {name}
+      </h1>
+      <p class="font-medium text-base" style="color:rgba(255,255,255,0.65);">{posLabel}</p>
+      {shirtNumber != null && (
+        <p class="font-black text-white leading-none mt-8 select-none" style="font-size:clamp(4rem,10vw,8rem); letter-spacing:-0.05em; opacity:0.9;">
+          {shirtNumber}
+        </p>
+      )}
+    </div>
+  </div>
+
+  <!-- ── Metadata strip ─────────────────────────────────────────────── -->
+  <div style="background:#fff; border-bottom:1px solid #E5E7EB;">
+    <div class="max-w-7xl mx-auto px-5 md:px-12">
+      <div class="flex flex-wrap divide-x" style="divide-color:#E5E7EB;">
+        <div class="py-5 pr-8">
+          <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Position</p>
+          <p class="font-black text-sm" style="color:#111;">{posLabel}</p>
+        </div>
+        {nationality && (
+          <div class="py-5 px-8">
+            <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Nationality</p>
+            <p class="font-black text-sm" style="color:#111;">{nationality}</p>
+          </div>
+        )}
+        {dob && (
+          <div class="py-5 px-8">
+            <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Date of Birth</p>
+            <p class="font-black text-sm" style="color:#111;">{dob}</p>
+          </div>
+        )}
+        {shirtNumber != null && (
+          <div class="py-5 pl-8">
+            <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Jersey Number</p>
+            <p class="font-black text-sm" style="color:#111;">#{shirtNumber}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Widgets ────────────────────────────────────────────────────── -->
+  <div style="background:#fff;">
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14 space-y-14">
 
       <section>
