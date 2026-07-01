@@ -1,0 +1,51 @@
+---
+description: TypeScript conventions, imports, and path aliases
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# TypeScript
+
+## Config
+
+Extends `astro/tsconfigs/strict`. Path alias: `@/*` → `src/*`.
+
+## Naming
+
+See `naming-conventions.mdc` for function, file, type, and component naming rules.
+
+## Imports
+
+- All imports at top of file — no inline imports
+- Prettier sorts imports (`@/` first) — run formatter before commit
+- Single quotes for strings (Prettier default); use double quotes when string contains `'`
+
+## Switch exhaustiveness
+
+For discriminated unions/enums, use `never` in default:
+
+```ts
+switch (layout) {
+  case 'text-left': ...
+  case 'img-left': ...
+  default: {
+    const _exhaustive: never = layout;
+    return _exhaustive;
+  }
+}
+```
+
+## Types
+
+- Locale: `'da' | 'en'` from `@/lib/i18n`
+- API routes: `APIRoute` from `astro`
+- Strapi responses: typed generics on fetch helpers; refine types incrementally
+- Avoid `any` in new code — prefer explicit interfaces in `src/lib/`
+
+## Server vs client boundary
+
+| Server-only | Client-safe |
+|---|---|
+| `@/lib/strapi/client` | `@/lib/i18n`, `@/lib/nav-config`, `@/lib/utils` |
+| `@/lib/si/client` | Props passed from Astro parent |
+| `@/lib/mailgun` | |

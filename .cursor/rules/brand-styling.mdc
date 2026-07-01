@@ -1,0 +1,39 @@
+---
+description: AB brand tokens, typography, and styling conventions
+globs: src/styles/**,src/components/**,src/pages/**
+alwaysApply: false
+---
+
+# Brand & Styling
+
+## Source of truth
+
+`src/styles/tokens.css` defines brand CSS variables. Tailwind v4 theme tokens live in `@theme` inside `global.css`.
+
+| Token | Value | Usage |
+|---|---|---|
+| `--ab-green` / `ab-green` | `#006A52` | Primary — CTAs, headlines |
+| `--ab-gold` / `ab-gold` | `#D6A02A` | Accents, numerals |
+| `--ab-beige` / `ab-beige` | `#D3BC8D` | Use minimally (badges, highlights) |
+| `--ab-neon` / `ab-neon` | `#00FF1F` | **Digital only** — focus, live indicators |
+
+## Hard rules
+
+- Never recreate the AB monogram or `1889` numeral from type — use `src/assets/brand/` SVGs
+- Neon green is on-screen only; never for print assets
+- Sponsor lockup: AB primary, vertical rule, side-by-side; owl crest ≠ monogram in lockups
+- Headlines: uppercase, heavy weight (`font-black`), tight letter-spacing
+- Body copy: mixed case, never justified
+
+## Styling approach
+
+- Tailwind utilities for layout/spacing — see `tailwind.mdc` for class patterns
+- Inline `style=` for one-off brand values (clamp typography, gradients) — match existing pages
+- Prefer token/Tailwind colours over raw hex when adding new styles
+- Fonts: ABC Camera Plain (self-hosted in `public/fonts/`, licensed); Helvetica fallback
+
+## Layout patterns
+
+- Max content width: `max-w-7xl mx-auto px-6 lg:px-16`
+- Hero heights: `clamp(...)` via inline style
+- Dark sections: `#0A0A09` / `rich-black`

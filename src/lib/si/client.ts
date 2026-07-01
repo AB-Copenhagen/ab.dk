@@ -6,14 +6,14 @@
  *
  * API docs: https://ss2.tjekscores.dk/superliga-docs/#
  */
-
 import { abConfig, siConfig } from '../config/ab';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type Locale = 'da' | 'en';
 
-export type EventStatus = 'notstarted' | 'inprogress' | 'finished' | 'cancelled';
+export type EventStatus =
+  'notstarted' | 'inprogress' | 'finished' | 'cancelled';
 
 export interface SIEvent {
   eventId: number;
@@ -93,7 +93,9 @@ async function siFetch<T>(
   });
 
   if (!res.ok) {
-    throw new Error(`SI API error ${res.status} on ${path}: ${await res.text()}`);
+    throw new Error(
+      `SI API error ${res.status} on ${path}: ${await res.text()}`
+    );
   }
 
   return res.json() as Promise<T>;
@@ -142,7 +144,9 @@ export async function fetchEvent(
 }
 
 /** Fetch match incidents (goals, cards, substitutions) for an event. */
-export async function fetchEventIncidents(eventId: number): Promise<SIIncident[]> {
+export async function fetchEventIncidents(
+  eventId: number
+): Promise<SIIncident[]> {
   return siFetch<SIIncident[]>(`/events/${eventId}/incidents`);
 }
 
@@ -163,12 +167,17 @@ export interface SIStandingRow {
 }
 
 /** Fetch the current 1.division standings table. */
-export async function fetchStandings(locale: Locale = 'da'): Promise<SIStandingRow[]> {
+export async function fetchStandings(
+  locale: Locale = 'da'
+): Promise<SIStandingRow[]> {
   if (!abConfig.tournamentId) {
     throw new Error('AB_TOURNAMENT_ID is not set — standings unavailable');
   }
   // /tournaments/:id/standings returns a flat array of rows directly
-  return siFetch<SIStandingRow[]>(`/tournaments/${abConfig.tournamentId}/standings`, { locale });
+  return siFetch<SIStandingRow[]>(
+    `/tournaments/${abConfig.tournamentId}/standings`,
+    { locale }
+  );
 }
 
 // ── Teams ─────────────────────────────────────────────────────────────────────
@@ -202,7 +211,9 @@ export interface SIPlayer {
 }
 
 /** Fetch all registered AB players for the current team. */
-export async function fetchABPlayers(locale: Locale = 'da'): Promise<SIPlayer[]> {
+export async function fetchABPlayers(
+  locale: Locale = 'da'
+): Promise<SIPlayer[]> {
   if (!abConfig.teamId) return [];
   return siFetch<SIPlayer[]>('/players', { teamId: abConfig.teamId, locale });
 }

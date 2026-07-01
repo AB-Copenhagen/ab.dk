@@ -13,6 +13,10 @@ export const siConfig = {
 
 export const abConfig = {
   teamId: Number(optionalEnv('AB_TEAM_ID', '9805')),
-  tournamentId: optionalEnv('AB_TOURNAMENT_ID') ? Number(import.meta.env.AB_TOURNAMENT_ID) : null,
-  seasonId: optionalEnv('AB_SEASON_ID') ? Number(import.meta.env.AB_SEASON_ID) : null,
+  tournamentId: optionalEnv('AB_TOURNAMENT_ID')
+    ? Number(import.meta.env.AB_TOURNAMENT_ID)
+    : null,
+  seasonId: optionalEnv('AB_SEASON_ID')
+    ? Number(import.meta.env.AB_SEASON_ID)
+    : null,
 } as const;

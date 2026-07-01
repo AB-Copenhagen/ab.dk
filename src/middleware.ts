@@ -16,7 +16,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     if (!sessionToken) {
       const loginUrl = locale === 'en' ? '/en/konto' : '/konto';
-      return context.redirect(`${loginUrl}?redirect=${encodeURIComponent(context.url.pathname)}`);
+      return context.redirect(
+        `${loginUrl}?redirect=${encodeURIComponent(context.url.pathname)}`
+      );
     }
 
     // TODO(descope): validate sessionToken with @descope/node-sdk

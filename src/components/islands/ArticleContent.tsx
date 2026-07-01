@@ -15,7 +15,11 @@ export default function ArticleContent({ content, strapiUrl }: Props) {
         blocks={{
           image: ({ image }) => (
             <img
-              src={image.url.startsWith('http') ? image.url : `${strapiUrl}${image.url}`}
+              src={
+                image.url.startsWith('http')
+                  ? image.url
+                  : `${strapiUrl}${image.url}`
+              }
               alt={image.alternativeText || image.name || ''}
               width={image.width}
               height={image.height}

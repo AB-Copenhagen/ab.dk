@@ -1,0 +1,36 @@
+---
+description: React island components — when and how to use client-side React
+globs: src/components/islands/**,src/components/widgets/**/*.tsx
+alwaysApply: false
+---
+
+# React Islands
+
+Use React only where Astro cannot: menus with state, search, Strapi Blocks renderer.
+
+## Location
+
+- `src/components/islands/` — interactive UI (MobileMenu, ArticleSearch, ArticleContent)
+- `src/components/widgets/SiWidget.tsx` — SI embed wrapper
+
+## Rules
+
+- Default export, functional components, `react` hooks only
+- Props passed from parent `.astro` file — keep islands dumb where possible
+- Use `className` (Tailwind), not Astro `class`
+- **Never** import `@/lib/si/client`, `@/lib/mailgun`, or Strapi client — server-only
+- Brand colours via Tailwind (`text-ab-green`) or inline styles matching tokens
+
+## Hydration
+
+Parent Astro file controls when JS loads:
+
+```astro
+<ArticleContent content={article.content} strapiUrl={STRAPI_URL} client:load />
+```
+
+Prefer `client:load` for above-the-fold interactivity; `client:visible` for below-fold if added later.
+
+## Vite alias note
+
+New island files need an explicit alias in `astro.config.mjs` if imported without extension in SSR builds. Follow existing entries for `ArticleContent`, `MobileMenu`, etc.

@@ -35,3 +35,7 @@ strapi/.strapi-updater*.json
 
 # Strapi response cache
 .cache/
+
+# Cursor project rules — override global ignore to keep rules in repo
+!.cursor/
+!.cursor/**

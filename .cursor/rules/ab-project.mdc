@@ -1,0 +1,43 @@
+---
+description: AB 1889 Astro project overview, stack, and where to edit
+alwaysApply: true
+---
+
+# AB 1889 — Project Context
+
+Website for Akademisk Boldklub (ab.dk). Astro 5 SSR app with Strapi CMS, Sports Innovation API, Descope auth, Mailgun.
+
+## Edit here
+
+- **Active frontend:** `src/` (pages, components, lib, layouts, middleware)
+- **CMS:** `strapi/` (separate Yarn process, Strapi v5)
+- **Do not edit** `next/` or `astro/` unless explicitly migrating — legacy Next.js / duplicate Astro tree
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Astro 7, TypeScript strict, `output: 'server'` |
+| Adapter | `@astrojs/node` standalone → Docker on datum-cloud |
+| UI | Tailwind v4 (`@tailwindcss/vite`) + `src/styles/tokens.css` |
+| Interactivity | React islands in `src/components/islands/` only when needed |
+| i18n | `da` default (no URL prefix), `en` at `/en/` |
+
+## Commands
+
+```bash
+npm install && npm run dev    # http://localhost:4321
+npm run check                 # TypeScript + Astro diagnostics
+npm run build                 # verify before PR
+npm run format:check          # Prettier
+cd strapi && yarn develop     # CMS at :1337 (needs Postgres or sqlite)
+```
+
+## Env
+
+Copy `.env.example` → `.env.local`. Minimum: `STRAPI_URL`, `STRAPI_API_TOKEN`. Never commit secrets.
+
+## Verification
+
+- Run `npm run build` after non-trivial changes
+- Health check: `GET /api/health` → `{"ok":true}`

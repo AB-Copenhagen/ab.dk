@@ -7,7 +7,12 @@ interface SiWidgetProps {
   label?: string;
 }
 
-export default function SiWidget({ widget, params, minHeight = 400, label }: SiWidgetProps) {
+export default function SiWidget({
+  widget,
+  params,
+  minHeight = 400,
+  label,
+}: SiWidgetProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const shimmerRef = useRef<HTMLDivElement>(null);
 
@@ -72,7 +77,8 @@ export default function SiWidget({ widget, params, minHeight = 400, label }: SiW
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(90deg,#0D1A10 25%,#122718 50%,#0D1A10 75%)',
+          background:
+            'linear-gradient(90deg,#0D1A10 25%,#122718 50%,#0D1A10 75%)',
           backgroundSize: '200% 100%',
           animation: 'siShimmer 1.6s ease-in-out infinite',
         }}
