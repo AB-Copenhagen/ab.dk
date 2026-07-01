@@ -21,6 +21,11 @@ export const t: Record<Locale, Record<string, string>> = {
     shop: 'Shop',
     nextMatch: 'Næste kamp',
     recentResults: 'Seneste resultater',
+    latestResults: 'Seneste\nresultater',
+    season: 'Sæson',
+    team: 'Hold',
+    yellowCards: 'Gule kort',
+    redCards: 'Røde kort',
     standings: '1. Division',
     allNews: 'Se alle nyheder',
     buyTickets: 'Køb billetter',
@@ -64,6 +69,11 @@ export const t: Record<Locale, Record<string, string>> = {
     shop: 'Shop',
     nextMatch: 'Next fixture',
     recentResults: 'Recent results',
+    latestResults: 'Latest\nResults',
+    season: 'Season',
+    team: 'Team',
+    yellowCards: 'Yellow Cards',
+    redCards: 'Red Cards',
     standings: '1st Division',
     allNews: 'All news',
     buyTickets: 'Buy tickets',
@@ -98,3 +108,9 @@ export const t: Record<Locale, Record<string, string>> = {
     signOut: 'Sign out',
   },
 };
+
+export type TranslationKey = keyof typeof t.da;
+
+export function translate(locale: Locale, key: TranslationKey): string {
+  return t[locale][key];
+}

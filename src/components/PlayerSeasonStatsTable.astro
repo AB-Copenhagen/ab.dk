@@ -1,0 +1,99 @@
+---
+import type { SISeasonStats } from '@/lib/si/client';
+import { translate, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+  rows: SISeasonStats[];
+}
+
+const { locale, rows } = Astro.props;
+
+if (rows.length === 0) {
+  return null;
+}
+
+const titleLines = translate(locale, 'latestResults').split('\n');
+
+const columns = [
+  { key: 'season', label: translate(locale, 'season'), align: 'left' as const },
+  { key: 'team', label: translate(locale, 'team'), align: 'left' as const },
+  { key: 'goals', label: translate(locale, 'goals'), align: 'left' as const },
+  { key: 'assists', label: translate(locale, 'assists'), align: 'left' as const },
+  { key: 'yellowCards', label: translate(locale, 'yellowCards'), align: 'left' as const },
+  { key: 'redCards', label: translate(locale, 'redCards'), align: 'left' as const },
+];
+---
+
+<div>
+  <!-- Title block -->
+  <div style="background:var(--ab-green); padding:1.25rem 1.5rem;">
+    <h2
+      class="font-black leading-tight"
+      style="color:var(--ab-white); font-size:clamp(1.75rem,3vw,2.1875rem); letter-spacing:-0.04em;"
+    >
+      {titleLines.map((line) => (
+        <span class="block">{line}</span>
+      ))}
+    </h2>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse" style="min-width:640px;">
+      <thead>
+        <tr style="background:var(--ab-neon);">
+          {columns.map((col) => (
+            <th
+              class="py-3 px-4 font-black text-left whitespace-nowrap"
+              style="color:var(--ab-green); font-size:1rem; letter-spacing:-0.04em;"
+            >
+              {col.label}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr style={i % 2 === 0 ? 'background:var(--ab-white);' : 'background:#f4f4f4;'}>
+            <td
+              class="py-4 px-4 font-black whitespace-nowrap"
+              style="color:var(--ab-green); font-size:1.125rem; letter-spacing:-0.02em;"
+            >
+              {row.seasonName}
+            </td>
+            <td
+              class="py-4 px-4 text-right whitespace-nowrap"
+              style="color:var(--ab-green); font-size:1.125rem; letter-spacing:-0.02em;"
+            >
+              {row.teamName}
+            </td>
+            <td
+              class="py-4 px-4 text-center tabular-nums whitespace-nowrap"
+              style="color:var(--ab-green); font-size:1.125rem; letter-spacing:-0.02em;"
+            >
+              {row.goals}
+            </td>
+            <td
+              class="py-4 px-4 tabular-nums whitespace-nowrap"
+              style="color:var(--ab-green); font-size:1.125rem; letter-spacing:-0.02em;"
+            >
+              {row.assists}
+            </td>
+            <td
+              class="py-4 px-4 tabular-nums whitespace-nowrap"
+              style="color:var(--ab-green); font-size:1.125rem; letter-spacing:-0.02em;"
+            >
+              {row.yellowCards}
+            </td>
+            <td
+              class="py-4 px-4 tabular-nums whitespace-nowrap"
+              style="color:var(--ab-green); font-size:1.125rem; letter-spacing:-0.02em;"
+            >
+              {row.redCards}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>

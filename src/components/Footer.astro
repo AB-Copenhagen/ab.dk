@@ -11,10 +11,15 @@ const year = new Date().getFullYear();
 const contactLinks = d?.internal_links as { text: string; URL: string }[] | undefined;
 const resourceLinks = d?.policy_links as { text: string; URL: string }[] | undefined;
 const socialLinks = d?.social_media_links as { text: string; URL: string }[] | undefined;
+
+const footerHeadingClass =
+  'font-black text-2xl text-white tracking-[-0.02em] mb-8';
+const footerItemClass = 'text-lg leading-[30px] tracking-[-0.02em] text-white';
+const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 transition-opacity no-underline`;
 ---
 
 <!-- Sponsor row (white bg) -->
-<div style="background:#fff; border-top:1px solid #e5e7eb; padding:48px 0;">
+<div class="bg-white border-t border-gray-200 py-12">
   <div class="max-w-7xl mx-auto px-8">
     <div class="flex flex-nowrap items-center justify-between gap-8">
       {[
@@ -27,8 +32,7 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
         <img
           src={src}
           alt={alt}
-          class="sponsor-logo"
-          style="width:180px; height:60px; object-fit:contain; object-position:center; flex-shrink:0;"
+          class="sponsor-logo w-[180px] h-[60px] object-contain object-center shrink-0"
         />
       ))}
     </div>
@@ -36,65 +40,73 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
 </div>
 
 <!-- Footer -->
-<footer style="background:#0A0A09;">
-  <div class="max-w-[1680px] mx-auto px-8 py-16 lg:py-20">
-    <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-20 items-center">
+<footer class="bg-rich-black">
+  <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-16 lg:py-28">
+    <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-20 items-start">
 
-      <!-- Left: AB 1889 wordmark SVG — large -->
+      <!-- Left: AB 1889 wordmark -->
       <div class="shrink-0">
         <img
           src="/images/ab-logo-wordmark.svg"
           alt="AB 1889"
-          style="width:clamp(180px,18vw,300px); height:auto;"
+          class="w-[clamp(180px,18vw,300px)] h-auto"
         />
       </div>
 
       <!-- Center: link columns -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-10">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-10 lg:gap-16">
         <!-- Contact -->
         <div>
-          <p class="font-black mb-5" style="color:#fff; font-size:0.95rem;">
+          <p class={footerHeadingClass}>
             {locale === 'da' ? 'Kontakt' : 'Contact'}
           </p>
           {contactLinks?.length ? (
-            <ul class="flex flex-col gap-3">
+            <ul class="flex flex-col">
               {contactLinks.map((link) => (
                 <li>
-                  <a href={link.URL} class="footer-link text-sm hover:opacity-70 transition-opacity" style="color:#fff; text-decoration:none;">
+                  <a href={link.URL} class={footerLinkClass}>
                     {link.text}
                   </a>
                 </li>
               ))}
             </ul>
           ) : (
-            <ul class="flex flex-col gap-3">
-              <li><span class="text-sm" style="color:#fff;">info@ab.dk</span></li>
-              <li><span class="text-sm" style="color:#fff;">+45 60399901</span></li>
-              <li><span class="text-sm" style="color:#fff;">Gladsaxevej 202, 2860</span></li>
-              <li><span class="text-sm" style="color:#fff;">{locale === 'da' ? 'Søborg Danmark' : 'Søborg Denmark'}</span></li>
+            <ul class="flex flex-col">
+              <li><span class={footerItemClass}>info@ab.dk</span></li>
+              <li><span class={footerItemClass}>+45 60399901</span></li>
+              <li>
+                <span class={footerItemClass}>
+                  {locale === 'da'
+                    ? 'Gladsaxevej 202, 2860 Søborg Danmark'
+                    : 'Gladsaxevej 202, 2860 Søborg Denmark'}
+                </span>
+              </li>
             </ul>
           )}
         </div>
 
         <!-- Social Media -->
         <div>
-          <p class="font-black mb-5" style="color:#fff; font-size:0.95rem;">
-            Social Media
-          </p>
+          <p class={footerHeadingClass}>Social Media</p>
           {socialLinks?.length ? (
-            <ul class="flex flex-col gap-3">
+            <ul class="flex flex-col">
               {socialLinks.map((link) => (
                 <li>
-                  <a href={link.URL} target="_blank" rel="noreferrer" class="text-sm hover:opacity-70 transition-opacity" style="color:#fff; text-decoration:none;">
+                  <a
+                    href={link.URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    class={footerLinkClass}
+                  >
                     {link.text}
                   </a>
                 </li>
               ))}
             </ul>
           ) : (
-            <ul class="flex flex-col gap-3">
+            <ul class="flex flex-col">
               {['Instagram', 'LinkedIn', 'Facebook', 'YouTube', 'TikTok'].map((s) => (
-                <li><span class="text-sm" style="color:#fff;">{s}</span></li>
+                <li><span class={footerItemClass}>{s}</span></li>
               ))}
             </ul>
           )}
@@ -102,29 +114,27 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
 
         <!-- Resources -->
         <div>
-          <p class="font-black mb-5" style="color:#fff; font-size:0.95rem;">
-            Resources
-          </p>
+          <p class={footerHeadingClass}>Resources</p>
           {resourceLinks?.length ? (
-            <ul class="flex flex-col gap-3">
+            <ul class="flex flex-col">
               {resourceLinks.map((link) => (
                 <li>
-                  <a href={link.URL} class="text-sm hover:opacity-70 transition-opacity" style="color:#fff; text-decoration:none;">
+                  <a href={link.URL} class={footerLinkClass}>
                     {link.text}
                   </a>
                 </li>
               ))}
             </ul>
           ) : (
-            <ul class="flex flex-col gap-3">
+            <ul class="flex flex-col">
               {[
-                [locale === 'da' ? 'Køb billetter' : 'Buy tickets', '#'],
-                [locale === 'da' ? 'Book event' : 'Book an event', '#'],
-                [locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor', '#'],
-                [locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', '#'],
-                [locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', '#'],
-              ].map(([label]) => (
-                <li><span class="text-sm" style="color:#fff;">{label}</span></li>
+                locale === 'da' ? 'Køb billetter' : 'Buy tickets',
+                locale === 'da' ? 'Book event' : 'Book an event',
+                locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor',
+                locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy',
+                locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy',
+              ].map((label) => (
+                <li><span class={footerItemClass}>{label}</span></li>
               ))}
             </ul>
           )}
@@ -132,24 +142,26 @@ const socialLinks = d?.social_media_links as { text: string; URL: string }[] | u
       </div>
 
       <!-- Right: AB circular crest -->
-      <div class="hidden lg:block shrink-0 self-center">
+      <div class="hidden lg:block shrink-0 self-start">
         <img
           src="/images/ab-crest.svg"
           alt="AB 1889"
-          style="width:clamp(120px,12vw,180px); height:auto; opacity:0.85;"
+          class="w-[clamp(120px,12vw,180px)] h-auto"
         />
       </div>
     </div>
   </div>
 
   <!-- Neon green copyright strip -->
-  <div style="background:#00FF1F; padding:1rem 2rem; text-align:center;">
-    <p class="text-sm font-bold" style="color:#0A0A09;">
+  <div class="bg-ab-neon min-h-[78px] flex items-center justify-center px-8">
+    <p class="text-lg text-rich-black text-center tracking-[-0.02em]">
       {d?.copyright ?? `© ${year} AB Gladsaxe. All rights reserved.`}
     </p>
   </div>
 </footer>
 
 <style>
-  .sponsor-logo:hover { opacity: 0.75; }
+  .sponsor-logo:hover {
+    opacity: 0.75;
+  }
 </style>

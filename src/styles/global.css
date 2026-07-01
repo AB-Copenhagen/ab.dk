@@ -2,21 +2,6 @@
 @plugin '@tailwindcss/typography';
 @import './tokens.css';
 
-@theme {
-  --color-ab-green: #006a52;
-  --color-ab-gold: #d6a02a;
-  --color-ab-beige: #d3bc8d;
-  --color-ab-neon: #00ff1f;
-  --color-rich-black: #0a0a0a;
-  --color-charcoal: #0a0a0a;
-  --color-lightblack: #141a16;
-
-  --font-display:
-    'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --font-sans:
-    'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
 /* ── Font faces ─────────────────────────────────────────────────────────
    ABC Camera Plain — licensed, files gitignored, served from /fonts/.
    ─────────────────────────────────────────────────────────────────────── */
@@ -48,6 +33,21 @@
   font-display: swap;
 }
 
+@theme {
+  --color-ab-green: #006a52;
+  --color-ab-gold: #d6a02a;
+  --color-ab-beige: #d3bc8d;
+  --color-ab-neon: #00ff1f;
+  --color-rich-black: #0a0a0a;
+  --color-charcoal: #0a0a0a;
+  --color-lightblack: #141a16;
+
+  --font-display:
+    'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-sans:
+    'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 /* ── Base document ──────────────────────────────────────────────────── */
 html {
   background: #fff;
@@ -60,25 +60,26 @@ html::-webkit-scrollbar {
 }
 
 /* ── Typography defaults ────────────────────────────────────────────── */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  letter-spacing: var(--tracking-head);
-  font-weight: 900;
-  text-align: left;
-}
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: var(--tracking-head);
+    font-weight: 900;
+    text-align: left;
+  }
 
-/* Body copy: always mixed-case, never justified. */
-p,
-li,
-td,
-th {
-  letter-spacing: var(--tracking-body);
+  /* Body copy: always mixed-case, never justified. */
+  p,
+  li,
+  td,
+  th {
+    letter-spacing: var(--tracking-body);
+  }
 }
-
 
 /* ── Focus ring ─────────────────────────────────────────────────────── */
 :focus-visible {
