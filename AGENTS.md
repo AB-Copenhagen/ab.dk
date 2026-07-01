@@ -54,3 +54,27 @@ strapi/             CMS (separate Yarn process)
 ## Environment
 
 Copy `.env.example` → `.env.local`. See README for required variables.
+
+## Pending content — player profiles (Strapi)
+
+The player detail page layout is fully built and CMS-driven. The **Player** content
+type (`api::player.player`) exists in Strapi but no entries have been created yet.
+
+Until entries are added, pages show:
+- Player Bio → placeholder text ("Spillerprofil tilføjes snart")
+- Quote section → hidden
+- Photo gallery → hidden
+- Nickname / Former Clubs in metadata bar → hidden
+
+**To populate a player entry in Strapi admin → Content Manager → Player:**
+
+| Field | Description | Example |
+|---|---|---|
+| `siPlayerId` | SI API player ID (from `/spiller/{id}-{slug}` URL) | `658977` |
+| `nickname` | Short name or nickname | `"Adri"` |
+| `formerClubs` | Comma-separated previous clubs | `"FC Augsburg II, SGV Freiberg"` |
+| `bio` (da + en) | 2–3 paragraph player biography | — |
+| `quote` (da + en) | One memorable player quote, no surrounding quotes | — |
+| `gallery` | Action photos — first image shown full-width, next 3 in grid | — |
+
+> Restart Strapi after the first deploy so it picks up the new content type.
