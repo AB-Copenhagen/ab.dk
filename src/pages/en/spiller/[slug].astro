@@ -1,7 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
-import SiWidget from '@/components/widgets/SiWidget.astro';
-import { fetchPlayerProfile, fetchABPlayers } from '@/lib/si/client';
+import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
 import type { SIPlayerProfile } from '@/lib/si/client';
 import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
 
@@ -53,8 +52,8 @@ const dob = birthDate
     })
   : null;
 
-const WIDGET_TEAM_ID = 10202;
-const WIDGET_SEASON_ID = 16387;
+const matchStats = await fetchPlayerStats(playerId).catch(() => []);
+const seasonStats = aggregateSeasonStats(matchStats);
 ---
 
 <Base locale="en" title={pageTitle}>
@@ -149,114 +148,45 @@ const WIDGET_SEASON_ID = 16387;
     </div>
   </div>
 
-  <!-- ── Widgets ────────────────────────────────────────────────────── -->
-  <div style="background:#fff;">
-    <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14 space-y-14">
-
-      <section>
-        <div style="background:#060806;border:1px solid #152214;overflow:hidden">
-          <SiWidget
-            widget="SPDKPlayerProfile"
-            params={{ playerId, card: 'true', showTShirt: 'true', teamId: WIDGET_TEAM_ID, lang: 'en' }}
-            minHeight={360}
-            label={`${name} — profile`}
-          />
-        </div>
-      </section>
-
-      <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
-          Season statistics
+  <!-- ── Season stats ──────────────────────────────────────────────── -->
+  {seasonStats.length > 0 && (
+    <section style="background:#fff;">
+      <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14">
+        <p class="font-bold uppercase mb-2" style="font-size:0.6rem; color:#006A52; letter-spacing:0.2em;">
+          Career
         </p>
-        <h2
-          class="font-black mb-6"
-          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em;color:#111"
-        >
-          The season
+        <h2 class="font-black mb-6" style="font-size:clamp(1.5rem,3vw,2.25rem); letter-spacing:-0.03em; color:#111;">
+          Season Statistics
         </h2>
-        <div style="background:#060806;border:1px solid #152214;overflow:hidden">
-          <SiWidget
-            widget="SPDKPlayerSeasonStats"
-            params={{ playerId, card: 'true', nopadding: 'true', teamId: WIDGET_TEAM_ID, seasonId: WIDGET_SEASON_ID, lang: 'en' }}
-            minHeight={280}
-            label="Season stats summary"
-          />
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead>
+              <tr style="background:#006A52;">
+                <th class="text-left py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Season</th>
+                <th class="text-left py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Club</th>
+                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Apps</th>
+                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Goals</th>
+                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Assists</th>
+                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Yellow</th>
+                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Red</th>
+              </tr>
+            </thead>
+            <tbody>
+              {seasonStats.map((s, i) => (
+                <tr style={i % 2 === 0 ? 'background:#fff;' : 'background:#F7F7F5;'}>
+                  <td class="py-3 px-4 font-black text-sm" style="color:#006A52; white-space:nowrap;">{s.seasonName}</td>
+                  <td class="py-3 px-4" style="color:#111; white-space:nowrap;">{s.teamName}</td>
+                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.appearances}</td>
+                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.goals}</td>
+                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.assists}</td>
+                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.yellowCards}</td>
+                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.redCards}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </section>
-
-      <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
-          Detailed
-        </p>
-        <h2
-          class="font-black mb-6"
-          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em;color:#111"
-        >
-          Statistics
-        </h2>
-        <div style="background:#060806;border:1px solid #152214;overflow:hidden">
-          <SiWidget
-            widget="SPDKPlayerStatsGrid"
-            params={{ playerId, nopadding: 'false', transparent: 'true', teamId: WIDGET_TEAM_ID, seasonId: WIDGET_SEASON_ID, lang: 'en' }}
-            minHeight={400}
-            label="Statistics grid"
-          />
-        </div>
-      </section>
-
-      <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
-          Video
-        </p>
-        <h2
-          class="font-black mb-6"
-          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em;color:#111"
-        >
-          Goals this season
-        </h2>
-        <div style="background:#060806;border:1px solid #152214;overflow:hidden">
-          <SiWidget
-            widget="SPDKGoalsHighlights"
-            params={{
-              type: 'VIDEO_BY_PLAYER',
-              viewList: 'VIEW_SLIDER',
-              viewCard: 'PLAYER_MIN_MATCH_INFO',
-              playerId,
-              seasonId: WIDGET_SEASON_ID,
-              teamId: WIDGET_TEAM_ID,
-              lang: 'en',
-            }}
-            minHeight={300}
-            label="Goals highlights"
-          />
-        </div>
-      </section>
-
-      <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
-          Comparison
-        </p>
-        <h2
-          class="font-black mb-6"
-          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em;color:#111"
-        >
-          Radar
-        </h2>
-        <div style="background:#060806;border:1px solid #152214;overflow:hidden">
-          <SiWidget
-            widget="PlayerH2HSeasonRadarStatsOPTA"
-            params={{
-              playerId1: playerId,
-              seasonId1: WIDGET_SEASON_ID,
-              teamId: WIDGET_TEAM_ID,
-              lang: 'en',
-            }}
-            minHeight={480}
-            label="Radar comparison"
-          />
-        </div>
-      </section>
-
-    </div>
-  </div>
+      </div>
+    </section>
+  )}
 </Base>

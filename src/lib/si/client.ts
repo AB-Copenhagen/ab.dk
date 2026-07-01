@@ -207,6 +207,61 @@ export async function fetchABPlayers(locale: Locale = 'da'): Promise<SIPlayer[]>
   return siFetch<SIPlayer[]>('/players', { teamId: abConfig.teamId, locale });
 }
 
+export interface SIPlayerMatchStat {
+  seasonId: number;
+  seasnonName: string; // API has a typo — preserved as-is
+  forName: string;
+  goals: number;
+  assists: number;
+  yellowCards: number;
+  secondYellowCards: number;
+  redCards: number;
+  minutesPlayed: number;
+}
+
+export interface SISeasonStats {
+  seasonId: number;
+  seasonName: string;
+  teamName: string;
+  appearances: number;
+  goals: number;
+  assists: number;
+  yellowCards: number;
+  redCards: number;
+}
+
+/** Fetch per-match stats for a player across all seasons. */
+export async function fetchPlayerStats(playerId: number): Promise<SIPlayerMatchStat[]> {
+  return siFetch<SIPlayerMatchStat[]>(`/players/${playerId}/stats`);
+}
+
+/** Roll up per-match data into per-season totals, newest first. */
+export function aggregateSeasonStats(matches: SIPlayerMatchStat[]): SISeasonStats[] {
+  const map = new Map<string, SISeasonStats>();
+  for (const m of matches) {
+    const key = `${m.seasonId}__${m.forName}`;
+    if (!map.has(key)) {
+      map.set(key, {
+        seasonId: m.seasonId,
+        seasonName: m.seasnonName,
+        teamName: m.forName,
+        appearances: 0,
+        goals: 0,
+        assists: 0,
+        yellowCards: 0,
+        redCards: 0,
+      });
+    }
+    const s = map.get(key)!;
+    if (m.minutesPlayed > 0) s.appearances++;
+    s.goals += m.goals;
+    s.assists += m.assists;
+    s.yellowCards += m.yellowCards + m.secondYellowCards;
+    s.redCards += m.redCards;
+  }
+  return [...map.values()].sort((a, b) => b.seasonId - a.seasonId);
+}
+
 /** Fetch a player's full profile and stats. */
 export async function fetchPlayerProfile(
   playerId: number,
