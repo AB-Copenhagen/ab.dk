@@ -1,0 +1,53 @@
+---
+description: Danish/English routing and locale conventions
+globs: src/pages/**,src/lib/i18n.ts,src/lib/nav-config.ts,src/middleware.ts
+alwaysApply: false
+---
+
+# i18n & Routing
+
+## URL structure
+
+| Locale | Pattern | Example |
+|---|---|---|
+| Danish (default) | no prefix | `/kampe`, `/nyheder`, `/hold` |
+| English | `/en/` prefix | `/en/kampe`, `/en/nyheder` |
+
+Configured in `astro.config.mjs`: `defaultLocale: 'da'`, `prefixDefaultLocale: false`.
+
+## Adding a page
+
+Mirror both locales when content is user-facing:
+
+```
+src/pages/kampe.astro       → Danish
+src/pages/en/kampe.astro    → English
+```
+
+Static marketing pages can use `export const prerender = true` in both.
+
+## Locale helpers
+
+```ts
+import { getLocale, localePath, t, type Locale } from '@/lib/i18n';
+
+const locale = getLocale(Astro.url);           // 'da' | 'en'
+const href = localePath('en', '/kampe');       // '/en/kampe'
+const label = t[locale].fixtures;              // UI strings
+```
+
+Pass `locale` to `<Base locale={locale}>` and Strapi calls (`{ locale }`).
+
+## Middleware
+
+`src/middleware.ts` sets `context.locals.locale` and guards `/konto/profil` routes via Descope cookie `DS`.
+
+## Date formatting
+
+Use locale-aware formatters in page frontmatter:
+
+```ts
+date.toLocaleDateString(locale === 'en' ? 'en-GB' : 'da-DK', { ... })
+```
+
+Do not hardcode Danish strings in English pages — use `t.en.*` or page-specific English copy.

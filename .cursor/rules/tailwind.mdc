@@ -1,0 +1,57 @@
+---
+description: Tailwind CSS setup and styling patterns for ab.dk
+globs: src/**/*.{astro,tsx,css},astro.config.mjs
+alwaysApply: false
+---
+
+# Tailwind CSS
+
+## Setup
+
+- **Tailwind v4** via `@tailwindcss/vite` in `astro.config.mjs` → `vite.plugins`
+- Entry: `@import "tailwindcss"` in `src/styles/global.css`
+- Theme tokens: `@theme { }` block in `global.css` (brand colours, fonts)
+- Brand CSS variables: `src/styles/tokens.css` (for inline styles & non-utility use)
+- Typography: `@plugin '@tailwindcss/typography'` in `global.css`
+
+Do **not** use `@astrojs/tailwind` — deprecated; incompatible with Tailwind v4.
+
+## When to use what
+
+| Use | For |
+|---|---|
+| Tailwind classes | Layout, spacing, flex/grid, responsive, typography weight |
+| `text-ab-green`, `bg-rich-black` | Brand colours from `@theme` |
+| Inline `style=` | `clamp()` typography, gradients, filters, one-off brand values |
+| CSS variables | Global tokens in `tokens.css` |
+
+## Brand colour classes
+
+```
+ab-green   #006A52    ab-gold    #D6A02A
+ab-beige   #D3BC8D    ab-neon    #00FF1F (digital only)
+rich-black #0A0A09    charcoal   #0A0A09
+```
+
+## Common patterns
+
+```html
+<div class="max-w-7xl mx-auto px-6 lg:px-16">
+<div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+```
+
+## Astro vs React
+
+- `.astro` files: `class="..."`
+- React islands: `className="..."`
+- Use `cn()` from `@/lib/utils` to merge conditional classes in TSX
+
+## Adding theme tokens
+
+Extend `@theme` in `global.css` — use `--color-*` for colours, `--font-*` for fonts:
+
+```css
+@theme {
+  --color-ab-green: #006a52;
+}
+```

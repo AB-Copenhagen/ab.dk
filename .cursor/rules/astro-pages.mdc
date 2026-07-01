@@ -1,0 +1,67 @@
+---
+description: Astro page and component conventions for ab.dk
+globs: src/**/*.astro
+alwaysApply: false
+---
+
+# Astro Pages & Components
+
+## Page skeleton
+
+```astro
+---
+import Base from '@/layouts/Base.astro';
+export const prerender = false; // or true for static marketing pages
+
+const locale = 'da';
+---
+
+<Base locale={locale} title="Page Title | Akademisk Boldklub">
+  <!-- content -->
+</Base>
+```
+
+## Prerender
+
+- `prerender = true` — static content only (e.g. `om/historik`, `om/stadion`)
+- `prerender = false` — Strapi/SI data, auth, API-backed pages (default for most routes)
+
+## React islands
+
+Use React only for client interactivity. Import from `@/components/islands/` and hydrate explicitly:
+
+```astro
+import MobileMenu from '@/components/islands/MobileMenu';
+<MobileMenu client:load nav={nav} locale={locale} enPrefix={enPrefix} />
+```
+
+Prefer `.astro` components for everything else (Navbar, widgets, cards).
+
+## Frontmatter strings
+
+Apostrophes in Danish/English copy break single-quoted strings. Use double quotes or escape:
+
+```ts
+// BAD — breaks esbuild
+heading: 'AB's farver'
+
+// GOOD
+heading: "AB's farver"
+heading: 'AB\'s farver'
+```
+
+## Resilient data fetching
+
+Wrap CMS/API calls in try/catch; pages must render when Strapi/SI is down:
+
+```ts
+let data: Article[] = [];
+try {
+  data = await fetchCollectionType('articles', { locale });
+} catch { /* CMS unavailable */ }
+```
+
+## Imports
+
+- Use `@/` path alias (`@/layouts/Base.astro`, `@/lib/strapi/client`)
+- TS/TSX island imports omit extension; `.astro` imports include `.astro`
