@@ -1,0 +1,104 @@
+---
+import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
+
+interface Props {
+  player: {
+    id?: number;
+    name: string;
+    position?: string;
+    shirtNumber?: number | null;
+    jerseyNumber?: number | null;
+    country?: { name: string } | null;
+  };
+  locale: 'da' | 'en';
+  /** Omit to auto-derive from player.name */
+  href?: string;
+}
+
+const { player, locale, href } = Astro.props;
+
+const number = player.shirtNumber ?? player.jerseyNumber;
+const photoUrl = getPlayerPhotoUrl(player.name);
+
+const positionLabels: Record<string, { da: string; en: string }> = {
+  keeper:     { da: 'Målmand',   en: 'Goalkeeper' },
+  defender:   { da: 'Forsvarer', en: 'Defender'   },
+  midfielder: { da: 'Midtbane',  en: 'Midfielder' },
+  forward:    { da: 'Angriber',  en: 'Forward'    },
+};
+const pos = (player.position ?? '').toLowerCase();
+const posLabel = (positionLabels[pos]?.[locale] ?? player.position ?? '');
+
+const nameParts = player.name.trim().split(' ');
+const firstName = nameParts[0];
+const lastName  = nameParts.slice(1).join(' ');
+
+function toSlug(name: string) {
+  return name.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+const playerSlug = player.id ? `${player.id}-${toSlug(player.name)}` : toSlug(player.name);
+const playerHref = href ?? (locale === 'da' ? `/spiller/${playerSlug}` : `/en/spiller/${playerSlug}`);
+---
+
+<!--
+  Card frame: aspect-ratio 593:503 (full frame incl. overflow zone at top)
+  Green background rectangle: occupies bottom 84.1% of frame (423/503)
+  Photo: right ~51%, full frame height — so it naturally "overflows" above the background
+-->
+<a
+  href={playerHref}
+  class="squad-card block relative group"
+  data-position={player.position}
+  style="aspect-ratio:593/503;"
+>
+  <!-- AB-green background rectangle (bottom 84% of card frame) -->
+  <div
+    class="absolute inset-x-0 bottom-0 rounded-xl transition-all duration-300 group-hover:brightness-110"
+    style="height:84.1%; background:#006A52;"
+  ></div>
+
+  <!-- Player photo: right 51%, full height of card frame -->
+  <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl" style="width:51%;">
+    {photoUrl ? (
+      <img
+        src={photoUrl}
+        alt={player.name}
+        loading="lazy"
+        class="absolute inset-0 w-full h-full object-cover object-top"
+        onerror="this.style.opacity='0'"
+      />
+    ) : null}
+  </div>
+
+  <!-- Text layer: left 53%, pinned to bottom 84% of frame -->
+  <div
+    class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10"
+    style="height:84.1%; width:53%;"
+  >
+    <!-- Name + position -->
+    <div>
+      <p
+        class="font-black text-white leading-tight"
+        style="font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance;"
+      >
+        {firstName}<br />{lastName}
+      </p>
+      <p class="text-xs mt-1 font-medium" style="color:rgba(255,255,255,0.6);">
+        {posLabel}
+      </p>
+    </div>
+
+    <!-- Jersey number -->
+    {number != null ? (
+      <p
+        class="font-black text-white leading-none select-none"
+        style="font-size:clamp(2.5rem,6.5vw,6.5rem); letter-spacing:-0.04em;"
+      >
+        {number}
+      </p>
+    ) : null}
+  </div>
+</a>

@@ -1,6 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
-import PlayerCard from '@/components/PlayerCard.astro';
+import SquadCard from '@/components/SquadCard.astro';
 import { fetchABPlayers, type SIPlayer } from '@/lib/si/client';
 export const prerender = false;
 
@@ -67,9 +67,9 @@ for (const p of players) {
                 </h2>
                 <span class="text-xs" style="color:#9CA3AF">({group.length})</span>
               </div>
-              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
                 {group.map((player) => (
-                  <PlayerCard player={{ ...player, jerseyNumber: player.shirtNumber ?? undefined }} locale="en" />
+                  <SquadCard player={player} locale="en" />
                 ))}
               </div>
             </section>
