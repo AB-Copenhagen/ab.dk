@@ -69,27 +69,18 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
   <div class="relative w-full overflow-hidden"
        style="background:linear-gradient(135deg, #004A38 0%, #006A52 55%, #007A5E 100%); min-height:clamp(460px,36vw,560px);">
 
-    <!-- "AB" + "1889" watermark behind photo -->
-    <div class="absolute hidden md:block pointer-events-none select-none"
-         style="left:38%; top:50%; transform:translate(-50%,-54%); z-index:1;
-                font-family:Helvetica,Arial,sans-serif; font-weight:900;
-                font-size:clamp(14rem,26vw,34rem); color:rgba(0,0,0,0.18);
-                letter-spacing:-0.08em; line-height:0.85;">
-      AB
-    </div>
-    <div class="absolute hidden md:block pointer-events-none select-none"
-         style="left:42%; top:78%; transform:translate(-50%,-50%); z-index:1;
-                font-family:Helvetica,Arial,sans-serif; font-weight:900;
-                font-size:clamp(5rem,9vw,12rem); color:rgba(0,0,0,0.18);
-                letter-spacing:-0.04em; line-height:1;">
-      1889
-    </div>
+    <!-- AB 1889 logo watermark behind photo -->
+    <img src="/images/logo-behind-player.svg" alt="" aria-hidden="true"
+         class="absolute hidden md:block pointer-events-none select-none"
+         style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:1;
+                width:clamp(320px,44vw,580px); height:auto;
+                filter:brightness(0) opacity(0.18);" />
 
     <!-- Circular crest overlay (right side) -->
     <div class="absolute hidden lg:block pointer-events-none"
          style="right:-4%; top:50%; transform:translateY(-50%);
                 width:clamp(280px,38vw,480px); z-index:1; opacity:0.22;">
-      <img src="/images/ab-crest.svg" alt="" aria-hidden="true"
+      <img src="/images/crest-behind-player.svg" alt="" aria-hidden="true"
            style="width:100%; height:auto; filter:brightness(0) invert(1);" />
     </div>
 
