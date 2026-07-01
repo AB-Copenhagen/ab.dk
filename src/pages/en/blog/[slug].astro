@@ -4,7 +4,7 @@ import ArticleContent from '@/components/islands/ArticleContent';
 import FixturesWidget from '@/components/FixturesWidget.astro';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
-import { truncate } from '@/lib/utils';
+import { truncate, decodeHtml } from '@/lib/utils';
 export const prerender = false;
 
 const { slug } = Astro.params;
@@ -39,14 +39,14 @@ function formatDate(str: string) {
 }
 ---
 
-<Base locale="en" title={`${article.title} | Akademisk Boldklub`}>
+<Base locale="en" title={`${decodeHtml(article.title)} | Akademisk Boldklub`}>
   <article>
     <!-- Full-width hero image -->
     <div class="relative w-full overflow-hidden" style="height:clamp(260px,38vw,480px);">
       {article.image?.url ? (
         <img
           src={strapiMediaUrl(article.image.url)}
-          alt={article.title}
+          alt={decodeHtml(article.title)}
           loading="eager"
           class="absolute inset-0 w-full h-full object-cover object-center"
         />
@@ -77,7 +77,7 @@ function formatDate(str: string) {
           <div>
             {article.description && (
               <p class="text-base leading-relaxed mb-8 font-medium" style="color:#374151;">
-                {truncate(article.description, 300)}
+                {truncate(decodeHtml(article.description), 300)}
               </p>
             )}
             {article.content && (
@@ -108,7 +108,7 @@ function formatDate(str: string) {
                 </p>
               )}
               <h1 class="font-black leading-tight mb-3" style="font-size:clamp(1.5rem,2.8vw,2.4rem); letter-spacing:-0.035em; color:#111;">
-                {article.title}
+                {decodeHtml(article.title)}
               </h1>
               <time class="text-sm" style="color:#9CA3AF; font-variant-numeric:tabular-nums;">
                 {formatDate(article.publishedAt)}
@@ -144,7 +144,7 @@ function formatDate(str: string) {
                     {a.image?.url ? (
                       <img
                         src={strapiMediaUrl(a.image.url)}
-                        alt={a.title}
+                        alt={decodeHtml(a.title)}
                         loading="lazy"
                         class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                       />
@@ -156,7 +156,7 @@ function formatDate(str: string) {
                     {a.categories?.[0]?.name ?? 'News'}
                   </p>
                   <h3 class="font-bold text-sm leading-snug group-hover:underline" style="color:#111;">
-                    {a.title}
+                    {decodeHtml(a.title)}
                   </h3>
                 </a>
               ))}
