@@ -55,15 +55,13 @@ export interface SIPlayerProfile {
   id: number;
   name: string;
   position: string;
-  nationality: string;
-  dateOfBirth?: string;
-  stats?: {
-    appearances: number;
-    goals: number;
-    assists: number;
-    yellowCards: number;
-    redCards: number;
-  };
+  countryName?: string;
+  birthDate?: string;
+  height?: number;
+  weight?: number;
+  age?: number;
+  country?: { id: number; name: string; code: string };
+  currentTeam?: { id: number; name: string; number: number };
 }
 
 export interface SIHighlight {
@@ -214,7 +212,7 @@ export async function fetchPlayerProfile(
   playerId: number,
   locale: Locale = 'da'
 ): Promise<SIPlayerProfile> {
-  return siFetch<SIPlayerProfile>(`/player/${playerId}/profile`, { locale });
+  return siFetch<SIPlayerProfile>(`/players/${playerId}/profile`, { locale });
 }
 
 // ── Highlights ────────────────────────────────────────────────────────────────

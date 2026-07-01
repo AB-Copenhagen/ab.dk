@@ -26,7 +26,7 @@ if (!player) {
   return Astro.redirect('/en/hold');
 }
 
-const { name, position, nationality, dateOfBirth, stats } = player;
+const { name, position, countryName, birthDate } = player;
 
 // Get jersey number from the squad list
 const squadPlayers = await fetchABPlayers('en').catch(() => []);
@@ -45,8 +45,8 @@ const posLabel = posLabels[position?.toLowerCase() ?? ''] ?? position;
 
 const pageTitle = `${name} | Akademisk Boldklub`;
 
-const dob = dateOfBirth
-  ? new Date(dateOfBirth).toLocaleDateString('en-GB', {
+const dob = birthDate
+  ? new Date(birthDate).toLocaleDateString('en-GB', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -106,10 +106,10 @@ const WIDGET_SEASON_ID = 16387;
           <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Position</p>
           <p class="font-black text-sm" style="color:#111;">{posLabel}</p>
         </div>
-        {nationality && (
+        {countryName && (
           <div class="py-5 px-8">
             <p class="text-xs font-bold uppercase mb-1" style="color:#9CA3AF; letter-spacing:0.14em;">Nationality</p>
-            <p class="font-black text-sm" style="color:#111;">{nationality}</p>
+            <p class="font-black text-sm" style="color:#111;">{countryName}</p>
           </div>
         )}
         {dob && (
