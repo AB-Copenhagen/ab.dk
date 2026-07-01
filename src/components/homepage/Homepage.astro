@@ -319,15 +319,15 @@ const sponsors = [
   <div class="grid md:grid-cols-2" style="gap:clamp(12px,2vw,24px);">
 
     <!-- Download App -->
-    <div class="relative overflow-hidden" style="min-height:clamp(400px,50vw,620px); border-radius:8px; background:linear-gradient(to right, #002A18 0%, #006A52 42%, #14C018 100%);">
+    <div class="relative overflow-hidden flex flex-col justify-between" style="min-height:clamp(400px,50vw,620px); border-radius:8px;">
+      <!-- Background photo (gradient + players composited) -->
+      <div class="absolute inset-0">
+        <img src="/images/banner-download-app.png" alt="" aria-hidden="true" loading="lazy" class="w-full h-full object-cover object-center" />
+      </div>
       <!-- AB watermark -->
-      <span class="absolute font-black select-none pointer-events-none" style="font-size:clamp(12rem,26vw,21rem); letter-spacing:-0.08em; line-height:0.82; color:#003520; opacity:0.75; top:-0.05em; left:-0.03em; z-index:1;">AB</span>
+      <span class="absolute font-black select-none pointer-events-none" style="font-size:clamp(12rem,26vw,21rem); letter-spacing:-0.08em; line-height:0.82; color:#003520; opacity:0.6; top:-0.05em; left:-0.03em; z-index:1;">AB</span>
       <!-- 1889 gold -->
       <span class="absolute font-black select-none pointer-events-none" style="font-size:clamp(3.5rem,9vw,7.5rem); letter-spacing:-0.04em; line-height:1; color:#D6A02A; bottom:7.5rem; left:1.8rem; z-index:1;">1889</span>
-      <!-- Player photo right side -->
-      <div class="absolute right-0 bottom-0 h-full pointer-events-none" style="width:62%; z-index:2;">
-        <img src="/images/squad-banner.png" alt="AB player" loading="lazy" class="w-full h-full object-cover object-top" />
-      </div>
       <!-- Content bottom-left -->
       <div class="absolute bottom-0 left-0 p-8 md:p-10" style="z-index:3;">
         <h2 class="font-black text-white leading-tight mb-4" style="font-size:clamp(1.5rem,2.8vw,2.2rem); letter-spacing:-0.03em; text-transform:none;">
