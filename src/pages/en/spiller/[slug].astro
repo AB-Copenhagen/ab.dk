@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import PlayerSeasonStatsTable from '@/components/PlayerSeasonStatsTable.astro';
 import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
 import type { SIPlayerProfile } from '@/lib/si/client';
 import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
@@ -179,39 +180,7 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
         </div>
 
         <!-- Right: Latest Results -->
-        {seasonStats.length > 0 && (
-          <div>
-            <div style="background:#00FF1F; padding:0.75rem 1.25rem;">
-              <h2 class="font-black text-xl" style="color:#006A52;">Latest Results</h2>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm border-collapse">
-                <thead>
-                  <tr style="background:#006A52;">
-                    <th class="text-left py-2.5 px-4 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Season</th>
-                    <th class="text-left py-2.5 px-4 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Club</th>
-                    <th class="text-center py-2.5 px-3 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Goals</th>
-                    <th class="text-center py-2.5 px-3 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Assists</th>
-                    <th class="text-center py-2.5 px-3 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Yellow Cards</th>
-                    <th class="text-center py-2.5 px-3 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Red Cards</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {seasonStats.map((s, i) => (
-                    <tr style={i % 2 === 0 ? 'background:#F9FAF9;' : 'background:#fff;'}>
-                      <td class="py-3 px-4 font-black text-sm" style="color:#006A52; white-space:nowrap;">{s.seasonName}</td>
-                      <td class="py-3 px-4" style="color:#111; white-space:nowrap;">{s.teamName}</td>
-                      <td class="py-3 px-3 text-center font-bold" style="color:#111;">{s.goals}</td>
-                      <td class="py-3 px-3 text-center font-bold" style="color:#111;">{s.assists}</td>
-                      <td class="py-3 px-3 text-center font-bold" style="color:#111;">{s.yellowCards}</td>
-                      <td class="py-3 px-3 text-center font-bold" style="color:#111;">{s.redCards}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+        <PlayerSeasonStatsTable locale="en" rows={seasonStats} />
 
       </div>
     </div>

@@ -7,18 +7,25 @@ export const prerender = false;
 const locale = 'da' as const;
 
 const POSITION_GROUPS = {
-  keeper:     'Målmænd',
-  defender:   'Forsvarsspillere',
+  keeper: 'Målmænd',
+  defender: 'Forsvarsspillere',
   midfielder: 'Midtbanespillere',
-  forward:    'Angribere',
+  forward: 'Angribere',
 } as const;
 type PositionKey = keyof typeof POSITION_GROUPS;
-const GROUP_ORDER: PositionKey[] = ['keeper', 'defender', 'midfielder', 'forward'];
+const GROUP_ORDER: PositionKey[] = [
+  'keeper',
+  'defender',
+  'midfielder',
+  'forward',
+];
 
 let players: SIPlayer[] = [];
 try {
   players = await fetchABPlayers(locale);
-} catch { /* SI unavailable */ }
+} catch {
+  /* SI unavailable */
+}
 
 players.sort((a, b) => {
   const ai = GROUP_ORDER.indexOf(a.position as PositionKey);
@@ -35,36 +42,52 @@ for (const p of players) {
 }
 ---
 
-<Base locale="da" title="Holdet | Akademisk Boldklub">
+<Base
+  locale="da"
+  title="Holdet | Akademisk Boldklub">
   <div style="background:#fff">
     <!-- Squad banner (image with embedded title) -->
     <div class="w-full">
-      <img src="/images/squad-banner.png" alt="AB 1889 Holdet" class="w-full h-auto block" loading="eager" />
+      <img
+        src="/images/squad-banner.png"
+        alt="AB 1889 Holdet"
+        class="w-full h-auto block"
+        loading="eager"
+      />
     </div>
 
     <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 lg:py-14">
-      {players.length === 0 ? (
-        <p class="text-center py-24 text-sm" style="color:#9CA3AF">
-          Holdoplysninger er ikke tilgængelige i øjeblikket.
-        </p>
-      ) : (
-        GROUP_ORDER.map((key) => {
-          const group = groups.get(key);
-          if (!group?.length) return null;
-          return (
-            <section class="mb-14">
-              <h2 class="font-black mb-6" style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; color:#111; text-transform:none;">
-                {POSITION_GROUPS[key]}
-              </h2>
-              <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
-                {group.map((player) => (
-                  <SquadCard player={player} locale="da" />
-                ))}
-              </div>
-            </section>
-          );
-        })
-      )}
+      {
+        players.length === 0 ? (
+          <p
+            class="text-center py-24 text-sm"
+            style="color:#9CA3AF">
+            Holdoplysninger er ikke tilgængelige i øjeblikket.
+          </p>
+        ) : (
+          GROUP_ORDER.map((key) => {
+            const group = groups.get(key);
+            if (!group?.length) return null;
+            return (
+              <section class="mb-14">
+                <h2
+                  class="font-black mb-6"
+                  style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; color:#111; text-transform:none;">
+                  {POSITION_GROUPS[key]}
+                </h2>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-3 md:gap-x-7">
+                  {group.map((player) => (
+                    <SquadCard
+                      player={player}
+                      locale="da"
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })
+        )
+      }
     </div>
   </div>
 </Base>

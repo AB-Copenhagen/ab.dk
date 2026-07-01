@@ -94,16 +94,18 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
               <div style="position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); width:40px; height:3px; background:#D3BC8D;" />
             )}
             {item.children && (
-              <div class="absolute top-full left-0 hidden group-hover:block z-50 min-w-[200px] shadow-2xl" style="background:#004A3A; border-top:3px solid #D3BC8D; margin-top:12px;">
-                {item.children.map((child) => (
-                  <a
-                    href={enPrefix + child.href}
-                    class="block px-5 py-3 font-black text-sm hover:bg-white/10 transition-colors"
-                    style="color:rgba(255,255,255,0.8); text-decoration:none; letter-spacing:-0.02em;"
-                  >
-                    {child.label}
-                  </a>
-                ))}
+              <div class="absolute top-full left-0 hidden group-hover:block z-50 pt-3">
+                <div class="min-w-[200px] shadow-2xl" style="background:#004A3A; border-top:3px solid #D3BC8D;">
+                  {item.children.map((child) => (
+                    <a
+                      href={enPrefix + child.href}
+                      class="block px-5 py-3 font-black text-sm hover:bg-white/10 transition-colors"
+                      style="color:rgba(255,255,255,0.8); text-decoration:none; letter-spacing:-0.02em;"
+                    >
+                      {child.label}
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
           </div>

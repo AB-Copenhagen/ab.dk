@@ -23,7 +23,12 @@ const [articles, events, players] = await Promise.all([
   fetchABPlayers(locale).catch((): SIPlayer[] => []),
 ]);
 
-const positionOrder: Record<string, number> = { keeper: 0, defender: 1, midfielder: 2, forward: 3 };
+const positionOrder: Record<string, number> = {
+  keeper: 0,
+  defender: 1,
+  midfielder: 2,
+  forward: 3,
+};
 const sortedPlayers = [...players].sort(
   (a, b) => (positionOrder[a.position] ?? 4) - (positionOrder[b.position] ?? 4)
 );
@@ -33,20 +38,39 @@ const [featured, ...rest] = articles;
 const nextMatch = events.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
 );
-const recentResults = events.filter((e: any) => e.statusType === 'finished').slice(0, 5);
+const recentResults = events
+  .filter((e: any) => e.statusType === 'finished')
+  .slice(0, 5);
 
 const abHome = nextMatch ? nextMatch.homeId === 9805 : false;
-const opponent = nextMatch ? (abHome ? nextMatch.awayName : nextMatch.homeName) : null;
-const oppLogo = nextMatch ? (abHome ? nextMatch.awayLogo : nextMatch.homeLogo) : null;
+const opponent = nextMatch
+  ? abHome
+    ? nextMatch.awayName
+    : nextMatch.homeName
+  : null;
+const oppLogo = nextMatch
+  ? abHome
+    ? nextMatch.awayLogo
+    : nextMatch.homeLogo
+  : null;
 const matchDateStr = nextMatch
-  ? new Date(nextMatch.startDate).toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-GB', {
-      weekday: 'long', day: 'numeric', month: 'long',
-    })
+  ? new Date(nextMatch.startDate).toLocaleDateString(
+      locale === 'da' ? 'da-DK' : 'en-GB',
+      {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      }
+    )
   : null;
 const matchTimeStr = nextMatch
-  ? new Date(nextMatch.startDate).toLocaleTimeString(locale === 'da' ? 'da-DK' : 'en-GB', {
-      hour: '2-digit', minute: '2-digit',
-    })
+  ? new Date(nextMatch.startDate).toLocaleTimeString(
+      locale === 'da' ? 'da-DK' : 'en-GB',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+      }
+    )
   : null;
 const venue = nextMatch?.properties?.venue ?? null;
 
@@ -62,9 +86,10 @@ const calMonthName = new Date(calYear, calMonth, 1).toLocaleDateString(
   locale === 'da' ? 'da-DK' : 'en-GB',
   { month: 'long', year: 'numeric' }
 );
-const calDayLabels = locale === 'da'
-  ? ['M', 'T', 'O', 'T', 'F', 'L', 'S']
-  : ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const calDayLabels =
+  locale === 'da'
+    ? ['M', 'T', 'O', 'T', 'F', 'L', 'S']
+    : ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const calMatchDays = new Set<number>(
   events
     .filter((e: any) => {
@@ -77,10 +102,18 @@ const calTotalCells = Math.ceil((calBlanks + calDaysInMonth) / 7) * 7;
 const calCells = Array.from({ length: calTotalCells }, (_, i) => {
   const day = i - calBlanks + 1;
   const valid = day >= 1 && day <= calDaysInMonth;
-  return { day, valid, isToday: valid && day === calToday, hasMatch: valid && calMatchDays.has(day) };
+  return {
+    day,
+    valid,
+    isToday: valid && day === calToday,
+    hasMatch: valid && calMatchDays.has(day),
+  };
 });
 const calRows = [...events]
-  .sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+  .sort(
+    (a: any, b: any) =>
+      new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+  )
   .slice(0, 7);
 
 function articlePath(slug: string) {
@@ -91,10 +124,16 @@ function localPath(path: string) {
 }
 function formatDate(str: string) {
   try {
-    return new Date(str).toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-GB', {
-      day: 'numeric', month: 'short',
-    });
-  } catch { return ''; }
+    return new Date(str).toLocaleDateString(
+      locale === 'da' ? 'da-DK' : 'en-GB',
+      {
+        day: 'numeric',
+        month: 'short',
+      }
+    );
+  } catch {
+    return '';
+  }
 }
 
 const products = [
@@ -105,13 +144,17 @@ const products = [
     img: '/images/product-1.png',
   },
   {
-    name: locale === 'da' ? 'Grøn Akademisk Fodboldklub Sweatshirt' : 'Green Academic Football Club Sweatshirt',
+    name:
+      locale === 'da'
+        ? 'Grøn Akademisk Fodboldklub Sweatshirt'
+        : 'Green Academic Football Club Sweatshirt',
     price: 'DKK 129',
     originalPrice: 'DKK 249',
     img: '/images/product-2.png',
   },
   {
-    name: locale === 'da' ? 'Grå Sweater med AB Logo' : 'Grey Sweater with AB Logo',
+    name:
+      locale === 'da' ? 'Grå Sweater med AB Logo' : 'Grey Sweater with AB Logo',
     price: 'DKK 219',
     originalPrice: 'DKK 429',
     img: '/images/product-3.png',
@@ -139,7 +182,10 @@ const heroSlides = [
     img: '/images/matches-header-bg.png',
     alt: locale === 'da' ? 'AB Kampe' : 'AB Matches',
     headline: locale === 'da' ? 'Næste kamp venter.' : 'Next match awaits.',
-    subtitle: locale === 'da' ? 'Se kampprogram og køb billetter' : 'View fixtures and buy tickets',
+    subtitle:
+      locale === 'da'
+        ? 'Se kampprogram og køb billetter'
+        : 'View fixtures and buy tickets',
     ctaLabel: locale === 'da' ? 'Kampe' : 'Matches',
     ctaUrl: localPath('/kampe'),
   },
@@ -147,7 +193,10 @@ const heroSlides = [
     img: '/images/join-team-ab-bg.png',
     alt: locale === 'da' ? 'Bliv en del af AB' : 'Join AB',
     headline: locale === 'da' ? 'Bliv en del af AB.' : 'Join the family.',
-    subtitle: locale === 'da' ? 'Meld dig ind og støt holdet' : 'Become a member and support the club',
+    subtitle:
+      locale === 'da'
+        ? 'Meld dig ind og støt holdet'
+        : 'Become a member and support the club',
     ctaLabel: locale === 'da' ? 'Meld dig ind' : 'Join now',
     ctaUrl: localPath('/om/bliv-medlem'),
   },
@@ -155,78 +204,133 @@ const heroSlides = [
 ---
 
 <style>
-  .article-img { transition: transform 0.5s ease; }
-  .article-card:hover .article-img { transform: scale(1.04); }
-  .product-img { transition: transform 0.45s ease; }
-  .product-card:hover .product-img { transform: scale(1.03); }
-  .sponsor-img { filter: grayscale(100%); opacity: 0.65; transition: filter 0.3s, opacity 0.3s; }
-  .sponsor-img:hover { filter: grayscale(0%); opacity: 1; }
-  .result-row:nth-child(odd) { background: #F9FAFB; }
-  @keyframes dot-fill { from { transform:scaleX(0) } to { transform:scaleX(1) } }
+  .article-img {
+    transition: transform 0.5s ease;
+  }
+  .article-card:hover .article-img {
+    transform: scale(1.04);
+  }
+  .product-img {
+    transition: transform 0.45s ease;
+  }
+  .product-card:hover .product-img {
+    transform: scale(1.03);
+  }
+  .sponsor-img {
+    filter: grayscale(100%);
+    opacity: 0.65;
+    transition:
+      filter 0.3s,
+      opacity 0.3s;
+  }
+  .sponsor-img:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+  }
+  .result-row:nth-child(odd) {
+    background: #f9fafb;
+  }
+  @keyframes dot-fill {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 </style>
 
 <!-- ── Hero Slider ───────────────────────────────────────── -->
-<section id="hero-slider" class="relative w-full overflow-hidden" style="height:60svh; min-height:560px; max-height:960px;">
-
+<section
+  id="hero-slider"
+  class="relative w-full overflow-hidden"
+  style="height:60svh; min-height:560px; max-height:960px;">
   <!-- Slide images -->
-  {heroSlides.map((slide, i) => (
-    <div class="hero-slide absolute inset-0" style={`opacity:${i === 0 ? 1 : 0}; transition:opacity 1s ease;`} data-slide={i}>
-      <img src={slide.img} alt={slide.alt}
-           loading={i === 0 ? 'eager' : 'lazy'}
-           class="w-full h-full object-cover object-center" />
-    </div>
-  ))}
+  {
+    heroSlides.map((slide, i) => (
+      <div
+        class="hero-slide absolute inset-0"
+        style={`opacity:${i === 0 ? 1 : 0}; transition:opacity 1s ease;`}
+        data-slide={i}>
+        <img
+          src={slide.img}
+          alt={slide.alt}
+          loading={i === 0 ? 'eager' : 'lazy'}
+          class="w-full h-full object-cover object-center"
+        />
+      </div>
+    ))
+  }
 
   <!-- Overlay -->
-  <div class="absolute inset-0 z-10" style="background:rgba(0,0,0,0.20);"></div>
+  <div
+    class="absolute inset-0 z-10"
+    style="background:rgba(0,0,0,0.20);">
+  </div>
 
   <!-- Centered content -->
-  <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
-    {heroSlides.map((slide, i) => (
-      <div class="hero-content absolute inset-0 flex flex-col items-center justify-center px-6"
-           style={`opacity:${i === 0 ? 1 : 0}; transition:opacity 1s ease;`}
-           data-content={i}>
-        <h1 class="font-black text-white leading-none"
+  <div
+    class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+    {
+      heroSlides.map((slide, i) => (
+        <div
+          class="hero-content absolute inset-0 flex flex-col items-center justify-center px-6"
+          style={`opacity:${i === 0 ? 1 : 0}; transition:opacity 1s ease;`}
+          data-content={i}>
+          <h1
+            class="font-black text-white leading-none"
             style="font-size:clamp(4rem,11vw,10rem); letter-spacing:-0.04em; text-wrap:balance;">
-          {slide.headline}
-        </h1>
-        <p class="font-bold text-white mt-8 mb-5" style="font-size:clamp(0.85rem,1.4vw,1rem);">
-          {slide.subtitle}
-        </p>
-        <a href={slide.ctaUrl}
-           class="inline-flex items-center px-8 py-3 font-black text-sm rounded-full hover:opacity-90 transition-opacity"
-           style="background:#D3BC8D; color:#111; letter-spacing:-0.02em;">
-          {slide.ctaLabel}
-        </a>
-      </div>
-    ))}
+            {slide.headline}
+          </h1>
+          <p
+            class="font-bold text-white mt-8 mb-5"
+            style="font-size:clamp(0.85rem,1.4vw,1rem);">
+            {slide.subtitle}
+          </p>
+          <a
+            href={slide.ctaUrl}
+            class="inline-flex items-center px-8 py-3 font-black text-sm rounded-full hover:opacity-90 transition-opacity"
+            style="background:#D3BC8D; color:#111; letter-spacing:-0.02em;">
+            {slide.ctaLabel}
+          </a>
+        </div>
+      ))
+    }
   </div>
 
   <!-- Timer dot indicators -->
-  <div class="absolute bottom-8 left-0 right-0 z-30 flex justify-center items-center gap-2">
-    {heroSlides.map((_, i) => (
-      <button
-        class="hero-dot relative overflow-hidden"
-        style={`height:4px; border-radius:2px; border:none; padding:0; cursor:pointer; transition:width 0.3s ease; background:rgba(255,255,255,0.35); ${i === 0 ? 'width:48px;' : 'width:16px;'}`}
-        data-dot={i}
-        aria-label={`Slide ${i + 1}`}
-      >
-        <div class="hero-dot-fill"
-             style={`position:absolute; inset:0; background:#fff; transform-origin:left; transform:scaleX(0); ${i === 0 ? 'animation:dot-fill 5s linear forwards;' : ''}`}>
-        </div>
-      </button>
-    ))}
+  <div
+    class="absolute bottom-8 left-0 right-0 z-30 flex justify-center items-center gap-2">
+    {
+      heroSlides.map((_, i) => (
+        <button
+          class="hero-dot relative overflow-hidden"
+          style={`height:4px; border-radius:2px; border:none; padding:0; cursor:pointer; transition:width 0.3s ease; background:rgba(255,255,255,0.35); ${i === 0 ? 'width:48px;' : 'width:16px;'}`}
+          data-dot={i}
+          aria-label={`Slide ${i + 1}`}>
+          <div
+            class="hero-dot-fill"
+            style={`position:absolute; inset:0; background:#fff; transform-origin:left; transform:scaleX(0); ${i === 0 ? 'animation:dot-fill 5s linear forwards;' : ''}`}></div>
+        </button>
+      ))
+    }
   </div>
 </section>
 
 <script>
   const DURATION = 5000;
-  const slides   = Array.from(document.querySelectorAll<HTMLElement>('.hero-slide'));
-  const contents = Array.from(document.querySelectorAll<HTMLElement>('.hero-content'));
-  const dots     = Array.from(document.querySelectorAll<HTMLElement>('.hero-dot'));
-  const fills    = dots.map(d => d.querySelector<HTMLElement>('.hero-dot-fill')!);
-  const total    = slides.length;
-  let current    = 0;
+  const slides = Array.from(
+    document.querySelectorAll<HTMLElement>('.hero-slide')
+  );
+  const contents = Array.from(
+    document.querySelectorAll<HTMLElement>('.hero-content')
+  );
+  const dots = Array.from(document.querySelectorAll<HTMLElement>('.hero-dot'));
+  const fills = dots.map((d) =>
+    d.querySelector<HTMLElement>('.hero-dot-fill')!
+  );
+  const total = slides.length;
+  let current = 0;
   let timer: ReturnType<typeof setInterval>;
 
   function activateDot(i: number) {
@@ -246,10 +350,10 @@ const heroSlides = [
   }
 
   function goTo(n: number) {
-    slides[current].style.opacity   = '0';
+    slides[current].style.opacity = '0';
     contents[current].style.opacity = '0';
     current = (n + total) % total;
-    slides[current].style.opacity   = '1';
+    slides[current].style.opacity = '1';
     contents[current].style.opacity = '1';
     activateDot(current);
   }
@@ -266,79 +370,136 @@ const heroSlides = [
 </script>
 
 <!-- ── Player + Standings ────────────────────────────────── -->
-<div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 md:py-14" style="background:#fff">
-  <div class="grid lg:grid-cols-[380px_1fr] xl:grid-cols-[460px_1fr] gap-8 xl:gap-12 items-start">
-
+<div
+  class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 md:py-14"
+  style="background:#fff">
+  <div
+    class="grid lg:grid-cols-[380px_1fr] xl:grid-cols-[460px_1fr] gap-8 xl:gap-12 items-start">
     <!-- Left: Player photo + next match + buy tickets -->
     <div class="flex flex-col gap-5">
-      <div class="relative overflow-hidden" style="border-radius:12px; aspect-ratio:3/4; background:#0a0a09;">
+      <div
+        class="relative overflow-hidden"
+        style="border-radius:12px; aspect-ratio:3/4; background:#0a0a09;">
         <img
           src="/images/player-featured.png"
           alt="AB 1889 Player"
           loading="lazy"
           class="w-full h-full object-cover object-top"
         />
-        <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 50%)"></div>
-        <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+        <div
+          class="absolute inset-0"
+          style="background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 50%)">
+        </div>
+        <div
+          class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
           <a
             href="https://billetter.ab.dk"
             target="_blank"
             rel="noreferrer"
             class="inline-flex items-center px-5 py-2.5 font-black text-xs rounded-full"
-            style="background:#D3BC8D; color:#111; letter-spacing:-0.01em;"
-          >
+            style="background:#D3BC8D; color:#111; letter-spacing:-0.01em;">
             {locale === 'da' ? 'Køb billetter' : 'Buy Tickets'}
           </a>
         </div>
       </div>
 
       <!-- Next match card -->
-      {nextMatch && opponent && (
-        <div class="rounded-xl border border-gray-200 overflow-hidden">
-          <div class="px-4 py-2.5 text-xs font-black uppercase" style="background:#006A52; color:rgba(255,255,255,0.6); letter-spacing:0.18em;">
-            {locale === 'da' ? 'Næste kamp' : 'Next Fixture'}
-          </div>
-          <div class="px-4 py-4 bg-white">
-            {matchDateStr && (
-              <p class="text-xs mb-3" style="color:#9CA3AF; letter-spacing:0.06em;">{matchDateStr} · {matchTimeStr}</p>
-            )}
-            <div class="flex items-center justify-between gap-2">
-              <div class="flex flex-col items-center gap-1.5">
-                <img src="/images/ab-crest.svg" alt="AB" width="44" height="44" style="opacity:0.85;" />
-                <span class="text-xs font-black" style="color:#111;">AB</span>
-              </div>
-              <span class="text-2xl font-black" style="color:#D6A02A; letter-spacing:-0.04em;">VS</span>
-              <div class="flex flex-col items-center gap-1.5">
-                {oppLogo ? (
-                  <img src={oppLogo} alt={opponent} width="44" height="44" class="object-contain" />
-                ) : (
-                  <div class="w-11 h-11 rounded-full flex items-center justify-center text-xs font-black" style="background:#F3F4F6; color:#6B7280;">{opponent.slice(0,2).toUpperCase()}</div>
-                )}
-                <span class="text-xs font-black text-center" style="color:#111; max-width:80px; line-height:1.2;">{opponent}</span>
-              </div>
+      {
+        nextMatch && opponent && (
+          <div class="rounded-xl border border-gray-200 overflow-hidden">
+            <div
+              class="px-4 py-2.5 text-xs font-black uppercase"
+              style="background:#006A52; color:rgba(255,255,255,0.6); letter-spacing:0.18em;">
+              {locale === 'da' ? 'Næste kamp' : 'Next Fixture'}
             </div>
-            {venue && (
-              <p class="text-xs mt-3 text-center" style="color:#9CA3AF;">{venue}</p>
-            )}
+            <div class="px-4 py-4 bg-white">
+              {matchDateStr && (
+                <p
+                  class="text-xs mb-3"
+                  style="color:#9CA3AF; letter-spacing:0.06em;">
+                  {matchDateStr} · {matchTimeStr}
+                </p>
+              )}
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex flex-col items-center gap-1.5">
+                  <img
+                    src="/images/ab-crest.svg"
+                    alt="AB"
+                    width="44"
+                    height="44"
+                    style="opacity:0.85;"
+                  />
+                  <span
+                    class="text-xs font-black"
+                    style="color:#111;">
+                    AB
+                  </span>
+                </div>
+                <span
+                  class="text-2xl font-black"
+                  style="color:#D6A02A; letter-spacing:-0.04em;">
+                  VS
+                </span>
+                <div class="flex flex-col items-center gap-1.5">
+                  {oppLogo ? (
+                    <img
+                      src={oppLogo}
+                      alt={opponent}
+                      width="44"
+                      height="44"
+                      class="object-contain"
+                    />
+                  ) : (
+                    <div
+                      class="w-11 h-11 rounded-full flex items-center justify-center text-xs font-black"
+                      style="background:#F3F4F6; color:#6B7280;">
+                      {opponent.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                  <span
+                    class="text-xs font-black text-center"
+                    style="color:#111; max-width:80px; line-height:1.2;">
+                    {opponent}
+                  </span>
+                </div>
+              </div>
+              {venue && (
+                <p
+                  class="text-xs mt-3 text-center"
+                  style="color:#9CA3AF;">
+                  {venue}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </div>
 
     <!-- Right: Standings -->
-    <div class="overflow-hidden" style="border-radius:12px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <div
+      class="overflow-hidden"
+      style="border-radius:12px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
       <!-- Header -->
-      <div class="px-5 py-4 flex items-center justify-between" style="background:#006A52;">
+      <div
+        class="px-5 py-4 flex items-center justify-between"
+        style="background:#006A52;">
         <div>
-          <p class="text-xs font-black uppercase mb-0.5" style="color:rgba(255,255,255,0.5); letter-spacing:0.18em;">
+          <p
+            class="text-xs font-black uppercase mb-0.5"
+            style="color:rgba(255,255,255,0.5); letter-spacing:0.18em;">
             {locale === 'da' ? '2. Division' : '2nd Division'}
           </p>
-          <p class="text-lg font-black text-white" style="letter-spacing:-0.03em;">
+          <p
+            class="text-lg font-black text-white"
+            style="letter-spacing:-0.03em;">
             {locale === 'da' ? 'Stillingen' : 'Standings'}
           </p>
         </div>
         <div class="text-right">
-          <a href={localPath('/kampe')} class="text-xs font-bold px-3 py-1.5 rounded-full border border-white/30 text-white/70 hover:text-white hover:border-white/70 transition-colors">
+          <a
+            href={localPath('/kampe')}
+            class="text-xs font-bold px-3 py-1.5 rounded-full border border-white/30 text-white/70 hover:text-white hover:border-white/70 transition-colors">
             {locale === 'da' ? 'Se alle →' : 'All →'}
           </a>
         </div>
@@ -347,122 +508,219 @@ const heroSlides = [
         <StandingsWidget locale={locale} />
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- ── Recent Results ──────────────────────────────────── -->
-{recentResults.length > 0 && (
-  <div style="background:#fff; border-top:1px solid #F3F4F6;">
-    <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10">
-      <div class="flex items-center gap-3 mb-5">
-        <p class="text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.22em;">
-          {locale === 'da' ? 'Seneste resultater' : 'Recent Results'}
-        </p>
-        <div class="flex-1 h-px bg-gray-200"></div>
-        <a href={localPath('/kampe')} class="text-xs font-bold" style="color:#006A52;">
-          {locale === 'da' ? 'Se alle →' : 'All →'}
-        </a>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead>
-            <tr style="border-bottom:2px solid #F3F4F6;">
-              <th class="text-left pb-2 text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.14em; width:220px;">{locale === 'da' ? 'Dato' : 'Date'}</th>
-              <th class="text-left pb-2 text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.14em;">{locale === 'da' ? 'Hjemme' : 'Home'}</th>
-              <th class="text-center pb-2 text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.14em; width:80px;">{locale === 'da' ? 'Resultat' : 'Score'}</th>
-              <th class="text-right pb-2 text-xs font-black uppercase" style="color:#9CA3AF; letter-spacing:0.14em;">{locale === 'da' ? 'Ude' : 'Away'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentResults.map((event: any) => {
-              const isHome = event.homeId === 9805;
-              return (
-                <tr class="result-row border-b border-gray-100">
-                  <td class="py-3 text-xs" style="color:#9CA3AF; font-variant-numeric:tabular-nums;">
-                    {new Date(event.startDate).toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-GB', {
-                      weekday: 'short', day: 'numeric', month: 'short',
-                    })}
-                  </td>
-                  <td class="py-3 text-sm font-bold" style={`color:${isHome ? '#006A52' : '#111'};`}>{event.homeName}</td>
-                  <td class="py-3 text-sm font-black text-center" style="color:#D6A02A; font-variant-numeric:tabular-nums; letter-spacing:0.04em;">
-                    {event.score ?? '–'}
-                  </td>
-                  <td class="py-3 text-sm font-bold text-right" style={`color:${!isHome ? '#006A52' : '#111'};`}>{event.awayName}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+{
+  recentResults.length > 0 && (
+    <div style="background:#fff; border-top:1px solid #F3F4F6;">
+      <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10">
+        <div class="flex items-center gap-3 mb-5">
+          <p
+            class="text-xs font-black uppercase"
+            style="color:#9CA3AF; letter-spacing:0.22em;">
+            {locale === 'da' ? 'Seneste resultater' : 'Recent Results'}
+          </p>
+          <div class="flex-1 h-px bg-gray-200" />
+          <a
+            href={localPath('/kampe')}
+            class="text-xs font-bold"
+            style="color:#006A52;">
+            {locale === 'da' ? 'Se alle →' : 'All →'}
+          </a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr style="border-bottom:2px solid #F3F4F6;">
+                <th
+                  class="text-left pb-2 text-xs font-black uppercase"
+                  style="color:#9CA3AF; letter-spacing:0.14em; width:220px;">
+                  {locale === 'da' ? 'Dato' : 'Date'}
+                </th>
+                <th
+                  class="text-left pb-2 text-xs font-black uppercase"
+                  style="color:#9CA3AF; letter-spacing:0.14em;">
+                  {locale === 'da' ? 'Hjemme' : 'Home'}
+                </th>
+                <th
+                  class="text-center pb-2 text-xs font-black uppercase"
+                  style="color:#9CA3AF; letter-spacing:0.14em; width:80px;">
+                  {locale === 'da' ? 'Resultat' : 'Score'}
+                </th>
+                <th
+                  class="text-right pb-2 text-xs font-black uppercase"
+                  style="color:#9CA3AF; letter-spacing:0.14em;">
+                  {locale === 'da' ? 'Ude' : 'Away'}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentResults.map((event: any) => {
+                const isHome = event.homeId === 9805;
+                return (
+                  <tr class="result-row border-b border-gray-100">
+                    <td
+                      class="py-3 text-xs"
+                      style="color:#9CA3AF; font-variant-numeric:tabular-nums;">
+                      {new Date(event.startDate).toLocaleDateString(
+                        locale === 'da' ? 'da-DK' : 'en-GB',
+                        {
+                          weekday: 'short',
+                          day: 'numeric',
+                          month: 'short',
+                        }
+                      )}
+                    </td>
+                    <td
+                      class="py-3 text-sm font-bold"
+                      style={`color:${isHome ? '#006A52' : '#111'};`}>
+                      {event.homeName}
+                    </td>
+                    <td
+                      class="py-3 text-sm font-black text-center"
+                      style="color:#D6A02A; font-variant-numeric:tabular-nums; letter-spacing:0.04em;">
+                      {event.score ?? '–'}
+                    </td>
+                    <td
+                      class="py-3 text-sm font-bold text-right"
+                      style={`color:${!isHome ? '#006A52' : '#111'};`}>
+                      {event.awayName}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
-)}
+  )
+}
 
 <!-- ── Join Team AB ──────────────────────────────────────── -->
-<a href={localPath('/bliv-involveret/myab')} class="block relative overflow-hidden" style="min-height:clamp(120px,16vw,200px); text-decoration:none;">
-  <div class="absolute inset-0" style="background-image:url('/images/join-team-ab-bg.png'); background-size:cover; background-position:center;"></div>
-  <div class="relative h-full flex flex-col md:flex-row items-center justify-between gap-6 px-8 md:px-14 py-10 md:py-0" style="min-height:inherit;">
-    <h2 class="font-black text-white leading-none" style="font-size:clamp(2.8rem,7vw,6.5rem); letter-spacing:-0.05em; text-wrap:balance; text-transform:none;">
+<a
+  href={localPath('/bliv-involveret/myab')}
+  class="block relative overflow-hidden"
+  style="min-height:clamp(120px,16vw,200px); text-decoration:none;">
+  <div
+    class="absolute inset-0"
+    style="background-image:url('/images/join-team-ab-bg.png'); background-size:cover; background-position:center;">
+  </div>
+  <div
+    class="relative h-full flex flex-col md:flex-row items-center justify-between gap-6 px-8 md:px-14 py-10 md:py-0"
+    style="min-height:inherit;">
+    <h2
+      class="font-black text-white leading-none"
+      style="font-size:clamp(2.8rem,7vw,6.5rem); letter-spacing:-0.05em; text-wrap:balance; text-transform:none;">
       Join Team AB
     </h2>
-    <span class="shrink-0 hidden md:inline-flex items-center px-7 py-3.5 font-bold rounded-full"
-          style="background:#fff; color:#111; font-size:clamp(0.85rem,1.2vw,1rem); white-space:nowrap; letter-spacing:-0.01em;">
-      {locale === 'da' ? 'Bliv en del af holdet. Tilmeld dig MyAB' : 'Stay in the Game. Sign up for MyAB'}
+    <span
+      class="shrink-0 hidden md:inline-flex items-center px-7 py-3.5 font-bold rounded-full"
+      style="background:#fff; color:#111; font-size:clamp(0.85rem,1.2vw,1rem); white-space:nowrap; letter-spacing:-0.01em;">
+      {
+        locale === 'da'
+          ? 'Bliv en del af holdet. Tilmeld dig MyAB'
+          : 'Stay in the Game. Sign up for MyAB'
+      }
     </span>
   </div>
 </a>
 
 <!-- ── App + ABTV ─────────────────────────────────────────── -->
-<div style="background:#fff; padding:clamp(20px,3.5vw,48px) clamp(16px,4vw,52px);">
-  <div class="grid md:grid-cols-2" style="gap:clamp(12px,2vw,24px);">
-
+<div
+  style="background:#fff; padding:clamp(20px,3.5vw,48px) clamp(16px,4vw,52px);">
+  <div
+    class="grid md:grid-cols-2"
+    style="gap:clamp(12px,2vw,24px);">
     <!-- Download App -->
-    <div class="relative overflow-hidden flex flex-col justify-between" style="min-height:clamp(400px,50vw,620px); border-radius:8px;">
+    <div
+      class="relative overflow-hidden flex flex-col justify-between"
+      style="min-height:clamp(400px,50vw,620px); border-radius:8px;">
       <!-- Background photo (gradient + players composited) -->
       <div class="absolute inset-0">
-        <img src="/images/banner-download-app.png" alt="" aria-hidden="true" loading="lazy" class="w-full h-full object-cover object-center" />
+        <img
+          src="/images/banner-download-app.png"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          class="w-full h-full object-cover object-center"
+        />
       </div>
       <!-- AB 1889 logo -->
-      <img src="/images/download-app-logo.svg" alt="" aria-hidden="true"
-           class="absolute pointer-events-none select-none"
-           style="left:1.5rem; top:50%; transform:translateY(-50%); width:clamp(180px,28vw,340px); height:auto; z-index:1;" />
+      <img
+        src="/images/download-app-logo.svg"
+        alt=""
+        aria-hidden="true"
+        class="absolute pointer-events-none select-none"
+        style="left:1.5rem; top:50%; transform:translateY(-50%); width:clamp(180px,28vw,340px); height:auto; z-index:1;"
+      />
       <!-- Content bottom-left -->
-      <div class="absolute bottom-0 left-0 p-8 md:p-10" style="z-index:3;">
-        <h2 class="font-black text-white leading-tight mb-4" style="font-size:clamp(1.5rem,2.8vw,2.2rem); letter-spacing:-0.03em; text-transform:none;">
+      <div
+        class="absolute bottom-0 left-0 p-8 md:p-10"
+        style="z-index:3;">
+        <h2
+          class="font-black text-white leading-tight mb-4"
+          style="font-size:clamp(1.5rem,2.8vw,2.2rem); letter-spacing:-0.03em; text-transform:none;">
           {locale === 'da' ? 'Download appen' : 'Download the App'}
         </h2>
-        <a href="#" class="inline-flex items-center px-6 py-2.5 font-black text-sm rounded-full transition-opacity hover:opacity-80"
-           style="background:rgba(0,0,0,0.7); color:#fff; letter-spacing:-0.01em;">
+        <a
+          href="#"
+          class="inline-flex items-center px-6 py-2.5 font-black text-sm rounded-full transition-opacity hover:opacity-80"
+          style="background:rgba(0,0,0,0.7); color:#fff; letter-spacing:-0.01em;">
           Download
         </a>
       </div>
     </div>
 
     <!-- ABTV: Watch Live -->
-    <div class="relative overflow-hidden flex flex-col justify-between" style="min-height:clamp(400px,50vw,620px); border-radius:8px;">
+    <div
+      class="relative overflow-hidden flex flex-col justify-between"
+      style="min-height:clamp(400px,50vw,620px); border-radius:8px;">
       <div class="absolute inset-0">
-        <img src="/images/banner-watch-live.png" alt="ABTV" loading="lazy" class="w-full h-full object-cover object-center" />
-        <div class="absolute inset-0" style="background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);"></div>
+        <img
+          src="/images/banner-watch-live.png"
+          alt="ABTV"
+          loading="lazy"
+          class="w-full h-full object-cover object-center"
+        />
+        <div
+          class="absolute inset-0"
+          style="background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);">
+        </div>
       </div>
       <!-- Top: Watch Live -->
-      <div class="relative p-8 md:p-10" style="z-index:1;">
-        <h2 class="font-black text-white leading-none" style="font-size:clamp(3.5rem,9vw,7.5rem); letter-spacing:-0.05em; text-transform:none;">
-          Watch<br/>Live
+      <div
+        class="relative p-8 md:p-10"
+        style="z-index:1;">
+        <h2
+          class="font-black text-white leading-none"
+          style="font-size:clamp(3.5rem,9vw,7.5rem); letter-spacing:-0.05em; text-transform:none;">
+          Watch<br />Live
         </h2>
       </div>
       <!-- Bottom: subtitle + CTA -->
-      <div class="relative p-8 md:p-10" style="z-index:1;">
-        <p class="text-white mb-5" style="font-size:clamp(0.9rem,1.5vw,1.05rem); opacity:0.9; line-height:1.4; max-width:280px;">
-          {locale === 'da' ? 'Live, highlights & eksklusivt indhold' : 'Live, Recaps & Exclusive Content'}
+      <div
+        class="relative p-8 md:p-10"
+        style="z-index:1;">
+        <p
+          class="text-white mb-5"
+          style="font-size:clamp(0.9rem,1.5vw,1.05rem); opacity:0.9; line-height:1.4; max-width:280px;">
+          {
+            locale === 'da'
+              ? 'Live, highlights & eksklusivt indhold'
+              : 'Live, Recaps & Exclusive Content'
+          }
         </p>
-        <a href={localPath('/abtv')} class="inline-flex items-center px-6 py-2.5 font-black text-sm rounded-full transition-opacity hover:opacity-80"
-           style="background:#006A52; color:#fff; letter-spacing:-0.01em;">
+        <a
+          href={localPath('/abtv')}
+          class="inline-flex items-center px-6 py-2.5 font-black text-sm rounded-full transition-opacity hover:opacity-80"
+          style="background:#006A52; color:#fff; letter-spacing:-0.01em;">
           ABTV
         </a>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -470,92 +728,187 @@ const heroSlides = [
 <div style="background:#fff;">
   <div class="max-w-[1680px] mx-auto px-5 md:px-10">
     <div class="grid lg:grid-cols-[1fr_320px] gap-8">
-
       <!-- Left: Calendar list -->
-      <div class="overflow-hidden" style="border-radius:4px; border:1px solid #E5E7EB;">
-        <div class="px-6 py-3 text-center" style="background:#006A52;">
-          <span class="font-black text-white text-sm" style="letter-spacing:-0.02em;">
+      <div
+        class="overflow-hidden"
+        style="border-radius:4px; border:1px solid #E5E7EB;">
+        <div
+          class="px-6 py-3 text-center"
+          style="background:#006A52;">
+          <span
+            class="font-black text-white text-sm"
+            style="letter-spacing:-0.02em;">
             {locale === 'da' ? 'Kalender' : 'Calendar'}
           </span>
         </div>
-        <div class="grid font-black text-xs py-2 px-3 gap-2" style="background:#00FF1F; color:#006A52; grid-template-columns:110px 1fr 100px 1fr 80px 1fr 64px; letter-spacing:0.02em;">
+        <div
+          class="grid font-black text-xs py-2 px-3 gap-2"
+          style="background:#00FF1F; color:#006A52; grid-template-columns:110px 1fr 100px 1fr 80px 1fr 64px; letter-spacing:0.02em;">
           <span>{locale === 'da' ? 'Dato' : 'Date'}</span>
           <span>{locale === 'da' ? 'Hjemme' : 'Home'}</span>
-          <span class="text-center">{locale === 'da' ? 'Tid/Res.' : 'Time/Results'}</span>
+          <span class="text-center"
+            >{locale === 'da' ? 'Tid/Res.' : 'Time/Results'}</span
+          >
           <span>{locale === 'da' ? 'Ude' : 'Away'}</span>
           <span>{locale === 'da' ? 'Sæson' : 'Season'}</span>
           <span>{locale === 'da' ? 'Bane' : 'Ground'}</span>
-          <span class="text-right">{locale === 'da' ? 'Artikel' : 'Article'}</span>
+          <span class="text-right"
+            >{locale === 'da' ? 'Artikel' : 'Article'}</span
+          >
         </div>
-        {calRows.map((event: any, i: number) => {
-          const isHome = event.homeId === 9805;
-          const d = new Date(event.startDate);
-          const dateStr = d.toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-          const timeStr = d.toLocaleTimeString(locale === 'da' ? 'da-DK' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
-          const scoreOrTime = event.statusType === 'finished' && event.score ? event.score : timeStr;
-          const evtVenue = event.properties?.venue ?? (isHome ? 'Gladsaxe Stadion' : '');
-          const season = event.tournamentYear ?? '—';
-          return (
-            <div class="grid items-center px-3 py-2.5 text-xs gap-2" style={`grid-template-columns:110px 1fr 100px 1fr 80px 1fr 64px; background:${i % 2 === 0 ? '#fff' : '#F9F9F6'}; border-top:1px solid #EBEBEB;`}>
-              <span style="color:#333;">{dateStr}</span>
-              <div class="flex items-center gap-1.5">
-                {isHome
-                  ? <img src="/images/ab-crest.svg" alt="AB" width="18" height="18" />
-                  : <span class="inline-flex w-5 h-5 rounded-full items-center justify-center text-[0.45rem] font-black" style="background:#E5E7EB; color:#555;">{event.homeName?.slice(0,2)}</span>
-                }
-                <span class="font-bold truncate" style="color:#111;">{event.homeName}</span>
+        {
+          calRows.map((event: any, i: number) => {
+            const isHome = event.homeId === 9805;
+            const d = new Date(event.startDate);
+            const dateStr = d.toLocaleDateString(
+              locale === 'da' ? 'da-DK' : 'en-US',
+              { month: 'long', day: 'numeric', year: 'numeric' }
+            );
+            const timeStr = d.toLocaleTimeString(
+              locale === 'da' ? 'da-DK' : 'en-GB',
+              { hour: '2-digit', minute: '2-digit' }
+            );
+            const scoreOrTime =
+              event.statusType === 'finished' && event.score
+                ? event.score
+                : timeStr;
+            const evtVenue =
+              event.properties?.venue ?? (isHome ? 'Gladsaxe Stadion' : '');
+            const season = event.tournamentYear ?? '—';
+            return (
+              <div
+                class="grid items-center px-3 py-2.5 text-xs gap-2"
+                style={`grid-template-columns:110px 1fr 100px 1fr 80px 1fr 64px; background:${i % 2 === 0 ? '#fff' : '#F9F9F6'}; border-top:1px solid #EBEBEB;`}>
+                <span style="color:#333;">{dateStr}</span>
+                <div class="flex items-center gap-1.5">
+                  {isHome ? (
+                    <img
+                      src="/images/ab-crest.svg"
+                      alt="AB"
+                      width="18"
+                      height="18"
+                    />
+                  ) : (
+                    <span
+                      class="inline-flex w-5 h-5 rounded-full items-center justify-center text-[0.45rem] font-black"
+                      style="background:#E5E7EB; color:#555;">
+                      {event.homeName?.slice(0, 2)}
+                    </span>
+                  )}
+                  <span
+                    class="font-bold truncate"
+                    style="color:#111;">
+                    {event.homeName}
+                  </span>
+                </div>
+                <span
+                  class="font-black text-center"
+                  style="color:#006A52;">
+                  {scoreOrTime}
+                </span>
+                <div class="flex items-center gap-1.5">
+                  {!isHome ? (
+                    <img
+                      src="/images/ab-crest.svg"
+                      alt="AB"
+                      width="18"
+                      height="18"
+                    />
+                  ) : (
+                    <span
+                      class="inline-flex w-5 h-5 rounded-full items-center justify-center text-[0.45rem] font-black"
+                      style="background:#E5E7EB; color:#555;">
+                      {event.awayName?.slice(0, 2)}
+                    </span>
+                  )}
+                  <span
+                    class="font-bold truncate"
+                    style="color:#111;">
+                    {event.awayName}
+                  </span>
+                </div>
+                <span style="color:#888;">{season}</span>
+                <span
+                  class="truncate"
+                  style="color:#888;">
+                  {evtVenue}
+                </span>
+                {event.statusType === 'finished' ? (
+                  <a
+                    href={localPath('/kampe')}
+                    class="text-right font-bold"
+                    style="color:#006A52; text-decoration:none;">
+                    {locale === 'da' ? 'Referat' : 'Recap'}
+                  </a>
+                ) : (
+                  <span
+                    class="text-right"
+                    style="color:#bbb;">
+                    —
+                  </span>
+                )}
               </div>
-              <span class="font-black text-center" style="color:#006A52;">{scoreOrTime}</span>
-              <div class="flex items-center gap-1.5">
-                {!isHome
-                  ? <img src="/images/ab-crest.svg" alt="AB" width="18" height="18" />
-                  : <span class="inline-flex w-5 h-5 rounded-full items-center justify-center text-[0.45rem] font-black" style="background:#E5E7EB; color:#555;">{event.awayName?.slice(0,2)}</span>
-                }
-                <span class="font-bold truncate" style="color:#111;">{event.awayName}</span>
-              </div>
-              <span style="color:#888;">{season}</span>
-              <span class="truncate" style="color:#888;">{evtVenue}</span>
-              {event.statusType === 'finished'
-                ? <a href={localPath('/kampe')} class="text-right font-bold" style="color:#006A52; text-decoration:none;">{locale === 'da' ? 'Referat' : 'Recap'}</a>
-                : <span class="text-right" style="color:#bbb;">—</span>
-              }
-            </div>
-          );
-        })}
+            );
+          })
+        }
       </div>
 
       <!-- Right: Mini-calendar -->
-      <div class="overflow-hidden" style="border-radius:4px; border:1px solid #E5E7EB;">
-        <div class="px-4 py-3 flex items-center justify-between" style="background:#006A52;">
+      <div
+        class="overflow-hidden"
+        style="border-radius:4px; border:1px solid #E5E7EB;">
+        <div
+          class="px-4 py-3 flex items-center justify-between"
+          style="background:#006A52;">
           <span class="text-white/50 text-sm font-bold px-1">‹</span>
-          <span class="font-black text-white text-sm capitalize" style="letter-spacing:-0.02em;">{calMonthName}</span>
+          <span
+            class="font-black text-white text-sm capitalize"
+            style="letter-spacing:-0.02em;"
+            >{calMonthName}</span
+          >
           <span class="text-white/50 text-sm font-bold px-1">›</span>
         </div>
-        <div class="grid grid-cols-7 text-center py-2" style="background:#00FF1F;">
-          {calDayLabels.map((lbl: string) => (
-            <span class="text-xs font-black" style="color:#006A52;">{lbl}</span>
-          ))}
+        <div
+          class="grid grid-cols-7 text-center py-2"
+          style="background:#00FF1F;">
+          {
+            calDayLabels.map((lbl: string) => (
+              <span
+                class="text-xs font-black"
+                style="color:#006A52;">
+                {lbl}
+              </span>
+            ))
+          }
         </div>
         <div class="grid grid-cols-7 bg-white">
-          {calCells.map((cell: any) => (
-            <div
-              class="flex items-center justify-center text-xs relative"
-              style={`aspect-ratio:1; color:${!cell.valid ? 'transparent' : cell.isToday ? '#111' : cell.hasMatch ? '#006A52' : '#444'}; font-weight:${cell.isToday || cell.hasMatch ? '900' : '400'}; background:${cell.isToday ? '#F0F7F4' : 'transparent'};`}
-            >
-              {cell.valid ? cell.day : ''}
-              {cell.hasMatch && !cell.isToday && (
-                <span class="absolute" style="bottom:3px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#00FF1F; display:block;"></span>
-              )}
-            </div>
-          ))}
+          {
+            calCells.map((cell: any) => (
+              <div
+                class="flex items-center justify-center text-xs relative"
+                style={`aspect-ratio:1; color:${!cell.valid ? 'transparent' : cell.isToday ? '#111' : cell.hasMatch ? '#006A52' : '#444'}; font-weight:${cell.isToday || cell.hasMatch ? '900' : '400'}; background:${cell.isToday ? '#F0F7F4' : 'transparent'};`}>
+                {cell.valid ? cell.day : ''}
+                {cell.hasMatch && !cell.isToday && (
+                  <span
+                    class="absolute"
+                    style="bottom:3px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#00FF1F; display:block;"
+                  />
+                )}
+              </div>
+            ))
+          }
         </div>
-        <div class="text-center py-3" style="border-top:1px solid #E5E7EB;">
-          <a href={localPath('/kampe')} class="text-xs font-bold underline" style="color:#006A52;">
+        <div
+          class="text-center py-3"
+          style="border-top:1px solid #E5E7EB;">
+          <a
+            href={localPath('/kampe')}
+            class="text-xs font-bold underline"
+            style="color:#006A52;">
             {locale === 'da' ? 'Se alle kampe' : 'View all matches'}
           </a>
         </div>
       </div>
-
     </div>
   </div>
 </div>
@@ -565,31 +918,67 @@ const heroSlides = [
   <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-12 md:py-16">
     <!-- Heading block: centered, large -->
     <div class="text-center mb-10">
-      <h2 class="font-black leading-none mb-4" style="font-size:clamp(3.5rem,9vw,8rem); letter-spacing:-0.04em; color:#111; text-transform:none; text-align:center;">
+      <h2
+        class="font-black leading-none mb-4"
+        style="font-size:clamp(3.5rem,9vw,8rem); letter-spacing:-0.04em; color:#111; text-transform:none; text-align:center;">
         {locale === 'da' ? 'Matchday gear' : 'Matchday gear'}
       </h2>
-      <p class="font-bold" style="font-size:clamp(0.95rem,1.5vw,1.1rem); color:#111;">
-        {locale === 'da' ? 'Alt du har brug for til kampdag' : 'Everything you need for kickoff'}
+      <p
+        class="font-bold"
+        style="font-size:clamp(0.95rem,1.5vw,1.1rem); color:#111;">
+        {
+          locale === 'da'
+            ? 'Alt du har brug for til kampdag'
+            : 'Everything you need for kickoff'
+        }
       </p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-      {products.map((p) => (
-        <a href="https://shop.ab.dk" target="_blank" rel="noreferrer" class="product-card group block">
-          <div class="overflow-hidden mb-3" style="aspect-ratio:3/4; background:#F3F4F6;">
-            <img src={p.img} alt={p.name} loading="lazy" class="product-img w-full h-full object-cover object-top" />
-          </div>
-          <div class="flex items-baseline gap-2 mb-1">
-            <p class="text-sm font-black" style="color:#006A52;">{p.price}</p>
-            <p class="text-xs line-through" style="color:#9CA3AF;">{p.originalPrice}</p>
-          </div>
-          <p class="font-black leading-snug" style="font-size:clamp(1rem,1.6vw,1.2rem); color:#111; letter-spacing:-0.02em;">{p.name}</p>
-        </a>
-      ))}
+      {
+        products.map((p) => (
+          <a
+            href="https://shop.ab.dk"
+            target="_blank"
+            rel="noreferrer"
+            class="product-card group block">
+            <div
+              class="overflow-hidden mb-3"
+              style="aspect-ratio:3/4; background:#F3F4F6;">
+              <img
+                src={p.img}
+                alt={p.name}
+                loading="lazy"
+                class="product-img w-full h-full object-cover object-top"
+              />
+            </div>
+            <div class="flex items-baseline gap-2 mb-1">
+              <p
+                class="text-sm font-black"
+                style="color:#006A52;">
+                {p.price}
+              </p>
+              <p
+                class="text-xs line-through"
+                style="color:#9CA3AF;">
+                {p.originalPrice}
+              </p>
+            </div>
+            <p
+              class="font-black leading-snug"
+              style="font-size:clamp(1rem,1.6vw,1.2rem); color:#111; letter-spacing:-0.02em;">
+              {p.name}
+            </p>
+          </a>
+        ))
+      }
     </div>
     <div class="text-center mt-10">
-      <a href="https://shop.ab.dk" target="_blank" rel="noreferrer"
-         class="text-sm font-bold underline underline-offset-4"
-         style="color:#006A52;">
+      <a
+        href="https://shop.ab.dk"
+        target="_blank"
+        rel="noreferrer"
+        class="text-sm font-bold underline underline-offset-4"
+        style="color:#006A52;">
         {locale === 'da' ? 'Shop AB Store' : 'Shop the AB Store'}
       </a>
     </div>
@@ -600,42 +989,75 @@ const heroSlides = [
 <section style="background:#fff;">
   <!-- Hero banner -->
   <div class="w-full">
-    <img src="/images/squad-banner.png" alt="AB 1889 Squad" loading="lazy" class="w-full h-auto block" />
+    <img
+      src="/images/squad-banner.png"
+      alt="AB 1889 Squad"
+      loading="lazy"
+      class="w-full h-auto block"
+    />
   </div>
 
   <!-- Players -->
-  <div class="max-w-[1680px] mx-auto px-5 md:px-10 pt-8 pb-14 md:pt-10 md:pb-20">
+  <div
+    class="max-w-[1680px] mx-auto px-5 md:px-10 pt-8 pb-14 md:pt-10 md:pb-20">
     <!-- Position filter pills -->
-    <div class="flex gap-2 md:gap-3 overflow-x-auto pb-3 mb-8" style="scrollbar-width:none; -webkit-overflow-scrolling:touch;">
-      <button data-filter="keeper" class="squad-filter squad-filter-active shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+    <div
+      class="flex gap-2 md:gap-3 overflow-x-auto pb-3 mb-8"
+      style="scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+      <button
+        data-filter="keeper"
+        class="squad-filter squad-filter-active shrink-0 px-5 py-2 rounded-full font-black text-sm"
+        style="letter-spacing:-0.02em;">
         {locale === 'da' ? 'Målmand' : 'Goalkeeper'}
       </button>
-      <button data-filter="defender" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+      <button
+        data-filter="defender"
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm"
+        style="letter-spacing:-0.02em;">
         {locale === 'da' ? 'Forsvar' : 'Defense'}
       </button>
-      <button data-filter="midfielder" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+      <button
+        data-filter="midfielder"
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm"
+        style="letter-spacing:-0.02em;">
         {locale === 'da' ? 'Midtbane' : 'Midfield'}
       </button>
-      <button data-filter="forward" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+      <button
+        data-filter="forward"
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm"
+        style="letter-spacing:-0.02em;">
         {locale === 'da' ? 'Angriber' : 'Attack'}
       </button>
-      <button data-filter="coach" class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm" style="letter-spacing:-0.02em;">
+      <button
+        data-filter="coach"
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm"
+        style="letter-spacing:-0.02em;">
         {locale === 'da' ? 'Trænerstab' : 'Coaching'}
       </button>
     </div>
 
     <!-- Player grid -->
-    {sortedPlayers.length > 0 ? (
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5" id="squad-grid">
-        {sortedPlayers.map(player => (
-          <SquadCard player={player} locale={locale} />
-        ))}
-      </div>
-    ) : null}
+    {
+      sortedPlayers.length > 0 ? (
+        <div
+          class="grid grid-cols-2 lg:grid-cols-3 gap-x-3 md:gap-x-5"
+          id="squad-grid">
+          {sortedPlayers.map((player) => (
+            <SquadCard
+              player={player}
+              locale={locale}
+            />
+          ))}
+        </div>
+      ) : null
+    }
 
     <!-- See Full Squad link -->
     <div class="text-center mt-10">
-      <a href={localPath('/hold')} class="text-sm font-bold underline underline-offset-4" style="color:#006A52;">
+      <a
+        href={localPath('/hold')}
+        class="text-sm font-bold underline underline-offset-4"
+        style="color:#006A52;">
         {locale === 'da' ? 'Se hele holdet' : 'See Full Squad'}
       </a>
     </div>
@@ -644,28 +1066,32 @@ const heroSlides = [
 
 <style>
   .squad-filter {
-    background: #F3F4F6;
+    background: #f3f4f6;
     color: #374151;
     border: 1.5px solid transparent;
   }
   .squad-filter-active {
-    background: #006A52 !important;
+    background: #006a52 !important;
     color: #fff !important;
   }
 </style>
 
 <script>
-  (function() {
-    const filters = document.querySelectorAll('.squad-filter') as NodeListOf<HTMLElement>;
-    const cards = document.querySelectorAll('.squad-card') as NodeListOf<HTMLElement>;
+  (function () {
+    const filters = document.querySelectorAll(
+      '.squad-filter'
+    ) as NodeListOf<HTMLElement>;
+    const cards = document.querySelectorAll(
+      '.squad-card'
+    ) as NodeListOf<HTMLElement>;
 
     function setActive(btn: HTMLElement) {
-      filters.forEach(b => b.classList.remove('squad-filter-active'));
+      filters.forEach((b) => b.classList.remove('squad-filter-active'));
       btn.classList.add('squad-filter-active');
     }
 
     function filterCards(pos: string) {
-      cards.forEach(card => {
+      cards.forEach((card) => {
         card.style.display = card.dataset.position === pos ? '' : 'none';
       });
     }
@@ -674,7 +1100,7 @@ const heroSlides = [
     const defaultFilter = 'keeper';
     filterCards(defaultFilter);
 
-    filters.forEach(btn => {
+    filters.forEach((btn) => {
       btn.addEventListener('click', () => {
         const pos = btn.dataset.filter!;
         setActive(btn);
@@ -688,54 +1114,78 @@ const heroSlides = [
 <section style="background:#fff;">
   <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-14 md:py-20">
     <div class="text-center mb-10 md:mb-14">
-      <h2 class="font-black leading-none mb-4" style="font-size:clamp(3.5rem,9vw,8rem); letter-spacing:-0.05em; color:#111; text-transform:none; text-align:center;">
+      <h2
+        class="font-black leading-none mb-4"
+        style="font-size:clamp(3.5rem,9vw,8rem); letter-spacing:-0.05em; color:#111; text-transform:none; text-align:center;">
         {locale === 'da' ? 'Inde i klubben' : 'Inside the club'}
       </h2>
-      <p class="font-bold" style="color:#111; font-size:clamp(0.95rem,1.5vw,1.1rem);">
-        {locale === 'da' ? 'Seneste nyheder og opdateringer fra AB Fodbold.' : 'Latest news and updates from AB Football.'}
+      <p
+        class="font-bold"
+        style="color:#111; font-size:clamp(0.95rem,1.5vw,1.1rem);">
+        {
+          locale === 'da'
+            ? 'Seneste nyheder og opdateringer fra AB Fodbold.'
+            : 'Latest news and updates from AB Football.'
+        }
       </p>
     </div>
 
-    {articles.length > 0 ? (
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
-        {articles.slice(0, 4).map((article: any) => (
-          <a href={articlePath(article.slug)} class="article-card group block">
-            <div class="overflow-hidden mb-4" style="aspect-ratio:3/2; background:#D1D5DB;">
-              {article.image?.url ? (
-                <img
-                  src={strapiMediaUrl(article.image.url)}
-                  alt={decodeHtml(article.title)}
-                  loading="lazy"
-                  class="article-img w-full h-full object-cover"
-                />
-              ) : (
-                <div class="w-full h-full flex items-center justify-center font-black text-5xl" style="color:rgba(0,106,82,0.15);">AB</div>
+    {
+      articles.length > 0 ? (
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
+          {articles.slice(0, 4).map((article: any) => (
+            <a
+              href={articlePath(article.slug)}
+              class="article-card group block">
+              <div
+                class="overflow-hidden mb-4"
+                style="aspect-ratio:3/2; background:#D1D5DB;">
+                {article.image?.url ? (
+                  <img
+                    src={strapiMediaUrl(article.image.url)}
+                    alt={decodeHtml(article.title)}
+                    loading="lazy"
+                    class="article-img w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    class="w-full h-full flex items-center justify-center font-black text-5xl"
+                    style="color:rgba(0,106,82,0.15);">
+                    AB
+                  </div>
+                )}
+              </div>
+              {article.categories?.[0] && (
+                <p
+                  class="font-bold mb-2 underline underline-offset-2"
+                  style="font-size:0.8rem; color:#006A52;">
+                  {article.categories[0].name}
+                </p>
               )}
-            </div>
-            {article.categories?.[0] && (
-              <p class="font-bold mb-2 underline underline-offset-2" style="font-size:0.8rem; color:#006A52;">
-                {article.categories[0].name}
-              </p>
-            )}
-            <h3 class="font-black leading-snug" style="font-size:clamp(1.05rem,1.8vw,1.4rem); letter-spacing:-0.03em; color:#111;">
-              {decodeHtml(article.title)}
-            </h3>
-          </a>
-        ))}
-      </div>
-    ) : (
-      <p class="text-center py-12 text-sm" style="color:#9CA3AF;">
-        {locale === 'da' ? 'Ingen nyheder endnu.' : 'No news yet.'}
-      </p>
-    )}
+              <h3
+                class="font-black leading-snug"
+                style="font-size:clamp(1.05rem,1.8vw,1.4rem); letter-spacing:-0.03em; color:#111;">
+                {decodeHtml(article.title)}
+              </h3>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p
+          class="text-center py-12 text-sm"
+          style="color:#9CA3AF;">
+          {locale === 'da' ? 'Ingen nyheder endnu.' : 'No news yet.'}
+        </p>
+      )
+    }
 
     <div class="mt-12 text-center">
-      <a href={localPath('/nyheder')}
-         class="text-sm font-bold underline underline-offset-4"
-         style="color:#006A52;">
+      <a
+        href={localPath('/nyheder')}
+        class="text-sm font-bold underline underline-offset-4"
+        style="color:#006A52;">
         {locale === 'da' ? 'Se alle nyheder' : 'See More News'}
       </a>
     </div>
   </div>
 </section>
-
