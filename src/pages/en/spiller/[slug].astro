@@ -67,20 +67,19 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
 <Base locale="en" title={pageTitle}>
   <!-- ── Hero ───────────────────────────────────────────────────────── -->
   <div class="relative w-full overflow-hidden"
-       style="background:linear-gradient(135deg, #004A38 0%, #006A52 55%, #007A5E 100%); min-height:clamp(460px,36vw,560px);">
+       style="background:linear-gradient(to right, #002A1A 0%, #006A52 42%, #00C018 100%); min-height:clamp(460px,36vw,560px);">
 
     <!-- AB 1889 logo watermark behind photo -->
     <img src="/images/logo-behind-player.svg" alt="" aria-hidden="true"
          class="absolute hidden md:block pointer-events-none select-none"
          style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:1;
-                width:clamp(320px,44vw,580px); height:auto;
-                filter:brightness(0) opacity(0.18);" />
+                width:clamp(320px,44vw,580px); height:auto; opacity:0.45;" />
 
-    <!-- Circular crest behind player photo -->
+    <!-- Circular crest — right side, visible against bright green -->
     <img src="/images/crest-behind-player.svg" alt="" aria-hidden="true"
          class="absolute hidden lg:block pointer-events-none select-none"
-         style="left:55%; top:50%; transform:translate(-50%,-50%); z-index:1;
-                width:clamp(300px,42vw,520px); height:auto; opacity:0.22;" />
+         style="right:-5%; top:50%; transform:translateY(-50%); z-index:1;
+                width:clamp(280px,40vw,500px); height:auto; opacity:0.45;" />
 
     <!-- Player photo (no side gradients) -->
     {photoUrl && (
@@ -102,7 +101,7 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
         Akademisk Boldklub 1889
       </p>
       <h1 class="font-black text-white leading-none mb-3"
-          style="font-size:clamp(2rem,4.5vw,4.5rem); letter-spacing:-0.04em;">
+          style="font-size:clamp(2rem,4.5vw,4.5rem); letter-spacing:-0.04em; text-transform:none;">
         {name}
       </h1>
       <p class="text-white mb-10" style="font-size:clamp(1rem,1.4vw,1.25rem); opacity:0.7;">
