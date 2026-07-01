@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
 import type { SIPlayerProfile } from '@/lib/si/client';
+import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
 import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
 
 export const prerender = false;
@@ -27,12 +28,16 @@ if (!player) {
 
 const { name, position, countryName, birthDate, height } = player;
 
-// Get jersey number from the squad list
-const squadPlayers = await fetchABPlayers('en').catch(() => []);
-const squadPlayer = squadPlayers.find(p => p.id === playerId);
-const shirtNumber = squadPlayer?.shirtNumber;
+// Fetch in parallel: jersey number, season stats, CMS content
+const [squadPlayers, matchStats, cmsPlayer] = await Promise.all([
+  fetchABPlayers('en').catch(() => []),
+  fetchPlayerStats(playerId).catch(() => []),
+  fetchPlayerCmsData(playerId, 'en').catch(() => null),
+]);
 
+const shirtNumber = squadPlayers.find(p => p.id === playerId)?.shirtNumber;
 const photoUrl = getPlayerPhotoUrl(name);
+const seasonStats = aggregateSeasonStats(matchStats);
 
 const posLabels: Record<string, string> = {
   keeper:     'Goalkeeper',
@@ -52,8 +57,11 @@ const dob = birthDate
     })
   : null;
 
-const matchStats = await fetchPlayerStats(playerId).catch(() => []);
-const seasonStats = aggregateSeasonStats(matchStats);
+// Gallery images with absolute URLs
+const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
+  ...img,
+  src: strapiMediaUrl(img.url),
+}));
 ---
 
 <Base locale="en" title={pageTitle}>
@@ -119,13 +127,25 @@ const seasonStats = aggregateSeasonStats(matchStats);
   </div>
 
   <!-- ── Metadata bar ───────────────────────────────────────────────── -->
-  <div style="background:#fff; border-top:1px solid #E5E7EB; border-bottom:1px solid #E5E7EB;">
+  <div style="background:#fff; border-bottom:1px solid #E5E7EB;">
     <div class="max-w-7xl mx-auto px-5 md:px-12">
       <div class="flex overflow-x-auto divide-x divide-gray-200">
         <div class="py-5 pr-8 flex-none text-center">
           <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Position</p>
           <p class="font-black" style="font-size:0.9rem; color:#111;">{posLabel}</p>
         </div>
+        {cmsPlayer?.nickname && (
+          <div class="py-5 px-8 flex-none text-center">
+            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Nickname</p>
+            <p class="font-black" style="font-size:0.9rem; color:#111;">{cmsPlayer.nickname}</p>
+          </div>
+        )}
+        {cmsPlayer?.formerClubs && (
+          <div class="py-5 px-8 flex-none text-center">
+            <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Former Clubs</p>
+            <p class="font-black" style="font-size:0.9rem; color:#111;">{cmsPlayer.formerClubs}</p>
+          </div>
+        )}
         {countryName && (
           <div class="py-5 px-8 flex-none text-center">
             <p class="mb-1.5 uppercase" style="font-size:0.7rem; color:#6B7280; letter-spacing:0.14em;">Nationality</p>
@@ -148,45 +168,106 @@ const seasonStats = aggregateSeasonStats(matchStats);
     </div>
   </div>
 
-  <!-- ── Season stats ──────────────────────────────────────────────── -->
-  {seasonStats.length > 0 && (
-    <section style="background:#fff;">
-      <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14">
-        <p class="font-bold uppercase mb-2" style="font-size:0.6rem; color:#006A52; letter-spacing:0.2em;">
-          Career
-        </p>
-        <h2 class="font-black mb-6" style="font-size:clamp(1.5rem,3vw,2.25rem); letter-spacing:-0.03em; color:#111;">
-          Season Statistics
-        </h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm border-collapse">
-            <thead>
-              <tr style="background:#006A52;">
-                <th class="text-left py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Season</th>
-                <th class="text-left py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Club</th>
-                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Apps</th>
-                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Goals</th>
-                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Assists</th>
-                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Yellow</th>
-                <th class="text-center py-3 px-4 font-black text-xs" style="color:#fff; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;">Red</th>
-              </tr>
-            </thead>
-            <tbody>
-              {seasonStats.map((s, i) => (
-                <tr style={i % 2 === 0 ? 'background:#fff;' : 'background:#F7F7F5;'}>
-                  <td class="py-3 px-4 font-black text-sm" style="color:#006A52; white-space:nowrap;">{s.seasonName}</td>
-                  <td class="py-3 px-4" style="color:#111; white-space:nowrap;">{s.teamName}</td>
-                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.appearances}</td>
-                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.goals}</td>
-                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.assists}</td>
-                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.yellowCards}</td>
-                  <td class="py-3 px-4 text-center font-bold" style="color:#111;">{s.redCards}</td>
-                </tr>
+  <!-- ── Bio + Latest Results ───────────────────────────────────────── -->
+  <section style="background:#fff;">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
+
+        <!-- Left: Player Bio -->
+        <div>
+          <h2 class="font-black text-xl mb-4" style="color:#111;">Player Bio</h2>
+          {cmsPlayer?.bio ? (
+            <div class="space-y-4">
+              {cmsPlayer.bio.split('\n\n').filter(Boolean).map(para => (
+                <p style="color:#444; line-height:1.75; font-size:0.9375rem;">{para}</p>
               ))}
-            </tbody>
-          </table>
+            </div>
+          ) : (
+            <p style="color:#aaa; font-size:0.875rem; line-height:1.7;">
+              Player bio coming soon.
+            </p>
+          )}
         </div>
+
+        <!-- Right: Latest Results -->
+        {seasonStats.length > 0 && (
+          <div>
+            <div style="background:#00FF1F; padding:0.75rem 1.25rem;">
+              <h2 class="font-black text-xl" style="color:#006A52;">Latest Results</h2>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm border-collapse">
+                <thead>
+                  <tr style="background:#006A52;">
+                    <th class="text-left py-2.5 px-4 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Season</th>
+                    <th class="text-left py-2.5 px-4 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Club</th>
+                    <th class="text-center py-2.5 px-3 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Goals</th>
+                    <th class="text-center py-2.5 px-3 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Assists</th>
+                    <th class="text-center py-2.5 px-3 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Yellow Cards</th>
+                    <th class="text-center py-2.5 px-3 font-black text-xs" style="color:#00FF1F; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Red Cards</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {seasonStats.map((s, i) => (
+                    <tr style={i % 2 === 0 ? 'background:#F9FAF9;' : 'background:#fff;'}>
+                      <td class="py-3 px-4 font-black text-sm" style="color:#006A52; white-space:nowrap;">{s.seasonName}</td>
+                      <td class="py-3 px-4" style="color:#111; white-space:nowrap;">{s.teamName}</td>
+                      <td class="py-3 px-3 text-center font-bold" style="color:#111;">{s.goals}</td>
+                      <td class="py-3 px-3 text-center font-bold" style="color:#111;">{s.assists}</td>
+                      <td class="py-3 px-3 text-center font-bold" style="color:#111;">{s.yellowCards}</td>
+                      <td class="py-3 px-3 text-center font-bold" style="color:#111;">{s.redCards}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
       </div>
+    </div>
+  </section>
+
+  <!-- ── Quote ──────────────────────────────────────────────────────── -->
+  {cmsPlayer?.quote && (
+    <section style="background:#fff; border-top:1px solid #E5E7EB; padding:5rem 0;">
+      <div class="max-w-4xl mx-auto px-5 md:px-12 text-center">
+        <blockquote class="font-black italic leading-tight"
+                    style="font-size:clamp(1.75rem,4.5vw,3.5rem); color:#111; letter-spacing:-0.03em;">
+          &ldquo;{cmsPlayer.quote}&rdquo;
+        </blockquote>
+        <p class="mt-5" style="color:#888; font-size:0.875rem; letter-spacing:0.05em;">
+          — {name}
+        </p>
+      </div>
+    </section>
+  )}
+
+  <!-- ── Photo gallery ─────────────────────────────────────────────── -->
+  {galleryImages.length > 0 && (
+    <section>
+      <!-- Full-width first image -->
+      <div class="w-full overflow-hidden" style="aspect-ratio:16/7;">
+        <img
+          src={galleryImages[0].src}
+          alt={galleryImages[0].alternativeText ?? name}
+          class="w-full h-full object-cover"
+        />
+      </div>
+      <!-- 3-column grid for remaining images -->
+      {galleryImages.length > 1 && (
+        <div class="grid grid-cols-3">
+          {galleryImages.slice(1, 4).map(img => (
+            <div class="overflow-hidden" style="aspect-ratio:1/1;">
+              <img
+                src={img.src}
+                alt={img.alternativeText ?? name}
+                class="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   )}
 </Base>

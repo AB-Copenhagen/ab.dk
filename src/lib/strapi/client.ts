@@ -80,6 +80,39 @@ export async function fetchDocument<T = unknown>(
   return result as T;
 }
 
+// ── Player CMS data ───────────────────────────────────────────────────────────
+
+export interface StrapiPlayerGalleryImage {
+  url: string;
+  alternativeText?: string;
+  width: number;
+  height: number;
+}
+
+export interface StrapiPlayer {
+  siPlayerId: number;
+  nickname?: string;
+  formerClubs?: string;
+  bio?: string;
+  quote?: string;
+  gallery?: StrapiPlayerGalleryImage[];
+}
+
+/** Fetch optional CMS content for a player by their SI player ID. Returns null if not found. */
+export async function fetchPlayerCmsData(
+  siPlayerId: number,
+  locale = 'da',
+): Promise<StrapiPlayer | null> {
+  const results = await fetchCollectionType<StrapiPlayer[]>('players', {
+    filters: { siPlayerId: { $eq: siPlayerId } },
+    populate: ['gallery'],
+    locale,
+  }).catch(() => []);
+  return results[0] ?? null;
+}
+
+// ── Media helpers ─────────────────────────────────────────────────────────────
+
 const WASABI_HOST_RE = /^https?:\/\/[^/]*wasabisys\.com\//;
 
 export function strapiMediaUrl(url: string | null | undefined): string {
