@@ -8,8 +8,6 @@
  */
 import { abConfig, siConfig } from '../config/ab';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
 export type Locale = 'da' | 'en';
 
 export type EventStatus =
@@ -31,7 +29,20 @@ export interface SIEvent {
   sportId: number;
   properties?: {
     venue?: string;
+    venueName?: string;
   };
+}
+
+const TEAM_LOGO_CDN =
+  (import.meta.env.SI_TEAM_LOGO_BASE_URL as string | undefined)?.replace(
+    /\/$/,
+    ''
+  ) ?? 'https://dxugi372p6nmc.cloudfront.net/spdk/current/64x64';
+
+/** Team crest URL — local AB asset or SI CloudFront CDN by team ID. */
+export function getTeamLogoSrc(teamId: number): string {
+  if (teamId === abConfig.teamId) return '/images/ab-crest.svg';
+  return `${TEAM_LOGO_CDN}/${teamId}/teamlogo.png`;
 }
 
 export interface SIIncident {

@@ -1,7 +1,6 @@
 ---
-import { abConfig } from '@/lib/config/ab';
 import { translate, type Locale } from '@/lib/i18n';
-import { fetchStandings, type SIStandingRow } from '@/lib/si/client';
+import { fetchStandings, getTeamLogoSrc, type SIStandingRow } from '@/lib/si/client';
 
 interface Props {
   locale: Locale;
@@ -25,10 +24,6 @@ const headers =
     ? ['#', 'Hold', 'K', 'V', 'U', 'T', 'F', 'M', 'Mål', 'Pt']
     : ['Pos', 'Team', 'P', 'W', 'D', 'L', 'F', 'A', 'GD', 'Pts'];
 
-function teamLogoSrc(teamId: number): string {
-  if (teamId === abConfig.teamId) return '/images/ab-crest.svg';
-  return `https://content.tjekscores.dk/Img/TeamImages/${teamId}.png`;
-}
 ---
 
 <div class="standings-widget">
@@ -101,10 +96,8 @@ function teamLogoSrc(teamId: number): string {
                     <span class="standings-team">
                       <span class="standings-team-logo">
                         <img
-                          src={teamLogoSrc(row.teamId)}
+                          src={getTeamLogoSrc(row.teamId)}
                           alt=""
-                          width="40"
-                          height="40"
                           loading="lazy"
                           onerror="this.closest('.standings-team-logo')?.classList.add('standings-team-logo--fallback')"
                         />
@@ -290,16 +283,16 @@ function teamLogoSrc(teamId: number): string {
 
   .standings-team-logo {
     position: relative;
-    display: grid;
-    place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
   }
 
   .standings-team-logo img {
-    width: 2.5rem;
-    height: 2.5rem;
+    max-height: 2.5rem;
+    width: auto;
+    height: auto;
     object-fit: contain;
   }
 

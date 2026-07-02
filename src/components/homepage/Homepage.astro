@@ -1,8 +1,11 @@
 ---
 import { fetchCollectionType } from '@/lib/strapi/client';
-import { fetchABEvents, fetchABPlayers, type SIPlayer } from '@/lib/si/client';
+import { fetchABEvents, fetchABPlayers, getTeamLogoSrc, type SIPlayer } from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
 import { strapiMediaUrl } from '@/lib/strapi/client';
 import SquadCard from '@/components/SquadCard.astro';
+import MatchScheduleList from '@/components/MatchScheduleList.astro';
+import MiniCalendar from '@/components/MiniCalendar.astro';
 import { translate } from '@/lib/i18n';
 import { truncate, decodeHtml } from '@/lib/utils';
 import StandingsWidget from '@/components/StandingsWidget.astro';
@@ -43,24 +46,25 @@ const recentResults = events
   .filter((e: any) => e.statusType === 'finished')
   .slice(0, 5);
 
-const abHome = nextMatch ? nextMatch.homeId === 9805 : false;
+const abHome = nextMatch ? nextMatch.homeId === abConfig.teamId : false;
 const opponent = nextMatch
   ? abHome
     ? nextMatch.awayName
     : nextMatch.homeName
   : null;
-const oppLogo = nextMatch
+const opponentId = nextMatch
   ? abHome
-    ? nextMatch.awayLogo
-    : nextMatch.homeLogo
+    ? nextMatch.awayId
+    : nextMatch.homeId
   : null;
+const oppLogo = opponentId ? getTeamLogoSrc(opponentId) : null;
 const matchDateStr = nextMatch
   ? new Date(nextMatch.startDate).toLocaleDateString(
-      locale === 'da' ? 'da-DK' : 'en-GB',
+      locale === 'da' ? 'da-DK' : 'en-US',
       {
         weekday: 'long',
-        day: 'numeric',
         month: 'long',
+        day: 'numeric',
       }
     )
   : null;
@@ -70,49 +74,10 @@ const matchTimeStr = nextMatch
       {
         hour: '2-digit',
         minute: '2-digit',
+        hour12: false,
       }
     )
   : null;
-const venue = nextMatch?.properties?.venue ?? null;
-
-// Calendar widget
-const _now = new Date();
-const calYear = _now.getFullYear();
-const calMonth = _now.getMonth();
-const calToday = _now.getDate();
-const calDaysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-const _firstDow = new Date(calYear, calMonth, 1).getDay();
-const calBlanks = _firstDow === 0 ? 6 : _firstDow - 1;
-const calMonthOnly = new Date(calYear, calMonth, 1).toLocaleDateString(
-  locale === 'da' ? 'da-DK' : 'en-US',
-  { month: 'long' }
-);
-const calDayLabels = translate(locale, 'calendarDayLabels').split(',');
-const calMatchDays = new Set<number>(
-  events
-    .filter((e: any) => {
-      const d = new Date(e.startDate);
-      return d.getFullYear() === calYear && d.getMonth() === calMonth;
-    })
-    .map((e: any) => new Date(e.startDate).getDate() as number)
-);
-const calTotalCells = Math.ceil((calBlanks + calDaysInMonth) / 7) * 7;
-const calCells = Array.from({ length: calTotalCells }, (_, i) => {
-  const day = i - calBlanks + 1;
-  const valid = day >= 1 && day <= calDaysInMonth;
-  return {
-    day,
-    valid,
-    isToday: valid && day === calToday,
-    hasMatch: valid && calMatchDays.has(day),
-  };
-});
-const calRows = [...events]
-  .sort(
-    (a: any, b: any) =>
-      new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-  )
-  .slice(0, 7);
 
 function articlePath(slug: string) {
   return locale === 'en' ? `/en/blog/${slug}` : `/blog/${slug}`;
@@ -200,6 +165,7 @@ const heroSlides = [
       transform: scaleX(1);
     }
   }
+
 </style>
 
 <!-- ── Hero Slider ───────────────────────────────────────── -->
@@ -241,7 +207,7 @@ const heroSlides = [
           </p>
           <a
             href={slide.ctaUrl}
-            class="inline-flex items-center px-8 py-3 font-black text-sm rounded-full bg-ab-beige text-[#111] tracking-[-0.02em] hover:opacity-90 transition-opacity">
+            class="btn btn-lg btn-beige">
             {slide.ctaLabel}
           </a>
         </div>
@@ -328,10 +294,10 @@ const heroSlides = [
   id="player-standings"
   class="content-container py-8 md:py-10 bg-white">
   <div
-    class="grid lg:grid-cols-[clamp(280px,28vw,460px)_1fr] gap-8 xl:gap-12 items-start">
+    class="grid lg:grid-cols-[clamp(280px,28vw,460px)_1fr] gap-8 xl:gap-10 items-start">
     <!-- Left: Player photo + next match + buy tickets -->
-    <div id="player-featured" class="flex flex-col gap-5">
-      <div class="relative overflow-hidden rounded-xl bg-rich-black">
+    <div id="player-featured" class="flex flex-col">
+      <div class="relative overflow-hidden  bg-rich-black">
         <img
           src="/images/player-featured.png"
           alt="AB 1889 Player"
@@ -342,12 +308,12 @@ const heroSlides = [
           class="absolute inset-0 bg-linear-to-t from-black/55 to-transparent">
         </div>
         <div
-          class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+          class="absolute left-4 top-4 flex items-start justify-between">
           <a
             href="https://billetter.ab.dk"
             target="_blank"
             rel="noreferrer"
-            class="inline-flex items-center px-5 py-2.5 font-black text-xs rounded-full bg-ab-beige text-[#111] tracking-[-0.01em]">
+            class="btn btn-md btn-green">
             {translate(locale, 'buyTickets')}
           </a>
         </div>
@@ -358,52 +324,55 @@ const heroSlides = [
         nextMatch && opponent && (
           <div
             id="next-match"
-            class="rounded-xl border border-gray-200 overflow-hidden">
-            <div class="px-4 py-2.5 text-xs font-black uppercase bg-ab-green text-white/60 tracking-[0.18em]">
+            class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col">
+            <h3
+              class="font-black text-white leading-[0.86] tracking-[-0.04em] mb-6"
+              style="font-size:clamp(1.75rem,3vw,2.1875rem)">
               {translate(locale, 'nextMatch')}
-            </div>
-            <div class="px-4 py-4 bg-white">
-              {matchDateStr && (
-                <p class="text-xs mb-3 text-gray-400 tracking-[0.06em]">
-                  {matchDateStr} · {matchTimeStr}
-                </p>
-              )}
-              <div class="flex items-center justify-between gap-2">
-                <div class="flex flex-col items-center gap-1.5">
-                  <img
-                    src="/images/ab-crest.svg"
-                    alt="AB"
-                    width="44"
-                    height="44"
-                    class="opacity-[0.85]"
-                  />
-                  <span class="text-xs font-black text-[#111]">AB</span>
-                </div>
-                <span class="text-2xl font-black text-ab-gold tracking-[-0.04em]">
-                  VS
+            </h3>
+            <div class="flex items-center justify-between gap-4 flex-1">
+              <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
+                <img
+                  src="/images/ab-logo-alt.png"
+                  alt="AB"
+                  width="81"
+                  height="81"
+                  class="size-[81px] object-contain"
+                />
+                <span class="text-sm font-normal text-white text-center tracking-[-0.02em]">
+                  AB
                 </span>
-                <div class="flex flex-col items-center gap-1.5">
-                  {oppLogo ? (
-                    <img
-                      src={oppLogo}
-                      alt={opponent}
-                      width="44"
-                      height="44"
-                      class="object-contain"
-                    />
-                  ) : (
-                    <div class="w-11 h-11 rounded-full flex items-center justify-center text-xs font-black bg-gray-100 text-gray-500">
-                      {opponent.slice(0, 2).toUpperCase()}
-                    </div>
-                  )}
-                  <span class="text-xs font-black text-center text-[#111] max-w-20 leading-tight">
-                    {opponent}
-                  </span>
-                </div>
               </div>
-              {venue && (
-                <p class="text-xs mt-3 text-center text-gray-400">{venue}</p>
-              )}
+              <div class="flex flex-col items-center text-center text-white flex-1 min-w-0">
+                {matchDateStr && (
+                  <p class="text-lg font-normal tracking-[-0.02em]">
+                    {matchDateStr}
+                  </p>
+                )}
+                {matchTimeStr && (
+                  <p class="text-lg font-black tracking-[-0.02em]">
+                    {matchTimeStr}
+                  </p>
+                )}
+              </div>
+              <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
+                {oppLogo ? (
+                  <img
+                    src={oppLogo}
+                    alt={opponent}
+                    width="81"
+                    height="81"
+                    class="size-[81px] object-contain"
+                  />
+                ) : (
+                  <div class="size-[81px] rounded-full flex items-center justify-center text-sm font-black bg-white/10 text-white">
+                    {opponent.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <span class="text-sm font-normal text-center text-white tracking-[-0.02em] leading-tight">
+                  {opponent}
+                </span>
+              </div>
             </div>
           </div>
         )
@@ -521,7 +490,7 @@ const heroSlides = [
     <!-- Download App -->
     <div
       id="download-app"
-      class="relative overflow-hidden flex flex-col justify-between min-h-[clamp(400px,50vw,620px)] rounded-lg">
+      class="relative overflow-hidden flex flex-col justify-between min-h-[clamp(400px,50vw,620px)]">
       <!-- Background photo (gradient + players composited) -->
       <div class="absolute inset-0">
         <img
@@ -537,7 +506,7 @@ const heroSlides = [
         src="/images/download-app-logo.svg"
         alt=""
         aria-hidden="true"
-        class="absolute pointer-events-none select-none left-6 top-1/2 -translate-y-1/2 w-[clamp(180px,28vw,340px)] h-auto z-1"
+        class="absolute pointer-events-none select-none left-6 top-6 w-[clamp(180px,28vw,340px)] h-auto z-1"
       />
       <!-- Content bottom-left -->
       <div class="absolute bottom-0 left-0 p-8 md:p-10 z">
@@ -547,8 +516,8 @@ const heroSlides = [
         </p>
         <a
           href="#"
-          class="inline-flex items-center px-6 py-2.5 font-black text-sm rounded-full bg-black/70 text-white tracking-[-0.01em] transition-opacity hover:opacity-80">
-          Download
+          class="btn btn-md btn-dark">
+          {translate(locale, 'download')}
         </a>
       </div>
     </div>
@@ -556,7 +525,7 @@ const heroSlides = [
     <!-- ABTV: Watch Live -->
     <div
       id="abtv"
-      class="relative overflow-hidden flex flex-col justify-between min-h-[clamp(400px,50vw,620px)] rounded-lg">
+      class="relative overflow-hidden flex flex-col justify-between min-h-[clamp(400px,50vw,620px)]">
       <div class="absolute inset-0">
         <img
           src="/images/banner-watch-live.png"
@@ -571,8 +540,8 @@ const heroSlides = [
       <!-- Top: Watch Live -->
       <div class="relative p-8 md:p-10 z-1">
         <h2
-          class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7.5rem)] tracking-[-0.05em] normal-case">
-          Watch<br />Live
+          class="font-black text-white leading-[0.82] text-[clamp(3.5rem,9vw,7.5rem)] tracking-tighter normal-case whitespace-pre-line">
+          {translate(locale, 'watchLive')}
         </h2>
       </div>
       <!-- Bottom: subtitle + CTA -->
@@ -583,7 +552,7 @@ const heroSlides = [
         </p>
         <a
           href={localPath('/abtv')}
-          class="inline-flex items-center px-6 py-2.5 font-black text-sm rounded-full bg-ab-green text-white tracking-[-0.01em] transition-opacity hover:opacity-80">
+          class="btn btn-md btn-green">
           ABTV
         </a>
       </div>
@@ -595,139 +564,8 @@ const heroSlides = [
 <section id="calendar" class="bg-white">
   <div class="content-container py-8 md:py-10">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-      <!-- Left: Calendar list -->
-      <div id="calendar-list" class="lg:col-span-8 overflow-x-auto">
-        <div class="min-w-[560px]">
-          <!-- Header -->
-          <div class="px-6 py-5 flex items-center justify-between bg-ab-green">
-            <h2
-              class="font-black text-white leading-none tracking-[-0.04em] whitespace-pre-line"
-              style="font-size:clamp(1.5rem,2.8vw,2.1875rem)">
-              {translate(locale, 'latestResults')}
-            </h2>
-            <a
-              href={localPath('/kampe')}
-              class="font-normal text-white underline text-[1.125rem] tracking-[-0.02em] shrink-0 ml-6">
-              {translate(locale, 'viewAllMatches')}
-            </a>
-          </div>
-
-          <!-- Column headers -->
-          <div
-            class="grid font-black text-[1rem] py-2.5 px-6 bg-ab-neon text-ab-green tracking-[-0.04em] grid-cols-[2fr_1.5fr_100px_1.5fr_1.5fr]">
-            <span>{translate(locale, 'date')}</span>
-            <span class="text-right">{translate(locale, 'homeTeam')}</span>
-            <span class="text-center">{translate(locale, 'score')}</span>
-            <span>{translate(locale, 'awayTeam')}</span>
-            <span>{translate(locale, 'ground')}</span>
-          </div>
-
-          <!-- Rows -->
-          {
-            calRows.map((event: any, i: number) => {
-              const d = new Date(event.startDate);
-              const weekday = d.toLocaleDateString(
-                locale === 'da' ? 'da-DK' : 'en-US',
-                { weekday: 'long' }
-              );
-              const monthDay = d.toLocaleDateString(
-                locale === 'da' ? 'da-DK' : 'en-US',
-                { month: 'long', day: 'numeric' }
-              );
-              const timeStr = d.toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true,
-              });
-              const dateTimeStr = `${weekday}, ${monthDay} – ${timeStr}`;
-              const scoreOrTime =
-                event.statusType === 'finished' && event.score
-                  ? event.score
-                  : timeStr;
-              const evtVenue =
-                event.properties?.venue ??
-                (event.homeId === 9805 ? 'Gladsaxe Stadion' : '');
-              return (
-                <div
-                  class={`grid items-center px-6 py-4 text-[1.125rem] tracking-[-0.02em] gap-2 grid-cols-[2fr_1.5fr_100px_1.5fr_1.5fr] border-t border-[#EBEBEB] ${i % 2 === 0 ? 'bg-white' : 'bg-[#f4f4f4]'}`}>
-                  <span class="font-black text-ab-green">{dateTimeStr}</span>
-                  <span class="text-right font-normal text-ab-green">
-                    {event.homeName}
-                  </span>
-                  <span class="text-center font-normal text-ab-green">
-                    {scoreOrTime}
-                  </span>
-                  <span class="font-normal text-ab-green">{event.awayName}</span>
-                  <span class="font-normal text-ab-green truncate">
-                    {evtVenue}
-                  </span>
-                </div>
-              );
-            })
-          }
-        </div>
-      </div>
-
-      <!-- Right: Mini-calendar -->
-      <div id="mini-calendar" class="lg:col-span-4 overflow-hidden">
-        <!-- Header -->
-        <div class="px-6 py-5 flex items-center justify-between bg-ab-green">
-          <span
-            class="text-white text-[1.75rem] leading-none font-light select-none"
-            aria-hidden="true">‹</span>
-          <h3
-            class="font-black text-white text-center leading-[0.86] tracking-[-0.04em] capitalize"
-            style="font-size:clamp(1.5rem,2.8vw,2.1875rem)">
-            {calMonthOnly}
-            <br />
-            {translate(locale, 'monthSchedule')}
-          </h3>
-          <span
-            class="text-white text-[1.75rem] leading-none font-light select-none"
-            aria-hidden="true">›</span>
-        </div>
-
-        <!-- Day labels -->
-        <div class="grid grid-cols-7 text-center py-2.5 bg-ab-neon">
-          {
-            calDayLabels.map((lbl: string) => (
-              <span class="text-[1rem] font-black text-ab-green tracking-[-0.04em]">
-                {lbl}
-              </span>
-            ))
-          }
-        </div>
-
-        <!-- Calendar grid -->
-        <div class="grid grid-cols-7 bg-[#f4f4f4]">
-          {
-            calCells.map((cell: any) => (
-              <div
-                class:list={[
-                  'flex items-center justify-center min-h-[4.5rem] text-[1rem] tracking-[-0.04em] text-ab-green',
-                  !cell.valid && 'invisible',
-                  cell.valid &&
-                    (cell.isToday
-                      ? 'bg-white font-black'
-                      : cell.hasMatch
-                        ? 'font-black'
-                        : 'font-normal'),
-                ]}>
-                {cell.valid ? cell.day : ''}
-              </div>
-            ))
-          }
-        </div>
-
-        <!-- Footer -->
-        <div class="text-center py-5 bg-[#f4f4f4]">
-          <a
-            href={localPath('/kampe')}
-            class="text-[1.125rem] font-normal underline text-ab-green tracking-[-0.02em]">
-            {translate(locale, 'seeAllEvents')}
-          </a>
-        </div>
-      </div>
+      <MatchScheduleList locale={locale} events={events} />
+      <MiniCalendar locale={locale} events={events} />
     </div>
   </div>
 </section>
@@ -803,30 +641,30 @@ const heroSlides = [
     class="content-container py-8 md:py-10">
     <!-- Position filter pills -->
     <div
-      class="flex gap-2 md:gap-3 overflow-x-auto pb-3 mb-8 [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
+      class="flex gap-2 md:gap-3 overflow-x-auto pb-3 mb-8 scrollbar-none [-webkit-overflow-scrolling:touch]">
       <button
         data-filter="keeper"
-        class="squad-filter squad-filter-active shrink-0 px-5 py-2 rounded-full font-black text-sm hover:cursor-pointer tracking-[-0.02em]">
+        class="squad-filter squad-filter-active shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
         {translate(locale, 'positionGoalkeeper')}
       </button>
       <button
         data-filter="defender"
-        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm hover:cursor-pointer tracking-[-0.02em]">
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
         {translate(locale, 'positionDefense')}
       </button>
       <button
         data-filter="midfielder"
-        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm hover:cursor-pointer tracking-[-0.02em]">
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
         {translate(locale, 'positionMidfield')}
       </button>
       <button
         data-filter="forward"
-        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm hover:cursor-pointer tracking-[-0.02em]">
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
         {translate(locale, 'positionAttack')}
       </button>
       <button
         data-filter="coach"
-        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm hover:cursor-pointer tracking-[-0.02em]">
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
         {translate(locale, 'positionCoaching')}
       </button>
     </div>
@@ -857,18 +695,6 @@ const heroSlides = [
     </div>
   </div>
 </section>
-
-<style>
-  .squad-filter {
-    background: #f3f4f6;
-    color: #374151;
-    border: 1.5px solid transparent;
-  }
-  .squad-filter-active {
-    background: #006a52 !important;
-    color: #fff !important;
-  }
-</style>
 
 <script>
   (function () {
@@ -909,7 +735,7 @@ const heroSlides = [
   <div class="content-container py-14 md:py-20">
     <div class="text-center mb-10 md:mb-14">
       <h2
-        class="font-black leading-none mb-4 text-[clamp(3.5rem,9vw,8rem)] tracking-[-0.05em] text-[#111] normal-case text-center">
+        class="font-black leading-none mb-4 text-[clamp(3.5rem,9vw,8rem)] tracking-tighter text-[#111] normal-case text-center">
         {translate(locale, 'insideTheClub')}
       </h2>
       <p class="font-bold text-[#111] text-[clamp(0.95rem,1.5vw,1.1rem)]">

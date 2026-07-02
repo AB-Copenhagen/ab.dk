@@ -1,0 +1,113 @@
+---
+import { localePath, translate, type Locale } from '@/lib/i18n';
+import type { SIEvent } from '@/lib/si/client';
+
+interface Props {
+  locale: Locale;
+  events: SIEvent[];
+  limit?: number;
+}
+
+const { locale, events, limit = 7 } = Astro.props;
+
+const rows = [...events]
+  .sort(
+    (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+  )
+  .slice(0, limit);
+
+function formatEventScore(score: unknown): string {
+  if (score == null) return '–';
+  if (typeof score === 'string') {
+    return score.replace('-', ' - ').replace(':', ' - ');
+  }
+  if (
+    typeof score === 'object' &&
+    'home' in (score as object) &&
+    'away' in (score as object)
+  ) {
+    const { home, away } = score as { home: number; away: number };
+    return `${home} - ${away}`;
+  }
+  return '–';
+}
+
+function eventVenue(event: SIEvent): string {
+  const props = event.properties as
+    | { venueName?: string; venue?: string }
+    | undefined;
+  return (
+    props?.venueName ??
+    props?.venue ??
+    (event.homeId === 9805 ? 'Gladsaxe Stadion' : '')
+  );
+}
+---
+
+<div id="calendar-list" class="lg:col-span-8 overflow-x-auto">
+  <div class="min-w-[560px]">
+    <div class="px-6 py-5 flex items-center justify-between bg-ab-green">
+      <h2
+        class="font-black text-white leading-none tracking-[-0.04em] whitespace-pre-line"
+        style="font-size:clamp(1.5rem,2.8vw,2.1875rem)">
+        {translate(locale, 'latestResults')}
+      </h2>
+      <a
+        href={localePath(locale, '/kampe')}
+        class="font-normal text-white underline text-[1.125rem] tracking-[-0.02em] shrink-0 ml-6">
+        {translate(locale, 'viewAllMatches')}
+      </a>
+    </div>
+
+    <div
+      class="grid font-black text-[1rem] py-2.5 px-6 bg-ab-neon text-ab-green tracking-[-0.04em] grid-cols-[2fr_1.5fr_100px_1.5fr_1.5fr]">
+      <span>{translate(locale, 'date')}</span>
+      <span class="text-right">{translate(locale, 'homeTeam')}</span>
+      <span class="text-center">{translate(locale, 'score')}</span>
+      <span>{translate(locale, 'awayTeam')}</span>
+      <span>{translate(locale, 'ground')}</span>
+    </div>
+
+    {
+      rows.map((event, i) => {
+        const d = new Date(event.startDate);
+        const weekday = d.toLocaleDateString(
+          locale === 'da' ? 'da-DK' : 'en-US',
+          { weekday: 'long' }
+        );
+        const monthDay = d.toLocaleDateString(
+          locale === 'da' ? 'da-DK' : 'en-US',
+          { month: 'long', day: 'numeric' }
+        );
+        const timeStr = d.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        });
+        const dateTimeStr = `${weekday}, ${monthDay} – ${timeStr}`;
+        const scoreStr =
+          event.statusType === 'finished'
+            ? formatEventScore(event.score)
+            : '–';
+
+        return (
+          <div
+            class:list={[
+              'grid items-center px-6 py-4 text-[1.125rem] tracking-[-0.02em] gap-2 grid-cols-[2fr_1.5fr_100px_1.5fr_1.5fr] border-t border-[#EBEBEB]',
+              i % 2 === 0 ? 'bg-white' : 'bg-[#f4f4f4]',
+            ]}>
+            <span class="font-black text-ab-green">{dateTimeStr}</span>
+            <span class="text-right font-normal text-ab-green">
+              {event.homeName}
+            </span>
+            <span class="text-center font-normal text-ab-green">{scoreStr}</span>
+            <span class="font-normal text-ab-green">{event.awayName}</span>
+            <span class="font-normal text-ab-green truncate">
+              {eventVenue(event)}
+            </span>
+          </div>
+        );
+      })
+    }
+  </div>
+</div>
