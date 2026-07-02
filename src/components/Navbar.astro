@@ -1,11 +1,11 @@
 ---
 import MobileMenu from './islands/MobileMenu';
-import SearchModal from './islands/SearchModal';
 import LangSwitch from '@/components/layout/LangSwitch.astro';
 import { getNavConfig } from '@/lib/nav-config';
+import { translate, type Locale } from '@/lib/i18n';
 
 interface Props {
-  locale?: string;
+  locale?: Locale;
   globalData?: any;
 }
 
@@ -27,7 +27,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
       href={enPrefix + '/bliv-involveret/myab'}
       class="flex items-center justify-center shrink-0 h-full font-black"
       style="background:#00FF1F; width:171px; color:#006A52; text-decoration:none; font-size:15px; letter-spacing:-0.04em;">
-      Join MyAB
+      {translate(locale, 'joinMyAB')}
     </a>
     <!-- Utility links -->
     <div class="flex items-center gap-8 px-8 flex-1">
@@ -37,7 +37,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
         rel="noreferrer"
         class="font-black hover:opacity-70 transition-opacity"
         style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;">
-        {locale === 'da' ? 'Billetter' : 'Tickets'}
+        {translate(locale, 'tickets')}
       </a>
       <a
         href="https://shop.ab.dk"
@@ -45,7 +45,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
         rel="noreferrer"
         class="font-black hover:opacity-70 transition-opacity"
         style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;"
-        >Shop</a
+        >{translate(locale, 'shop')}</a
       >
       <a
         href="https://abtv.ab.dk"
@@ -60,48 +60,52 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
     <div class="flex items-center gap-5 px-6">
       <a
         href={enPrefix + '/konto'}
-        class="flex items-center gap-1.5 font-black hover:opacity-70 transition-opacity"
+        class="flex items-center gap-5 font-black hover:opacity-70 transition-opacity"
         style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;">
+        {translate(locale, 'signIn')}
+
         <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          aria-hidden="true">
-          <circle
-            cx="7"
-            cy="4.5"
-            r="2.5"
-            stroke="currentColor"
-            stroke-width="1.4"
-          ></circle>
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="19"
+          viewBox="0 0 20 19"
+          fill="none">
           <path
-            d="M2 13c0-2.761 2.239-5 5-5s5 2.239 5 5"
-            stroke="currentColor"
-            stroke-width="1.4"
-            stroke-linecap="round"
+            d="M20 3.17155C20 3.57349 19.6787 3.90232 19.286 3.90232H17.6151V5.61233C17.6151 6.01426 17.2938 6.3431 16.9011 6.3431C16.5083 6.3431 16.187 6.01426 16.187 5.61233V3.90232H14.5162C14.1235 3.90232 13.8022 3.57349 13.8022 3.17155C13.8022 2.76961 14.1235 2.44078 14.5162 2.44078H16.187V0.730772C16.187 0.328836 16.5083 0 16.9011 0C17.2938 0 17.6151 0.328836 17.6151 0.730772V2.44078H19.286C19.6787 2.44078 20 2.76961 20 3.17155ZM8.57541 10.9615C11.1318 10.9615 13.2165 8.82761 13.2165 6.21156C13.2165 3.59551 11.1315 1.46166 8.57541 1.46166C6.01927 1.46166 3.93429 3.59551 3.93429 6.21156C3.93429 8.82761 6.01927 10.9615 8.57541 10.9615ZM14.2164 10.618C13.4381 10.618 12.7027 10.9322 12.1457 11.4949C11.1889 12.4741 9.92504 13.0076 8.57552 13.0076C7.22601 13.0076 5.95495 12.4669 4.99826 11.4949C4.44846 10.9249 3.71299 10.618 2.92755 10.618C2.14926 10.618 1.41379 10.9249 0.856844 11.4949C0.307047 12.0576 0 12.8103 0 13.6142C0 14.418 0.307047 15.1634 0.856844 15.7334C2.91327 17.8453 5.65517 19 8.56844 19C11.4817 19 14.2236 17.8381 16.28 15.7334C16.8298 15.1707 17.1369 14.418 17.1369 13.6142C17.1369 12.8103 16.8298 12.0649 16.28 11.4949C15.7302 10.9322 14.9948 10.618 14.2093 10.618H14.2164Z"
+            fill="white"
           ></path>
         </svg>
-        {locale === 'da' ? 'Log ind' : 'Login'}
       </a>
-      <div class="flex items-center gap-2">
-        <!-- Danish flag -->
-        <a href={daPath} class="transition-opacity" style={`display:inline-flex; text-decoration:none; opacity:${locale === 'da' ? '1' : '0.4'}; border-radius:3px; overflow:hidden;`} aria-label="Dansk">
-          <svg width="22" height="16" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="22" height="16" fill="#C60C30"/>
-            <rect x="10" width="4" height="20" fill="#fff"/>
-            <rect y="8" width="28" height="4" fill="#fff"/>
-          </svg>
+      <div class="flex items-center gap-4 ml-5">
+        <a
+          href={daPath}
+          class:list={[
+            'no-underline hover:opacity-100 transition-opacity',
+            locale === 'da' ? 'opacity-100' : 'opacity-45',
+          ]}
+          aria-label="Dansk">
+          <img
+            src="/flags/da.jpg"
+            alt=""
+            width="18"
+            height="14"
+            class="block h-3.5 w-auto"
+          />
         </a>
-        <!-- UK flag -->
-        <a href={enPath} class="transition-opacity" style={`display:inline-flex; text-decoration:none; opacity:${locale === 'en' ? '1' : '0.4'}; border-radius:3px; overflow:hidden;`} aria-label="English">
-          <svg width="22" height="16" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="60" height="40" fill="#012169"/>
-            <path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="8"/>
-            <path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="4"/>
-            <path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="12"/>
-            <path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="8"/>
-          </svg>
+        <a
+          href={enPath}
+          class:list={[
+            'no-underline hover:opacity-100 transition-opacity',
+            locale === 'en' ? 'opacity-100' : 'opacity-45',
+          ]}
+          aria-label="English">
+          <img
+            src="/flags/en.jpg"
+            alt=""
+            width="21"
+            height="14"
+            class="block h-3.5 w-auto"
+          />
         </a>
       </div>
     </div>
@@ -114,7 +118,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
     <!-- Logo -->
     <a
       href={enPrefix + '/'}
-      aria-label="AB 1889 — hjem"
+      aria-label={translate(locale, 'logoHome')}
       class="shrink-0 mr-8 lg:mr-16">
       <img
         src="/images/ab-logo.svg"
@@ -126,48 +130,52 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
     </a>
 
     <!-- Desktop nav links (centered) -->
-    <nav class="hidden lg:flex items-center gap-8 xl:gap-12 flex-1 justify-center">
-      {nav.primary.map((item) => {
-        const isActive = currentPath === (enPrefix + item.href) || (item.href !== '/' && currentPath.startsWith(enPrefix + item.href));
-        return (
-          <div class="relative group">
-            <a
-              href={enPrefix + item.href}
-              class="font-black transition-colors"
-              style={`text-decoration:none; font-size:16px; letter-spacing:-0.04em; color:${isActive ? '#D3BC8D' : '#fff'};`}
-            >
-              {item.label}
-            </a>
-            {isActive && (
-              <div style="position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); width:40px; height:3px; background:#D3BC8D;" />
-            )}
-            {item.children && (
-              <div class="absolute top-full left-0 hidden group-hover:block z-50 min-w-[200px]" style="padding-top:12px;">
-                <div style="background:#004A3A; border-top:3px solid #D3BC8D;" class="shadow-2xl">
-                  {item.children.map((child) => (
-                    <a
-                      href={enPrefix + child.href}
-                      class="block px-5 py-3 font-medium text-sm hover:bg-white/10 transition-colors"
-                      style="color:rgba(255,255,255,0.8); text-decoration:none;"
-                    >
-                      {child.label}
-                    </a>
-                  ))}
+    <nav
+      class="hidden lg:flex items-center gap-8 xl:gap-12 flex-1 justify-center">
+      {
+        nav.primary.map((item) => {
+          const isActive =
+            currentPath === enPrefix + item.href ||
+            (item.href !== '/' && currentPath.startsWith(enPrefix + item.href));
+          return (
+            <div class="relative group">
+              <a
+                href={enPrefix + item.href}
+                class="font-black transition-colors"
+                style={`text-decoration:none; font-size:16px; letter-spacing:-0.04em; color:${isActive ? '#D3BC8D' : '#fff'};`}>
+                {item.label}
+              </a>
+              {isActive && (
+                <div class="absolute bottom-0 left-0 w-full h-[3px] bg-ab-beige" />
+              )}
+              {item.children && (
+                <div class="absolute top-full left-0 hidden group-hover:block z-50 pt-3">
+                  <div
+                    class="min-w-[200px] shadow-2xl"
+                    style="background:#004A3A; border-top:3px solid #D3BC8D;">
+                    {item.children.map((child) => (
+                      <a
+                        href={enPrefix + child.href}
+                        class="block px-5 py-3 font-black text-sm hover:bg-white/10 transition-colors"
+                        style="color:rgba(255,255,255,0.8); text-decoration:none; letter-spacing:-0.02em;">
+                        {child.label}
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
+              )}
+            </div>
+          );
+        })
+      }
     </nav>
 
     <!-- Right: Search + Mobile -->
     <div class="flex items-center gap-3 ml-auto">
       <button
-        id="search-open-btn"
         class="hidden lg:flex items-center gap-2 font-black text-sm"
         style="background:rgba(15,148,118,0.5); color:#fff; border:none; border-radius:22px; padding:10px 20px; cursor:pointer; letter-spacing:-0.03em;"
-        aria-label={locale === 'da' ? 'Søg' : 'Search'}>
+        aria-label={translate(locale, 'search')}>
         <svg
           width="14"
           height="14"
@@ -188,10 +196,14 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
             stroke-linecap="round"
           ></path>
         </svg>
-        {locale === 'da' ? 'Søg' : 'Search'}
+        {translate(locale, 'search')}
       </button>
-      <MobileMenu client:load nav={nav} locale={locale} enPrefix={enPrefix} />
-      <SearchModal client:load locale={locale} />
+      <MobileMenu
+        client:load
+        nav={nav}
+        locale={locale}
+        enPrefix={enPrefix}
+      />
     </div>
   </div>
 </header>

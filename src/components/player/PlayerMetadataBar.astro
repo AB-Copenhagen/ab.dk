@@ -1,0 +1,84 @@
+---
+import { translate, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+  positionLabel: string;
+  nickname?: string | null;
+  formerClubs?: string | null;
+  countryName?: string | null;
+  height?: number | null;
+  dateOfBirth?: string | null;
+}
+
+const { locale, positionLabel, nickname, formerClubs, countryName, height, dateOfBirth } =
+  Astro.props;
+
+const cells: { label: string; value: string; minWidth: string }[] = [
+  {
+    label: translate(locale, 'playerPosition'),
+    value: positionLabel,
+    minWidth: '90px',
+  },
+];
+
+if (nickname) {
+  cells.push({
+    label: translate(locale, 'playerNickname'),
+    value: nickname,
+    minWidth: '90px',
+  });
+}
+
+if (formerClubs) {
+  cells.push({
+    label: translate(locale, 'playerFormerClubs'),
+    value: formerClubs,
+    minWidth: '110px',
+  });
+}
+
+if (countryName) {
+  cells.push({
+    label: translate(locale, 'playerNationality'),
+    value: countryName,
+    minWidth: '90px',
+  });
+}
+
+if (height) {
+  cells.push({
+    label: translate(locale, 'playerHeight'),
+    value: `${height} cm`,
+    minWidth: '80px',
+  });
+}
+
+if (dateOfBirth) {
+  cells.push({
+    label: translate(locale, 'playerBirthDate'),
+    value: dateOfBirth,
+    minWidth: '110px',
+  });
+}
+---
+
+<div style="background:#fff; border-bottom:1px solid #E5E7EB;">
+  <div class="flex overflow-x-auto divide-x divide-gray-200">
+    {
+      cells.map((cell) => (
+        <div class="py-5 px-6 flex-1 text-center" style={`min-width:${cell.minWidth};`}>
+          <p
+            class="mb-1.5 uppercase"
+            style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;"
+          >
+            {cell.label}
+          </p>
+          <p class="font-black" style="font-size:0.9rem; color:#111;">
+            {cell.value}
+          </p>
+        </div>
+      ))
+    }
+  </div>
+</div>
