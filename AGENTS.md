@@ -18,9 +18,9 @@ npm run build        # Production build
 npm run format:check # Prettier
 ```
 
-## Cursor rules
+## Project rules
 
-Project conventions live in `.cursor/rules/`:
+Conventions live in `.cursor/rules/` — single source of truth for Cursor and Claude Code.
 
 | Rule                     | Topic                                      |
 | ------------------------ | ------------------------------------------ |
@@ -33,6 +33,10 @@ Project conventions live in `.cursor/rules/`:
 | `tailwind.mdc`           | Tailwind patterns                          |
 | `naming-conventions.mdc` | Function, file, type naming                |
 | `typescript.mdc`         | TS config, imports, server/client boundary |
+
+### Claude Code
+
+Claude Code reads `CLAUDE.md` at the repo root, which imports this file and all `.cursor/rules/*.mdc` files. Run `/memory` in a session to verify loaded files.
 
 ## Key paths
 
