@@ -3,7 +3,9 @@ import Base from '@/layouts/Base.astro';
 export const prerender = true;
 ---
 
-<Base locale="da" title="Historik | AB 1889">
+<Base
+  locale="da"
+  title="Historik | AB 1889">
   <!-- Hero -->
   <div class="relative w-full">
     <img
@@ -12,52 +14,89 @@ export const prerender = true;
       class="w-full h-auto block"
       loading="eager"
     />
-    <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.55) 100%);"></div>
+    <div
+      class="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.1)_30%,rgba(0,0,0,0.55)_100%)]">
+    </div>
     <div class="absolute inset-0 flex items-end px-8 lg:px-20 pb-14">
-      <h1 class="font-black text-white leading-none" style="font-size:clamp(3.5rem,10vw,8rem);letter-spacing:-0.04em;">Historik</h1>
+      <h1
+        class="font-black text-white leading-none text-[clamp(3.5rem,10vw,8rem)] tracking-[-0.04em]">
+        Historik
+      </h1>
     </div>
   </div>
 
   <!-- 1883: White bg — tekst venstre, billede højre -->
-  <section style="background:#fff; padding:clamp(64px,9vw,112px) 0;">
+  <section class="bg-white py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
         <div>
-          <div class="inline-flex items-center mb-7" style="background:#D3BC8D; border-radius:100px; padding:9px 22px;">
-            <span class="font-black" style="font-size:1.4rem; color:#111; letter-spacing:-0.04em;">1883</span>
+          <div
+            class="inline-flex items-center mb-7 bg-ab-beige rounded-full py-[9px] px-[22px]">
+            <span
+              class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+              >1883</span
+            >
           </div>
-          <h2 class="font-black mb-7 history-h2">AB's velkendte farver — grønt og hvidt.</h2>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; max-width:44ch;">
-            Da eleverne fra Fredericia Latinskole kom til København i 1883, medbragte de mere end akademisk viden. Da fodbold endnu ikke havde slået an i Danmark, startede disse studerende i stedet en Kricketklub som samlingssted for deres sportslige aktiviteter.
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+            AB's velkendte farver — grønt og hvidt.
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] max-w-[44ch]">
+            Da eleverne fra Fredericia Latinskole kom til København i 1883,
+            medbragte de mere end akademisk viden. Da fodbold endnu ikke havde
+            slået an i Danmark, startede disse studerende i stedet en
+            Kricketklub som samlingssted for deres sportslige aktiviteter.
           </p>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; max-width:44ch; margin-top:1.25rem;">
-            Denne klub fik navnet "Fredericia-studenternes Kricketklub" (FSK), som en afsluttende hyldest til deres gamle skole. Spillernes uniformer var allerede i de kendte AB-farver: Grønt og hvidt.
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] max-w-[44ch] mt-5">
+            Denne klub fik navnet "Fredericia-studenternes Kricketklub" (FSK),
+            som en afsluttende hyldest til deres gamle skole. Spillernes
+            uniformer var allerede i de kendte AB-farver: Grønt og hvidt.
           </p>
         </div>
-        <div class="overflow-hidden" style="border-radius:6px; aspect-ratio:4/3;">
-          <img src="/images/about-frederician-latin-school-building.png" alt="Fredericia Latinskole" class="w-full h-full object-cover" />
+        <div class="overflow-hidden rounded-md aspect-4/3">
+          <img
+            src="/images/about-frederician-latin-school-building.png"
+            alt="Fredericia Latinskole"
+            class="w-full h-full object-cover"
+          />
         </div>
       </div>
     </div>
   </section>
 
   <!-- 1887: Beige bg — billede venstre, tekst højre -->
-  <section style="background:#D3BC8D; padding:clamp(64px,9vw,112px) 0;">
+  <section class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
-        <div class="overflow-hidden order-2 lg:order-1" style="border-radius:6px; aspect-ratio:4/3;">
-          <img src="/images/about-board-of-directors.png" alt="AB hold 1887" class="w-full h-full object-cover" />
+        <div class="overflow-hidden order-2 lg:order-1 rounded-md aspect-4/3">
+          <img
+            src="/images/about-board-of-directors.png"
+            alt="AB hold 1887"
+            class="w-full h-full object-cover"
+          />
         </div>
         <div class="order-1 lg:order-2">
-          <div class="inline-flex items-center mb-7" style="background:#00FF1F; border-radius:100px; padding:9px 22px;">
-            <span class="font-black" style="font-size:1.4rem; color:#111; letter-spacing:-0.04em;">1887</span>
+          <div
+            class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
+            <span
+              class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+              >1887</span
+            >
           </div>
-          <h2 class="font-black mb-7 history-h2">Optaget i FSK i 1887</h2>
-          <p style="font-size:1.1rem; line-height:1.75; color:#111; max-width:44ch;">
-            Allerede i 1887 blev fodboldspillet optaget i FSK. Dette skete efter at en dansk oversættelse af det engelske Football Associations love var blevet lavet i efteråret 1886/87.
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+            Optaget i FSK i 1887
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] max-w-[44ch]">
+            Allerede i 1887 blev fodboldspillet optaget i FSK. Dette skete efter
+            at en dansk oversættelse af det engelske Football Associations love
+            var blevet lavet i efteråret 1886/87.
           </p>
-          <p style="font-size:1.1rem; line-height:1.75; color:#111; max-width:44ch; margin-top:1.25rem;">
-            Efterhånden som tilstrømningen af københavnere steg, aftalte man at klubbens navn ikke længere repræsenterede dens medlemmer. Den 26. februar 1889 fusionerede "Fredericia-studenternes Kricketklub" med den lidt yngre "Polyteknisk Klub". Navnet blev: Akademisk Boldklub.
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] max-w-[44ch] mt-5">
+            Efterhånden som tilstrømningen af københavnere steg, aftalte man at
+            klubbens navn ikke længere repræsenterede dens medlemmer. Den 26.
+            februar 1889 fusionerede "Fredericia-studenternes Kricketklub" med
+            den lidt yngre "Polyteknisk Klub". Navnet blev: Akademisk Boldklub.
           </p>
         </div>
       </div>
@@ -65,40 +104,69 @@ export const prerender = true;
   </section>
 
   <!-- 1889: Lysegrå bg — tekst venstre, billede højre -->
-  <section style="background:#E7E7E7; padding:clamp(64px,9vw,112px) 0;">
+  <section class="bg-[#E7E7E7] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
         <div>
-          <h2 class="font-black mb-7 history-h2">Krav til den nystiftede akademiske fodboldklub</h2>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; max-width:44ch;">
-            Optagelseskravene for at blive medlem af den nystiftede Akademiske Fodboldklub blev ændret efter fusionen, så alle der havde aflagt adgangseksamen til et universitet eller en polyteknisk skole kunne blive medlemmer. Dette gjaldt også studerende fra andre skandinaviske universiteter.
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+            Krav til den nystiftede akademiske fodboldklub
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] max-w-[44ch]">
+            Optagelseskravene for at blive medlem af den nystiftede Akademiske
+            Fodboldklub blev ændret efter fusionen, så alle der havde aflagt
+            adgangseksamen til et universitet eller en polyteknisk skole kunne
+            blive medlemmer. Dette gjaldt også studerende fra andre
+            skandinaviske universiteter.
           </p>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; max-width:44ch; margin-top:1.25rem;">
-            Derudover kunne ikke-akademiske fodboldspillere med potentiale optages i AB ved at blive enstemmigt foreslået af bestyrelsen eller af 15 af klubbens medlemmer.
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] max-w-[44ch] mt-5">
+            Derudover kunne ikke-akademiske fodboldspillere med potentiale
+            optages i AB ved at blive enstemmigt foreslået af bestyrelsen eller
+            af 15 af klubbens medlemmer.
           </p>
         </div>
-        <div class="overflow-hidden" style="border-radius:6px; aspect-ratio:4/3;">
-          <img src="/images/about-stadium-seat.png" alt="AB stadion" class="w-full h-full object-cover" />
+        <div class="overflow-hidden rounded-md aspect-4/3">
+          <img
+            src="/images/about-stadium-seat.png"
+            alt="AB stadion"
+            class="w-full h-full object-cover"
+          />
         </div>
       </div>
     </div>
   </section>
 
   <!-- 1889 sort: Ny bestyrelse -->
-  <section style="background:#0A0A09; padding:clamp(64px,9vw,112px) 0;">
+  <section class="bg-rich-black py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
-        <div class="overflow-hidden" style="border-radius:6px; aspect-ratio:4/3;">
-          <img src="/images/about-board-of-directors.png" alt="AB bestyrelse 1889" class="w-full h-full object-cover" />
+        <div class="overflow-hidden rounded-md aspect-4/3">
+          <img
+            src="/images/about-board-of-directors.png"
+            alt="AB bestyrelse 1889"
+            class="w-full h-full object-cover"
+          />
         </div>
         <div>
-          <div class="inline-flex items-center mb-7" style="background:#006A52; border-radius:100px; padding:9px 22px;">
-            <span class="font-black" style="font-size:1.4rem; color:#fff; letter-spacing:-0.04em;">1889</span>
+          <div
+            class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-white tracking-[-0.04em]"
+              >1889</span
+            >
           </div>
-          <h2 class="font-black mb-7 history-h2" style="color:#D3BC8D;">AB's nye bestyrelse</h2>
-          <p style="font-size:1.1rem; line-height:1.75; color:#D3BC8D; margin-bottom:1rem;">AB's nye bestyrelse efter fusionen bestod af:</p>
-          <ul style="display:flex; flex-direction:column; gap:0.5rem; color:#D3BC8D; font-size:1.1rem; line-height:1.75;">
-            <li>ME Pagh — Formand (tidl. formand for Fredericia-studenternes Kricketklub)</li>
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-ab-beige">
+            AB's nye bestyrelse
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-ab-beige mb-4">
+            AB's nye bestyrelse efter fusionen bestod af:
+          </p>
+          <ul
+            class="flex flex-col gap-2 text-ab-beige text-[1.1rem] leading-[1.75]">
+            <li>
+              ME Pagh — Formand (tidl. formand for Fredericia-studenternes
+              Kricketklub)
+            </li>
             <li>E. Faber</li>
             <li>H. Forchhammer</li>
             <li>H.C. Lund</li>
@@ -110,35 +178,67 @@ export const prerender = true;
   </section>
 
   <!-- 1889 hvid: To kolonner -->
-  <section style="background:#fff; padding:clamp(64px,9vw,112px) 0;">
+  <section class="bg-white py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-start">
         <div>
-          <div class="inline-flex items-center mb-7" style="background:#006A52; border-radius:100px; padding:9px 22px;">
-            <span class="font-black" style="font-size:1.4rem; color:#fff; letter-spacing:-0.04em;">1889</span>
+          <div
+            class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-white tracking-[-0.04em]"
+              >1889</span
+            >
           </div>
-          <h2 class="font-black mb-7 history-h2">Kontingent på 50 ØRE om måneden i 1889</h2>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444;">I 1889 var kontingent for aktive AB-medlemmer blot 50 øre om måneden.</p>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
-            Den 1. april 1889 flyttede klubben til nye lokaler på Helgesensgade 5, hvor de blev vel modtaget af klubbens første beklædningssponsor. Da de ikke havde råd til at købe håndklæder, købte en AB-spillers mor stof på kredit og syede selv 6 håndklæder til de entusiastiske spillere.
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+            Kontingent på 50 ØRE om måneden i 1889
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+            I 1889 var kontingent for aktive AB-medlemmer blot 50 øre om
+            måneden.
           </p>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
-            DBU skaffede en flot pokal for den nette sum af 150 kroner, og resultatet af DBU's første turnering (1889-1890) var at AB vandt finalen over KB 2-0.
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            Den 1. april 1889 flyttede klubben til nye lokaler på Helgesensgade
+            5, hvor de blev vel modtaget af klubbens første beklædningssponsor.
+            Da de ikke havde råd til at købe håndklæder, købte en AB-spillers
+            mor stof på kredit og syede selv 6 håndklæder til de entusiastiske
+            spillere.
           </p>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
-            Omkring århundredeskiftet havde KB og B93 begge egne baner, og AB mente de burde have det samme. Den nødvendige kapital på 60.000 kr. blev skaffet hos klubbens støtter, og det var dermed muligt at leje et areal på Lammefælleden på Tagensvej af Københavns Kommune. Banen stod klar i 1903.
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            DBU skaffede en flot pokal for den nette sum af 150 kroner, og
+            resultatet af DBU's første turnering (1889-1890) var at AB vandt
+            finalen over KB 2-0.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            Omkring århundredeskiftet havde KB og B93 begge egne baner, og AB
+            mente de burde have det samme. Den nødvendige kapital på 60.000 kr.
+            blev skaffet hos klubbens støtter, og det var dermed muligt at leje
+            et areal på Lammefælleden på Tagensvej af Københavns Kommune. Banen
+            stod klar i 1903.
           </p>
         </div>
-        <div style="padding-top: calc(1.4rem + 18px + 1.75rem);">
-          <h2 class="font-black mb-7 history-h2">En af de største personligheder i AB</h2>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444;">
-            En af tidens største personligheder i AB var afdelingsleder Charles Buchwald, som spillede alle tre boldspil tilgængelige i AB: fodbold, tennis og cricket. Buchwald spillede på landsholdet i fodbold og cricket og var klubmester i tennis.
+        <div class="pt-[calc(1.4rem+18px+1.75rem)]">
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+            En af de største personligheder i AB
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+            En af tidens største personligheder i AB var afdelingsleder Charles
+            Buchwald, som spillede alle tre boldspil tilgængelige i AB: fodbold,
+            tennis og cricket. Buchwald spillede på landsholdet i fodbold og
+            cricket og var klubmester i tennis.
           </p>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
-            Buchwald debuterede på AB's første hold som 16-årig — samme alder som Harald Bohr, der nåede 4 landskampe. Hans bror Niels, der sandsynligvis blev bedre kendt uden for banen, var målmand.
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            Buchwald debuterede på AB's første hold som 16-årig — samme alder
+            som Harald Bohr, der nåede 4 landskampe. Hans bror Niels, der
+            sandsynligvis blev bedre kendt uden for banen, var målmand.
           </p>
-          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
-            'AB var ganske overlegen i en kamp mod det tyske hold Mittweida — og Niels Bohr fik tiden til at gå ved at stå og læne sig op ad en af målstolperne. Pludselig blev der sparket en lang bold mod AB's mål. Alle ventede at Niels ville gå ud og tage bolden, men han gjorde ingenting. Efter kampen måtte han indrømme at hans tanker var optaget af et matematisk problem.'
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            'AB var ganske overlegen i en kamp mod det tyske hold Mittweida — og
+            Niels Bohr fik tiden til at gå ved at stå og læne sig op ad en af
+            målstolperne. Pludselig blev der sparket en lang bold mod AB's mål.
+            Alle ventede at Niels ville gå ud og tage bolden, men han gjorde
+            ingenting. Efter kampen måtte han indrømme at hans tanker var
+            optaget af et matematisk problem.'
           </p>
         </div>
       </div>
@@ -146,34 +246,42 @@ export const prerender = true;
   </section>
 
   <!-- 1894: Grøn bg — crest venstre, tekst højre -->
-  <section style="background:#006A52; padding:clamp(64px,9vw,112px) 0;">
+  <section class="bg-ab-green py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
-        <div class="flex items-center justify-center" style="aspect-ratio:1; max-height:500px;">
-          <img src="/images/about-crest-original.png" alt="AB 1889 crest" style="width:min(480px,90%);" />
+        <div
+          class="flex items-center justify-center aspect-square max-h-[500px]">
+          <img
+            src="/images/about-crest-original.png"
+            alt="AB 1889 crest"
+            class="w-[min(480px,90%)]"
+          />
         </div>
         <div>
-          <div class="inline-flex items-center mb-7" style="background:#00FF1F; border-radius:100px; padding:9px 22px;">
-            <span class="font-black" style="font-size:1.4rem; color:#111; letter-spacing:-0.04em;">1894</span>
+          <div
+            class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
+            <span
+              class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+              >1894</span
+            >
           </div>
-          <h2 class="font-black mb-7 history-h2" style="color:#fff;">Etablering af juniorafdeling i 1894</h2>
-          <p style="font-size:1.1rem; line-height:1.75; color:rgba(255,255,255,0.85);">
-            Da det nye spil endnu ikke havde nået skolerne, forsøgte klubben i 1894 at etablere en Juniorafdeling — uden den store succes. I 1899 forsøgte AB igen, denne gang under ledelse af skaberen af AB's berømte juniorafdeling og dens leder i 20 år: Edmond Andersen.
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-white">
+            Etablering af juniorafdeling i 1894
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85">
+            Da det nye spil endnu ikke havde nået skolerne, forsøgte klubben i
+            1894 at etablere en Juniorafdeling — uden den store succes. I 1899
+            forsøgte AB igen, denne gang under ledelse af skaberen af AB's
+            berømte juniorafdeling og dens leder i 20 år: Edmond Andersen.
           </p>
-          <p style="font-size:1.1rem; line-height:1.75; color:rgba(255,255,255,0.85); margin-top:1.25rem;">
-            I løbet af afdelingens første år steg antallet af medlemmer til næsten 70. Edmond Andersen holdt en omhyggelig dagbog over de enkelte træningssessioner — både store og små.
+          <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5">
+            I løbet af afdelingens første år steg antallet af medlemmer til
+            næsten 70. Edmond Andersen holdt en omhyggelig dagbog over de
+            enkelte træningssessioner — både store og små.
           </p>
         </div>
       </div>
     </div>
   </section>
 </Base>
-
-<style>
-  .history-h2 {
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    letter-spacing: -0.04em;
-    line-height: 1.05;
-    color: #111;
-  }
-</style>

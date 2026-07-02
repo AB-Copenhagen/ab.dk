@@ -2,7 +2,7 @@
 import MobileMenu from './islands/MobileMenu';
 import SearchModal from './islands/SearchModal';
 import LangSwitch from '@/components/layout/LangSwitch.astro';
-import { getNavConfig } from '@/lib/nav-config';
+import { getNavConfig, isNavItemActive } from '@/lib/nav-config';
 import { translate, type Locale } from '@/lib/i18n';
 
 interface Props {
@@ -135,9 +135,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
       class="hidden lg:flex items-center gap-8 xl:gap-12 flex-1 justify-center">
       {
         nav.primary.map((item) => {
-          const isActive =
-            currentPath === enPrefix + item.href ||
-            (item.href !== '/' && currentPath.startsWith(enPrefix + item.href));
+          const isActive = isNavItemActive(currentPath, item, enPrefix);
           return (
             <div class="relative group">
               <a
