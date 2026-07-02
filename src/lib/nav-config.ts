@@ -65,7 +65,7 @@ const da: NavConfig = {
   preHeader: {
     left: [
       { label: 'Join MyAB', href: '/da/bliv-involveret/myab', highlight: true },
-      { label: 'Billetter', href: 'https://billetter.ab.dk', external: true },
+      { label: 'Billetter', href: 'https://billet.ab.dk', external: true },
       { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
   },
@@ -107,7 +107,7 @@ const en: NavConfig = {
   preHeader: {
     left: [
       { label: 'Join MyAB', href: '/en/bliv-involveret/myab', highlight: true },
-      { label: 'Tickets', href: 'https://billetter.ab.dk', external: true },
+      { label: 'Tickets', href: 'https://billet.ab.dk', external: true },
       { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
   },

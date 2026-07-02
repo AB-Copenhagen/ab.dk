@@ -1,4 +1,5 @@
 ---
+import betiniaLiga from '@/assets/images/betinia-liga.png';
 import { translate, type Locale } from '@/lib/i18n';
 import { fetchStandings, getTeamLogoSrc, type SIStandingRow } from '@/lib/si/client';
 
@@ -31,13 +32,13 @@ const headers =
     showHeader && (
       <div class="standings-header">
         <h3 class="standings-title">
-          {translate(locale, 'secondDivision')}
+          {translate(locale, 'firstDivision')}
           <br />
           {translate(locale, 'standingsTitle')}
         </h3>
         <img
-          src="/images/sponsors/campobet-division.png"
-          alt="CampoBet 2nd Division"
+          src={betiniaLiga.src}
+          alt="Betinia Liga"
           class="standings-sponsor"
           width="151"
           height="48"

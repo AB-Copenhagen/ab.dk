@@ -10,7 +10,9 @@ const facilities = [
 ];
 ---
 
-<Base locale="en" title="Stadium Info | AB 1889">
+<Base
+  locale="en"
+  title="Stadium Info | AB 1889">
   <!-- Hero -->
   <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
     <img
@@ -18,18 +20,30 @@ const facilities = [
       alt="Gladsaxe Stadium"
       class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.5] saturate-[0.6]"
     />
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_70%)]"></div>
-    <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
-      <h1 class="font-black text-white text-[clamp(3rem,9vw,7rem)] tracking-[-0.04em] leading-[0.9]">Stadium Info</h1>
+    <div
+      class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_70%)]">
+    </div>
+    <div
+      class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
+      <h1
+        class="font-black text-white text-[clamp(3rem,9vw,7rem)] tracking-[-0.04em] leading-[0.9]">
+        Stadium Info
+      </h1>
     </div>
   </div>
 
   <!-- Tab breadcrumb -->
   <div class="bg-white border-b border-[#E5E7EB]">
     <div class="max-w-7xl mx-auto px-8 flex items-center gap-6 h-12">
-      <a href="/en/kampe" class="text-sm font-bold text-[#555] no-underline tracking-[-0.02em]">← Matches</a>
+      <a
+        href="/en/kampe"
+        class="text-sm font-bold text-[#555] no-underline tracking-[-0.02em]"
+        >← Matches</a
+      >
       <span class="text-[#DDD]">/</span>
-      <span class="text-sm font-bold text-ab-green tracking-[-0.02em]">Stadium Info</span>
+      <span class="text-sm font-bold text-ab-green tracking-[-0.02em]"
+        >Stadium Info</span
+      >
     </div>
   </div>
 
@@ -37,28 +51,44 @@ const facilities = [
   <section class="bg-white py-[clamp(40px,6vw,72px)]">
     <div class="max-w-7xl mx-auto px-6 lg:px-16">
       <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-
         <!-- Left: details -->
         <div>
-          <span class="inline-block font-black text-xs px-3 py-1 mb-6 bg-ab-beige text-ab-green tracking-[0.12em]">HOME GROUND</span>
-          <h2 class="font-black mb-4 text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.05em] leading-[0.95] text-[#111]">Gladsaxe Stadium</h2>
+          <span
+            class="inline-block font-black text-xs px-3 py-1 mb-6 bg-ab-beige text-ab-green tracking-[0.12em]"
+            >HOME GROUND</span
+          >
+          <h2
+            class="font-black mb-4 text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.05em] leading-[0.95] text-[#111]">
+            Gladsaxe Stadium
+          </h2>
           <p class="text-sm leading-relaxed mb-8 text-[#555] max-w-[44ch]">
-            AB's home ground since 1930. Gladsaxe Stadium is a modern facility with an artificial grass pitch and room for 9,000 fans. The stadium is set in a green and peaceful environment in Gladsaxe, easily accessible by public transport.
+            AB's home ground since 1930. Gladsaxe Stadium is a modern facility
+            with an artificial grass pitch and room for 9,000 fans. The stadium
+            is set in a green and peaceful environment in Gladsaxe, easily
+            accessible by public transport.
           </p>
 
           <!-- Fact grid -->
           <div class="grid grid-cols-2 gap-4 mb-8">
-            {facilities.map(({ label, value }) => (
-              <div class="border border-[#E5E7EB] py-4 px-5">
-                <p class="text-xs uppercase mb-1 text-[#999] tracking-[0.12em]">{label}</p>
-                <p class="font-black text-lg text-[#111] tracking-[-0.04em]">{value}</p>
-              </div>
-            ))}
+            {
+              facilities.map(({ label, value }) => (
+                <div class="border border-[#E5E7EB] py-4 px-5">
+                  <p class="text-xs uppercase mb-1 text-[#999] tracking-[0.12em]">
+                    {label}
+                  </p>
+                  <p class="font-black text-lg text-[#111] tracking-[-0.04em]">
+                    {value}
+                  </p>
+                </div>
+              ))
+            }
           </div>
 
           <!-- Address -->
           <div class="border-l-[3px] border-ab-green pl-4">
-            <p class="text-xs uppercase mb-2 text-[#999] tracking-[0.12em]">Address</p>
+            <p class="text-xs uppercase mb-2 text-[#999] tracking-[0.12em]">
+              Address
+            </p>
             <p class="text-sm font-bold text-[#111]">Gladsaxevej 202</p>
             <p class="text-sm text-[#555]">2860 Søborg, Denmark</p>
           </div>
@@ -68,30 +98,34 @@ const facilities = [
               href="https://maps.google.com/?q=Gladsaxevej+202,+2860+Søborg"
               target="_blank"
               rel="noreferrer"
-              class="font-black text-sm px-5 py-3 bg-ab-green text-white no-underline tracking-[-0.02em]"
-            >
+              class="font-black text-sm px-5 py-3 bg-ab-green text-white no-underline tracking-[-0.02em]">
               Open in Google Maps
             </a>
             <a
-              href="https://billetter.ab.dk"
+              href="https://billet.ab.dk"
               target="_blank"
               rel="noreferrer"
-              class="font-black text-sm px-5 py-3 bg-ab-neon text-ab-green no-underline tracking-[-0.02em]"
-            >
+              class="font-black text-sm px-5 py-3 bg-ab-neon text-ab-green no-underline tracking-[-0.02em]">
               Buy tickets
             </a>
           </div>
         </div>
 
         <!-- Right: map placeholder -->
-        <div class="rounded overflow-hidden bg-[#EBEBEB] aspect-[4/3] flex items-center justify-center border border-[#E5E7EB]">
+        <div
+          class="rounded overflow-hidden bg-[#EBEBEB] aspect-[4/3] flex items-center justify-center border border-[#E5E7EB]">
           <div class="text-center px-8">
-            <img src="/images/ab-crest.svg" alt="AB 1889" width="80" height="80" class="opacity-[0.12] mx-auto mb-4" />
+            <img
+              src="/images/ab-crest.svg"
+              alt="AB 1889"
+              width="80"
+              height="80"
+              class="opacity-[0.12] mx-auto mb-4"
+            />
             <p class="text-sm font-bold text-[#999]">Gladsaxe Stadium</p>
             <p class="text-xs mt-1 text-[#BBB]">Gladsaxevej 202, 2860 Søborg</p>
           </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -99,33 +133,39 @@ const facilities = [
   <!-- Getting there -->
   <section class="bg-[#EBEBEB] py-[clamp(40px,6vw,64px)]">
     <div class="max-w-7xl mx-auto px-6 lg:px-16">
-      <h2 class="font-black mb-10 text-[clamp(1.5rem,4vw,2.5rem)] tracking-[-0.04em] text-[#111]">Getting to the stadium</h2>
+      <h2
+        class="font-black mb-10 text-[clamp(1.5rem,4vw,2.5rem)] tracking-[-0.04em] text-[#111]">
+        Getting to the stadium
+      </h2>
       <div class="grid md:grid-cols-3 gap-8">
-        {[
-          {
-            icon: '🚇',
-            title: 'Metro / S-Train',
-            desc: 'Take the S-train to Buddinge St. (5 min walk), or bus 200S from Lyngby/Glostrup.',
-          },
-          {
-            icon: '🚗',
-            title: 'By car',
-            desc: 'Free parking available at the stadium. Follow signs from Ring 2 / Gladsaxevej.',
-          },
-          {
-            icon: '🚲',
-            title: 'By bike',
-            desc: 'Cycle paths along Gladsaxevej. Secure bike parking at all entrances.',
-          },
-        ].map(({ icon, title, desc }) => (
-          <div class="bg-white p-6 border border-[#E5E7EB]">
-            <span class="text-[2rem]">{icon}</span>
-            <h3 class="font-black mt-3 mb-2 text-[1.1rem] tracking-[-0.03em] text-[#111]">{title}</h3>
-            <p class="text-sm leading-relaxed text-[#555]">{desc}</p>
-          </div>
-        ))}
+        {
+          [
+            {
+              icon: '🚇',
+              title: 'Metro / S-Train',
+              desc: 'Take the S-train to Buddinge St. (5 min walk), or bus 200S from Lyngby/Glostrup.',
+            },
+            {
+              icon: '🚗',
+              title: 'By car',
+              desc: 'Free parking available at the stadium. Follow signs from Ring 2 / Gladsaxevej.',
+            },
+            {
+              icon: '🚲',
+              title: 'By bike',
+              desc: 'Cycle paths along Gladsaxevej. Secure bike parking at all entrances.',
+            },
+          ].map(({ icon, title, desc }) => (
+            <div class="bg-white p-6 border border-[#E5E7EB]">
+              <span class="text-[2rem]">{icon}</span>
+              <h3 class="font-black mt-3 mb-2 text-[1.1rem] tracking-[-0.03em] text-[#111]">
+                {title}
+              </h3>
+              <p class="text-sm leading-relaxed text-[#555]">{desc}</p>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
-
 </Base>
