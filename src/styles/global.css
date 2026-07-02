@@ -48,6 +48,10 @@
     'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+@utility text-banner-subtitle {
+  @apply font-sans text-2xl md:text-3xl lg:text-4xl font-extrabold leading-7.5 tracking-[-1.4px] text-white not-italic;
+}
+
 /* ── Base document ──────────────────────────────────────────────────── */
 html {
   background: #fff;

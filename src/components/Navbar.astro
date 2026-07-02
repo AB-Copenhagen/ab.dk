@@ -2,9 +2,10 @@
 import MobileMenu from './islands/MobileMenu';
 import LangSwitch from '@/components/layout/LangSwitch.astro';
 import { getNavConfig } from '@/lib/nav-config';
+import { translate, type Locale } from '@/lib/i18n';
 
 interface Props {
-  locale?: string;
+  locale?: Locale;
   globalData?: any;
 }
 
@@ -26,7 +27,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
       href={enPrefix + '/bliv-involveret/myab'}
       class="flex items-center justify-center shrink-0 h-full font-black"
       style="background:#00FF1F; width:171px; color:#006A52; text-decoration:none; font-size:15px; letter-spacing:-0.04em;">
-      Join MyAB
+      {translate(locale, 'joinMyAB')}
     </a>
     <!-- Utility links -->
     <div class="flex items-center gap-8 px-8 flex-1">
@@ -36,7 +37,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
         rel="noreferrer"
         class="font-black hover:opacity-70 transition-opacity"
         style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;">
-        {locale === 'da' ? 'Billetter' : 'Tickets'}
+        {translate(locale, 'tickets')}
       </a>
       <a
         href="https://shop.ab.dk"
@@ -44,7 +45,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
         rel="noreferrer"
         class="font-black hover:opacity-70 transition-opacity"
         style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;"
-        >Shop</a
+        >{translate(locale, 'shop')}</a
       >
       <a
         href="https://abtv.ab.dk"
@@ -59,44 +60,53 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
     <div class="flex items-center gap-5 px-6">
       <a
         href={enPrefix + '/konto'}
-        class="flex items-center gap-1.5 font-black hover:opacity-70 transition-opacity"
+        class="flex items-center gap-5 font-black hover:opacity-70 transition-opacity"
         style="color:#fff; text-decoration:none; font-size:15px; letter-spacing:-0.03em;">
+        {translate(locale, 'signIn')}
+
         <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          aria-hidden="true">
-          <circle
-            cx="7"
-            cy="4.5"
-            r="2.5"
-            stroke="currentColor"
-            stroke-width="1.4"
-          ></circle>
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="19"
+          viewBox="0 0 20 19"
+          fill="none">
           <path
-            d="M2 13c0-2.761 2.239-5 5-5s5 2.239 5 5"
-            stroke="currentColor"
-            stroke-width="1.4"
-            stroke-linecap="round"
+            d="M20 3.17155C20 3.57349 19.6787 3.90232 19.286 3.90232H17.6151V5.61233C17.6151 6.01426 17.2938 6.3431 16.9011 6.3431C16.5083 6.3431 16.187 6.01426 16.187 5.61233V3.90232H14.5162C14.1235 3.90232 13.8022 3.57349 13.8022 3.17155C13.8022 2.76961 14.1235 2.44078 14.5162 2.44078H16.187V0.730772C16.187 0.328836 16.5083 0 16.9011 0C17.2938 0 17.6151 0.328836 17.6151 0.730772V2.44078H19.286C19.6787 2.44078 20 2.76961 20 3.17155ZM8.57541 10.9615C11.1318 10.9615 13.2165 8.82761 13.2165 6.21156C13.2165 3.59551 11.1315 1.46166 8.57541 1.46166C6.01927 1.46166 3.93429 3.59551 3.93429 6.21156C3.93429 8.82761 6.01927 10.9615 8.57541 10.9615ZM14.2164 10.618C13.4381 10.618 12.7027 10.9322 12.1457 11.4949C11.1889 12.4741 9.92504 13.0076 8.57552 13.0076C7.22601 13.0076 5.95495 12.4669 4.99826 11.4949C4.44846 10.9249 3.71299 10.618 2.92755 10.618C2.14926 10.618 1.41379 10.9249 0.856844 11.4949C0.307047 12.0576 0 12.8103 0 13.6142C0 14.418 0.307047 15.1634 0.856844 15.7334C2.91327 17.8453 5.65517 19 8.56844 19C11.4817 19 14.2236 17.8381 16.28 15.7334C16.8298 15.1707 17.1369 14.418 17.1369 13.6142C17.1369 12.8103 16.8298 12.0649 16.28 11.4949C15.7302 10.9322 14.9948 10.618 14.2093 10.618H14.2164Z"
+            fill="white"
           ></path>
         </svg>
-        {locale === 'da' ? 'Log ind' : 'Login'}
       </a>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-4 ml-5">
         <a
           href={daPath}
-          class="hover:opacity-100 transition-opacity"
-          style={`text-decoration:none; font-size:14px; opacity:${locale === 'da' ? '1' : '0.45'};`}
-          >🇩🇰</a
-        >
-        <span style="color:rgba(255,255,255,0.3); font-size:12px;">/</span>
+          class:list={[
+            'no-underline hover:opacity-100 transition-opacity',
+            locale === 'da' ? 'opacity-100' : 'opacity-45',
+          ]}
+          aria-label="Dansk">
+          <img
+            src="/flags/da.jpg"
+            alt=""
+            width="18"
+            height="14"
+            class="block h-3.5 w-auto"
+          />
+        </a>
         <a
           href={enPath}
-          class="hover:opacity-100 transition-opacity"
-          style={`text-decoration:none; font-size:14px; opacity:${locale === 'en' ? '1' : '0.45'};`}
-          >🇬🇧</a
-        >
+          class:list={[
+            'no-underline hover:opacity-100 transition-opacity',
+            locale === 'en' ? 'opacity-100' : 'opacity-45',
+          ]}
+          aria-label="English">
+          <img
+            src="/flags/en.jpg"
+            alt=""
+            width="21"
+            height="14"
+            class="block h-3.5 w-auto"
+          />
+        </a>
       </div>
     </div>
   </div>
@@ -108,7 +118,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
     <!-- Logo -->
     <a
       href={enPrefix + '/'}
-      aria-label="AB 1889 — hjem"
+      aria-label={translate(locale, 'logoHome')}
       class="shrink-0 mr-8 lg:mr-16">
       <img
         src="/images/ab-logo.svg"
@@ -165,7 +175,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
       <button
         class="hidden lg:flex items-center gap-2 font-black text-sm"
         style="background:rgba(15,148,118,0.5); color:#fff; border:none; border-radius:22px; padding:10px 20px; cursor:pointer; letter-spacing:-0.03em;"
-        aria-label={locale === 'da' ? 'Søg' : 'Search'}>
+        aria-label={translate(locale, 'search')}>
         <svg
           width="14"
           height="14"
@@ -186,7 +196,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
             stroke-linecap="round"
           ></path>
         </svg>
-        {locale === 'da' ? 'Søg' : 'Search'}
+        {translate(locale, 'search')}
       </button>
       <MobileMenu
         client:load
