@@ -39,3 +39,4 @@ strapi/.strapi-updater*.json
 # Cursor project rules — override global ignore to keep rules in repo
 !.cursor/
 !.cursor/**
+.vercel
