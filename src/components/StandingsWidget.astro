@@ -33,7 +33,7 @@ const headers = locale === 'da'
       <thead>
         <tr class="border-b border-[#E5E7EB]">
           {headers.map((h) => (
-            <th class="py-2 px-2 text-left font-bold uppercase first:pl-4 last:pr-4" style="color:#7A9185;font-size:0.6rem;letter-spacing:0.12em">
+            <th class="py-2 px-2 text-left font-medium uppercase first:pl-4 last:pr-4" style="color:#7A9185;font-size:0.6rem;letter-spacing:0.12em">
               {h}
             </th>
           ))}
@@ -49,10 +49,10 @@ const headers = locale === 'da'
               class="transition-colors hover:bg-[#F5FAF8]"
               style={isAB ? 'background:rgba(0,106,82,0.07)' : ''}
             >
-              <td class="py-2.5 pl-4 pr-2 tabular-nums font-bold" style={isAB ? 'color:#D6A02A' : 'color:#888'}>
+              <td class="py-2.5 pl-4 pr-2 tabular-nums font-medium" style={isAB ? 'color:#D6A02A' : 'color:#888'}>
                 {row.rank}
               </td>
-              <td class="py-2.5 px-2 font-bold" style={isAB ? 'color:#006A52' : 'color:#111'}>
+              <td class="py-2.5 px-2 font-medium" style={isAB ? 'color:#006A52' : 'color:#111'}>
                 {row.teamName ?? '—'}
                 {isAB && <span class="ml-1.5 text-[0.55rem] uppercase font-black" style="color:#D6A02A">▲</span>}
               </td>
@@ -61,7 +61,7 @@ const headers = locale === 'da'
               <td class="py-2.5 px-2 tabular-nums" style="color:#888">{row.matchesDraw}</td>
               <td class="py-2.5 px-2 tabular-nums" style="color:#888">{row.matchesLost}</td>
               <td class="py-2.5 px-2 tabular-nums" style="color:#888">{gdStr}</td>
-              <td class="py-2.5 pr-4 pl-2 font-black tabular-nums" style={isAB ? 'color:#006A52' : 'color:#111'}>
+              <td class="py-2.5 pr-4 pl-2 font-bold tabular-nums" style={isAB ? 'color:#006A52' : 'color:#111'}>
                 {row.points}
               </td>
             </tr>

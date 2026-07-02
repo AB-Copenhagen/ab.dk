@@ -22,7 +22,7 @@
   /* Helvetica is the ONLY approved fallback. No other sans substitutes. */
 
   --tracking-head: -0.01em; /* headlines: -0.02em to 0em */
-  --tracking-body: 0.01em; /* body: 0em to +0.02em — NEVER below 0 */
+  --tracking-body: 0em;
 
   /* ── Spacing scale ───────────────────────────────────────────── */
   --space-xs: 0.25rem;

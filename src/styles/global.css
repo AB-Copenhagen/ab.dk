@@ -53,6 +53,7 @@ html {
   background: #fff;
   color: var(--ab-white);
   font-family: var(--font-body);
+  font-size: 17px;
   scrollbar-width: none; /* Firefox */
 }
 html::-webkit-scrollbar {

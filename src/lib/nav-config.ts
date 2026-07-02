@@ -47,7 +47,7 @@ const da: NavConfig = {
     { label: 'Nyheder', href: '/nyheder' },
     {
       label: 'Om AB',
-      href: '/om',
+      href: '/om/historik',
       children: [
         { label: 'Historik', href: '/om/historik' },
         { label: 'Stadion', href: '/om/stadion' },
@@ -89,7 +89,7 @@ const en: NavConfig = {
     { label: 'News', href: '/nyheder' },
     {
       label: 'About AB',
-      href: '/om',
+      href: '/om/historik',
       children: [
         { label: 'History', href: '/om/historik' },
         { label: 'Stadium', href: '/om/stadion' },

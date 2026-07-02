@@ -62,7 +62,7 @@ function formatDate(str: string) {
         </h1>
         {article.description && (
           <p class="leading-relaxed mb-6"
-             style="font-size:clamp(0.9rem,1.3vw,1.05rem); color:#111; max-width:440px;">
+             style="font-size:clamp(1rem,1.5vw,1.15rem); color:#111; max-width:440px;">
             {truncate(decodeHtml(article.description), 220)}
           </p>
         )}
@@ -198,7 +198,7 @@ function formatDate(str: string) {
 </Base>
 
 <style is:global>
-  .article-prose { color: #111; line-height: 1.8; font-size: 0.9375rem; }
+  .article-prose { color: #111; line-height: 1.85; font-size: 1.0625rem; }
   .article-prose h1, .article-prose h2, .article-prose h3, .article-prose h4 {
     color: #111; letter-spacing: -0.02em; margin-top: 1.75em; margin-bottom: 0.5em; font-weight: 900;
   }

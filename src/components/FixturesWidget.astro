@@ -58,7 +58,7 @@ function formatDate(dateStr: string) {
 
           <!-- Teams row -->
           <div class="flex items-center gap-2">
-            <span class="text-sm font-black uppercase flex-1 text-right" style={`color:${nameColor}; letter-spacing:0.03em`}>
+            <span class="text-sm font-medium flex-1 text-right" style={`color:${nameColor};`}>
               {home}
             </span>
 
@@ -70,15 +70,15 @@ function formatDate(dateStr: string) {
                 {event.score}
               </span>
             ) : (
-              <span class="text-sm shrink-0 font-bold" style={`color:${dateColor}`}>vs</span>
+              <span class="text-sm shrink-0 font-medium" style={`color:${dateColor}`}>vs</span>
             )}
 
-            <span class="text-sm font-black uppercase flex-1" style={`color:${nameColor}; letter-spacing:0.03em`}>
+            <span class="text-sm font-medium flex-1" style={`color:${nameColor};`}>
               {away}
             </span>
 
             {isLive && (
-              <span class="inline-flex items-center gap-1 text-xs font-bold uppercase shrink-0" style="color:#00FF1F;letter-spacing:0.1em">
+              <span class="inline-flex items-center gap-1 text-xs font-medium uppercase shrink-0" style="color:#00FF1F;letter-spacing:0.1em">
                 <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
                 LIVE
               </span>

@@ -1,139 +1,179 @@
 ---
 import Base from '@/layouts/Base.astro';
 export const prerender = true;
-
-const milestones = [
-  {
-    year: '1883',
-    heading: "AB's famous colors — green and white.",
-    body: "When the Præstedan and Latin School merged in 1883, they needed to agree on colors. Students from both schools held a meeting and landed on a solution that has endured to this day: Akademisk Boldklub's colors are green and white. This simple decision had a profound impact on the club's identity and sense of belonging.",
-    img: '/images/squad-banner.png',
-    imgAlt: 'AB 1883',
-    layout: 'text-left',
-    bg: '#fff',
-  },
-  {
-    year: '1887',
-    heading: 'Admitted to FSK in 1887',
-    body: 'Gradually in 1887, the game of football was adopted by the FSK. The cooperative editor Globalt became a decisive voice and one of the most influential representatives of the association. On 25 February 1889, the cooperative was reformed as Akademisk Boldklub — a dramatic move that saw much younger players recruited into the club.',
-    img: '/images/player-featured.png',
-    imgAlt: 'AB 1887',
-    layout: 'img-left',
-    bg: '#EBEBEB',
-  },
-  {
-    year: '1889',
-    heading: 'Contingency of 50 ØRE per month in 1889',
-    body: "In 1889 the newly formed club set a monthly membership fee of 50 øre. In June 1889 AB played their first game on the Frederiksberg meadow. The pitch was open and the team could move freely around the space. The result of AB's first ever match has not survived history, but the enthusiasm was palpable.",
-    subHeading: 'One of the greatest personalities in AB',
-    subBody: 'Most of the oldest personalities in the history of the club played for AB and formed a genuinely important part of the club. Baumann created a tournament-famous football club that was not yet complete for all positions at the time. He carried the club in a tremendously important way in the 1890s. After he made his name as a footballer, he took on the role of administrator for many years.',
-    img: '/images/ab-crest.svg',
-    imgAlt: 'AB crest 1889',
-    layout: 'two-col',
-    bg: '#fff',
-  },
-  {
-    year: '1894',
-    heading: 'Establishment of junior department in 1894',
-    body: 'When the professional section suffered from a lack of recruitment in 1894, AB chose to establish a junior department in the 1893–94 season. The junior section provided an opportunity to recruit and nurture new talent, which would shape the next chapter of AB\'s glorious history and help maintain the academic tradition upon which the club was proudly founded.',
-    img: null,
-    imgAlt: '',
-    layout: 'text-only',
-    bg: '#EBEBEB',
-  },
-];
 ---
 
 <Base locale="en" title="History | AB 1889">
   <!-- Hero -->
-  <div class="relative overflow-hidden" style="height:clamp(280px,40vw,480px);">
+  <div class="relative w-full">
     <img
-      src="/images/squad-banner.png"
+      src="/images/about-history-hero.png"
       alt="AB 1889 History"
-      class="absolute inset-0 w-full h-full object-cover object-top"
-      style="filter:brightness(0.35) saturate(0.4);"
+      class="w-full h-auto block"
+      loading="eager"
     />
-    <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%);"></div>
-    <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
-      <h1 class="font-black text-white" style="font-size:clamp(4rem,10vw,8rem);letter-spacing:-0.05em;line-height:0.88;">History</h1>
+    <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.55) 100%);"></div>
+    <div class="absolute inset-0 flex items-end px-8 lg:px-20 pb-14">
+      <h1 class="font-black text-white leading-none" style="font-size:clamp(3.5rem,10vw,8rem);letter-spacing:-0.04em;">History</h1>
     </div>
   </div>
 
-  <!-- Timeline sections -->
-  {milestones.map((m) => (
-    <section style={`background:${m.bg}; padding: clamp(48px,7vw,80px) 0;`}>
-      <div class="max-w-7xl mx-auto px-6 lg:px-16">
-        {m.layout === 'text-left' && (
-          <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <div>
-              <span class="inline-block font-black text-xs px-3 py-1 mb-5" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">{m.year}</span>
-              <h2 class="font-black mb-5" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#111;">{m.heading}</h2>
-              <p class="text-sm leading-relaxed" style="color:#555; max-width:48ch;">{m.body}</p>
-            </div>
-            <div class="rounded overflow-hidden aspect-[4/3]">
-              <img src={m.img!} alt={m.imgAlt} class="w-full h-full object-cover" />
-            </div>
+  <!-- 1883: White bg — text left, image right -->
+  <section style="background:#fff; padding:clamp(64px,9vw,112px) 0;">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div>
+          <div class="inline-flex items-center mb-7" style="background:#D3BC8D; border-radius:100px; padding:9px 22px;">
+            <span class="font-black" style="font-size:1.4rem; color:#111; letter-spacing:-0.04em;">1883</span>
           </div>
-        )}
-
-        {m.layout === 'img-left' && (
-          <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <div class="rounded overflow-hidden aspect-[4/3] order-2 lg:order-1">
-              <img src={m.img!} alt={m.imgAlt} class="w-full h-full object-cover object-top" />
-            </div>
-            <div class="order-1 lg:order-2">
-              <span class="inline-block font-black text-xs px-3 py-1 mb-5" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">{m.year}</span>
-              <h2 class="font-black mb-5" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#111;">{m.heading}</h2>
-              <p class="text-sm leading-relaxed" style="color:#555; max-width:48ch;">{m.body}</p>
-            </div>
-          </div>
-        )}
-
-        {m.layout === 'two-col' && (
-          <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-            <div>
-              <span class="inline-block font-black text-xs px-3 py-1 mb-5" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">{m.year}</span>
-              <h2 class="font-black mb-5" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#111;">{m.heading}</h2>
-              <p class="text-sm leading-relaxed mb-10" style="color:#555;">{m.body}</p>
-              <div class="flex items-end gap-6">
-                <img src="/images/ab-crest.svg" alt="AB 1889 crest" width="120" height="120" style="opacity:0.15;" />
-              </div>
-            </div>
-            <div>
-              <h3 class="font-black mb-4" style="font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.04em; line-height:1.1; color:#111;">{m.subHeading}</h3>
-              <p class="text-sm leading-relaxed" style="color:#555;">{m.subBody}</p>
-            </div>
-          </div>
-        )}
-
-        {m.layout === 'text-only' && (
-          <div class="max-w-3xl">
-            <span class="inline-block font-black text-xs px-3 py-1 mb-5" style="background:#D3BC8D; color:#006A52; letter-spacing:0.12em;">{m.year}</span>
-            <h2 class="font-black mb-5" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#111;">{m.heading}</h2>
-            <p class="text-sm leading-relaxed" style="color:#555;">{m.body}</p>
-          </div>
-        )}
+          <h2 class="font-black mb-7 history-h2">Well-known AB colors in green and white.</h2>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; max-width:44ch;">
+            When the disciples of the Frederician Latin School became students in 1883 and moved to Copenhagen, they brought more than academic knowledge with them. Since football had not yet fully taken hold in Denmark, these students instead started a Cricket Club as a gathering point for their sporting activities.
+          </p>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; max-width:44ch; margin-top:1.25rem;">
+            This club was named "Fredericia-studenternes Kricketklub" (FSK), as a final tribute to their old school. The players' uniforms were already in the familiar AB colours: Green and white.
+          </p>
+        </div>
+        <div class="overflow-hidden" style="border-radius:6px; aspect-ratio:4/3;">
+          <img src="/images/about-frederician-latin-school-building.png" alt="Frederician Latin School" class="w-full h-full object-cover" />
+        </div>
       </div>
-    </section>
-  ))}
+    </div>
+  </section>
 
-  <!-- Dark interlude: Board of directors -->
-  <section style="background:#0A0A09; padding: clamp(48px,7vw,80px) 0;">
-    <div class="max-w-7xl mx-auto px-6 lg:px-16">
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <div class="rounded overflow-hidden aspect-video">
-          <img src="/images/hero.jpg" alt="AB 1889 board" class="w-full h-full object-cover" style="filter:saturate(0.4);" />
+  <!-- 1887: Beige bg — image left, text right -->
+  <section style="background:#D3BC8D; padding:clamp(64px,9vw,112px) 0;">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div class="overflow-hidden order-2 lg:order-1" style="border-radius:6px; aspect-ratio:4/3;">
+          <img src="/images/about-board-of-directors.png" alt="AB team 1887" class="w-full h-full object-cover" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center mb-7" style="background:#00FF1F; border-radius:100px; padding:9px 22px;">
+            <span class="font-black" style="font-size:1.4rem; color:#111; letter-spacing:-0.04em;">1887</span>
+          </div>
+          <h2 class="font-black mb-7 history-h2">Admitted to FSK in 1887</h2>
+          <p style="font-size:1.1rem; line-height:1.75; color:#111; max-width:44ch;">
+            As early as 1887, the game of football was admitted to the FSK. This happened after a Danish translation of the laws of the English Football Association had been made in the autumn of 1886/87.
+          </p>
+          <p style="font-size:1.1rem; line-height:1.75; color:#111; max-width:44ch; margin-top:1.25rem;">
+            Gradually, the influx of Copenhageners increased, and it was therefore agreed that the name of the club no longer represented its members. On 26 February 1889, the "Fredericia-studenternes Kricketklub" merged with the slightly younger "Polyteknisk Klub". The name then became: Akademisk Boldklub.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1889: Light gray bg — text left, image right -->
+  <section style="background:#E7E7E7; padding:clamp(64px,9vw,112px) 0;">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div>
+          <h2 class="font-black mb-7 history-h2">Newly established academic football club requirements</h2>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; max-width:44ch;">
+            The entry requirements for becoming a member of the newly established Academic Football Club were changed after the merger so that anyone who had taken an entrance exam to a university or polytechnic could become a member. This also applied to students from other Scandinavian universities.
+          </p>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; max-width:44ch; margin-top:1.25rem;">
+            In addition, non-academic football players with potential could be admitted to AB by being unanimously proposed by the board or by 15 members of the club.
+          </p>
+        </div>
+        <div class="overflow-hidden" style="border-radius:6px; aspect-ratio:4/3;">
+          <img src="/images/about-stadium-seat.png" alt="AB stadium" class="w-full h-full object-cover" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1889 black: Board of directors -->
+  <section style="background:#0A0A09; padding:clamp(64px,9vw,112px) 0;">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div class="overflow-hidden" style="border-radius:6px; aspect-ratio:4/3;">
+          <img src="/images/about-board-of-directors.png" alt="AB board of directors 1889" class="w-full h-full object-cover" />
         </div>
         <div>
-          <h2 class="font-black mb-6" style="font-size:clamp(1.75rem,4vw,2.75rem); letter-spacing:-0.04em; line-height:1.05; color:#fff;">AB's new board of directors</h2>
-          <p class="text-sm leading-relaxed mb-6" style="color:rgba(255,255,255,0.6);">AB's board works diligently to lead the club into a new era focused on sporting success and strong community roots.</p>
-          <ul class="flex flex-col gap-2">
-            {['Jens Andersen — Chairman', 'Lars Nielsen — Vice Chairman', 'Sofie Larsen', 'Michael Christensen', 'Anna Pedersen'].map((name) => (
-              <li class="text-sm" style="color:rgba(255,255,255,0.5);">{name}</li>
-            ))}
+          <div class="inline-flex items-center mb-7" style="background:#006A52; border-radius:100px; padding:9px 22px;">
+            <span class="font-black" style="font-size:1.4rem; color:#fff; letter-spacing:-0.04em;">1889</span>
+          </div>
+          <h2 class="font-black mb-7 history-h2" style="color:#D3BC8D;">AB's new board of directors</h2>
+          <p style="font-size:1.1rem; line-height:1.75; color:#D3BC8D; margin-bottom:1rem;">AB's new board of directors after the merger consisted of:</p>
+          <ul style="display:flex; flex-direction:column; gap:0.5rem; color:#D3BC8D; font-size:1.1rem; line-height:1.75;">
+            <li>ME Pagh — Chairman (former Chairman of the Fredericia Students' Cricket Club)</li>
+            <li>E. Faber</li>
+            <li>H. Forchhammer</li>
+            <li>H.C. Lund</li>
+            <li>H. Birk</li>
           </ul>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- 1889 white: Two columns -->
+  <section style="background:#fff; padding:clamp(64px,9vw,112px) 0;">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-start">
+        <div>
+          <div class="inline-flex items-center mb-7" style="background:#006A52; border-radius:100px; padding:9px 22px;">
+            <span class="font-black" style="font-size:1.4rem; color:#fff; letter-spacing:-0.04em;">1889</span>
+          </div>
+          <h2 class="font-black mb-7 history-h2">Contingency of 50 ORE per month in 1889</h2>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444;">In 1889, the membership fee for active members of AB was just 50 øre per month.</p>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
+            On 1 April 1889, the club moved to new premises at Helgesensgade 5, where they were well received by the club's first clothing sponsor. Since they could not afford to buy new towels, a mother of an AB player bought fabric on credit and sewed 6 towels herself, which she happily handed to the enthusiastic players.
+          </p>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
+            DBU acquired a nice trophy for the tidy sum of 150 kroons, and the result of DBU's first tournament (1889–1890) was that AB won the final over KB 2-0.
+          </p>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
+            Around the turn of the century, both KB and B93 had their own pitches, and AB thought that they should have one too. The necessary capital — 60,000 DKK — was obtained from the club's supporters, and it was then possible to rent an area on Lammefælleden on Tagensvej from the Municipality of Copenhagen, completed in 1903.
+          </p>
+        </div>
+        <div style="padding-top: calc(1.4rem + 18px + 1.75rem);">
+          <h2 class="font-black mb-7 history-h2">One of the greatest personalities in AB</h2>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444;">
+            One of the greatest personalities of this time in AB was Department Head Charles Buchwald, who played all three ball games available at AB: football, tennis and cricket. Buchwald played on the national team in football and cricket and was club champion in tennis.
+          </p>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
+            Buchwald made his debut on AB's first team in football at the age of 16, the same age as Harald Bohr, who made it to 4 international matches. His brother Niels, who probably became better known outside the pitch, was a goalkeeper.
+          </p>
+          <p style="font-size:1.1rem; line-height:1.75; color:#444; margin-top:1.25rem;">
+            'AB was quite superior in a match against a selected German team — Mittweida — and Niels Bohr made the time pass by standing and leaning on one of the goalposts. Suddenly a long ball was kicked towards AB's goal. Everyone expected Niels to go out and take the ball, but he did nothing. After the match he had to admit that his thoughts were about a mathematical problem.'
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1894: Green bg — crest left, text right -->
+  <section style="background:#006A52; padding:clamp(64px,9vw,112px) 0;">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div class="flex items-center justify-center" style="aspect-ratio:1; max-height:500px;">
+          <img src="/images/about-crest-original.png" alt="AB 1889 crest" style="width:min(480px,90%);" />
+        </div>
+        <div>
+          <div class="inline-flex items-center mb-7" style="background:#00FF1F; border-radius:100px; padding:9px 22px;">
+            <span class="font-black" style="font-size:1.4rem; color:#111; letter-spacing:-0.04em;">1894</span>
+          </div>
+          <h2 class="font-black mb-7 history-h2" style="color:#fff;">Establishment of junior department in 1894</h2>
+          <p style="font-size:1.1rem; line-height:1.75; color:rgba(255,255,255,0.85);">
+            Since the new game had not yet reached the schools, the club tried in 1894 to establish a Junior Department, which was not a great success. In 1899 AB tried again. This time under the leadership of the creator of AB's famous junior department and its leader for 20 years — Edmond Andersen.
+          </p>
+          <p style="font-size:1.1rem; line-height:1.75; color:rgba(255,255,255,0.85); margin-top:1.25rem;">
+            During the department's first year of existence, the number of members increased to almost 70. Edmond Andersen kept a careful diary of the individual training sessions — both big and small.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .history-h2 {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: #111;
+  }
+</style>
