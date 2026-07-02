@@ -28,12 +28,34 @@ function decodeBlocks(blocks: any[]): any[] {
   });
 }
 
+function htmlToParapraphs(html: string): string {
+  return html
+    .replace(/<br\s*\/?>\s*<br\s*\/?>/gi, '\n\n')
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p>${p.replace(/<br\s*\/?>/gi, '<br/>')}</p>`)
+    .join('');
+}
+
 export default function ArticleContent({ content, strapiUrl }: Props) {
   if (!content) return null;
-  const decoded = Array.isArray(content) ? decodeBlocks(content) : content;
 
+  // HTML string from Strapi (legacy rich text or markdown field)
+  if (typeof content === 'string') {
+    const decoded = decodeHtml(content);
+    return (
+      <div
+        className="article-prose"
+        dangerouslySetInnerHTML={{ __html: htmlToParapraphs(decoded) }}
+      />
+    );
+  }
+
+  // Strapi blocks format (array)
+  const decoded = decodeBlocks(content);
   return (
-    <div className="prose prose-invert prose-sm max-w-none">
+    <div className="article-prose">
       <BlocksRenderer
         content={decoded}
         blocks={{
