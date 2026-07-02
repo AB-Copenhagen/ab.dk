@@ -1,73 +1,333 @@
 ---
-import { fetchStandings } from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
+import { translate, type Locale } from '@/lib/i18n';
+import { fetchStandings, type SIStandingRow } from '@/lib/si/client';
 
 interface Props {
-  locale: 'da' | 'en';
+  locale: Locale;
+  showHeader?: boolean;
 }
 
-const { locale } = Astro.props;
+const { locale, showHeader = true } = Astro.props;
 
-let rows: any[] = [];
+let rows: SIStandingRow[] = [];
 let error = '';
 
 try {
   rows = await fetchStandings(locale);
-} catch (err) {
-  error = locale === 'da' ? 'Stilling ikke tilgængelig' : 'Standings unavailable';
+} catch {
+  error =
+    locale === 'da' ? 'Stilling ikke tilgængelig' : 'Standings unavailable';
 }
 
-const headers = locale === 'da'
-  ? ['#', 'Hold', 'K', 'V', 'U', 'T', 'Mål', 'Pt']
-  : ['#', 'Club', 'P', 'W', 'D', 'L', 'GD', 'Pts'];
+const headers =
+  locale === 'da'
+    ? ['#', 'Hold', 'K', 'V', 'U', 'T', 'F', 'M', 'Mål', 'Pt']
+    : ['Pos', 'Team', 'P', 'W', 'D', 'L', 'F', 'A', 'GD', 'Pts'];
+
+function teamLogoSrc(teamId: number): string {
+  if (teamId === abConfig.teamId) return '/images/ab-crest.svg';
+  return `https://content.tjekscores.dk/Img/TeamImages/${teamId}.png`;
+}
 ---
 
-{error ? (
-  <div class="text-xs py-4 text-center" style="color:#888">{error}</div>
-) : !rows.length ? (
-  <div class="text-xs py-6 text-center" style="color:#888">
-    {locale === 'da' ? 'Sæsonen er endnu ikke startet' : 'Season has not started yet'}
-  </div>
-) : (
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-      <thead>
-        <tr class="border-b border-[#E5E7EB]">
-          {headers.map((h) => (
-            <th class="py-2 px-2 text-left font-medium uppercase first:pl-4 last:pr-4" style="color:#7A9185;font-size:0.6rem;letter-spacing:0.12em">
-              {h}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-[#E5E7EB]">
-        {rows.map((row: any) => {
-          const isAB = row.teamId === 9805;
-          const gd = (row.goalsScored ?? 0) - (row.goalsConceded ?? 0);
-          const gdStr = gd > 0 ? `+${gd}` : String(gd);
-          return (
-            <tr
-              class="transition-colors hover:bg-[#F5FAF8]"
-              style={isAB ? 'background:rgba(0,106,82,0.07)' : ''}
-            >
-              <td class="py-2.5 pl-4 pr-2 tabular-nums font-medium" style={isAB ? 'color:#D6A02A' : 'color:#888'}>
-                {row.rank}
-              </td>
-              <td class="py-2.5 px-2 font-medium" style={isAB ? 'color:#006A52' : 'color:#111'}>
-                {row.teamName ?? '—'}
-                {isAB && <span class="ml-1.5 text-[0.55rem] uppercase font-black" style="color:#D6A02A">▲</span>}
-              </td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#888">{row.matchesPlayed}</td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#888">{row.matchesWon}</td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#888">{row.matchesDraw}</td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#888">{row.matchesLost}</td>
-              <td class="py-2.5 px-2 tabular-nums" style="color:#888">{gdStr}</td>
-              <td class="py-2.5 pr-4 pl-2 font-bold tabular-nums" style={isAB ? 'color:#006A52' : 'color:#111'}>
-                {row.points}
-              </td>
+<div class="standings-widget">
+  {
+    showHeader && (
+      <div class="standings-header">
+        <h3 class="standings-title">
+          {translate(locale, 'secondDivision')}
+          <br />
+          {translate(locale, 'standingsTitle')}
+        </h3>
+        <img
+          src="/images/sponsors/campobet-division.png"
+          alt="CampoBet 2nd Division"
+          class="standings-sponsor"
+          width="151"
+          height="48"
+          loading="lazy"
+        />
+      </div>
+    )
+  }
+
+  {
+    error ? (
+      <div class="standings-empty">{error}</div>
+    ) : !rows.length ? (
+      <div class="standings-empty">
+        {locale === 'da'
+          ? 'Sæsonen er endnu ikke startet'
+          : 'Season has not started yet'}
+      </div>
+    ) : (
+      <div class="standings-table-wrap">
+        <table class="standings-table">
+          <colgroup>
+            <col class="standings-col standings-col--pos" />
+            <col class="standings-col standings-col--team" />
+            <col span="8" class="standings-col standings-col--stat" />
+          </colgroup>
+          <thead>
+            <tr class="standings-col-head">
+              {headers.map((h, i) => (
+                <th
+                  class:list={[
+                    'standings-th',
+                    i === 0 && 'standings-th--pos',
+                    i === 1 && 'standings-th--team',
+                    i >= 2 && 'standings-th--stat',
+                  ]}
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-)}
+          </thead>
+          <tbody>
+            {rows.map((row, index) => {
+              const gd = (row.goalsScored ?? 0) - (row.goalsConceded ?? 0);
+              const gdStr = gd > 0 ? `+${gd}` : String(gd);
+              return (
+                <tr
+                  class:list={[
+                    'standings-row',
+                    index % 2 === 0 ? 'standings-row--base' : 'standings-row--alt',
+                  ]}
+                >
+                  <td class="standings-td standings-td--pos">{row.rank}</td>
+                  <td class="standings-td standings-td--team">
+                    <span class="standings-team">
+                      <span class="standings-team-logo">
+                        <img
+                          src={teamLogoSrc(row.teamId)}
+                          alt=""
+                          width="40"
+                          height="40"
+                          loading="lazy"
+                          onerror="this.closest('.standings-team-logo')?.classList.add('standings-team-logo--fallback')"
+                        />
+                        <span class="standings-team-initial" aria-hidden="true">
+                          {(row.teamShortName ?? row.teamName ?? '?').slice(0, 3)}
+                        </span>
+                      </span>
+                      <span class="standings-team-name">
+                        {row.teamName ?? '—'}
+                      </span>
+                    </span>
+                  </td>
+                  <td class="standings-td standings-td--stat">
+                    {row.matchesPlayed}
+                  </td>
+                  <td class="standings-td standings-td--stat">
+                    {row.matchesWon}
+                  </td>
+                  <td class="standings-td standings-td--stat">
+                    {row.matchesDraw}
+                  </td>
+                  <td class="standings-td standings-td--stat">
+                    {row.matchesLost}
+                  </td>
+                  <td class="standings-td standings-td--stat">
+                    {row.goalsScored}
+                  </td>
+                  <td class="standings-td standings-td--stat">
+                    {row.goalsConceded}
+                  </td>
+                  <td class="standings-td standings-td--stat">{gdStr}</td>
+                  <td class="standings-td standings-td--stat standings-td--pts">
+                    {row.points}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .standings-widget {
+    background: var(--ab-white);
+    overflow: hidden;
+  }
+
+  .standings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--ab-green);
+  }
+
+  .standings-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.4vw, 2.1875rem);
+    font-weight: 800;
+    line-height: 0.86;
+    letter-spacing: -0.04em;
+    color: var(--ab-white);
+    text-transform: none;
+  }
+
+  .standings-sponsor {
+    width: auto;
+    max-width: 9.5rem;
+    height: 3rem;
+    object-fit: contain;
+    object-position: right center;
+    flex-shrink: 0;
+  }
+
+  .standings-empty {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #888;
+  }
+
+  .standings-table-wrap {
+    overflow-x: auto;
+  }
+
+  .standings-table {
+    width: 100%;
+    min-width: 56rem;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    letter-spacing: -0.02em;
+    color: var(--ab-green);
+  }
+
+  .standings-col--pos {
+    width: 4.75rem;
+  }
+
+  .standings-col--team {
+    width: auto;
+  }
+
+  .standings-col--stat {
+    width: 4.4375rem;
+  }
+
+  .standings-col-head {
+    background: var(--ab-neon);
+  }
+
+  .standings-th {
+    padding: 0.65rem 0.5rem;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--ab-green);
+    white-space: nowrap;
+  }
+
+  .standings-th--pos {
+    padding-left: 1.25rem;
+    text-align: left;
+  }
+
+  .standings-th--team {
+    text-align: left;
+  }
+
+  .standings-th--stat {
+    text-align: center;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .standings-row--base {
+    background: var(--ab-white);
+  }
+
+  .standings-row--alt {
+    background: #f4f4f4;
+  }
+
+  .standings-td {
+    padding: 0.55rem 0.5rem;
+    vertical-align: middle;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .standings-td--pos {
+    padding-left: 1.25rem;
+    font-weight: 400;
+  }
+
+  .standings-td--team {
+    min-width: 11rem;
+  }
+
+  .standings-td--stat {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .standings-td--pts {
+    padding-right: 1.25rem;
+  }
+
+  .standings-team {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .standings-team-logo {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+  }
+
+  .standings-team-logo img {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: contain;
+  }
+
+  .standings-team-initial {
+    display: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background: rgba(0, 106, 82, 0.08);
+    font-size: 0.625rem;
+    font-weight: 800;
+    line-height: 2.5rem;
+    text-align: center;
+    letter-spacing: 0;
+  }
+
+  .standings-team-logo--fallback img {
+    display: none;
+  }
+
+  .standings-team-logo--fallback .standings-team-initial {
+    display: block;
+  }
+
+  .standings-team-name {
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>

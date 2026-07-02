@@ -52,6 +52,10 @@
   @apply font-sans text-2xl md:text-3xl lg:text-4xl font-extrabold leading-7.5 tracking-[-1.4px] text-white not-italic;
 }
 
+@utility content-container {
+  @apply max-w-[1680px] mx-auto px-5 md:px-10;
+}
+
 /* ── Base document ──────────────────────────────────────────────────── */
 html {
   background: #fff;
