@@ -13,8 +13,8 @@ const resourceLinks = d?.policy_links as { text: string; URL: string }[] | undef
 const socialLinks = d?.social_media_links as { text: string; URL: string }[] | undefined;
 
 const footerHeadingClass =
-  'font-black text-2xl text-white tracking-[-0.02em] mb-8';
-const footerItemClass = 'text-lg leading-[30px] tracking-[-0.02em] text-white';
+  'font-black text-base text-white tracking-[-0.02em] mb-5';
+const footerItemClass = 'text-sm leading-6 tracking-[-0.01em] text-white/80';
 const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 transition-opacity no-underline`;
 ---
 
@@ -105,8 +105,16 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
             </ul>
           ) : (
             <ul class="flex flex-col">
-              {['Instagram', 'LinkedIn', 'Facebook', 'YouTube', 'TikTok'].map((s) => (
-                <li><span class={footerItemClass}>{s}</span></li>
+              {([
+                { label: 'Instagram', href: 'https://www.instagram.com/ab1889.dk' },
+                { label: 'LinkedIn', href: 'https://www.linkedin.com/company/akademisk-boldklub' },
+                { label: 'Facebook', href: 'https://www.facebook.com/AB1889' },
+                { label: 'YouTube', href: 'https://www.youtube.com/@ab1889' },
+                { label: 'TikTok', href: 'https://www.tiktok.com/@ab1889' },
+              ] as {label:string; href:string}[]).map((s) => (
+                <li>
+                  <a href={s.href} target="_blank" rel="noreferrer" class={footerLinkClass}>{s.label}</a>
+                </li>
               ))}
             </ul>
           )}
@@ -127,14 +135,16 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
             </ul>
           ) : (
             <ul class="flex flex-col">
-              {[
-                locale === 'da' ? 'Køb billetter' : 'Buy tickets',
-                locale === 'da' ? 'Book event' : 'Book an event',
-                locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor',
-                locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy',
-                locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy',
-              ].map((label) => (
-                <li><span class={footerItemClass}>{label}</span></li>
+              {([
+                { label: locale === 'da' ? 'Køb billetter' : 'Buy tickets', href: 'https://billetter.ab.dk', external: true },
+                { label: locale === 'da' ? 'Book event' : 'Book an event', href: locale === 'en' ? '/en/bliv-involveret/events' : '/bliv-involveret/events', external: false },
+                { label: locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor', href: locale === 'en' ? '/en/bliv-involveret/sponsor' : '/bliv-involveret/sponsor', external: false },
+                { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/om/privatlivspolitik' : '/om/privatlivspolitik', external: false },
+                { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/om/returpolitik' : '/om/returpolitik', external: false },
+              ] as {label:string; href:string; external:boolean}[]).map((item) => (
+                <li>
+                  <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
+                </li>
               ))}
             </ul>
           )}

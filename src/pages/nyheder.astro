@@ -1,7 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
-import { truncate } from '@/lib/utils';
+import { truncate, decodeHtml } from '@/lib/utils';
 export const prerender = false;
 
 const locale = 'da';
@@ -45,11 +45,11 @@ function formatDate(str: string) {
             {featured.categories?.[0]?.name ?? 'Feature'}
           </p>
           <h1 class="font-black text-white mb-4 leading-none" style="font-size:clamp(1.9rem,4.5vw,3.4rem);letter-spacing:-0.03em">
-            {featured.title}
+            {decodeHtml(featured.title)}
           </h1>
           {featured.description && (
             <p class="text-sm leading-relaxed mb-8" style="color:rgba(255,255,255,0.72)">
-              {truncate(featured.description, 160)}
+              {truncate(decodeHtml(featured.description), 160)}
             </p>
           )}
           <a
@@ -87,7 +87,7 @@ function formatDate(str: string) {
                 {article.categories?.[0]?.name ?? 'Nyheder'}
               </p>
               <h2 class="font-bold text-base leading-snug" style="color:#111;letter-spacing:-0.01em">
-                {article.title}
+                {decodeHtml(article.title)}
               </h2>
             </a>
           ))}
