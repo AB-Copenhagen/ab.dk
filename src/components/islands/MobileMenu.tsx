@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { NavConfig } from '@/lib/nav-config';
 
@@ -6,43 +6,45 @@ interface Props {
   nav: NavConfig;
   locale: string;
   enPrefix: string;
+  toggleId?: string;
 }
 
-export default function MobileMenu({ nav, locale, enPrefix }: Props) {
+export default function MobileMenu({
+  nav,
+  locale,
+  enPrefix,
+  toggleId = 'mobile-menu-open-btn',
+}: Props) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  return (
-    <div className="lg:hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        aria-label={open ? nav.closeMenu : nav.openMenu}
-        className="p-2 text-white/70 hover:text-white transition-colors"
-      >
-        {open ? (
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path
-              d="M5 5L15 15M15 5L5 15"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        ) : (
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path
-              d="M3 6h14M3 10h14M3 14h14"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        )}
-      </button>
+  useEffect(() => {
+    const toggle = document.getElementById(toggleId);
+    if (!toggle) return;
 
+    const onClick = () => setOpen((current) => !current);
+    toggle.addEventListener('click', onClick);
+    return () => toggle.removeEventListener('click', onClick);
+  }, [toggleId]);
+
+  useEffect(() => {
+    const toggle = document.getElementById(toggleId);
+    if (!toggle) return;
+
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? nav.closeMenu : nav.openMenu);
+    toggle.innerHTML = open
+      ? '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>'
+      : '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>';
+  }, [open, nav.closeMenu, nav.openMenu, toggleId]);
+
+  return (
+    <div data-mobile-menu-root="">
+      <span className="sr-only">Mobile menu</span>
       {open && (
         <div
-          className="fixed inset-0 top-[92px] z-40 overflow-y-auto"
+          id="mobile-menu-panel"
+          className="fixed inset-0 top-[92px] z-40 overflow-y-auto lg:hidden"
           style={{ background: '#006A52', borderTop: '3px solid #D3BC8D' }}
         >
           <nav className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-1">
