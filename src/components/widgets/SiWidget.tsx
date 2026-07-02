@@ -93,8 +93,6 @@ export default function SiWidget({
         ref={iframeRef}
         width="100%"
         height="100%"
-        frameBorder={0}
-        scrolling="no"
         allowFullScreen
         aria-label={label ?? widget}
         title={label ?? widget}

@@ -98,7 +98,7 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
   </main>
 
   {DESCOPE_PROJECT_ID && (
-    <script type="module" define:vars={{ DESCOPE_PROJECT_ID }}>
+    <script is:inline type="module" define:vars={{ DESCOPE_PROJECT_ID }}>
       import('https://unpkg.com/@descope/web-component@3/dist/index.js').then(() => {
         const el = document.createElement('descope-user-profile');
         el.setAttribute('project-id', DESCOPE_PROJECT_ID);

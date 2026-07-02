@@ -1,13 +1,18 @@
 ---
 import { fetchCollectionType } from '@/lib/strapi/client';
-import { fetchABEvents, fetchABPlayers, getTeamLogoSrc, type SIPlayer } from '@/lib/si/client';
+import {
+  fetchABEvents,
+  fetchABPlayers,
+  getTeamLogoSrc,
+  type SIPlayer,
+} from '@/lib/si/client';
 import { abConfig } from '@/lib/config/ab';
 import { strapiMediaUrl } from '@/lib/strapi/client';
 import SquadCard from '@/components/SquadCard.astro';
 import MatchScheduleList from '@/components/MatchScheduleList.astro';
 import MiniCalendar from '@/components/MiniCalendar.astro';
 import { translate } from '@/lib/i18n';
-import { truncate, decodeHtml } from '@/lib/utils';
+import { decodeHtml } from '@/lib/utils';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 
 interface Props {
@@ -36,8 +41,6 @@ const positionOrder: Record<string, number> = {
 const sortedPlayers = [...players].sort(
   (a, b) => (positionOrder[a.position] ?? 4) - (positionOrder[b.position] ?? 4)
 );
-
-const [featured, ...rest] = articles;
 
 const nextMatch = events.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
@@ -85,19 +88,6 @@ function articlePath(slug: string) {
 function localPath(path: string) {
   return locale === 'en' ? `/en${path}` : path;
 }
-function formatDate(str: string) {
-  try {
-    return new Date(str).toLocaleDateString(
-      locale === 'da' ? 'da-DK' : 'en-GB',
-      {
-        day: 'numeric',
-        month: 'short',
-      }
-    );
-  } catch {
-    return '';
-  }
-}
 
 const products = [
   {
@@ -118,14 +108,6 @@ const products = [
     originalPrice: 'DKK 429',
     img: '/images/product-3.png',
   },
-];
-
-const sponsors = [
-  { name: 'Plane', img: '/images/sponsors/plane.png' },
-  { name: 'Myriad360', img: '/images/sponsors/myriad360.png' },
-  { name: 'Datum', img: '/images/sponsors/datum.png' },
-  { name: 'Select Sport', img: '/images/sponsors/select-sport.png' },
-  { name: 'Carlsberg', img: '/images/sponsors/carlsberg.png' },
 ];
 
 const heroSlides = [
@@ -165,7 +147,6 @@ const heroSlides = [
       transform: scaleX(1);
     }
   }
-
 </style>
 
 <!-- ── Hero Slider ───────────────────────────────────────── -->
@@ -296,8 +277,10 @@ const heroSlides = [
   <div
     class="grid lg:grid-cols-[clamp(280px,28vw,460px)_1fr] gap-8 xl:gap-10 items-start">
     <!-- Left: Player photo + next match + buy tickets -->
-    <div id="player-featured" class="flex flex-col">
-      <div class="relative overflow-hidden  bg-rich-black">
+    <div
+      id="player-featured"
+      class="flex flex-col">
+      <div class="relative overflow-hidden bg-rich-black">
         <img
           src="/images/player-featured.png"
           alt="AB 1889 Player"
@@ -307,8 +290,7 @@ const heroSlides = [
         <div
           class="absolute inset-0 bg-linear-to-t from-black/55 to-transparent">
         </div>
-        <div
-          class="absolute left-4 top-4 flex items-start justify-between">
+        <div class="absolute left-4 top-4 flex items-start justify-between">
           <a
             href="https://billet.ab.dk/"
             target="_blank"
@@ -380,7 +362,9 @@ const heroSlides = [
     </div>
 
     <!-- Right: Standings -->
-    <div id="standings" class="overflow-hidden bg-white shadow-sm">
+    <div
+      id="standings"
+      class="overflow-hidden bg-white shadow-sm">
       <StandingsWidget locale={locale} />
     </div>
   </div>
@@ -389,7 +373,9 @@ const heroSlides = [
 <!-- ── Recent Results ──────────────────────────────────── -->
 {
   recentResults.length > 0 && (
-    <section id="recent-results" class="bg-white border-t border-gray-100">
+    <section
+      id="recent-results"
+      class="bg-white border-t border-gray-100">
       <div class="content-container py-8 nd:py-10">
         <div class="flex items-center gap-3 mb-5">
           <p class="text-xs font-black uppercase text-gray-400 tracking-[0.22em]">
@@ -465,9 +451,8 @@ const heroSlides = [
   <div
     class="absolute inset-0 bg-[url('/images/join-team-ab-bg.png')] bg-cover bg-center">
   </div>
-  
-  <div
-    class="content-container relative w-full">
+
+  <div class="content-container relative w-full">
     <div
       class="flex flex-col md:flex-row items-center justify-between gap-6 w-full">
       <h2
@@ -485,7 +470,7 @@ const heroSlides = [
 <!-- ── App + ABTV ─────────────────────────────────────────── -->
 <section
   id="app-abtv"
-  class="bg-white content-container relative w-full pb-0! py-8 md:py-10 ">
+  class="bg-white content-container relative w-full pb-0! py-8 md:py-10">
   <div class="grid md:grid-cols-2 gap-[clamp(12px,2vw,24px)]">
     <!-- Download App -->
     <div
@@ -510,8 +495,7 @@ const heroSlides = [
       />
       <!-- Content bottom-left -->
       <div class="absolute bottom-0 left-0 p-8 md:p-10 z">
-        <p
-          class="mb-5 text-banner-subtitle">
+        <p class="mb-5 text-banner-subtitle">
           {translate(locale, 'downloadApp')}
         </p>
         <a
@@ -546,8 +530,7 @@ const heroSlides = [
       </div>
       <!-- Bottom: subtitle + CTA -->
       <div class="relative p-8 md:p-10 z-1">
-        <p
-          class="mb-5 max-w-[280px] text-banner-subtitle">
+        <p class="mb-5 max-w-[280px] text-banner-subtitle">
           {translate(locale, 'abtvSubtitle')}
         </p>
         <a
@@ -561,17 +544,27 @@ const heroSlides = [
 </section>
 
 <!-- ── Calendar + Mini-Calendar ───────────────────────────── -->
-<section id="calendar" class="bg-white">
+<section
+  id="calendar"
+  class="bg-white">
   <div class="content-container py-8 md:py-10">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-      <MatchScheduleList locale={locale} events={events} />
-      <MiniCalendar locale={locale} events={events} />
+      <MatchScheduleList
+        locale={locale}
+        events={events}
+      />
+      <MiniCalendar
+        locale={locale}
+        events={events}
+      />
     </div>
   </div>
 </section>
 
 <!-- ── Matchday Gear / Shop ──────────────────────────────── -->
-<section id="matchday-gear" class="bg-white border-t border-gray-100">
+<section
+  id="matchday-gear"
+  class="bg-white border-t border-gray-100">
   <div class="content-container py-8 md:py-10">
     <!-- Heading block: centered, large -->
     <div class="text-center mb-10">
@@ -625,7 +618,9 @@ const heroSlides = [
 </section>
 
 <!-- ── The Squad ──────────────────────────────────────────────── -->
-<section id="squad" class="bg-white">
+<section
+  id="squad"
+  class="bg-white">
   <!-- Hero banner -->
   <div class="w-full">
     <img
@@ -637,8 +632,7 @@ const heroSlides = [
   </div>
 
   <!-- Players -->
-  <div
-    class="content-container py-8 md:py-10">
+  <div class="content-container py-8 md:py-10">
     <!-- Position filter pills -->
     <div
       class="flex gap-2 md:gap-3 overflow-x-auto pb-3 mb-8 scrollbar-none [-webkit-overflow-scrolling:touch]">
@@ -731,7 +725,9 @@ const heroSlides = [
 </script>
 
 <!-- ── News — Inside the club ─────────────────────────────── -->
-<section id="news" class="bg-white">
+<section
+  id="news"
+  class="bg-white">
   <div class="content-container py-14 md:py-20">
     <div class="text-center mb-10 md:mb-14">
       <h2

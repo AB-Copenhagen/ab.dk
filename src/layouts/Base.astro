@@ -3,11 +3,12 @@ import Navbar from '@/components/Navbar.astro';
 import Footer from '@/components/Footer.astro';
 import '@/styles/global.css';
 import { fetchSingleType } from '@/lib/strapi/client';
+import type { Locale } from '@/lib/i18n';
 
 interface Props {
   title?: string;
   description?: string;
-  locale?: string;
+  locale?: Locale;
   ogImage?: string;
 }
 
@@ -41,7 +42,7 @@ try {
     <link rel="alternate" hreflang="en" href={Astro.url.href.includes('/en') ? Astro.url.href : `/en${Astro.url.pathname}`} />
   </head>
   <body class="min-h-screen" style="background:#fff; color:#111;">
-    <Navbar locale={locale} globalData={globalData} />
+    <Navbar locale={locale} />
     <main>
       <slot />
     </main>
