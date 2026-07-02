@@ -14,12 +14,6 @@ const allArticles = await fetchCollectionType<any[]>('articles', {
 }).catch(() => [] as any[]);
 
 const [featured, ...rest] = allArticles;
-
-function formatDate(str: string) {
-  try {
-    return new Date(str).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' });
-  } catch { return ''; }
-}
 ---
 
 <Base locale="da" title="Nyheder | Akademisk Boldklub">

@@ -1,16 +1,14 @@
 ---
 import MobileMenu from './islands/MobileMenu';
 import SearchModal from './islands/SearchModal';
-import LangSwitch from '@/components/layout/LangSwitch.astro';
 import { getNavConfig, isNavItemActive } from '@/lib/nav-config';
 import { translate, type Locale } from '@/lib/i18n';
 
 interface Props {
   locale?: Locale;
-  globalData?: any;
 }
 
-const { locale = 'da', globalData } = Astro.props;
+const { locale = 'da' } = Astro.props;
 const nav = getNavConfig(locale);
 const enPrefix = locale === 'en' ? '/en' : '';
 const currentPath = Astro.url.pathname;

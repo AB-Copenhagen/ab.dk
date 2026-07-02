@@ -15,12 +15,11 @@ if (isNaN(eventId)) {
 }
 
 let event: SIEvent | null = null;
-let fetchError = '';
 
 try {
   event = await fetchEvent(eventId, 'da');
-} catch (err) {
-  fetchError = err instanceof Error ? err.message : 'Ukendt fejl';
+} catch {
+  // SI unavailable — redirect below
 }
 
 if (!event) {
