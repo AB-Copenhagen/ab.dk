@@ -1,6 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { fetchABEvents } from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 export const prerender = false;
 
@@ -65,7 +66,7 @@ function fmtTime(d: string) {
             <rect width="20" height="20" rx="4" fill="rgba(255,255,255,0.15)"/>
             <path d="M4 6h12M4 10h12M4 14h8" stroke="#D3BC8D" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <span class="font-black text-white text-sm" style="letter-spacing:-0.02em;">CampoBet Division</span>
+          <span class="font-black text-white text-sm" style="letter-spacing:-0.02em;">Betinia Liga</span>
         </div>
         <div class="flex items-center gap-4">
           <span class="text-xs hidden sm:block" style="color:rgba(255,255,255,0.7);">Tilføj AB's kampprogram til din kalender</span>
@@ -82,14 +83,18 @@ function fmtTime(d: string) {
         <div class="text-center py-12 text-sm" style="color:#777;">Ingen kommende kampe fundet.</div>
       )}
       {upcoming.map((event: any) => {
-        const isABHome = event.homeId === 9805;
-        const opponent = isABHome ? event.awayName : event.homeName;
-        const venue = event.venue ?? 'Gladsaxe Stadion';
+        const isABHome = event.homeId === abConfig.teamId;
+        const homeName = isABHome ? 'AB' : event.homeName;
+        const awayName = isABHome ? event.awayName : 'AB';
+        const venue = event.properties?.venueName ?? (isABHome ? 'Gladsaxe Stadion' : event.homeName);
         const round = event.round ? `Runde ${event.round}` : '';
         return (
           <div style="background:#fff; border:1px solid #E5E7EB; border-radius:4px; overflow:hidden;">
-            <div class="px-5 py-1.5" style="background:#F0F4F0; border-bottom:1px solid #E5E7EB;">
-              <span class="text-xs font-bold" style="color:#006A52; letter-spacing:0.04em;">Grundspil</span>
+            <div class="px-5 py-1.5 flex items-center justify-between" style="background:#F0F4F0; border-bottom:1px solid #E5E7EB;">
+              <span class="text-xs font-bold" style={`color:${isABHome ? '#006A52' : '#888'}; letter-spacing:0.04em;`}>
+                {isABHome ? 'Hjemmekamp' : 'Udekamp'}
+              </span>
+              <span class="text-xs" style="color:#999;">Betinia Liga</span>
             </div>
             <div class="grid items-center gap-4 px-5 py-4" style="grid-template-columns:140px 1fr auto;">
               <!-- Date -->
@@ -99,11 +104,17 @@ function fmtTime(d: string) {
                 <p class="text-sm font-bold mt-0.5" style="color:#555;">{fmtTime(event.startDate)}</p>
               </div>
 
-              <!-- Teams -->
+              <!-- Teams: always home left, away right -->
               <div class="flex items-center justify-center gap-4">
                 <div class="flex flex-col items-center gap-1.5">
-                  <img src="/images/ab-crest.svg" alt="AB" width="44" height="44" class="object-contain" />
-                  <span class="text-xs font-bold" style="color:#111;">AB</span>
+                  {isABHome ? (
+                    <img src="/images/ab-crest.svg" alt="AB" width="44" height="44" class="object-contain" />
+                  ) : (
+                    <div class="w-11 h-11 rounded-full flex items-center justify-center" style="background:#F5F5F5; border:1px solid #E5E7EB;">
+                      <span class="text-xs font-bold" style="color:#555;">{event.homeName?.slice(0,3).toUpperCase()}</span>
+                    </div>
+                  )}
+                  <span class="text-xs font-bold" style="color:#111;">{homeName}</span>
                 </div>
                 <div class="text-center">
                   {round && <p class="text-xs mb-1" style="color:#999;">{round}</p>}
@@ -111,27 +122,37 @@ function fmtTime(d: string) {
                   <p class="text-xs mt-1" style="color:#777;">{venue}</p>
                 </div>
                 <div class="flex flex-col items-center gap-1.5">
-                  <div class="w-11 h-11 rounded-full flex items-center justify-center" style="background:#F5F5F5; border:1px solid #E5E7EB;">
-                    <span class="text-xs font-bold" style="color:#555;">{opponent?.slice(0,3).toUpperCase()}</span>
-                  </div>
-                  <span class="text-xs font-bold" style="color:#111;">{opponent}</span>
+                  {!isABHome ? (
+                    <img src="/images/ab-crest.svg" alt="AB" width="44" height="44" class="object-contain" />
+                  ) : (
+                    <div class="w-11 h-11 rounded-full flex items-center justify-center" style="background:#F5F5F5; border:1px solid #E5E7EB;">
+                      <span class="text-xs font-bold" style="color:#555;">{event.awayName?.slice(0,3).toUpperCase()}</span>
+                    </div>
+                  )}
+                  <span class="text-xs font-bold" style="color:#111;">{awayName}</span>
                 </div>
               </div>
 
-              <!-- Tickets CTA -->
-              <a
-                href="https://billet.ab.dk/"
-                target="_blank"
-                rel="noreferrer"
-                class="flex items-center gap-2 font-black text-sm px-4 py-2.5 whitespace-nowrap"
-                style="background:#00FF1F; color:#006A52; text-decoration:none; border-radius:4px; letter-spacing:-0.02em;"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/>
-                  <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2"/>
-                </svg>
-                Billetter
-              </a>
+              <!-- CTA: tickets for home, away badge for away -->
+              {isABHome ? (
+                <a
+                  href="https://billet.ab.dk/"
+                  target="_blank"
+                  rel="noreferrer"
+                  class="flex items-center gap-2 font-black text-sm px-4 py-2.5 whitespace-nowrap"
+                  style="background:#00FF1F; color:#006A52; text-decoration:none; border-radius:4px; letter-spacing:-0.02em;"
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2"/>
+                  </svg>
+                  Billetter
+                </a>
+              ) : (
+                <span class="font-black text-xs px-3 py-2 whitespace-nowrap" style="background:#F5F5F5; color:#888; border-radius:4px; border:1px solid #E5E7EB; letter-spacing:0.04em;">
+                  UDEBANE
+                </span>
+              )}
             </div>
             <!-- Watch row -->
             <div class="px-5 py-2.5 flex items-center gap-4" style="border-top:1px solid #F0F0F0;">
@@ -152,7 +173,7 @@ function fmtTime(d: string) {
         <h2 class="font-black mb-6" style="font-size:clamp(1.75rem,4vw,2.5rem); letter-spacing:-0.04em; color:#111;">Resultater</h2>
         <div class="flex flex-col gap-2">
           {results.slice(0, 10).map((event: any) => {
-            const isABHome = event.homeId === 9805;
+            const isABHome = event.homeId === abConfig.teamId;
             const opponent = isABHome ? event.awayName : event.homeName;
             return (
               <div class="flex items-center justify-between px-5 py-3 gap-4" style="background:#F9FAFB; border:1px solid #E5E7EB; border-radius:4px;">
