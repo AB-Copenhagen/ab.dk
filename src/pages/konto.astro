@@ -6,8 +6,9 @@ export const prerender = false;
 // If already authenticated (DS cookie present), go straight to profile
 const sessionToken = Astro.cookies.get('DS')?.value;
 if (sessionToken) {
-  const redirect = Astro.url.searchParams.get('redirect') ?? '/konto/profil';
-  return Astro.redirect(redirect);
+  return Astro.redirect(
+    Astro.url.searchParams.get('redirect') ?? '/konto/profil'
+  );
 }
 
 const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
@@ -54,7 +55,7 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
   </main>
 
   {DESCOPE_PROJECT_ID && (
-    <script type="module" define:vars={{ DESCOPE_PROJECT_ID }}>
+    <script is:inline type="module" define:vars={{ DESCOPE_PROJECT_ID }}>
       import('https://unpkg.com/@descope/web-component@3/dist/index.js').then(() => {
         const el = document.createElement('descope-wc');
         el.setAttribute('project-id', DESCOPE_PROJECT_ID);
@@ -62,7 +63,7 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
         el.setAttribute('theme', 'dark');
         el.setAttribute('locale', 'da-DK');
 
-        el.addEventListener('success', (e) => {
+        el.addEventListener('success', () => {
           const params = new URLSearchParams(location.search);
           location.href = params.get('redirect') ?? '/konto/profil';
         });

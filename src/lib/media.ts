@@ -13,7 +13,7 @@ export function mediaUrl(key: string): string {
 
 export function mediaSrc(
   key: string,
-  opts: { width?: number; quality?: number } = {}
+  _opts: { width?: number; quality?: number } = {}
 ): string {
   return mediaUrl(key);
 }

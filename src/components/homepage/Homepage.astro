@@ -12,7 +12,7 @@ import SquadCard from '@/components/SquadCard.astro';
 import MatchScheduleList from '@/components/MatchScheduleList.astro';
 import MiniCalendar from '@/components/MiniCalendar.astro';
 import { translate } from '@/lib/i18n';
-import { truncate, decodeHtml } from '@/lib/utils';
+import { decodeHtml } from '@/lib/utils';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 
 interface Props {
@@ -41,8 +41,6 @@ const positionOrder: Record<string, number> = {
 const sortedPlayers = [...players].sort(
   (a, b) => (positionOrder[a.position] ?? 4) - (positionOrder[b.position] ?? 4)
 );
-
-const [featured, ...rest] = articles;
 
 const nextMatch = events.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
@@ -90,19 +88,6 @@ function articlePath(slug: string) {
 function localPath(path: string) {
   return locale === 'en' ? `/en${path}` : path;
 }
-function formatDate(str: string) {
-  try {
-    return new Date(str).toLocaleDateString(
-      locale === 'da' ? 'da-DK' : 'en-GB',
-      {
-        day: 'numeric',
-        month: 'short',
-      }
-    );
-  } catch {
-    return '';
-  }
-}
 
 const products = [
   {
@@ -123,14 +108,6 @@ const products = [
     originalPrice: 'DKK 429',
     img: '/images/product-3.png',
   },
-];
-
-const sponsors = [
-  { name: 'Plane', img: '/images/sponsors/plane.png' },
-  { name: 'Myriad360', img: '/images/sponsors/myriad360.png' },
-  { name: 'Datum', img: '/images/sponsors/datum.png' },
-  { name: 'Select Sport', img: '/images/sponsors/select-sport.png' },
-  { name: 'Carlsberg', img: '/images/sponsors/carlsberg.png' },
 ];
 
 const heroSlides = [
