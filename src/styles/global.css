@@ -52,6 +52,66 @@
   @apply font-sans text-2xl md:text-3xl lg:text-4xl font-extrabold leading-7.5 tracking-[-1.4px] text-white not-italic;
 }
 
+@utility content-container {
+  @apply max-w-[1680px] mx-auto px-5 md:px-10;
+}
+
+@layer components {
+  .squad-filter {
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    background-color: #f3f4f6;
+    color: #374151;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .squad-filter:not(.squad-filter-active):hover {
+    background-color: #e5e7eb;
+    color: var(--ab-green);
+  }
+
+  .squad-filter-active {
+    background-color: var(--ab-green);
+    color: var(--ab-white);
+  }
+
+  .squad-filter-active:hover {
+    background-color: #005442;
+  }
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center font-black rounded-full transition-opacity;
+}
+
+@utility btn-sm {
+  @apply px-5 py-2.5 text-xs tracking-[-0.01em];
+}
+
+@utility btn-md {
+  @apply px-6 py-2.5 text-sm tracking-[-0.01em] hover:opacity-80;
+}
+
+@utility btn-lg {
+  @apply px-8 py-3 text-sm tracking-[-0.02em] hover:opacity-90;
+}
+
+@utility btn-green {
+  @apply bg-ab-green text-white;
+}
+
+@utility btn-dark {
+  @apply bg-black/70 text-white;
+}
+
+@utility btn-beige {
+  @apply bg-ab-beige text-[#111];
+}
+
 /* ── Base document ──────────────────────────────────────────────────── */
 html {
   background: #fff;
