@@ -1,6 +1,5 @@
 ---
 import MobileMenu from './islands/MobileMenu';
-import SearchModal from './islands/SearchModal';
 import LangSwitch from '@/components/layout/LangSwitch.astro';
 import { getNavConfig } from '@/lib/nav-config';
 import { translate, type Locale } from '@/lib/i18n';
@@ -174,7 +173,6 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
     <!-- Right: Search + Mobile -->
     <div class="flex items-center gap-3 ml-auto">
       <button
-        id="search-open-btn"
         class="hidden lg:flex items-center gap-2 font-black text-sm"
         style="background:rgba(15,148,118,0.5); color:#fff; border:none; border-radius:22px; padding:10px 20px; cursor:pointer; letter-spacing:-0.03em;"
         aria-label={translate(locale, 'search')}>
@@ -206,7 +204,6 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
         locale={locale}
         enPrefix={enPrefix}
       />
-      <SearchModal client:load locale={locale} />
     </div>
   </div>
 </header>
