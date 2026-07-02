@@ -1,6 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
-import PlayerSeasonStatsTable from '@/components/PlayerSeasonStatsTable.astro';
+import PlayerHeroContent from '@/components/player/PlayerHeroContent.astro';
+import PlayerMetadataBar from '@/components/player/PlayerMetadataBar.astro';
+import PlayerSeasonStatsTable from '@/components/player/PlayerSeasonStatsTable.astro';
 import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
 import type { SIPlayerProfile } from '@/lib/si/client';
 import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
@@ -90,74 +92,24 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
       </div>
     )}
 
-    <!-- Left: text content -->
-    <div class="relative flex flex-col justify-center"
-         style="z-index:10; width:clamp(260px,38vw,500px); min-height:clamp(460px,36vw,560px);
-                padding:3.5rem max(1.5rem,5vw) 3.5rem max(1.5rem,8vw);">
-      <a href="/hold"
-         class="inline-flex items-center gap-1 text-xs font-bold uppercase mb-8 hover:opacity-100 transition-opacity"
-         style="color:rgba(255,255,255,0.6); letter-spacing:0.16em;">
-        ← Holdet
-      </a>
-      <p class="font-bold uppercase mb-3" style="font-size:0.6rem; color:rgba(255,255,255,0.45); letter-spacing:0.24em;">
-        Akademisk Boldklub 1889
-      </p>
-      <h1 class="font-black text-white leading-none mb-3"
-          style="font-size:clamp(2rem,4.5vw,4.5rem); letter-spacing:-0.04em; text-transform:none;">
-        {name}
-      </h1>
-      <p class="text-white mb-10" style="font-size:clamp(1rem,1.4vw,1.25rem); opacity:0.7;">
-        {posLabel}
-      </p>
-      {shirtNumber != null && (
-        <p class="font-black text-white leading-none select-none"
-           style="font-size:clamp(5rem,10.5vw,11rem); letter-spacing:-0.05em; opacity:0.85;">
-          {shirtNumber}
-        </p>
-      )}
-    </div>
+    <PlayerHeroContent
+      locale="da"
+      name={name}
+      positionLabel={posLabel}
+      shirtNumber={shirtNumber}
+    />
 
   </div>
 
-  <!-- ── Metadata bar (full-width, equal cells) ─────────────────────── -->
-  <div style="background:#fff; border-bottom:1px solid #E5E7EB;">
-    <div class="flex overflow-x-auto divide-x divide-gray-200">
-      <div class="py-5 px-6 flex-1 text-center" style="min-width:90px;">
-        <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Position</p>
-        <p class="font-black" style="font-size:0.9rem; color:#111;">{posLabel}</p>
-      </div>
-      {cmsPlayer?.nickname && (
-        <div class="py-5 px-6 flex-1 text-center" style="min-width:90px;">
-          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Kælenavn</p>
-          <p class="font-black" style="font-size:0.9rem; color:#111;">{cmsPlayer.nickname}</p>
-        </div>
-      )}
-      {cmsPlayer?.formerClubs && (
-        <div class="py-5 px-6 flex-1 text-center" style="min-width:110px;">
-          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Tidligere klubber</p>
-          <p class="font-black" style="font-size:0.9rem; color:#111;">{cmsPlayer.formerClubs}</p>
-        </div>
-      )}
-      {countryName && (
-        <div class="py-5 px-6 flex-1 text-center" style="min-width:90px;">
-          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Nationalitet</p>
-          <p class="font-black" style="font-size:0.9rem; color:#111;">{countryName}</p>
-        </div>
-      )}
-      {height && (
-        <div class="py-5 px-6 flex-1 text-center" style="min-width:80px;">
-          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Højde</p>
-          <p class="font-black" style="font-size:0.9rem; color:#111;">{height} cm</p>
-        </div>
-      )}
-      {dob && (
-        <div class="py-5 px-6 flex-1 text-center" style="min-width:110px;">
-          <p class="mb-1.5 uppercase" style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;">Fødselsdato</p>
-          <p class="font-black" style="font-size:0.9rem; color:#111;">{dob}</p>
-        </div>
-      )}
-    </div>
-  </div>
+  <PlayerMetadataBar
+    locale="da"
+    positionLabel={posLabel}
+    nickname={cmsPlayer?.nickname}
+    formerClubs={cmsPlayer?.formerClubs}
+    countryName={countryName}
+    height={height}
+    dateOfBirth={dob}
+  />
 
   <!-- ── Bio + Latest Results ───────────────────────────────────────── -->
   <section style="background:#fff;">
