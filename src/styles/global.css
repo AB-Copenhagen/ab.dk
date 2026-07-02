@@ -3,31 +3,27 @@
 @import './tokens.css';
 
 /* ── Font faces ─────────────────────────────────────────────────────────
-   ABC Camera Plain — licensed, files gitignored, served from /fonts/.
+   ABC Camera Plain — licensed. Served via /api/media proxy (Wasabi auth).
+   Public direct access is blocked at the Wasabi account level; the server
+   proxy authenticates with WASABI_ACCESS_KEY_ID / WASABI_SECRET_ACCESS_KEY.
    ─────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'ABC Camera Plain';
-  src:
-    url('/fonts/ABCCameraPlain-Regular.woff2') format('woff2'),
-    url('/fonts/ABCCameraPlain-Regular.otf') format('opentype');
+  src: url('/api/media/fonts/ABCCameraPlain-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'ABC Camera Plain';
-  src:
-    url('/fonts/ABCCameraPlain-Medium.woff2') format('woff2'),
-    url('/fonts/ABCCameraPlain-Medium.otf') format('opentype');
+  src: url('/api/media/fonts/ABCCameraPlain-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'ABC Camera Plain';
-  src:
-    url('/fonts/ABCCameraPlain-Heavy.woff2') format('woff2'),
-    url('/fonts/ABCCameraPlain-Heavy.otf') format('opentype');
+  src: url('/api/media/fonts/ABCCameraPlain-Heavy.woff2') format('woff2');
   font-weight: 700 900;
   font-style: normal;
   font-display: swap;

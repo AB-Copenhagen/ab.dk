@@ -27,8 +27,15 @@ export const GET: APIRoute = async ({ params }) => {
     const cmd = new GetObjectCommand({ Bucket: BUCKET, Key: key });
     const res = await s3.send(cmd);
 
+    // Fonts are immutable — cache for 1 year; other assets 24h.
+    const isFont = /\.(woff2?|ttf|otf|eot)$/i.test(key);
+    const cacheControl = isFont
+      ? 'public, max-age=31536000, immutable'
+      : 'public, max-age=86400';
+
     const headers: Record<string, string> = {
-      'Cache-Control': 'public, max-age=86400',
+      'Cache-Control': cacheControl,
+      'Access-Control-Allow-Origin': '*',
     };
     if (res.ContentType) headers['Content-Type'] = res.ContentType;
     if (res.ETag) headers['ETag'] = res.ETag;
