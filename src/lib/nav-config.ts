@@ -24,6 +24,34 @@ export function isDropdown(item: NavItem): item is NavItemDropdown {
   return Array.isArray(item.children) && item.children.length > 0;
 }
 
+/** True when pathname matches this nav href exactly or as a sub-path. */
+export function isNavLeafActive(
+  currentPath: string,
+  href: string,
+  enPrefix = '',
+): boolean {
+  const fullHref = enPrefix + href;
+  if (currentPath === fullHref) return true;
+  return currentPath.startsWith(`${fullHref}/`);
+}
+
+/** True when pathname matches the item or any of its dropdown children. */
+export function isNavItemActive(
+  currentPath: string,
+  item: NavItem,
+  enPrefix = '',
+): boolean {
+  if (isNavLeafActive(currentPath, item.href, enPrefix)) return true;
+
+  if (item.children?.length) {
+    return item.children.some((child) =>
+      isNavLeafActive(currentPath, child.href, enPrefix),
+    );
+  }
+
+  return false;
+}
+
 export interface NavConfig {
   preHeader: { left: PreHeaderItem[] };
   primary: NavItem[];
@@ -37,7 +65,7 @@ const da: NavConfig = {
   preHeader: {
     left: [
       { label: 'Join MyAB', href: '/da/bliv-involveret/myab', highlight: true },
-      { label: 'Billetter', href: 'https://billetter.ab.dk', external: true },
+      { label: 'Billetter', href: 'https://billet.ab.dk', external: true },
       { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
   },
@@ -79,7 +107,7 @@ const en: NavConfig = {
   preHeader: {
     left: [
       { label: 'Join MyAB', href: '/en/bliv-involveret/myab', highlight: true },
-      { label: 'Tickets', href: 'https://billetter.ab.dk', external: true },
+      { label: 'Tickets', href: 'https://billet.ab.dk', external: true },
       { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
   },

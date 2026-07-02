@@ -8,9 +8,12 @@ const { locale = 'da', globalData } = Astro.props;
 const d = globalData;
 const year = new Date().getFullYear();
 
-const contactLinks = d?.internal_links as { text: string; URL: string }[] | undefined;
-const resourceLinks = d?.policy_links as { text: string; URL: string }[] | undefined;
-const socialLinks = d?.social_media_links as { text: string; URL: string }[] | undefined;
+const contactLinks = d?.internal_links as
+  { text: string; URL: string }[] | undefined;
+const resourceLinks = d?.policy_links as
+  { text: string; URL: string }[] | undefined;
+const socialLinks = d?.social_media_links as
+  { text: string; URL: string }[] | undefined;
 
 const footerHeadingClass =
   'font-black text-base text-white tracking-[-0.02em] mb-5';
@@ -22,19 +25,21 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
 <div class="bg-white border-t border-gray-200 py-12">
   <div class="max-w-7xl mx-auto px-8">
     <div class="flex flex-nowrap items-center justify-between gap-8">
-      {[
-        { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg' },
-        { src: '/images/sponsors/datum.png', alt: 'Datum' },
-        { src: '/images/sponsors/myriad360.png', alt: 'Myriad360' },
-        { src: '/images/sponsors/unisport.png', alt: 'Unisport' },
-        { src: '/images/sponsors/plane.png', alt: 'Plane' },
-      ].map(({ src, alt }) => (
-        <img
-          src={src}
-          alt={alt}
-          class="sponsor-logo w-[180px] h-[60px] object-contain object-center shrink-0"
-        />
-      ))}
+      {
+        [
+          { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg' },
+          { src: '/images/sponsors/datum.png', alt: 'Datum' },
+          { src: '/images/sponsors/myriad360.png', alt: 'Myriad360' },
+          { src: '/images/sponsors/unisport.png', alt: 'Unisport' },
+          { src: '/images/sponsors/plane.png', alt: 'Plane' },
+        ].map(({ src, alt }) => (
+          <img
+            src={src}
+            alt={alt}
+            class="sponsor-logo w-[180px] h-[60px] object-contain object-center shrink-0"
+          />
+        ))
+      }
     </div>
   </div>
 </div>
@@ -42,8 +47,8 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
 <!-- Footer -->
 <footer class="bg-rich-black">
   <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-16 lg:py-28">
-    <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-20 items-start">
-
+    <div
+      class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-20 items-start">
       <!-- Left: AB 1889 wordmark -->
       <div class="shrink-0">
         <img
@@ -60,94 +65,174 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
           <p class={footerHeadingClass}>
             {locale === 'da' ? 'Kontakt' : 'Contact'}
           </p>
-          {contactLinks?.length ? (
-            <ul class="flex flex-col">
-              {contactLinks.map((link) => (
+          {
+            contactLinks?.length ? (
+              <ul class="flex flex-col">
+                {contactLinks.map((link) => (
+                  <li>
+                    <a
+                      href={link.URL}
+                      class={footerLinkClass}>
+                      {link.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <ul class="flex flex-col">
                 <li>
-                  <a href={link.URL} class={footerLinkClass}>
-                    {link.text}
-                  </a>
+                  <span class={footerItemClass}>info@ab.dk</span>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <ul class="flex flex-col">
-              <li><span class={footerItemClass}>info@ab.dk</span></li>
-              <li><span class={footerItemClass}>+45 60399901</span></li>
-              <li>
-                <span class={footerItemClass}>
-                  {locale === 'da'
-                    ? 'Gladsaxevej 202, 2860 Søborg Danmark'
-                    : 'Gladsaxevej 202, 2860 Søborg Denmark'}
-                </span>
-              </li>
-            </ul>
-          )}
+                <li>
+                  <span class={footerItemClass}>+45 60399901</span>
+                </li>
+                <li>
+                  <span class={footerItemClass}>
+                    {locale === 'da'
+                      ? 'Gladsaxevej 202, 2860 Søborg Danmark'
+                      : 'Gladsaxevej 202, 2860 Søborg Denmark'}
+                  </span>
+                </li>
+              </ul>
+            )
+          }
         </div>
 
         <!-- Social Media -->
         <div>
           <p class={footerHeadingClass}>Social Media</p>
-          {socialLinks?.length ? (
-            <ul class="flex flex-col">
-              {socialLinks.map((link) => (
-                <li>
-                  <a
-                    href={link.URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    class={footerLinkClass}
-                  >
-                    {link.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <ul class="flex flex-col">
-              {([
-                { label: 'Instagram', href: 'https://www.instagram.com/ab1889.dk' },
-                { label: 'LinkedIn', href: 'https://www.linkedin.com/company/akademisk-boldklub' },
-                { label: 'Facebook', href: 'https://www.facebook.com/AB1889' },
-                { label: 'YouTube', href: 'https://www.youtube.com/@ab1889' },
-                { label: 'TikTok', href: 'https://www.tiktok.com/@ab1889' },
-              ] as {label:string; href:string}[]).map((s) => (
-                <li>
-                  <a href={s.href} target="_blank" rel="noreferrer" class={footerLinkClass}>{s.label}</a>
-                </li>
-              ))}
-            </ul>
-          )}
+          {
+            socialLinks?.length ? (
+              <ul class="flex flex-col">
+                {socialLinks.map((link) => (
+                  <li>
+                    <a
+                      href={link.URL}
+                      target="_blank"
+                      rel="noreferrer"
+                      class={footerLinkClass}>
+                      {link.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <ul class="flex flex-col">
+                {(
+                  [
+                    {
+                      label: 'Instagram',
+                      href: 'https://www.instagram.com/ab1889.dk',
+                    },
+                    {
+                      label: 'LinkedIn',
+                      href: 'https://www.linkedin.com/company/akademisk-boldklub',
+                    },
+                    {
+                      label: 'Facebook',
+                      href: 'https://www.facebook.com/AB1889',
+                    },
+                    {
+                      label: 'YouTube',
+                      href: 'https://www.youtube.com/@ab1889',
+                    },
+                    { label: 'TikTok', href: 'https://www.tiktok.com/@ab1889' },
+                  ] as { label: string; href: string }[]
+                ).map((s) => (
+                  <li>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      class={footerLinkClass}>
+                      {s.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
         </div>
 
         <!-- Resources -->
         <div>
           <p class={footerHeadingClass}>Resources</p>
-          {resourceLinks?.length ? (
-            <ul class="flex flex-col">
-              {resourceLinks.map((link) => (
-                <li>
-                  <a href={link.URL} class={footerLinkClass}>
-                    {link.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <ul class="flex flex-col">
-              {([
-                { label: locale === 'da' ? 'Køb billetter' : 'Buy tickets', href: 'https://billetter.ab.dk', external: true },
-                { label: locale === 'da' ? 'Book event' : 'Book an event', href: locale === 'en' ? '/en/bliv-involveret/events' : '/bliv-involveret/events', external: false },
-                { label: locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor', href: locale === 'en' ? '/en/bliv-involveret/sponsor' : '/bliv-involveret/sponsor', external: false },
-                { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/om/privatlivspolitik' : '/om/privatlivspolitik', external: false },
-                { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/om/returpolitik' : '/om/returpolitik', external: false },
-              ] as {label:string; href:string; external:boolean}[]).map((item) => (
-                <li>
-                  <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
-                </li>
-              ))}
-            </ul>
-          )}
+          {
+            resourceLinks?.length ? (
+              <ul class="flex flex-col">
+                {resourceLinks.map((link) => (
+                  <li>
+                    <a
+                      href={link.URL}
+                      class={footerLinkClass}>
+                      {link.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <ul class="flex flex-col">
+                {(
+                  [
+                    {
+                      label: locale === 'da' ? 'Køb billetter' : 'Buy tickets',
+                      href: 'https://billet.ab.dk',
+                      external: true,
+                    },
+                    {
+                      label: locale === 'da' ? 'Book event' : 'Book an event',
+                      href:
+                        locale === 'en'
+                          ? '/en/bliv-involveret/events'
+                          : '/bliv-involveret/events',
+                      external: false,
+                    },
+                    {
+                      label:
+                        locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor',
+                      href:
+                        locale === 'en'
+                          ? '/en/bliv-involveret/sponsor'
+                          : '/bliv-involveret/sponsor',
+                      external: false,
+                    },
+                    {
+                      label:
+                        locale === 'da'
+                          ? 'Privatlivspolitik'
+                          : 'Privacy policy',
+                      href:
+                        locale === 'en'
+                          ? '/en/om/privatlivspolitik'
+                          : '/om/privatlivspolitik',
+                      external: false,
+                    },
+                    {
+                      label:
+                        locale === 'da'
+                          ? 'Refunderings- og returpolitik'
+                          : 'Refund and Return Policy',
+                      href:
+                        locale === 'en'
+                          ? '/en/om/returpolitik'
+                          : '/om/returpolitik',
+                      external: false,
+                    },
+                  ] as { label: string; href: string; external: boolean }[]
+                ).map((item) => (
+                  <li>
+                    <a
+                      href={item.href}
+                      target={item.external ? '_blank' : undefined}
+                      rel={item.external ? 'noreferrer' : undefined}
+                      class={footerLinkClass}>
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
         </div>
       </div>
 
