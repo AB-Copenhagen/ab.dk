@@ -12,8 +12,8 @@
     "postinstall": "husky"
   },
   "dependencies": {
-    "@astrojs/node": "^11.0.0",
     "@astrojs/react": "^6.0.0",
+    "@astrojs/vercel": "^11.0.1",
     "@aws-sdk/client-s3": "^3.1077.0",
     "@datum-cloud/strapi-revalidate": "^0.3.0",
     "@strapi/blocks-react-renderer": "^1.0.2",

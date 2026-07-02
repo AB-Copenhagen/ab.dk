@@ -1,4 +1,4 @@
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
@@ -8,7 +8,7 @@ const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
 
 export default defineConfig({
   output: 'server',
-  adapter: node({ mode: 'standalone' }),
+  adapter: vercel(),
   integrations: [react()],
   i18n: {
     defaultLocale: 'da',
