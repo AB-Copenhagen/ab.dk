@@ -9,21 +9,24 @@
    ─────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/api/media/fonts/ABCCameraPlain-Regular.woff2') format('woff2');
+  src: url('/fonts/ABCCameraPlain-Regular.woff2') format('woff2'),
+       url('/api/media/fonts/ABCCameraPlain-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/api/media/fonts/ABCCameraPlain-Medium.woff2') format('woff2');
+  src: url('/fonts/ABCCameraPlain-Medium.woff2') format('woff2'),
+       url('/api/media/fonts/ABCCameraPlain-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/api/media/fonts/ABCCameraPlain-Heavy.woff2') format('woff2');
+  src: url('/fonts/ABCCameraPlain-Heavy.woff2') format('woff2'),
+       url('/api/media/fonts/ABCCameraPlain-Heavy.woff2') format('woff2');
   font-weight: 700 900;
   font-style: normal;
   font-display: swap;
@@ -113,7 +116,7 @@ html {
   background: #fff;
   color: var(--ab-white);
   font-family: var(--font-body);
-  font-size: 17px;
+  font-size: 16px;
   scrollbar-width: none; /* Firefox */
 }
 html::-webkit-scrollbar {

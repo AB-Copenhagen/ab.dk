@@ -157,82 +157,31 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
         <!-- Resources -->
         <div>
           <p class={footerHeadingClass}>Resources</p>
-          {
-            resourceLinks?.length ? (
-              <ul class="flex flex-col">
-                {resourceLinks.map((link) => (
-                  <li>
-                    <a
-                      href={link.URL}
-                      class={footerLinkClass}>
-                      {link.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <ul class="flex flex-col">
-                {(
-                  [
-                    {
-                      label: locale === 'da' ? 'Køb billetter' : 'Buy tickets',
-                      href: 'https://billet.ab.dk',
-                      external: true,
-                    },
-                    {
-                      label: locale === 'da' ? 'Book event' : 'Book an event',
-                      href:
-                        locale === 'en'
-                          ? '/en/bliv-involveret/events'
-                          : '/bliv-involveret/events',
-                      external: false,
-                    },
-                    {
-                      label:
-                        locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor',
-                      href:
-                        locale === 'en'
-                          ? '/en/bliv-involveret/sponsor'
-                          : '/bliv-involveret/sponsor',
-                      external: false,
-                    },
-                    {
-                      label:
-                        locale === 'da'
-                          ? 'Privatlivspolitik'
-                          : 'Privacy policy',
-                      href:
-                        locale === 'en'
-                          ? '/en/om/privatlivspolitik'
-                          : '/om/privatlivspolitik',
-                      external: false,
-                    },
-                    {
-                      label:
-                        locale === 'da'
-                          ? 'Refunderings- og returpolitik'
-                          : 'Refund and Return Policy',
-                      href:
-                        locale === 'en'
-                          ? '/en/om/returpolitik'
-                          : '/om/returpolitik',
-                      external: false,
-                    },
-                  ] as { label: string; href: string; external: boolean }[]
-                ).map((item) => (
-                  <li>
-                    <a
-                      href={item.href}
-                      target={item.external ? '_blank' : undefined}
-                      rel={item.external ? 'noreferrer' : undefined}
-                      class={footerLinkClass}>
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )
-          }
+          {resourceLinks?.length ? (
+            <ul class="flex flex-col">
+              {resourceLinks.map((link) => (
+                <li>
+                  <a href={link.URL} class={footerLinkClass}>
+                    {link.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul class="flex flex-col">
+              {([
+                { label: locale === 'da' ? 'Køb billetter' : 'Buy tickets', href: 'https://billet.ab.dk/', external: true },
+                { label: locale === 'da' ? 'Book event' : 'Book an event', href: locale === 'en' ? '/en/bliv-involveret/events' : '/bliv-involveret/events', external: false },
+                { label: locale === 'da' ? 'Bliv sponsor' : 'Become a sponsor', href: locale === 'en' ? '/en/bliv-involveret/sponsor' : '/bliv-involveret/sponsor', external: false },
+                { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/om/privatlivspolitik' : '/om/privatlivspolitik', external: false },
+                { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/om/returpolitik' : '/om/returpolitik', external: false },
+              ] as {label:string; href:string; external:boolean}[]).map((item) => (
+                <li>
+                  <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
