@@ -41,8 +41,8 @@ export default function MobileMenu({
       {open && (
         <div
           id="mobile-menu-panel"
-          className="fixed inset-0 top-[92px] z-40 overflow-y-auto lg:hidden"
-          style={{ background: '#006A52', borderTop: '3px solid #D3BC8D' }}
+          className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto lg:hidden"
+          style={{ top: 'var(--nav-height, 92px)', background: '#006A52', borderTop: '3px solid #D3BC8D' }}
         >
           <nav className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-1">
             {nav.preHeader.left.map((item) => (

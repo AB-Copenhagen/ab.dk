@@ -243,20 +243,27 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
 
     let lastChange = -COOLDOWN;
 
+    const syncNavHeight = () => {
+      document.documentElement.style.setProperty('--nav-height', (hdr as HTMLElement).offsetHeight + 'px');
+    };
+
     const update = () => {
       const now = performance.now();
       if (now - lastChange < COOLDOWN) return;
 
       const y = window.scrollY;
       const compact = hdr.classList.contains('nav-scrolled');
-      if (!compact && y > SHRINK_AT)  { hdr.classList.add('nav-scrolled');    lastChange = now; }
-      if ( compact && y < RESTORE_AT) { hdr.classList.remove('nav-scrolled'); lastChange = now; }
+      if (!compact && y > SHRINK_AT)  { hdr.classList.add('nav-scrolled');    lastChange = now; setTimeout(syncNavHeight, 360); }
+      if ( compact && y < RESTORE_AT) { hdr.classList.remove('nav-scrolled'); lastChange = now; setTimeout(syncNavHeight, 360); }
     };
 
     window.addEventListener('load', () => {
       hdr.classList.add('nav-no-transition');
       hdr.classList.toggle('nav-scrolled', window.scrollY > SHRINK_AT);
-      requestAnimationFrame(() => requestAnimationFrame(() => hdr.classList.remove('nav-no-transition')));
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        hdr.classList.remove('nav-no-transition');
+        syncNavHeight();
+      }));
     });
 
     window.addEventListener('scroll', update, { passive: true });
