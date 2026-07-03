@@ -1,37 +1,28 @@
 ---
 import Base from '@/layouts/Base.astro';
+import MatchList, { type MatchListFilter } from '@/components/MatchList.astro';
+import StandingsWidget from '@/components/StandingsWidget.astro';
 import { fetchABEvents } from '@/lib/si/client';
 import { abConfig } from '@/lib/config/ab';
-import StandingsWidget from '@/components/StandingsWidget.astro';
 export const prerender = false;
 
 const locale = 'en';
 
-let events: any[] = [];
+let events: Awaited<ReturnType<typeof fetchABEvents>> = [];
 try {
   events = await fetchABEvents({ locale, limit: 100 });
 } catch { /* SI API unavailable */ }
 
 const now = new Date();
-const filter = Astro.url.searchParams.get('filter') ?? 'upcoming';
-const upcoming = events.filter((e: any) => new Date(e.startDate) >= now);
-const finished = events.filter((e: any) => new Date(e.startDate) < now).reverse();
+const filter = (Astro.url.searchParams.get('filter') ?? 'upcoming') as MatchListFilter;
+const upcoming = events.filter((e) => new Date(e.startDate) >= now);
+const finished = events.filter((e) => new Date(e.startDate) < now).reverse();
 
 const displayEvents =
-  filter === 'home'    ? upcoming.filter((e: any) => e.homeId === abConfig.teamId) :
-  filter === 'away'    ? upcoming.filter((e: any) => e.homeId !== abConfig.teamId) :
+  filter === 'home'    ? upcoming.filter((e) => e.homeId === abConfig.teamId) :
+  filter === 'away'    ? upcoming.filter((e) => e.homeId !== abConfig.teamId) :
   filter === 'results' ? finished :
   upcoming;
-
-function fmtDay(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', { weekday: 'long' });
-}
-function fmtMonthDay(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', { month: 'long', day: 'numeric' });
-}
-function fmtTime(d: string) {
-  return new Date(d).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-}
 ---
 
 <Base locale={locale} title="Matches | Akademisk Boldklub">
@@ -92,106 +83,7 @@ function fmtTime(d: string) {
     </div>
   </div>
 
-  <!-- Match list -->
-  <div style="background:#F5F5F5; padding:32px 0 48px;">
-    <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col gap-3">
-      {displayEvents.length === 0 && (
-        <div class="text-center py-12 text-sm" style="color:#777;">
-          {filter === 'home' ? 'No upcoming home fixtures.' :
-           filter === 'away' ? 'No upcoming away fixtures.' :
-           filter === 'results' ? 'No results found.' :
-           'No upcoming fixtures found.'}
-        </div>
-      )}
-      {(() => {
-        const seenDates = new Set();
-        return displayEvents.map((event: any) => {
-        const isABHome = event.homeId === abConfig.teamId;
-        const homeName = isABHome ? 'AB' : event.homeName;
-        const awayName = isABHome ? event.awayName : 'AB';
-        const venue = event.properties?.venueName ?? (isABHome ? 'Gladsaxe Stadium' : event.homeName);
-        const round = event.round ? `Round ${event.round}` : '';
-        const dk = event.startDate.slice(0, 10);
-        const isFirst = !seenDates.has(dk);
-        if (isFirst) seenDates.add(dk);
-        return (
-          <div id={isFirst ? dk : undefined} class="scroll-mt-24 md:scroll-mt-40" style="background:#fff; border:1px solid #E5E7EB; border-radius:4px; overflow:hidden;">
-            <div class="px-5 py-1.5 flex items-center justify-between" style="background:#F0F4F0; border-bottom:1px solid #E5E7EB;">
-              <span class="text-xs font-bold" style={`color:${isABHome ? '#006A52' : '#888'}; letter-spacing:0.04em;`}>
-                {isABHome ? 'Home' : 'Away'}
-              </span>
-              <span class="text-xs" style="color:#999;">Betinia Liga</span>
-            </div>
-            <div class="grid items-center gap-4 px-5 py-4" style="grid-template-columns:140px 1fr auto;">
-              <!-- Date -->
-              <div>
-                <p class="font-black text-xs capitalize" style="color:#006A52; letter-spacing:-0.01em;">{fmtDay(event.startDate)}</p>
-                <p class="font-black" style="font-size:1.5rem; line-height:1.1; letter-spacing:-0.04em; color:#111;">{fmtMonthDay(event.startDate)}</p>
-                <p class="text-sm font-bold mt-0.5" style="color:#555;">{fmtTime(event.startDate)}</p>
-              </div>
-
-              <!-- Teams: always home left, away right -->
-              <div class="flex items-center justify-center gap-4">
-                <div class="flex flex-col items-center gap-1.5">
-                  {isABHome ? (
-                    <img src="/images/ab-crest.svg" alt="AB" width="44" height="44" class="object-contain" />
-                  ) : (
-                    <div class="w-11 h-11 rounded-full flex items-center justify-center" style="background:#F5F5F5; border:1px solid #E5E7EB;">
-                      <span class="text-xs font-bold" style="color:#555;">{event.homeName?.slice(0,3).toUpperCase()}</span>
-                    </div>
-                  )}
-                  <span class="text-xs font-bold" style="color:#111;">{homeName}</span>
-                </div>
-                <div class="text-center">
-                  {round && <p class="text-xs mb-1" style="color:#999;">{round}</p>}
-                  <span class="font-black text-lg" style="color:#111; letter-spacing:-0.04em;">VS</span>
-                  <p class="text-xs mt-1" style="color:#777;">{venue}</p>
-                </div>
-                <div class="flex flex-col items-center gap-1.5">
-                  {!isABHome ? (
-                    <img src="/images/ab-crest.svg" alt="AB" width="44" height="44" class="object-contain" />
-                  ) : (
-                    <div class="w-11 h-11 rounded-full flex items-center justify-center" style="background:#F5F5F5; border:1px solid #E5E7EB;">
-                      <span class="text-xs font-bold" style="color:#555;">{event.awayName?.slice(0,3).toUpperCase()}</span>
-                    </div>
-                  )}
-                  <span class="text-xs font-bold" style="color:#111;">{awayName}</span>
-                </div>
-              </div>
-
-              <!-- CTA: tickets for home, away badge for away -->
-              {isABHome ? (
-                <a
-                  href="https://billet.ab.dk/"
-                  target="_blank"
-                  rel="noreferrer"
-                  class="flex items-center gap-2 font-black text-sm px-4 py-2.5 whitespace-nowrap"
-                  style="background:#00FF1F; color:#006A52; text-decoration:none; border-radius:4px; letter-spacing:-0.02em;"
-                >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/>
-                    <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2"/>
-                  </svg>
-                  Tickets
-                </a>
-              ) : (
-                <span class="font-black text-xs px-3 py-2 whitespace-nowrap" style="background:#F5F5F5; color:#888; border-radius:4px; border:1px solid #E5E7EB; letter-spacing:0.04em;">
-                  AWAY
-                </span>
-              )}
-            </div>
-            <!-- Watch row -->
-            <div class="px-5 py-2.5 flex items-center gap-4" style="border-top:1px solid #F0F0F0;">
-              <span class="text-xs" style="color:#999;">Watch on</span>
-              <a href="https://abtv.ab.dk" target="_blank" rel="noreferrer" class="text-xs font-bold" style="color:#006A52; text-decoration:none;">Online</a>
-              <a href="https://abtv.ab.dk" target="_blank" rel="noreferrer" class="text-xs font-bold" style="color:#006A52; text-decoration:none;">ABTV</a>
-            </div>
-          </div>
-        );
-        });
-      })()}
-    </div>
-  </div>
+  <MatchList locale={locale} events={displayEvents} filter={filter} />
 
   <!-- Standings section -->
   <div id="standings" style="background:#EBEBEB; padding:40px 0 48px;">

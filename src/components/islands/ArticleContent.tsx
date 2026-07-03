@@ -7,7 +7,9 @@ interface Props {
 
 function decodeHtml(str: string): string {
   return str
-    .replace(/&#(\d+);/g, (_, code: string) => String.fromCharCode(Number(code)))
+    .replace(/&#(\d+);/g, (_, code: string) =>
+      String.fromCharCode(Number(code))
+    )
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
