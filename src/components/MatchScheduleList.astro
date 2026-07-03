@@ -1,6 +1,6 @@
 ---
 import { localePath, translate, type Locale } from '@/lib/i18n';
-import type { SIEvent } from '@/lib/si/client';
+import { getTeamLogoSrc, type SIEvent } from '@/lib/si/client';
 
 interface Props {
   locale: Locale;
@@ -46,26 +46,21 @@ function eventVenue(event: SIEvent): string {
 
 <div id="calendar-list" class="lg:col-span-8 overflow-x-auto">
   <div class="min-w-[560px]">
-    <div class="px-6 py-5 flex items-center justify-between bg-ab-green">
-      <h2
-        class="font-black text-white leading-none tracking-[-0.04em] whitespace-pre-line"
-        style="font-size:clamp(1.5rem,2.8vw,2.1875rem)">
-        {translate(locale, 'latestResults')}
-      </h2>
+    <div class="widget-header">
+      <h2 class="widget-heading">{translate(locale, 'latestResults')}</h2>
       <a
         href={localePath(locale, '/kampe')}
-        class="font-normal text-white underline text-[1.125rem] tracking-[-0.02em] shrink-0 ml-6">
+        class="font-normal text-white underline text-base tracking-[-0.02em] shrink-0 ml-6">
         {translate(locale, 'viewAllMatches')}
       </a>
     </div>
 
-    <div
-      class="grid font-black text-[1rem] py-2.5 px-6 bg-ab-neon text-ab-green tracking-[-0.04em] grid-cols-[2fr_1.5fr_100px_1.5fr_1.5fr]">
-      <span>{translate(locale, 'date')}</span>
-      <span class="text-right">{translate(locale, 'homeTeam')}</span>
-      <span class="text-center">{translate(locale, 'score')}</span>
-      <span>{translate(locale, 'awayTeam')}</span>
-      <span>{translate(locale, 'ground')}</span>
+    <div class="grid py-2.5 px-6 bg-ab-neon grid-cols-[2fr_1.75fr_90px_1.75fr_1.5fr]">
+      <span class="widget-th">{translate(locale, 'date')}</span>
+      <span class="widget-th text-right">{translate(locale, 'homeTeam')}</span>
+      <span class="widget-th text-center">{translate(locale, 'score')}</span>
+      <span class="widget-th">{translate(locale, 'awayTeam')}</span>
+      <span class="widget-th">{translate(locale, 'ground')}</span>
     </div>
 
     {
@@ -93,18 +88,36 @@ function eventVenue(event: SIEvent): string {
         return (
           <div
             class:list={[
-              'grid items-center px-6 py-4 text-[1.125rem] tracking-[-0.02em] gap-2 grid-cols-[2fr_1.5fr_100px_1.5fr_1.5fr] border-t border-[#EBEBEB]',
-              i % 2 === 0 ? 'bg-white' : 'bg-[#f4f4f4]',
+              'grid items-center px-6 py-3 gap-2 grid-cols-[2fr_1.75fr_90px_1.75fr_1.5fr] border-t border-[#EBEBEB]',
+              i % 2 === 0 ? 'widget-row-even' : 'widget-row-odd',
             ]}>
-            <span class="font-black text-ab-green">{dateTimeStr}</span>
-            <span class="text-right font-normal text-ab-green">
+            <span class="widget-td font-black">{dateTimeStr}</span>
+            <span class="widget-td font-normal flex items-center gap-2 justify-end">
               {event.homeName}
+              <img
+                src={getTeamLogoSrc(event.homeId)}
+                alt=""
+                width="24"
+                height="24"
+                class="shrink-0 object-contain"
+                style="height:24px;width:auto;"
+                onerror="this.style.display='none'"
+              />
             </span>
-            <span class="text-center font-normal text-ab-green">{scoreStr}</span>
-            <span class="font-normal text-ab-green">{event.awayName}</span>
-            <span class="font-normal text-ab-green truncate">
-              {eventVenue(event)}
+            <span class="widget-td text-center font-black tabular-nums">{scoreStr}</span>
+            <span class="widget-td font-normal flex items-center gap-2">
+              <img
+                src={getTeamLogoSrc(event.awayId)}
+                alt=""
+                width="24"
+                height="24"
+                class="shrink-0 object-contain"
+                style="height:24px;width:auto;"
+                onerror="this.style.display='none'"
+              />
+              {event.awayName}
             </span>
+            <span class="widget-td font-normal truncate">{eventVenue(event)}</span>
           </div>
         );
       })

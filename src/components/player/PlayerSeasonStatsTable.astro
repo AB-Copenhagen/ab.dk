@@ -26,12 +26,8 @@ const columns = [
 ---
 
 <div>
-  <!-- Title block -->
-  <div style="background:var(--ab-green); padding:1.25rem 1.5rem;">
-    <h2
-      class="font-black leading-tight"
-      style="color:var(--ab-white); font-size:clamp(1.75rem,3vw,2.1875rem); letter-spacing:-0.04em;"
-    >
+  <div class="widget-header">
+    <h2 class="widget-heading">
       {titleLines.map((line) => (
         <span class="block">{line}</span>
       ))}
@@ -41,56 +37,21 @@ const columns = [
   <div class="overflow-x-auto">
     <table class="w-full border-collapse" style="min-width:640px;">
       <thead>
-        <tr style="background:var(--ab-neon);">
+        <tr class="bg-ab-neon">
           {columns.map((col) => (
-            <th
-              class="py-3 px-4 font-black text-left whitespace-nowrap"
-              style="color:var(--ab-green); letter-spacing:-0.04em;"
-            >
-              {col.label}
-            </th>
+            <th class="widget-th py-3 px-4">{col.label}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {rows.map((row, i) => (
-          <tr style={i % 2 === 0 ? 'background:var(--ab-white);' : 'background:#f4f4f4;'}>
-            <td
-              class="py-4 px-4 font-black whitespace-nowrap"
-              style="color:var(--ab-green); letter-spacing:-0.02em;"
-            >
-              {row.seasonName}
-            </td>
-            <td
-              class="py-4 px-4 text-right whitespace-nowrap"
-              style="color:var(--ab-green); letter-spacing:-0.02em;"
-            >
-              {row.teamName}
-            </td>
-            <td
-              class="py-4 px-4 text-center tabular-nums whitespace-nowrap"
-              style="color:var(--ab-green); letter-spacing:-0.02em;"
-            >
-              {row.goals}
-            </td>
-            <td
-              class="py-4 px-4 tabular-nums whitespace-nowrap"
-              style="color:var(--ab-green); letter-spacing:-0.02em;"
-            >
-              {row.assists}
-            </td>
-            <td
-              class="py-4 px-4 tabular-nums whitespace-nowrap"
-              style="color:var(--ab-green); letter-spacing:-0.02em;"
-            >
-              {row.yellowCards}
-            </td>
-            <td
-              class="py-4 px-4 tabular-nums whitespace-nowrap"
-              style="color:var(--ab-green); letter-spacing:-0.02em;"
-            >
-              {row.redCards}
-            </td>
+          <tr class={i % 2 === 0 ? 'widget-row-even' : 'widget-row-odd'}>
+            <td class="widget-td py-4 px-4 font-black whitespace-nowrap">{row.seasonName}</td>
+            <td class="widget-td py-4 px-4 text-right whitespace-nowrap">{row.teamName}</td>
+            <td class="widget-td py-4 px-4 text-center tabular-nums whitespace-nowrap">{row.goals}</td>
+            <td class="widget-td py-4 px-4 tabular-nums whitespace-nowrap">{row.assists}</td>
+            <td class="widget-td py-4 px-4 tabular-nums whitespace-nowrap">{row.yellowCards}</td>
+            <td class="widget-td py-4 px-4 tabular-nums whitespace-nowrap">{row.redCards}</td>
           </tr>
         ))}
       </tbody>
