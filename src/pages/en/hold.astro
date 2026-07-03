@@ -20,6 +20,18 @@ const GROUP_ORDER: PositionKey[] = [
   'forward',
 ];
 
+const COACHING_STAFF = [
+  { name: 'Fannar Berg Gunnólfsson', role: 'Head Coach',         nationality: 'Icelandic' },
+  { name: 'Benjamin Chor',           role: 'Assistant Coach',    nationality: 'Danish' },
+  { name: 'Jussi Kontinen',          role: 'Assistant Coach',    nationality: 'Swedish, Finnish' },
+  { name: 'Joakim Sternas',          role: 'Goalkeeping Coach',  nationality: 'Swedish' },
+  { name: 'Konstantinos Ntolaptsis', role: 'Fitness Coach',      nationality: 'Greek' },
+  { name: 'Andreas Søndergaard',     role: 'Physiotherapist',    nationality: 'Danish' },
+  { name: 'Albert Kaarnøe',          role: 'Physiotherapist',    nationality: 'Danish' },
+  { name: 'Kim Villy Nielsen',        role: 'Kit Manager',        nationality: 'Danish' },
+  { name: 'Allan Petersen',          role: 'Kit Manager',        nationality: 'Danish' },
+];
+
 let players: SIPlayer[] = [];
 try {
   players = await fetchABPlayers(locale);
@@ -88,6 +100,23 @@ for (const p of players) {
           })
         )
       }
+      <!-- Coaching Staff -->
+      <section class="mb-14">
+        <h2
+          class="font-black mb-6"
+          style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; color:#111; text-transform:none;">
+          Coaching Staff
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {COACHING_STAFF.map((staff) => (
+            <div class="bg-[#f4f4f4] px-5 py-4">
+              <p class="font-black text-base leading-tight tracking-[-0.02em] text-ab-green mb-1">{staff.name}</p>
+              <p class="text-sm text-ab-green/70 tracking-[-0.01em]">{staff.role}</p>
+              <p class="text-xs text-ab-green/50 mt-0.5 tracking-[-0.01em]">{staff.nationality}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   </div>
 </Base>

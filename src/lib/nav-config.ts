@@ -74,12 +74,11 @@ const da: NavConfig = {
     { label: 'Kampe', href: '/kampe' },
     { label: 'Nyheder', href: '/nyheder' },
     {
-      label: 'Om AB',
+      label: 'Om',
       href: '/om/historik',
       children: [
         { label: 'Historik', href: '/om/historik' },
         { label: 'Stadion', href: '/om/stadion' },
-        { label: 'Fællesskab', href: '/om/faellesskab' },
         { label: 'Ledelse', href: '/om/ledelse' },
         { label: 'Medieressourcer', href: '/om/medier' },
         { label: 'Kontakt', href: '/om/kontakt' },
@@ -90,6 +89,7 @@ const da: NavConfig = {
       href: '/bliv-involveret',
       children: [
         { label: 'Join MyAB', href: '/bliv-involveret/myab' },
+        { label: 'Fællesskab', href: '/om/faellesskab' },
         { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Sponsor', href: '/bliv-involveret/sponsor' },
         { label: 'Events', href: '/bliv-involveret/events' },
@@ -112,16 +112,15 @@ const en: NavConfig = {
     ],
   },
   primary: [
-    { label: 'Squad', href: '/hold' },
-    { label: 'Fixtures', href: '/kampe' },
+    { label: 'Team', href: '/hold' },
+    { label: 'Matches', href: '/kampe' },
     { label: 'News', href: '/nyheder' },
     {
-      label: 'About AB',
+      label: 'About',
       href: '/om/historik',
       children: [
         { label: 'History', href: '/om/historik' },
         { label: 'Stadium', href: '/om/stadion' },
-        { label: 'Community', href: '/om/faellesskab' },
         { label: 'Leadership', href: '/om/ledelse' },
         { label: 'Media Resources', href: '/om/medier' },
         { label: 'Contact', href: '/om/kontakt' },
@@ -132,6 +131,7 @@ const en: NavConfig = {
       href: '/bliv-involveret',
       children: [
         { label: 'Join MyAB', href: '/bliv-involveret/myab' },
+        { label: 'Community', href: '/om/faellesskab' },
         { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Sponsor', href: '/bliv-involveret/sponsor' },
         { label: 'Events', href: '/bliv-involveret/events' },
