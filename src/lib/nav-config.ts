@@ -28,7 +28,7 @@ export function isDropdown(item: NavItem): item is NavItemDropdown {
 export function isNavLeafActive(
   currentPath: string,
   href: string,
-  enPrefix = '',
+  enPrefix = ''
 ): boolean {
   const fullHref = enPrefix + href;
   if (currentPath === fullHref) return true;
@@ -39,13 +39,13 @@ export function isNavLeafActive(
 export function isNavItemActive(
   currentPath: string,
   item: NavItem,
-  enPrefix = '',
+  enPrefix = ''
 ): boolean {
   if (isNavLeafActive(currentPath, item.href, enPrefix)) return true;
 
   if (item.children?.length) {
     return item.children.some((child) =>
-      isNavLeafActive(currentPath, child.href, enPrefix),
+      isNavLeafActive(currentPath, child.href, enPrefix)
     );
   }
 

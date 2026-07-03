@@ -253,12 +253,16 @@ export interface SISeasonStats {
 }
 
 /** Fetch per-match stats for a player across all seasons. */
-export async function fetchPlayerStats(playerId: number): Promise<SIPlayerMatchStat[]> {
+export async function fetchPlayerStats(
+  playerId: number
+): Promise<SIPlayerMatchStat[]> {
   return siFetch<SIPlayerMatchStat[]>(`/players/${playerId}/stats`);
 }
 
 /** Roll up per-match data into per-season totals, newest first. */
-export function aggregateSeasonStats(matches: SIPlayerMatchStat[]): SISeasonStats[] {
+export function aggregateSeasonStats(
+  matches: SIPlayerMatchStat[]
+): SISeasonStats[] {
   const map = new Map<string, SISeasonStats>();
   for (const m of matches) {
     const key = `${m.seasonId}__${m.forName}`;

@@ -9,24 +9,27 @@
    ─────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/fonts/ABCCameraPlain-Regular.woff2') format('woff2'),
-       url('/api/media/fonts/ABCCameraPlain-Regular.woff2') format('woff2');
+  src:
+    url('/fonts/ABCCameraPlain-Regular.woff2') format('woff2'),
+    url('/api/media/fonts/ABCCameraPlain-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/fonts/ABCCameraPlain-Medium.woff2') format('woff2'),
-       url('/api/media/fonts/ABCCameraPlain-Medium.woff2') format('woff2');
+  src:
+    url('/fonts/ABCCameraPlain-Medium.woff2') format('woff2'),
+    url('/api/media/fonts/ABCCameraPlain-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'ABC Camera Plain';
-  src: url('/fonts/ABCCameraPlain-Heavy.woff2') format('woff2'),
-       url('/api/media/fonts/ABCCameraPlain-Heavy.woff2') format('woff2');
+  src:
+    url('/fonts/ABCCameraPlain-Heavy.woff2') format('woff2'),
+    url('/api/media/fonts/ABCCameraPlain-Heavy.woff2') format('woff2');
   font-weight: 700 900;
   font-style: normal;
   font-display: swap;
@@ -129,8 +132,12 @@
   @apply text-ab-green text-base tracking-[-0.02em] align-middle;
 }
 
-@utility widget-row-even { background: #fff; }
-@utility widget-row-odd  { background: #f4f4f4; }
+@utility widget-row-even {
+  background: #fff;
+}
+@utility widget-row-odd {
+  background: #f4f4f4;
+}
 
 /* ── Match list ─────────────────────────────────────────────────────── */
 @layer components {
@@ -292,7 +299,9 @@
 
     .match-card-body {
       @apply items-center gap-4 px-5 py-4;
-      grid-template-columns: var(--match-date-col) minmax(0, 1fr) var(--match-action-col);
+      grid-template-columns: var(--match-date-col) minmax(0, 1fr) var(
+          --match-action-col
+        );
     }
 
     .match-card-date {
