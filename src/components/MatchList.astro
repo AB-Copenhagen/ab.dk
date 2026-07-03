@@ -1,0 +1,236 @@
+---
+import { abConfig } from '@/lib/config/ab';
+import { translate, type Locale } from '@/lib/i18n';
+import { getTeamLogoSrc, type SIEvent } from '@/lib/si/client';
+
+export type MatchListFilter = 'upcoming' | 'home' | 'away' | 'results';
+
+interface Props {
+  locale: Locale;
+  events: SIEvent[];
+  filter?: MatchListFilter;
+}
+
+const { locale, events, filter = 'upcoming' } = Astro.props;
+
+const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB';
+
+function fmtDay(d: string) {
+  return new Date(d).toLocaleDateString(dateLocale, { weekday: 'long' });
+}
+
+function fmtMonthDay(d: string) {
+  return new Date(d).toLocaleDateString(dateLocale, {
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function fmtTime(d: string) {
+  return new Date(d).toLocaleTimeString(dateLocale, {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function emptyMessage(filter: MatchListFilter): string {
+  switch (filter) {
+    case 'home':
+      return translate(locale, 'noHomeFixtures');
+    case 'away':
+      return translate(locale, 'noAwayFixtures');
+    case 'results':
+      return translate(locale, 'noResultsFound');
+    case 'upcoming':
+      return translate(locale, 'noUpcomingFixtures');
+    default: {
+      const _exhaustive: never = filter;
+      return _exhaustive;
+    }
+  }
+}
+
+function eventRound(event: SIEvent): string {
+  const round = (event as SIEvent & { round?: number }).round;
+  if (!round) return '';
+  return `${translate(locale, 'matchRound')} ${round}`;
+}
+
+function eventVenue(event: SIEvent, isABHome: boolean): string {
+  return (
+    event.properties?.venueName ??
+    (isABHome ? translate(locale, 'defaultStadium') : event.homeName)
+  );
+}
+
+const seenDates = new Set<string>();
+---
+
+<div class="match-list">
+  <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col gap-y-8 md:gap-y-10">
+    {
+      events.length === 0 && (
+        <div
+          class="text-center py-12 text-sm"
+          style="color:#777;">
+          {emptyMessage(filter)}
+        </div>
+      )
+    }
+    {
+      events.map((event) => {
+        const isABHome = event.homeId === abConfig.teamId;
+        const homeName = isABHome ? 'AB' : event.homeName;
+        const awayName = isABHome ? event.awayName : 'AB';
+        const venue = eventVenue(event, isABHome);
+        const round = eventRound(event);
+        const dateKey = event.startDate.slice(0, 10);
+        const isFirst = !seenDates.has(dateKey);
+        if (isFirst) seenDates.add(dateKey);
+
+        return (
+          <div
+            id={isFirst ? dateKey : undefined}
+            class="scroll-mt-24 md:scroll-mt-40"
+            style="background:#fff; border:1px solid #E5E7EB; border-radius:4px; overflow:hidden;">
+            <div
+              class="px-5 py-1.5 flex items-center justify-between"
+              style="background:#F0F4F0; border-bottom:1px solid #E5E7EB;">
+              <span
+                class="text-xs font-bold"
+                style={`color:${isABHome ? '#006A52' : '#888'}; letter-spacing:0.04em;`}>
+                {isABHome
+                  ? translate(locale, 'homeMatch')
+                  : translate(locale, 'awayMatch')}
+              </span>
+              <span
+                class="text-xs"
+                style="color:#999;">
+                {translate(locale, 'secondDivision')}
+              </span>
+            </div>
+            <div class="match-card-body">
+              <div class="match-card-date">
+                <p class="match-card-weekday">{fmtDay(event.startDate)}</p>
+                <p class="match-card-day">{fmtMonthDay(event.startDate)}</p>
+                <p class="match-card-time">{fmtTime(event.startDate)}</p>
+              </div>
+
+              <div class="match-teams">
+                <div class="match-teams-grid">
+                  {round && <p class="match-teams-round">{round}</p>}
+                  <span class="match-team-name match-team-name--home">
+                    {homeName}
+                  </span>
+                  <span class="match-team-logo match-team-logo--home">
+                    <img
+                      src={getTeamLogoSrc(event.homeId)}
+                      alt=""
+                      width="56"
+                      height="56"
+                      class="match-team-logo-img"
+                      loading="lazy"
+                      onerror="this.closest('.match-team-logo')?.classList.add('match-team-logo--fallback')"
+                    />
+                    <span class="match-team-logo-fallback">
+                      <span
+                        class="text-xs font-bold"
+                        style="color:#555;">
+                        {event.homeName?.slice(0, 3).toUpperCase()}
+                      </span>
+                    </span>
+                  </span>
+                  <span class="match-vs">VS</span>
+                  <span class="match-team-logo match-team-logo--away">
+                    <img
+                      src={getTeamLogoSrc(event.awayId)}
+                      alt=""
+                      width="56"
+                      height="56"
+                      class="match-team-logo-img"
+                      loading="lazy"
+                      onerror="this.closest('.match-team-logo')?.classList.add('match-team-logo--fallback')"
+                    />
+                    <span class="match-team-logo-fallback">
+                      <span
+                        class="text-xs font-bold"
+                        style="color:#555;">
+                        {event.awayName?.slice(0, 3).toUpperCase()}
+                      </span>
+                    </span>
+                  </span>
+                  <span class="match-team-name match-team-name--away">
+                    {awayName}
+                  </span>
+                  <p class="match-teams-venue">{venue}</p>
+                </div>
+              </div>
+
+              <div class="match-card-action">
+                {isABHome ? (
+                  <a
+                    href="https://billet.ab.dk/"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="match-card-cta match-card-cta--tickets">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      aria-hidden="true">
+                      <rect
+                        x="1"
+                        y="4"
+                        width="12"
+                        height="6"
+                        rx="1"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                      />
+                      <path
+                        d="M10 4v-.5a2 2 0 0 0-4 0V4"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                      />
+                    </svg>
+                    {translate(locale, 'tickets')}
+                  </a>
+                ) : (
+                  <span class="match-card-cta match-card-cta--away">
+                    {translate(locale, 'awayBadge')}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div
+              class="px-5 py-2.5 flex items-center gap-4"
+              style="border-top:1px solid #F0F0F0;">
+              <span
+                class="text-xs"
+                style="color:#999;">
+                {translate(locale, 'watchOn')}
+              </span>
+              <a
+                href="https://abtv.ab.dk"
+                target="_blank"
+                rel="noreferrer"
+                class="text-xs font-bold"
+                style="color:#006A52; text-decoration:none;">
+                {translate(locale, 'watchOnline')}
+              </a>
+              <a
+                href="https://abtv.ab.dk"
+                target="_blank"
+                rel="noreferrer"
+                class="text-xs font-bold"
+                style="color:#006A52; text-decoration:none;">
+                ABTV
+              </a>
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+</div>
