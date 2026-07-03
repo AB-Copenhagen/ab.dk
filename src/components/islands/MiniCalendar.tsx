@@ -179,7 +179,7 @@ export default function MiniCalendar({
 
       {/* Footer — shows match info on hover, link otherwise */}
       <div className="px-6 py-4 bg-[#f4f4f4] flex items-center justify-between min-h-[3.5rem]">
-        {footerMatchInfo && (
+        {footerMatchInfo ? (
           <>
             <span className="text-sm font-black text-ab-green tracking-[-0.02em] truncate pr-3">
               {footerMatchInfo.vs}
@@ -188,6 +188,13 @@ export default function MiniCalendar({
               {footerMatchInfo.time}
             </span>
           </>
+        ) : (
+          <a
+            href={kampeHref}
+            className="text-sm font-black text-ab-green tracking-[-0.02em] underline underline-offset-2"
+          >
+            {seeAllLabel}
+          </a>
         )}
       </div>
     </div>
