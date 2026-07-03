@@ -30,11 +30,9 @@ const headers =
 <div class="standings-widget">
   {
     showHeader && (
-      <div class="standings-header">
-        <h3 class="standings-title">
-          {translate(locale, 'firstDivision')}
-          <br />
-          {translate(locale, 'standingsTitle')}
+      <div class="widget-header">
+        <h3 class="widget-heading">
+          {translate(locale, 'firstDivision')} {translate(locale, 'standingsTitle')}
         </h3>
         <img
           src={betiniaLiga.src}
@@ -70,7 +68,7 @@ const headers =
               {headers.map((h, i) => (
                 <th
                   class:list={[
-                    'standings-th',
+                    'widget-th standings-th',
                     i === 0 && 'standings-th--pos',
                     i === 1 && 'standings-th--team',
                     i >= 2 && 'standings-th--stat',
@@ -89,11 +87,11 @@ const headers =
                 <tr
                   class:list={[
                     'standings-row',
-                    index % 2 === 0 ? 'standings-row--base' : 'standings-row--alt',
+                    index % 2 === 0 ? 'widget-row-even' : 'widget-row-odd',
                   ]}
                 >
-                  <td class="standings-td standings-td--pos">{row.rank}</td>
-                  <td class="standings-td standings-td--team">
+                  <td class="widget-td standings-td standings-td--pos">{row.rank}</td>
+                  <td class="widget-td standings-td standings-td--team">
                     <span class="standings-team">
                       <span class="standings-team-logo">
                         <img
@@ -111,26 +109,26 @@ const headers =
                       </span>
                     </span>
                   </td>
-                  <td class="standings-td standings-td--stat">
+                  <td class="widget-td standings-td standings-td--stat">
                     {row.matchesPlayed}
                   </td>
-                  <td class="standings-td standings-td--stat">
+                  <td class="widget-td standings-td standings-td--stat">
                     {row.matchesWon}
                   </td>
-                  <td class="standings-td standings-td--stat">
+                  <td class="widget-td standings-td standings-td--stat">
                     {row.matchesDraw}
                   </td>
-                  <td class="standings-td standings-td--stat">
+                  <td class="widget-td standings-td standings-td--stat">
                     {row.matchesLost}
                   </td>
-                  <td class="standings-td standings-td--stat">
+                  <td class="widget-td standings-td standings-td--stat">
                     {row.goalsScored}
                   </td>
-                  <td class="standings-td standings-td--stat">
+                  <td class="widget-td standings-td standings-td--stat">
                     {row.goalsConceded}
                   </td>
-                  <td class="standings-td standings-td--stat">{gdStr}</td>
-                  <td class="standings-td standings-td--stat standings-td--pts">
+                  <td class="widget-td standings-td standings-td--stat">{gdStr}</td>
+                  <td class="widget-td standings-td standings-td--stat standings-td--pts">
                     {row.points}
                   </td>
                 </tr>
@@ -147,26 +145,6 @@ const headers =
   .standings-widget {
     background: var(--ab-white);
     overflow: hidden;
-  }
-
-  .standings-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.25rem 1.5rem;
-    background: var(--ab-green);
-  }
-
-  .standings-title {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: clamp(1.35rem, 2.4vw, 2.1875rem);
-    font-weight: 800;
-    line-height: 0.86;
-    letter-spacing: -0.04em;
-    color: var(--ab-white);
-    text-transform: none;
   }
 
   .standings-sponsor {
@@ -195,9 +173,6 @@ const headers =
     table-layout: fixed;
     border-collapse: collapse;
     font-family: var(--font-display);
-    font-size: 1rem;
-    letter-spacing: -0.02em;
-    color: var(--ab-green);
   }
 
   .standings-col--pos {
@@ -218,11 +193,6 @@ const headers =
 
   .standings-th {
     padding: 0.65rem 0.5rem;
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    color: var(--ab-green);
-    white-space: nowrap;
   }
 
   .standings-th--pos {
@@ -240,19 +210,8 @@ const headers =
     padding-right: 0.875rem;
   }
 
-  .standings-row--base {
-    background: var(--ab-white);
-  }
-
-  .standings-row--alt {
-    background: #f4f4f4;
-  }
-
   .standings-td {
     padding: 0.55rem 0.5rem;
-    vertical-align: middle;
-    font-weight: 400;
-    line-height: 1;
   }
 
   .standings-td--pos {

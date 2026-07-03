@@ -152,53 +152,39 @@ const heroSlides = [
 <!-- ── Hero Slider ───────────────────────────────────────── -->
 <section
   id="hero-slider"
-  class="relative w-full overflow-hidden h-[60svh] min-h-[560px] max-h-[960px]">
-  <!-- Slide images -->
-  {
-    heroSlides.map((slide, i) => (
-      <div
-        class={`hero-slide absolute inset-0 transition-opacity duration-1000 ${i === 0 ? 'opacity-100' : 'opacity-0'}`}
-        data-slide={i}>
-        <img
-          src={slide.img}
-          alt={slide.alt}
-          loading={i === 0 ? 'eager' : 'lazy'}
-          class="w-full h-full object-cover object-center"
-        />
-      </div>
-    ))
-  }
+  class="relative w-full overflow-hidden h-[60svh] min-h-[560px] max-h-[960px] cursor-grab active:cursor-grabbing select-none">
 
-  <!-- Overlay -->
-  <div class="absolute inset-0 z-10 bg-black/20"></div>
-
-  <!-- Centered content -->
-  <div
-    class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+  <!-- Horizontal track: all slides side-by-side -->
+  <div id="hero-track" class="flex h-full will-change-transform" style="transform:translateX(0)">
     {
       heroSlides.map((slide, i) => (
-        <div
-          class={`hero-content absolute inset-0 flex flex-col items-center justify-center px-6 transition-opacity duration-1000 ${i === 0 ? 'opacity-100' : 'opacity-0'}`}
-          data-content={i}>
-          <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance">
-            {slide.headline}
-          </h1>
-          <p class="font-bold text-white mt-8 mb-5 text-[clamp(0.85rem,1.4vw,1rem)]">
-            {slide.subtitle}
-          </p>
-          <a
-            href={slide.ctaUrl}
-            class="btn btn-lg btn-beige">
-            {slide.ctaLabel}
-          </a>
+        <div class="relative flex-shrink-0 w-full h-full">
+          <img
+            src={slide.img}
+            alt={slide.alt}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            draggable="false"
+            class="w-full h-full object-cover object-center pointer-events-none"
+          />
+          <div class="absolute inset-0 bg-black/20" />
+          <div class="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
+            <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance">
+              {slide.headline}
+            </h1>
+            <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
+              {slide.subtitle}
+            </p>
+            <a href={slide.ctaUrl} class="btn btn-lg btn-beige pointer-events-auto">
+              {slide.ctaLabel}
+            </a>
+          </div>
         </div>
       ))
     }
   </div>
 
   <!-- Timer dot indicators -->
-  <div
-    class="absolute bottom-8 left-0 right-0 z-30 flex justify-center items-center gap-2">
+  <div class="absolute bottom-8 left-0 right-0 z-30 flex justify-center items-center gap-2">
     {
       heroSlides.map((_, i) => (
         <button
@@ -208,7 +194,7 @@ const heroSlides = [
           aria-label={`Slide ${i + 1}`}>
           <div
             class="hero-dot-fill"
-            style={`position:absolute; inset:0; background:#fff; transform-origin:left; transform:scaleX(0); ${i === 0 ? 'animation:dot-fill 5s linear forwards;' : ''}`}
+            style={`position:absolute; inset:0; background:#fff; transform-origin:left; transform:scaleX(0); ${i === 0 ? `animation:dot-fill ${5000}ms linear forwards;` : ''}`}
           />
         </button>
       ))
@@ -217,33 +203,58 @@ const heroSlides = [
 </section>
 
 <script>
-  const DURATION = 5000;
-  const slides = Array.from(
-    document.querySelectorAll<HTMLElement>('.hero-slide')
-  );
-  const contents = Array.from(
-    document.querySelectorAll<HTMLElement>('.hero-content')
-  );
-  const dots = Array.from(document.querySelectorAll<HTMLElement>('.hero-dot'));
-  const fills = dots.map((d) =>
-    d.querySelector<HTMLElement>('.hero-dot-fill')!
-  );
-  const total = slides.length;
-  let current = 0;
+  const DURATION        = 5000;
+  const SNAP_EASE       = 'transform 0.48s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  const SWIPE_THRESHOLD = 50;
+
+  const slider = document.getElementById('hero-slider')!;
+  const track  = document.getElementById('hero-track')!;
+  const dots   = Array.from(document.querySelectorAll<HTMLElement>('.hero-dot'));
+  const fills  = dots.map(d => d.querySelector<HTMLElement>('.hero-dot-fill')!);
+  const total  = dots.length;
+
+  // ── Clone first/last for infinite wrapping ─────────────────
+  // Track layout: [lastClone] [s0] [s1] … [sN] [firstClone]
+  // trackIndex 0 = lastClone, 1..total = real slides, total+1 = firstClone
+  const realSlides = Array.from(track.children) as HTMLElement[];
+  track.prepend(realSlides[total - 1].cloneNode(true));
+  track.append(realSlides[0].cloneNode(true));
+
+  let current    = 0;      // logical slide index (0..total-1)
+  let trackIndex = 1;      // position in expanded track
   let timer: ReturnType<typeof setInterval>;
+
+  const w = () => slider.offsetWidth;
+
+  function snap(ti: number, animated: boolean) {
+    track.style.transition = animated ? SNAP_EASE : 'none';
+    track.style.transform  = `translateX(${-ti * w()}px)`;
+  }
+
+  // After animated transition to a clone, silently jump to real slide
+  track.addEventListener('transitionend', () => {
+    if (trackIndex === 0) {
+      trackIndex = total;
+      snap(trackIndex, false);
+    } else if (trackIndex === total + 1) {
+      trackIndex = 1;
+      snap(trackIndex, false);
+    }
+  });
+
+  // Start at real slide 0
+  snap(1, false);
 
   function activateDot(i: number) {
     dots.forEach((dot, j) => {
       const fill = fills[j];
       if (j === i) {
-        dot.classList.remove('w-4');
-        dot.classList.add('w-12');
+        dot.style.width = '48px';
         fill.style.animation = 'none';
-        void fill.offsetWidth; // force reflow to restart
+        void fill.offsetWidth;
         fill.style.animation = `dot-fill ${DURATION}ms linear forwards`;
       } else {
-        dot.classList.remove('w-12');
-        dot.classList.add('w-4');
+        dot.style.width = '16px';
         fill.style.animation = 'none';
         fill.style.transform = 'scaleX(0)';
       }
@@ -251,23 +262,70 @@ const heroSlides = [
   }
 
   function goTo(n: number) {
-    slides[current].classList.replace('opacity-100', 'opacity-0');
-    contents[current].classList.replace('opacity-100', 'opacity-0');
     current = (n + total) % total;
-    slides[current].classList.replace('opacity-0', 'opacity-100');
-    contents[current].classList.replace('opacity-0', 'opacity-100');
+    // Route wraps through clones so motion stays directional
+    if (n >= total)  trackIndex = total + 1;   // forward wrap → firstClone
+    else if (n < 0)  trackIndex = 0;           // backward wrap → lastClone
+    else             trackIndex = current + 1;
+    snap(trackIndex, true);
     activateDot(current);
   }
 
   timer = setInterval(() => goTo(current + 1), DURATION);
 
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
+  dots.forEach((dot, i) => dot.addEventListener('click', () => {
+    clearInterval(timer);
+    goTo(i);
+    timer = setInterval(() => goTo(current + 1), DURATION);
+  }));
+
+  window.addEventListener('resize', () => snap(trackIndex, false), { passive: true });
+
+  // ── Drag ──────────────────────────────────────────────────
+  let dragStartX = 0;
+  let dragDelta  = 0;
+  let dragging   = false;
+  let didDrag    = false;
+
+  slider.addEventListener('pointerdown', (e) => {
+    if ((e.target as Element).closest('a, button')) return;
+    dragStartX = e.clientX;
+    dragDelta  = 0;
+    dragging   = true;
+    didDrag    = false;
+    track.style.transition = 'none';
+    slider.setPointerCapture(e.pointerId);
+  }, { passive: true });
+
+  slider.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    dragDelta = e.clientX - dragStartX;
+    if (Math.abs(dragDelta) > 8) didDrag = true;
+    track.style.transform = `translateX(${-trackIndex * w() + dragDelta}px)`;
+  }, { passive: true });
+
+  slider.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
+    if (Math.abs(dragDelta) > SWIPE_THRESHOLD) {
       clearInterval(timer);
-      goTo(i);
+      goTo(dragDelta < 0 ? current + 1 : current - 1);
       timer = setInterval(() => goTo(current + 1), DURATION);
-    });
+    } else {
+      snap(trackIndex, true);  // spring back
+    }
+    dragDelta = 0;
   });
+
+  slider.addEventListener('pointercancel', () => {
+    if (!dragging) return;
+    dragging = false; dragDelta = 0;
+    snap(trackIndex, true);
+  });
+
+  slider.addEventListener('click', (e) => {
+    if (didDrag) { e.preventDefault(); didDrag = false; }
+  }, { capture: true });
 </script>
 
 <!-- ── Player + Standings ────────────────────────────────── -->

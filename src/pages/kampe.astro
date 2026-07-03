@@ -103,14 +103,19 @@ function fmtTime(d: string) {
            'Ingen kommende kampe fundet.'}
         </div>
       )}
-      {displayEvents.map((event: any) => {
+      {(() => {
+        const seenDates = new Set();
+        return displayEvents.map((event: any) => {
         const isABHome = event.homeId === abConfig.teamId;
         const homeName = isABHome ? 'AB' : event.homeName;
         const awayName = isABHome ? event.awayName : 'AB';
         const venue = event.properties?.venueName ?? (isABHome ? 'Gladsaxe Stadion' : event.homeName);
         const round = event.round ? `Runde ${event.round}` : '';
+        const dk = event.startDate.slice(0, 10);
+        const isFirst = !seenDates.has(dk);
+        if (isFirst) seenDates.add(dk);
         return (
-          <div style="background:#fff; border:1px solid #E5E7EB; border-radius:4px; overflow:hidden;">
+          <div id={isFirst ? dk : undefined} class="scroll-mt-24 md:scroll-mt-40" style="background:#fff; border:1px solid #E5E7EB; border-radius:4px; overflow:hidden;">
             <div class="px-5 py-1.5 flex items-center justify-between" style="background:#F0F4F0; border-bottom:1px solid #E5E7EB;">
               <span class="text-xs font-bold" style={`color:${isABHome ? '#006A52' : '#888'}; letter-spacing:0.04em;`}>
                 {isABHome ? 'Hjemmekamp' : 'Udekamp'}
@@ -183,7 +188,8 @@ function fmtTime(d: string) {
             </div>
           </div>
         );
-      })}
+        });
+      })()}
     </div>
   </div>
 

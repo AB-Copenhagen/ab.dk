@@ -96,7 +96,7 @@
 }
 
 @utility btn-lg {
-  @apply px-8 py-3 text-sm tracking-[-0.02em] hover:opacity-90;
+  @apply px-10 py-4 text-lg tracking-[-0.02em] hover:opacity-90;
 }
 
 @utility btn-green {
@@ -110,6 +110,27 @@
 @utility btn-beige {
   @apply bg-ab-beige text-[#111];
 }
+
+/* ── Widget shared styles ────────────────────────────────────────────── */
+@utility widget-header {
+  @apply bg-ab-green px-6 py-3 flex items-center justify-between;
+}
+
+@utility widget-heading {
+  @apply font-black text-white leading-none tracking-[-0.04em] whitespace-nowrap;
+  font-size: 1.125rem;
+}
+
+@utility widget-th {
+  @apply font-black text-ab-green text-base tracking-[-0.04em] whitespace-nowrap text-left;
+}
+
+@utility widget-td {
+  @apply text-ab-green text-base tracking-[-0.02em] align-middle;
+}
+
+@utility widget-row-even { background: #fff; }
+@utility widget-row-odd  { background: #f4f4f4; }
 
 /* ── Base document ──────────────────────────────────────────────────── */
 html {

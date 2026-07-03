@@ -33,9 +33,6 @@ export default function MobileMenu({
 
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     toggle.setAttribute('aria-label', open ? nav.closeMenu : nav.openMenu);
-    toggle.innerHTML = open
-      ? '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>'
-      : '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>';
   }, [open, nav.closeMenu, nav.openMenu, toggleId]);
 
   return (

@@ -27,17 +27,19 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
     <div class="flex flex-nowrap items-center justify-between gap-8">
       {
         [
-          { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg' },
-          { src: '/images/sponsors/datum.png', alt: 'Datum' },
-          { src: '/images/sponsors/myriad360.png', alt: 'Myriad360' },
-          { src: '/images/sponsors/unisport.png', alt: 'Unisport' },
-          { src: '/images/sponsors/plane.png', alt: 'Plane' },
-        ].map(({ src, alt }) => (
-          <img
-            src={src}
-            alt={alt}
-            class="sponsor-logo w-[180px] h-[60px] object-contain object-center shrink-0"
-          />
+          { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg',  href: 'https://carlsbergdanmark.dk/', sz: 'w-[210px] h-[70px]' },
+          { src: '/images/sponsors/datum.png',     alt: 'Datum',      href: 'https://datum.net/',           sz: 'w-[240px] h-[80px]' },
+          { src: '/images/sponsors/myriad360.png', alt: 'Myriad360', href: 'https://myriad360.com/',        sz: 'w-[185px] h-[62px]' },
+          { src: '/images/sponsors/unisport.png',  alt: 'Unisport',   href: 'https://dk.select-sport.com/', sz: 'w-[160px] h-[52px]' },
+          { src: '/images/sponsors/plane.png',     alt: 'Plane',      href: 'https://plane.so/',            sz: 'w-[160px] h-[52px]' },
+        ].map(({ src, alt, href, sz }) => (
+          <a href={href} target="_blank" rel="noreferrer" aria-label={alt} class="shrink-0">
+            <img
+              src={src}
+              alt={alt}
+              class:list={['sponsor-logo object-contain object-center', sz]}
+            />
+          </a>
         ))
       }
     </div>

@@ -185,7 +185,7 @@ export const t: Record<Locale, Record<string, string>> = {
     article: 'Article',
     awayTeam: 'Away',
     calendar: 'Calendar',
-    calendarDayLabels: 'S,M,T,W,T,F,S',
+    calendarDayLabels: 'M,T,W,T,F,S,S',
     monthSchedule: 'Schedule',
     seeAllEvents: 'See All Events',
     prevMonth: 'Previous month',
