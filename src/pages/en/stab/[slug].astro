@@ -7,15 +7,15 @@ const { slug } = Astro.params;
 const staff = COACHING_STAFF.find(s => s.slug === slug);
 if (!staff) return Astro.redirect('/en/hold');
 
-// Try to fetch bio from Strapi (staff collection); fail silently
-let bio: string | null = null;
+// Try Strapi first, fall back to static data
+let bio: string | null = staff.bio?.en ?? null;
 try {
   const { fetchCollectionType } = await import('@/lib/strapi/client');
   const results = await fetchCollectionType<{ slug: string; bio?: string }[]>('staff', {
     filters: { slug: { $eq: staff.slug } },
     locale: 'en',
   }).catch(() => []);
-  bio = results[0]?.bio ?? null;
+  if (results[0]?.bio) bio = results[0].bio;
 } catch { /* Strapi unavailable */ }
 
 const initials = staffInitials(staff.name);
