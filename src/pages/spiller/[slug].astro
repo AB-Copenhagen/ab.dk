@@ -116,7 +116,7 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16">
       <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
 
-        <!-- Left: Player Bio -->
+        <!-- Left: Player Bio + Quote -->
         <div>
           <h2 class="font-black text-xl mb-4" style="color:#111;">Spillerprofil</h2>
           {cmsPlayer?.bio ? (
@@ -130,6 +130,16 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
               Spillerprofil tilføjes snart.
             </p>
           )}
+          {cmsPlayer?.quote && (
+            <div class="relative mt-8 pl-3">
+              <span aria-hidden="true" class="absolute top-0 left-0 font-black leading-none select-none pointer-events-none"
+                    style="font-size:5rem; color:#D3BC8D; opacity:0.25; line-height:1;">&ldquo;</span>
+              <blockquote class="relative font-medium italic leading-snug pt-5"
+                          style="font-size:clamp(1.1rem,2vw,1.5rem); color:#006A52; letter-spacing:-0.01em;">
+                {cmsPlayer.quote}
+              </blockquote>
+            </div>
+          )}
         </div>
 
         <!-- Right: Latest Results -->
@@ -138,21 +148,6 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
       </div>
     </div>
   </section>
-
-  <!-- ── Quote ──────────────────────────────────────────────────────── -->
-  {cmsPlayer?.quote && (
-    <section style="background:#fff; border-top:1px solid #E5E7EB; padding:5rem 0;">
-      <div class="max-w-4xl mx-auto px-5 md:px-12 text-center">
-        <blockquote class="font-black italic leading-tight"
-                    style="font-size:clamp(1.75rem,4.5vw,3.5rem); color:#111; letter-spacing:-0.03em;">
-          &ldquo;{cmsPlayer.quote}&rdquo;
-        </blockquote>
-        <p class="mt-5" style="color:#888; font-size:0.875rem; letter-spacing:0.05em;">
-          — {name}
-        </p>
-      </div>
-    </section>
-  )}
 
   <!-- ── Photo gallery ─────────────────────────────────────────────── -->
   {galleryImages.length > 0 && (

@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import SquadCard from '@/components/SquadCard.astro';
 import { fetchABPlayers, type SIPlayer } from '@/lib/si/client';
+import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
 export const prerender = false;
 
 const locale = 'en' as const;
@@ -20,17 +21,6 @@ const GROUP_ORDER: PositionKey[] = [
   'forward',
 ];
 
-const COACHING_STAFF = [
-  { name: 'Fannar Berg Gunnólfsson', role: 'Head Coach',         nationality: 'Icelandic' },
-  { name: 'Benjamin Chor',           role: 'Assistant Coach',    nationality: 'Danish' },
-  { name: 'Jussi Kontinen',          role: 'Assistant Coach',    nationality: 'Swedish, Finnish' },
-  { name: 'Joakim Sternas',          role: 'Goalkeeping Coach',  nationality: 'Swedish' },
-  { name: 'Konstantinos Ntolaptsis', role: 'Fitness Coach',      nationality: 'Greek' },
-  { name: 'Andreas Søndergaard',     role: 'Physiotherapist',    nationality: 'Danish' },
-  { name: 'Albert Kaarnøe',          role: 'Physiotherapist',    nationality: 'Danish' },
-  { name: 'Kim Villy Nielsen',        role: 'Kit Manager',        nationality: 'Danish' },
-  { name: 'Allan Petersen',          role: 'Kit Manager',        nationality: 'Danish' },
-];
 
 let players: SIPlayer[] = [];
 try {
@@ -107,14 +97,37 @@ for (const p of players) {
           style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; color:#111; text-transform:none;">
           Coaching Staff
         </h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {COACHING_STAFF.map((staff) => (
-            <div class="bg-[#f4f4f4] px-5 py-4">
-              <p class="font-black text-base leading-tight tracking-[-0.02em] text-ab-green mb-1">{staff.name}</p>
-              <p class="text-sm text-ab-green/70 tracking-[-0.01em]">{staff.role}</p>
-              <p class="text-xs text-ab-green/50 mt-0.5 tracking-[-0.01em]">{staff.nationality}</p>
-            </div>
-          ))}
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-3 md:gap-x-7">
+          {COACHING_STAFF.map((staff) => {
+            const parts = staff.name.trim().split(' ');
+            const firstName = parts[0];
+            const lastName = parts.slice(1).join(' ');
+            const initials = staffInitials(staff.name);
+            return (
+              <a href={`/en/stab/${staff.slug}`} class="relative block group" style="aspect-ratio:593/503;">
+                <div class="absolute inset-x-0 bottom-0 transition-all duration-300 group-hover:brightness-95" style="height:84.1%; background:#EBEBEB;"></div>
+                <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl" style="width:51%;">
+                  <img src={staff.photo} alt={staff.name} loading="lazy"
+                       class="absolute inset-0 w-full h-full object-cover object-top"
+                       onerror="this.style.opacity='0'" />
+                </div>
+                <div class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10"
+                     style="height:84.1%; width:53%;">
+                  <div>
+                    <p class="font-black leading-tight"
+                       style="font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance; color:#006A52;">
+                      {firstName}<br />{lastName}
+                    </p>
+                    <p class="text-xs mt-1 font-medium" style="color:rgba(0,106,82,0.6);">{staff.role.en}</p>
+                  </div>
+                  <p class="font-black leading-none select-none"
+                     style="font-size:clamp(2.5rem,6.5vw,6.5rem); letter-spacing:-0.04em; color:rgba(0,106,82,0.18);">
+                    {initials}
+                  </p>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </section>
     </div>
