@@ -93,8 +93,8 @@ export const COACHING_STAFF: StaffMember[] = [
   },
 ];
 
-/** Returns the first two initials from a full name, e.g. "Fannar Berg Gunnólfsson" → "FB" */
+/** Returns first + last initial, e.g. "Fannar Berg Gunnólfsson" → "FG" */
 export function staffInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
-  return (parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '');
+  return (parts[0]?.[0] ?? '') + (parts[parts.length - 1]?.[0] ?? '');
 }
