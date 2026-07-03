@@ -113,12 +113,12 @@
 
 /* ── Widget shared styles ────────────────────────────────────────────── */
 @utility widget-header {
-  @apply bg-ab-green px-6 py-5 flex items-center justify-between;
+  @apply bg-ab-green px-6 py-3 flex items-center justify-between;
 }
 
 @utility widget-heading {
-  @apply font-black text-white leading-none tracking-[-0.04em] whitespace-pre-line;
-  font-size: clamp(1.75rem, 3vw, 2.1875rem);
+  @apply font-black text-white leading-none tracking-[-0.04em] whitespace-nowrap;
+  font-size: 1.125rem;
 }
 
 @utility widget-th {

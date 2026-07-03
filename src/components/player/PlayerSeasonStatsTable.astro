@@ -13,7 +13,7 @@ if (rows.length === 0) {
   return null;
 }
 
-const titleLines = translate(locale, 'latestResults').split('\n');
+const widgetTitle = translate(locale, 'latestResults').replace(/\n/g, ' ');
 
 const columns = [
   { key: 'season', label: translate(locale, 'season'), align: 'left' as const },
@@ -27,11 +27,7 @@ const columns = [
 
 <div>
   <div class="widget-header">
-    <h2 class="widget-heading">
-      {titleLines.map((line) => (
-        <span class="block">{line}</span>
-      ))}
-    </h2>
+    <h2 class="widget-heading">{widgetTitle}</h2>
   </div>
 
   <div class="overflow-x-auto">
