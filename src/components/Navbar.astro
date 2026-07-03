@@ -237,17 +237,22 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
 <script>
   const hdr = document.querySelector('header.sticky');
   if (hdr) {
-    const SHRINK_AT  = 80;  // scroll past this → compact
-    const RESTORE_AT = 40;  // must scroll back below this → full
+    const SHRINK_AT  = 80;
+    const RESTORE_AT = 20;
+    const COOLDOWN   = 450; // ms — longer than the 0.34s transition
+
+    let lastChange = -COOLDOWN;
 
     const update = () => {
+      const now = performance.now();
+      if (now - lastChange < COOLDOWN) return;
+
       const y = window.scrollY;
       const compact = hdr.classList.contains('nav-scrolled');
-      if (!compact && y > SHRINK_AT)  hdr.classList.add('nav-scrolled');
-      if ( compact && y < RESTORE_AT) hdr.classList.remove('nav-scrolled');
+      if (!compact && y > SHRINK_AT)  { hdr.classList.add('nav-scrolled');    lastChange = now; }
+      if ( compact && y < RESTORE_AT) { hdr.classList.remove('nav-scrolled'); lastChange = now; }
     };
 
-    // Set correct state after anchor-scroll settles, without animating
     window.addEventListener('load', () => {
       hdr.classList.add('nav-no-transition');
       hdr.classList.toggle('nav-scrolled', window.scrollY > SHRINK_AT);

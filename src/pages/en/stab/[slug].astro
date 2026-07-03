@@ -1,0 +1,99 @@
+---
+import Base from '@/layouts/Base.astro';
+import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
+export const prerender = false;
+
+const { slug } = Astro.params;
+const staff = COACHING_STAFF.find(s => s.slug === slug);
+if (!staff) return Astro.redirect('/en/hold');
+
+// Try Strapi first, fall back to static data
+let bio: string | null = staff.bio?.en ?? null;
+try {
+  const { fetchCollectionType } = await import('@/lib/strapi/client');
+  const results = await fetchCollectionType<{ slug: string; bio?: string }[]>('staff', {
+    filters: { slug: { $eq: staff.slug } },
+    locale: 'en',
+  }).catch(() => []);
+  if (results[0]?.bio) bio = results[0].bio;
+} catch { /* Strapi unavailable */ }
+
+const initials = staffInitials(staff.name);
+const parts = staff.name.trim().split(' ');
+const firstName = parts[0];
+const lastName = parts.slice(1).join(' ');
+---
+
+<Base locale="en" title={`${staff.name} | Akademisk Boldklub`}>
+  <!-- ── Hero ───────────────────────────────────────────────────────── -->
+  <div class="relative w-full overflow-hidden"
+       style="background:linear-gradient(to right, #002A1A 0%, #006A52 42%, #00C018 100%); min-height:clamp(460px,36vw,560px);">
+
+    <img src="/images/logo-behind-player.svg" alt="" aria-hidden="true"
+         class="absolute hidden md:block pointer-events-none select-none"
+         style="left:40%; top:50%; transform:translate(-50%,-50%); z-index:1;
+                width:clamp(320px,33vw,580px); height:auto; opacity:1;" />
+
+    <img src="/images/crest-behind-player.svg" alt="" aria-hidden="true"
+         class="absolute hidden lg:block pointer-events-none select-none"
+         style="right:1%; top:50%; transform:translateY(-50%); z-index:1;
+                width:clamp(280px,29vw,500px); height:auto; opacity:0.45;" />
+
+    <div class="absolute inset-0 flex items-end justify-center pointer-events-none" style="z-index:2;">
+      <img src={staff.photo} alt={staff.name} loading="eager" class="h-full w-auto max-w-none" />
+    </div>
+
+    <!-- Name overlay -->
+    <div class="absolute inset-0 flex flex-col justify-end px-8 lg:px-16 pb-10 z-10" style="pointer-events:none;">
+      <p class="text-white/60 font-black text-sm tracking-widest mb-1" style="letter-spacing:0.12em;">
+        {staff.role.en.toUpperCase()}
+      </p>
+      <h1 class="font-black text-white leading-none" style="font-size:clamp(2.5rem,7vw,6rem); letter-spacing:-0.04em; text-transform:none;">
+        {firstName}<br />{lastName}
+      </h1>
+    </div>
+  </div>
+
+  <!-- ── Metadata bar ─────────────────────────────────────────────── -->
+  <div style="background:#006A52; color:#fff;">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 flex flex-wrap items-center gap-x-8 gap-y-2 py-4">
+      <div>
+        <p class="text-xs font-bold" style="color:rgba(255,255,255,0.5); letter-spacing:0.08em;">ROLE</p>
+        <p class="font-black text-sm">{staff.role.en}</p>
+      </div>
+      <div class="w-px h-8 bg-white/20 hidden sm:block"></div>
+      <div>
+        <p class="text-xs font-bold" style="color:rgba(255,255,255,0.5); letter-spacing:0.08em;">NATIONALITY</p>
+        <p class="font-black text-sm">{staff.nationality.en}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bio ──────────────────────────────────────────────────────── -->
+  <section style="background:#fff;">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
+        <div>
+          <h2 class="font-black text-xl mb-4" style="color:#111;">About the Coach</h2>
+          {bio ? (
+            <div class="space-y-4">
+              {bio.split('\n\n').filter(Boolean).map(para => (
+                <p style="color:#444; line-height:1.75; font-size:0.9375rem;">{para}</p>
+              ))}
+            </div>
+          ) : (
+            <p style="color:#aaa; font-size:0.875rem; line-height:1.7;">Coach profile coming soon.</p>
+          )}
+        </div>
+
+        <!-- Right: decorative initials block -->
+        <div class="hidden lg:flex items-center justify-center" style="min-height:200px;">
+          <span class="font-black select-none"
+                style="font-size:clamp(8rem,16vw,14rem); letter-spacing:-0.05em; color:#EBEBEB; line-height:1;">
+            {initials}
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

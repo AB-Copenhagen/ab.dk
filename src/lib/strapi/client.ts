@@ -108,7 +108,23 @@ export async function fetchPlayerCmsData(
     populate: ['gallery'],
     locale,
   }).catch(() => []);
-  return results[0] ?? null;
+
+  if (results[0]) return results[0];
+
+  // Static fallback — used when Strapi is unreachable or the player collection
+  // hasn't been seeded yet.
+  const { PLAYER_CMS_DATA } = await import('@/data/player-cms-data');
+  const entry = PLAYER_CMS_DATA[siPlayerId];
+  if (!entry) return null;
+
+  const l = locale === 'en' ? 'en' : 'da';
+  return {
+    siPlayerId,
+    nickname: entry.nickname,
+    formerClubs: entry.formerClubs,
+    bio: entry.bio?.[l],
+    quote: entry.quote?.[l],
+  };
 }
 
 // ── Media helpers ─────────────────────────────────────────────────────────────
