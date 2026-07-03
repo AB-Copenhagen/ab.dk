@@ -1,0 +1,403 @@
+---
+import Base from '@/layouts/Base.astro';
+export const prerender = false;
+
+const SECTIONS = [
+  { id: 'getting-here',  label: 'Getting Here' },
+  { id: 'food-drink',    label: 'Food & Drink' },
+  { id: 'tickets',       label: 'Tickets' },
+  { id: 'stadium-info',  label: 'Stadium Info' },
+  { id: 'accessibility', label: 'Accessibility' },
+  { id: 'policies',      label: 'Policies' },
+  { id: 'press',         label: 'Press' },
+];
+
+const TICKET_PRICES = [
+  { type: 'General Admission',                             price: 'DKK 110 + fees' },
+  { type: 'Discounted (Students / Pensioners / Under 17)', price: 'DKK 60 + fees' },
+  { type: 'Season Pass — General',                         price: 'DKK 1,600 + fees' },
+  { type: 'Season Pass — Discounted',                      price: 'DKK 800 + fees' },
+  { type: 'At the door (surcharge)',                       price: '+ DKK 40' },
+];
+
+const PROHIBITED_ITEMS = [
+  'Luggage, computer bags, briefcases, backpacks, large purses, camera cases, coolers, thermoses or ice chests of any size',
+  'Firearms or weapons of any kind',
+  'Bottles, cans, coolers, containers',
+  'Noisemakers, plastic horns, air horns, whistles, drums or musical instruments',
+  'Fireworks, flares, smoke bombs or similar items',
+  'Pets or animals (except certified service animals)',
+  'Selfie sticks, professional camera equipment, tripods, laser pointers',
+  'Water guns, toy/replica weapons, squirt bottles, soap bubbles',
+  'Beach balls, frisbees, balloons, skateboards, hoverboards, rollerblades',
+  'Streamers or confetti',
+  'Strollers that do not fit under the seats',
+  'Fully inflated miniature or full-size soccer balls (must be fully deflated)',
+];
+---
+
+<Base locale="en" title="Matchday Guide | Akademisk Boldklub">
+
+  <!-- ── Hero ───────────────────────────────────────────────────────── -->
+  <div class="relative w-full">
+    <img src="/api/media/uploads/bring_the_kids_along_for_a_fun_football_experience_gladsaxe_stadium_0b4d4095f3.jpg" alt="AB supporters cheering at Gladsaxe Stadion"
+         class="block h-auto w-full max-h-[480px] object-cover object-top" loading="eager" />
+    <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);"></div>
+    <div class="absolute inset-0 flex flex-col justify-end px-8 pb-10 lg:px-16">
+      <p class="mb-2 text-xs font-black tracking-widest text-ab-beige">GLADSAXE STADION</p>
+      <h1 class="font-black leading-none normal-case text-white" style="font-size:clamp(3.5rem,10vw,8rem); letter-spacing:-0.04em;">Matchday</h1>
+    </div>
+  </div>
+
+  <div class="bg-white">
+    <div class="mx-auto max-w-7xl px-5 md:px-10 lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-14">
+
+      <!-- ── Left sticky subnav (desktop) ───────────────────────────── -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-24 py-12">
+          <p class="mb-4 text-xs font-black tracking-widest text-neutral-400">MATCHDAY GUIDE</p>
+          <ul class="flex flex-col">
+            {SECTIONS.map(s => (
+              <li>
+                <a href={`#${s.id}`} data-matchday-link
+                   class="matchday-link block py-2 pl-4 text-sm font-black tracking-tight">
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- ── Content column ─────────────────────────────────────────── -->
+      <div class="pb-20 pt-10 lg:pt-12">
+
+        <!-- Mobile quick links -->
+        <nav class="mb-10 lg:hidden">
+          <p class="mb-3 text-xs font-black tracking-widest text-neutral-400">MATCHDAY GUIDE</p>
+          <div class="grid grid-cols-2 gap-2">
+            {SECTIONS.map(s => (
+              <a href={`#${s.id}`}
+                 class="rounded bg-neutral-100 px-4 py-2.5 text-sm font-black tracking-tight text-ab-green">
+                {s.label}
+              </a>
+            ))}
+          </div>
+        </nav>
+
+        <!-- ── Getting Here ─────────────────────────────────────────── -->
+        <section id="getting-here" class="mb-14 scroll-mt-28 border-b border-neutral-200 pb-14">
+          <div class="mb-7 flex items-center gap-4">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Getting to Gladsaxe</h2>
+          </div>
+
+          <div class="mb-7 rounded bg-ab-green/5 p-5">
+            <p class="mb-0.5 text-base font-black text-ab-green">Gladsaxe Stadion</p>
+            <p class="text-[1.1rem] text-neutral-600">Gladsaxevej 202, 2860 Søborg, Denmark</p>
+            <a href="https://maps.google.com/?q=Gladsaxevej+202,+2860+Søborg" target="_blank" rel="noreferrer"
+               class="mt-3 inline-block rounded bg-ab-green px-3 py-1.5 text-xs font-black text-white">
+              Open in Google Maps ↗
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div>
+              <h3 class="mb-3 text-base font-black text-neutral-900">Public Transportation</h3>
+              <ul class="space-y-3 text-[1.1rem] leading-[1.75] text-neutral-700">
+                <li><strong>Bus:</strong> Lines 4A, 30E, 68 and 164 stop at the door. Alight at <em>Høje Gladsaxe</em>.</li>
+                <li><strong>S-Train:</strong> Nearest stations are Buddinge and Kildebakke. From there, walk 10–15 min or take a bus direct to Gladsaxevej 202. Alight at <em>Høje Gladsaxe</em>.</li>
+              </ul>
+              <div class="mt-4 flex gap-2">
+                <a href="https://www.rejseplanen.dk/" target="_blank" rel="noreferrer"
+                   class="rounded bg-ab-green/5 px-3 py-1.5 text-xs font-black text-ab-green">Bus Schedule ↗</a>
+                <a href="https://www.dsb.dk/" target="_blank" rel="noreferrer"
+                   class="rounded bg-ab-green/5 px-3 py-1.5 text-xs font-black text-ab-green">S-Train ↗</a>
+              </div>
+            </div>
+            <div>
+              <h3 class="mb-3 text-base font-black text-neutral-900">Parking</h3>
+              <ul class="space-y-3 text-[1.1rem] leading-[1.75] text-neutral-700">
+                <li><strong>General:</strong> Large open parking lot directly next to Gladsaxevej. Additional spaces nearby at Høje Gladsaxe, Gladsaxe Skøjtehal and Gladsaxe Svømmehal on Vandtårnsvej.</li>
+                <li><strong>Disabled:</strong> 2 dedicated spaces on Gladsaxevej next to the tennis courts, approx. 50–100m from the main grandstand. A valid handicap parking pass must be displayed.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Food & Drink ─────────────────────────────────────────── -->
+        <section id="food-drink" class="mb-14 scroll-mt-28 border-b border-neutral-200 pb-14">
+          <div class="mb-7 flex items-center gap-4">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            </span>
+            <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Food & Drink</h2>
+          </div>
+
+          <p class="mb-6 text-[1.1rem] leading-[1.75] text-neutral-700">
+            At AB, we care about what we serve — all food at Gladsaxe Stadion is <strong>100% organic</strong>. We offer a wide selection with a strong focus on quality and great taste, including healthy meals, vegan and gluten-free options. Our coffee bar serves organic coffee alongside organic pastries and cakes from local bakeries.
+          </p>
+          <div class="mb-6 rounded border-l-[3px] border-ab-beige bg-ab-green/5 p-5">
+            <p class="mb-1 text-base font-black text-ab-green">The Mad Owl Pub</p>
+            <p class="text-[1.1rem] leading-[1.75] text-neutral-600">Beers from around the world — alcoholic and non-alcoholic — plus great drinks. Located on the first floor. Opens <strong>2 hours before kick-off</strong>.</p>
+          </div>
+          <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="rounded bg-neutral-100 p-5">
+              <p class="mb-1 text-xs font-black tracking-wider text-ab-green">FOOD STALLS & COFFEE BAR</p>
+              <p class="text-[1.1rem] text-neutral-700">Open <strong>1.5 hours</strong> before kick-off</p>
+            </div>
+            <div class="rounded bg-neutral-100 p-5">
+              <p class="mb-1 text-xs font-black tracking-wider text-ab-green">THE MAD OWL PUB</p>
+              <p class="text-[1.1rem] text-neutral-700">Open <strong>2 hours</strong> before kick-off</p>
+            </div>
+          </div>
+          <p class="rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-neutral-500">
+            No outside food or drink is permitted in the stadium, unless for medical reasons.
+          </p>
+        </section>
+
+        <!-- ── Tickets ──────────────────────────────────────────────── -->
+        <section id="tickets" class="mb-14 scroll-mt-28 border-b border-neutral-200 pb-14">
+          <div class="mb-7 flex items-center gap-4">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg>
+            </span>
+            <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Tickets</h2>
+          </div>
+
+          <h3 class="mb-3 text-base font-black text-neutral-900">Ticket Prices</h3>
+          <div class="mb-7 overflow-x-auto">
+            <table class="w-full border-collapse text-base">
+              <thead>
+                <tr class="bg-ab-green text-white">
+                  <th class="px-4 py-2.5 text-left font-black">Type</th>
+                  <th class="px-4 py-2.5 text-right font-black">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TICKET_PRICES.map(row => (
+                  <tr class="border-b border-neutral-200 even:bg-ab-green/[0.03]">
+                    <td class="px-4 py-3 text-neutral-700">{row.type}</td>
+                    <td class="px-4 py-3 text-right font-black tabular-nums text-ab-green">{row.price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="mb-3 text-base font-black text-neutral-900">Mobile Ticketing</h3>
+          <p class="mb-4 text-[1.1rem] leading-[1.75] text-neutral-700">
+            Gladsaxe Stadion is a <strong>mobile ticketing venue</strong>. Access your tickets by logging into the MyAB mobile app using the email address associated with your tickets. If you have login issues, reset your password using the email provided at purchase.
+          </p>
+          <p class="mb-6 text-[1.1rem] leading-[1.75] text-neutral-700">
+            All tickets are subject to the Ticket Terms and Policies and Fan Code of Conduct. If affiliated with the away team, please purchase a ticket for the away section.
+          </p>
+          <div class="mb-7 flex flex-wrap gap-3">
+            <a href="https://billet.ab.dk/" target="_blank" rel="noreferrer"
+               class="rounded bg-ab-neon px-5 py-2.5 text-sm font-black tracking-tight text-ab-green">
+              Buy Tickets
+            </a>
+            <a href="https://billet.ab.dk/event/seasonal-ticket-pass-26-27-copy-u8hk6v" target="_blank" rel="noreferrer"
+               class="rounded bg-ab-beige px-5 py-2.5 text-sm font-black tracking-tight text-ab-green">
+              Season Card
+            </a>
+          </div>
+          <div class="rounded bg-ab-green/5 p-5">
+            <p class="mb-1 text-base font-black text-ab-green">Fan Services</p>
+            <p class="text-[1.1rem] leading-[1.75] text-neutral-600">
+              Visit the Guest Services window directly inside <strong>Gate B</strong>. We recommend adding your tickets to Apple Wallet or Google Pay before arriving to avoid connectivity issues at the gate.
+            </p>
+            <p class="mt-2 text-[1.1rem] text-neutral-600">
+              Questions? Email <a href="mailto:info@ab.dk" class="font-bold text-ab-green">info@ab.dk</a>
+            </p>
+          </div>
+        </section>
+
+        <!-- ── Stadium Info ─────────────────────────────────────────── -->
+        <section id="stadium-info" class="mb-14 scroll-mt-28 border-b border-neutral-200 pb-14">
+          <div class="mb-7 flex items-center gap-4">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7 12 2"/></svg>
+            </span>
+            <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Stadium Info</h2>
+          </div>
+
+          <h3 class="mb-3 text-base font-black text-neutral-900">Bag Policy</h3>
+          <div class="mb-7 rounded bg-ab-green/5 p-5">
+            <p class="text-[1.1rem] leading-[1.75] text-neutral-700">
+              Bags sized <strong>14"×14"×6"</strong> or smaller are permitted. Backpacks of any kind or bags larger than this limit are not permitted. Medical and baby bags are exempt but subject to search.
+            </p>
+          </div>
+
+          <h3 class="mb-3 text-base font-black text-neutral-900">Prohibited Items</h3>
+          <ul class="mb-6 grid grid-cols-1 gap-x-8 gap-y-2.5 text-[1.1rem] text-neutral-700 md:grid-cols-2">
+            {PROHIBITED_ITEMS.map(item => (
+              <li class="flex items-start gap-2 leading-relaxed">
+                <span class="mt-0.5 shrink-0 text-red-400">✕</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-neutral-500">
+            Prohibited items found at entrances must be returned to your vehicle or discarded — no storage is provided. Unlawful items are subject to confiscation. For questions: <a href="mailto:info@ab.dk" class="font-bold text-ab-green">info@ab.dk</a>
+          </p>
+        </section>
+
+        <!-- ── Accessibility ────────────────────────────────────────── -->
+        <section id="accessibility" class="mb-14 scroll-mt-28 border-b border-neutral-200 pb-14">
+          <div class="mb-7 flex items-center gap-4">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg>
+            </span>
+            <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Accessibility</h2>
+          </div>
+
+          <p class="mb-6 text-[1.1rem] leading-[1.75] text-neutral-700">
+            It is a top priority of Gladsaxe Stadion to accommodate the needs of all guests, including those with disabilities and their companions. For assistance, contact <a href="mailto:info@ab.dk" class="font-bold text-ab-green">info@ab.dk</a>.
+          </p>
+          <div class="space-y-4">
+            <div class="rounded bg-ab-green/5 p-5">
+              <p class="mb-1.5 text-base font-black text-ab-green">Wheelchair Spaces</p>
+              <p class="text-[1.1rem] leading-[1.75] text-neutral-700">
+                Wheelchair-friendly viewing areas are located in the new grandstand (Grandstand 3) with an elevated view of the pitch. Access via the elevator inside <strong>entrance 4</strong>. Guests in Knud Lundberg Lounge use the elevator at <strong>entrance 3</strong>.
+              </p>
+              <p class="mt-2 text-[1.1rem] leading-[1.75] text-neutral-700">
+                Fully accessible disabled toilets are at each end of the main stand. Food and beverage stalls are accessible via flat surfaces. Electric mobility scooters are permitted at walking pace.
+              </p>
+            </div>
+            <div class="rounded bg-ab-green/5 p-5">
+              <p class="mb-1.5 text-base font-black text-ab-green">Companion Card</p>
+              <p class="text-[1.1rem] leading-[1.75] text-neutral-700">
+                A valid companion card (<em>Ledsagerkort</em>) issued by an authorized entity must be presented physically or digitally at the entrance gates. No verification is needed when purchasing tickets online.
+              </p>
+            </div>
+            <p class="rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-neutral-500">
+              The wheelchair accessible infrastructure with lift access is built into the main stand only. It is not possible to sit in the away section with wheelchair access.
+            </p>
+          </div>
+        </section>
+
+        <!-- ── Policies ─────────────────────────────────────────────── -->
+        <section id="policies" class="mb-14 scroll-mt-28 border-b border-neutral-200 pb-14">
+          <div class="mb-7 flex items-center gap-4">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Policies</h2>
+          </div>
+
+          <div class="space-y-4">
+            <div class="rounded bg-ab-green/5 p-5">
+              <p class="mb-1.5 text-base font-black text-ab-green">Away Fans</p>
+              <p class="text-[1.1rem] leading-[1.75] text-neutral-700">
+                AB aims to create a stadium experience where everyone is welcome. Away team merchandise is fully permitted in the neutral and handicap sections. Security personnel may refuse entry or expel spectators who violate the code of conduct.
+              </p>
+            </div>
+            <div class="rounded bg-ab-green/5 p-5">
+              <p class="mb-1.5 text-base font-black text-ab-green">Security</p>
+              <p class="text-[1.1rem] leading-[1.75] text-neutral-700">
+                AB's authorized security manager is <strong>Bo Jørgensen</strong>. Reach him at <a href="mailto:bjorgensen@ab.dk" class="font-bold text-ab-green">bjorgensen@ab.dk</a>.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Press ────────────────────────────────────────────────── -->
+        <section id="press" class="scroll-mt-28">
+          <div class="mb-7 flex items-center gap-4">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6z"/></svg>
+            </span>
+            <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Press Access</h2>
+          </div>
+
+          <p class="mb-4 text-[1.1rem] leading-[1.75] text-neutral-700">
+            Press representatives are admitted at the entrance upon presentation of a valid press card. Team lineups are available from reception approximately 20 minutes before kick-off. Post-match player and coach interviews are conducted through the reception at the New Grandstand.
+          </p>
+          <p class="mb-6 text-[1.1rem] leading-[1.75] text-neutral-700">
+            Commercial activities of any kind within the stadium require a prior agreement with the club, including sale of goods, data collection, or image/sound for commercial purposes.
+          </p>
+          <a href="mailto:press@ab.dk"
+             class="inline-block rounded bg-ab-green px-5 py-2.5 text-sm font-black tracking-tight text-white">
+            Contact Press Team ↗
+          </a>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .matchday-link {
+      color: var(--color-neutral-400);
+      border-left: 2px solid var(--color-neutral-200);
+      transition:
+        color 0.15s,
+        border-color 0.15s;
+    }
+    .matchday-link:hover {
+      color: var(--color-ab-green);
+    }
+    .matchday-link.is-active {
+      color: var(--color-ab-green);
+      border-left-color: var(--color-ab-neon);
+    }
+  </style>
+
+  <script>
+    const HEADER_OFFSET = 100;
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-matchday-link]'));
+    const sections = links
+      .map(l => document.querySelector<HTMLElement>(l.getAttribute('href') ?? ''))
+      .filter((s): s is HTMLElement => s !== null);
+
+    // ── Scrollspy ──
+    const setActive = (id: string) => {
+      links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === `#${id}`));
+    };
+
+    const update = () => {
+      let current = sections[0]?.id ?? '';
+      for (const s of sections) {
+        if (s.getBoundingClientRect().top <= HEADER_OFFSET + 40) current = s.id;
+      }
+      setActive(current);
+    };
+
+    document.addEventListener('scroll', update, { passive: true });
+    update();
+
+    // ── Eased smooth scroll for all in-page anchors ──
+    const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const smoothScrollTo = (targetY: number, duration = 650) => {
+      const startY = window.scrollY;
+      const diff = targetY - startY;
+      let start: number | undefined;
+      const step = (ts: number) => {
+        start ??= ts;
+        const p = Math.min((ts - start) / duration, 1);
+        window.scrollTo(0, startY + diff * easeInOutCubic(p));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href')?.slice(1);
+        const target = id ? document.getElementById(id) : null;
+        if (!target) return;
+        e.preventDefault();
+        const y = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+        if (reducedMotion.matches) window.scrollTo(0, y);
+        else smoothScrollTo(y);
+        history.pushState(null, '', `#${id}`);
+      });
+    });
+  </script>
+
+</Base>
