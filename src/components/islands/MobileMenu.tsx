@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import type { NavConfig } from '@/lib/nav-config';
 
@@ -38,11 +39,11 @@ export default function MobileMenu({
   return (
     <div data-mobile-menu-root="">
       <span className="sr-only">Mobile menu</span>
-      {open && (
+      {open && createPortal(
         <div
           id="mobile-menu-panel"
-          className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto lg:hidden"
-          style={{ top: 'var(--nav-height, 92px)', background: '#006A52', borderTop: '3px solid #D3BC8D' }}
+          className="fixed inset-x-0 bottom-0 overflow-y-auto"
+          style={{ top: 'var(--nav-height, 92px)', zIndex: 200, background: '#006A52', borderTop: '3px solid #D3BC8D' }}
         >
           <nav className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-1">
             {nav.preHeader.left.map((item) => (
@@ -134,7 +135,8 @@ export default function MobileMenu({
               </a>
             </div>
           </nav>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
