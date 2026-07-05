@@ -5,7 +5,7 @@ export const prerender = false;
 
 const { slug } = Astro.params;
 const staff = COACHING_STAFF.find(s => s.slug === slug);
-if (!staff) return Astro.redirect('/en/hold');
+if (!staff) return Astro.redirect('/en/squad');
 
 // Try Strapi first, fall back to static data
 let bio: string | null = staff.bio?.en ?? null;

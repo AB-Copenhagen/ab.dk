@@ -22,9 +22,9 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
 ---
 
 <!-- Sponsor row (white bg) -->
-<div class="bg-white border-t border-gray-200 py-12">
+<div class="overflow-hidden bg-white border-t border-gray-200 py-12">
   <div class="max-w-7xl mx-auto px-8">
-    <div class="flex flex-nowrap items-center justify-between gap-8">
+    <div class="flex flex-wrap items-center justify-center gap-8 md:flex-nowrap md:justify-between">
       {
         [
           { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg',  href: 'https://carlsbergdanmark.dk/', sz: 'w-[210px] h-[70px]' },

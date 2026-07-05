@@ -14,7 +14,7 @@ const { slug } = Astro.params;
 const playerId = slug ? parseInt(slug.split('-')[0], 10) : NaN;
 
 if (isNaN(playerId)) {
-  return Astro.redirect('/en/hold');
+  return Astro.redirect('/en/squad');
 }
 
 let player: SIPlayerProfile | null = null;
@@ -26,7 +26,7 @@ try {
 }
 
 if (!player) {
-  return Astro.redirect('/en/hold');
+  return Astro.redirect('/en/squad');
 }
 
 const { name, position, countryName, birthDate, height } = player;

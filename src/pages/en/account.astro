@@ -6,7 +6,7 @@ export const prerender = false;
 const sessionToken = Astro.cookies.get('DS')?.value;
 if (sessionToken) {
   return Astro.redirect(
-    Astro.url.searchParams.get('redirect') ?? '/en/konto/profil'
+    Astro.url.searchParams.get('redirect') ?? '/en/account/profile'
   );
 }
 
@@ -41,7 +41,7 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
         el.setAttribute('locale', 'en-US');
         el.addEventListener('success', () => {
           const params = new URLSearchParams(location.search);
-          location.href = params.get('redirect') ?? '/en/konto/profil';
+          location.href = params.get('redirect') ?? '/en/account/profile';
         });
         document.getElementById('descope-container')?.appendChild(el);
       });

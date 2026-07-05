@@ -10,7 +10,7 @@ const { slug } = Astro.params;
 const eventId = slug ? parseInt(slug.split('-')[0], 10) : NaN;
 
 if (isNaN(eventId)) {
-  return Astro.redirect('/en/kampe');
+  return Astro.redirect('/en/matches');
 }
 
 let event: SIEvent | null = null;
@@ -22,7 +22,7 @@ try {
 }
 
 if (!event) {
-  return Astro.redirect('/en/kampe');
+  return Astro.redirect('/en/matches');
 }
 
 const { homeName, awayName, startDate, statusType, score, tournamentName } = event;
@@ -51,7 +51,7 @@ const WIDGET_SEASON_ID = 16387;
       <div class="max-w-7xl mx-auto px-5 md:px-12">
         <div class="pt-10 pb-8">
           <a
-            href="/en/kampe"
+            href="/en/matches"
             class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8 hover:underline"
             style="color:#006A52;letter-spacing:0.15em"
           >

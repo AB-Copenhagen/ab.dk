@@ -45,10 +45,10 @@ const displayEvents =
     <div class="max-w-7xl mx-auto px-8 flex items-center justify-between" style="height:56px;">
       <div class="flex items-center gap-1">
         {[
-          { label: 'Upcoming', value: 'upcoming', href: '/en/kampe' },
-          { label: 'Home',     value: 'home',     href: '/en/kampe?filter=home' },
-          { label: 'Away',     value: 'away',     href: '/en/kampe?filter=away' },
-          { label: 'Results',  value: 'results',  href: '/en/kampe?filter=results' },
+          { label: 'Upcoming', value: 'upcoming', href: '/en/matches' },
+          { label: 'Home',     value: 'home',     href: '/en/matches?filter=home' },
+          { label: 'Away',     value: 'away',     href: '/en/matches?filter=away' },
+          { label: 'Results',  value: 'results',  href: '/en/matches?filter=results' },
         ].map(tab => (
           <a
             href={tab.href}

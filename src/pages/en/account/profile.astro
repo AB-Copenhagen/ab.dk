@@ -5,7 +5,7 @@ export const prerender = false;
 
 const sessionToken = Astro.cookies.get('DS')?.value;
 if (!sessionToken) {
-  return Astro.redirect('/en/konto?redirect=/en/konto/profil');
+  return Astro.redirect('/en/account?redirect=/en/account/profile');
 }
 
 let name = '';
@@ -74,7 +74,7 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
       });
       document.getElementById('logout-btn')?.addEventListener('click', () => {
         document.cookie = 'DS=; Max-Age=0; path=/';
-        location.href = '/en/konto';
+        location.href = '/en/account';
       });
     </script>
   )}
@@ -82,7 +82,7 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
     <script>
       document.getElementById('logout-btn')?.addEventListener('click', () => {
         document.cookie = 'DS=; Max-Age=0; path=/';
-        location.href = '/en/konto';
+        location.href = '/en/account';
       });
     </script>
   )}

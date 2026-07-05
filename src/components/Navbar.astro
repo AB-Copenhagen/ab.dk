@@ -70,7 +70,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
       <div class="w-px h-4 bg-white/20 shrink-0"></div>
       <!-- Login -->
       <a
-        href={enPrefix + '/konto'}
+        href={enPrefix + (locale === 'en' ? '/account' : '/konto')}
         class="flex items-center gap-2 text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity">
         Login
         <svg

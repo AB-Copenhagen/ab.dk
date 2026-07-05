@@ -85,8 +85,14 @@ const matchTimeStr = nextMatch
 function articlePath(slug: string) {
   return locale === 'en' ? `/en/blog/${slug}` : `/blog/${slug}`;
 }
-function localPath(path: string) {
-  return locale === 'en' ? `/en${path}` : path;
+const enSlugs: Record<string, string> = {
+  '/kampe': '/matches',
+  '/hold': '/squad',
+  '/nyheder': '/news',
+};
+function localPath(daPath: string) {
+  if (locale !== 'en') return daPath;
+  return `/en${enSlugs[daPath] ?? daPath}`;
 }
 
 const products = [

@@ -112,15 +112,15 @@ const en: NavConfig = {
     ],
   },
   primary: [
-    { label: 'Team', href: '/hold' },
-    { label: 'Matches', href: '/kampe' },
-    { label: 'News', href: '/nyheder' },
+    { label: 'Team', href: '/squad' },
+    { label: 'Matches', href: '/matches' },
+    { label: 'News', href: '/news' },
     {
       label: 'About',
-      href: '/om/historik',
+      href: '/about/history',
       children: [
-        { label: 'History', href: '/om/historik' },
-        { label: 'Stadium', href: '/om/stadion' },
+        { label: 'History', href: '/about/history' },
+        { label: 'Stadium', href: '/about/stadium' },
         { label: 'Leadership', href: '/om/ledelse' },
         { label: 'Media Resources', href: '/om/medier' },
         { label: 'Contact', href: '/om/kontakt' },

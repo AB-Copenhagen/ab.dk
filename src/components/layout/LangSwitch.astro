@@ -1,4 +1,6 @@
 ---
+import { switchLocalePath } from '@/lib/i18n';
+
 interface Props {
   locale: 'da' | 'en';
   class?: string;
@@ -6,11 +8,9 @@ interface Props {
 
 const { locale, class: cls = '' } = Astro.props;
 
-// Build the switched-locale URL by adding/removing /en prefix
 const currentPath = Astro.url.pathname;
-const switchedPath = locale === 'da'
-  ? `/en${currentPath}`
-  : currentPath.replace(/^\/en/, '') || '/';
+const targetLocale = locale === 'da' ? 'en' : 'da';
+const switchedPath = switchLocalePath(currentPath, targetLocale);
 ---
 
 <a

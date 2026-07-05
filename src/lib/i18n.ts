@@ -4,8 +4,46 @@ export function getLocale(url: URL): Locale {
   return url.pathname.startsWith('/en') ? 'en' : 'da';
 }
 
-export function localePath(locale: Locale, path: string): string {
-  return locale === 'en' ? `/en${path}` : path;
+// DA slug → EN slug mapping (exact paths; prefix entries end with '/')
+const daToEn: Record<string, string> = {
+  '/kampe': '/matches',
+  '/hold': '/squad',
+  '/nyheder': '/news',
+  '/om/historik': '/about/history',
+  '/om/stadion': '/about/stadium',
+  '/kamp/': '/match/',
+  '/spiller/': '/player/',
+  '/stab/': '/staff/',
+  '/konto': '/account',
+  '/konto/profil': '/account/profile',
+};
+
+const enToDa: Record<string, string> = Object.fromEntries(
+  Object.entries(daToEn).map(([k, v]) => [v, k])
+);
+
+function translateSlug(path: string, map: Record<string, string>): string {
+  if (path in map) return map[path];
+  for (const [from, to] of Object.entries(map)) {
+    if (from.endsWith('/') && path.startsWith(from)) {
+      return to + path.slice(from.length);
+    }
+  }
+  return path;
+}
+
+export function localePath(locale: Locale, daPath: string): string {
+  if (locale !== 'en') return daPath;
+  return `/en${translateSlug(daPath, daToEn)}`;
+}
+
+/** Returns the URL for the current page translated to targetLocale. */
+export function switchLocalePath(currentPath: string, targetLocale: Locale): string {
+  if (targetLocale === 'en') {
+    return `/en${translateSlug(currentPath, daToEn)}`;
+  }
+  const enPath = currentPath.replace(/^\/en/, '') || '/';
+  return translateSlug(enPath, enToDa);
 }
 
 // UI strings dictionary
