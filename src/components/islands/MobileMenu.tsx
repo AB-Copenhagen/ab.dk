@@ -7,6 +7,7 @@ interface Props {
   nav: NavConfig;
   locale: string;
   enPrefix: string;
+  switchedLocalePath?: string;
   toggleId?: string;
 }
 
@@ -14,6 +15,7 @@ export default function MobileMenu({
   nav,
   locale,
   enPrefix,
+  switchedLocalePath,
   toggleId = 'mobile-menu-open-btn',
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -112,7 +114,7 @@ export default function MobileMenu({
 
             <div className="mt-6">
               <a
-                href={locale === 'da' ? '/en' : '/'}
+                href={switchedLocalePath ?? (locale === 'da' ? '/en' : '/')}
                 className="text-xs font-bold uppercase text-white/30 tracking-[0.18em]"
                 onClick={() => setOpen(false)}
               >

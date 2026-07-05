@@ -2,7 +2,7 @@
 import MobileMenu from './islands/MobileMenu';
 import SearchModal from './islands/SearchModal';
 import { getNavConfig, isNavItemActive } from '@/lib/nav-config';
-import { translate, type Locale } from '@/lib/i18n';
+import { translate, switchLocalePath, type Locale } from '@/lib/i18n';
 
 interface Props {
   locale?: Locale;
@@ -12,8 +12,8 @@ const { locale = 'da' } = Astro.props;
 const nav = getNavConfig(locale);
 const enPrefix = locale === 'en' ? '/en' : '';
 const currentPath = Astro.url.pathname;
-const daPath = currentPath.replace(/^\/en/, '') || '/';
-const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
+const daPath = switchLocalePath(currentPath, 'da');
+const enPath = switchLocalePath(currentPath, 'en');
 ---
 
 <header class="sticky top-0 z-50">
@@ -219,6 +219,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
         nav={nav}
         locale={locale}
         enPrefix={enPrefix}
+        switchedLocalePath={locale === 'da' ? enPath : daPath}
         toggleId="mobile-menu-open-btn"
       />
       <SearchModal
