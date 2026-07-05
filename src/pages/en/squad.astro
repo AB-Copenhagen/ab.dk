@@ -47,7 +47,7 @@ for (const p of players) {
 <Base
   locale="en"
   title="The Squad | Akademisk Boldklub">
-  <div style="background:#fff">
+  <div class="bg-white">
     <!-- Squad banner (image with embedded title) -->
     <div class="w-full">
       <img
@@ -61,9 +61,7 @@ for (const p of players) {
     <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 lg:py-14">
       {
         players.length === 0 ? (
-          <p
-            class="text-center py-24 text-sm"
-            style="color:#9CA3AF">
+          <p class="text-center py-24 text-sm text-gray-400">
             Squad information is currently unavailable.
           </p>
         ) : (
@@ -73,8 +71,8 @@ for (const p of players) {
             return (
               <section class="mb-14">
                 <h2
-                  class="font-black mb-6"
-                  style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; color:#111; text-transform:none;">
+                  class="font-black mb-6 text-[#111]"
+                  style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; text-transform:none;">
                   {POSITION_GROUPS[key]}
                 </h2>
                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-3 md:gap-x-7">
@@ -93,8 +91,8 @@ for (const p of players) {
       <!-- Coaching Staff -->
       <section class="mb-14">
         <h2
-          class="font-black mb-6"
-          style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; color:#111; text-transform:none;">
+          class="font-black mb-6 text-[#111]"
+          style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; text-transform:none;">
           Coaching Staff
         </h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-3 md:gap-x-7">
@@ -104,7 +102,7 @@ for (const p of players) {
             const lastName = parts.slice(1).join(' ');
             const initials = staffInitials(staff.name);
             return (
-              <a href={`/en/staff/${staff.slug}`} class="relative block group" style="aspect-ratio:593/503;">
+              <a href={`/en/staff/${staff.slug}`} class="relative block group aspect-[593/503]">
                 <div class="absolute inset-x-0 bottom-0 transition-all duration-300 group-hover:brightness-95" style="height:84.1%; background:#EBEBEB;"></div>
                 <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl" style="width:51%;">
                   <img src={staff.photo} alt={staff.name} loading="lazy"
@@ -114,14 +112,14 @@ for (const p of players) {
                 <div class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10"
                      style="height:84.1%; width:53%;">
                   <div>
-                    <p class="font-black leading-tight"
-                       style="font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance; color:#006A52;">
+                    <p class="font-black leading-tight text-ab-green"
+                       style="font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance;">
                       {firstName}<br />{lastName}
                     </p>
                     <p class="text-xs mt-1 font-medium" style="color:rgba(0,106,82,0.6);">{staff.role.en}</p>
                   </div>
-                  <p class="font-black leading-none select-none"
-                     style="font-size:clamp(2.5rem,6.5vw,6.5rem); letter-spacing:-0.04em; color:rgba(0,106,82,0.18);">
+                  <p class="font-black leading-none select-none tracking-[-0.04em]"
+                     style="font-size:clamp(2.5rem,6.5vw,6.5rem); color:rgba(0,106,82,0.18);">
                     {initials}
                   </p>
                 </div>

@@ -15,8 +15,7 @@ const switchedPath = switchLocalePath(currentPath, targetLocale);
 
 <a
   href={switchedPath}
-  class={`text-[0.65rem] font-bold uppercase transition-colors hover:text-white ${cls}`}
-  style="color:rgba(255,255,255,0.35);letter-spacing:0.2em"
+  class={`text-[0.65rem] font-bold uppercase transition-colors hover:text-white text-white/35 tracking-[0.2em] ${cls}`}
   aria-label={locale === 'da' ? 'Switch to English' : 'Skift til dansk'}
 >
   {locale === 'da' ? 'EN' : 'DA'}

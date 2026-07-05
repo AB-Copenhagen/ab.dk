@@ -42,8 +42,8 @@ export default function MobileMenu({
       {open && createPortal(
         <div
           id="mobile-menu-panel"
-          className="fixed inset-x-0 bottom-0 overflow-y-auto"
-          style={{ top: 'var(--nav-height, 92px)', zIndex: 200, background: '#006A52', borderTop: '3px solid #D3BC8D' }}
+          className="fixed inset-x-0 bottom-0 overflow-y-auto bg-ab-green border-t-[3px] border-ab-beige"
+          style={{ top: 'var(--nav-height, 92px)', zIndex: 200 }}
         >
           <nav className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-1">
             {nav.preHeader.left.map((item) => (
@@ -52,19 +52,14 @@ export default function MobileMenu({
                 href={item.href}
                 target={item.external ? '_blank' : undefined}
                 rel={item.external ? 'noreferrer' : undefined}
-                className="text-xs font-bold uppercase py-2 border-b"
-                style={{
-                  color: item.highlight ? '#D6A02A' : 'rgba(255,255,255,0.4)',
-                  borderColor: 'rgba(255,255,255,0.04)',
-                  letterSpacing: '0.18em',
-                }}
+                className={`text-xs font-bold uppercase py-2 border-b tracking-[0.18em] border-white/[0.04] ${item.highlight ? 'text-ab-gold' : 'text-white/40'}`}
                 onClick={() => setOpen(false)}
               >
                 {item.label}
               </a>
             ))}
 
-            <div className="my-3 h-px" style={{ background: '#152214' }} />
+            <div className="my-3 h-px bg-[#152214]" />
 
             {nav.primary.map((item) => (
               <div key={item.href}>
@@ -74,13 +69,12 @@ export default function MobileMenu({
                       onClick={() =>
                         setExpanded(expanded === item.href ? null : item.href)
                       }
-                      className="w-full flex items-center justify-between py-3 text-sm font-bold text-white uppercase"
-                      style={{ letterSpacing: '0.06em' }}
+                      className="w-full flex items-center justify-between py-3 text-sm font-bold text-white uppercase tracking-[0.06em]"
                     >
                       {item.label}
                       <span
+                        className="text-ab-green"
                         style={{
-                          color: '#006A52',
                           transform:
                             expanded === item.href ? 'rotate(180deg)' : 'none',
                           transition: 'transform 0.2s',
@@ -95,11 +89,7 @@ export default function MobileMenu({
                           <a
                             key={child.href}
                             href={enPrefix + child.href}
-                            className="py-2 text-xs"
-                            style={{
-                              color: 'rgba(255,255,255,0.5)',
-                              letterSpacing: '0.04em',
-                            }}
+                            className="py-2 text-xs text-white/50 tracking-[0.04em]"
                             onClick={() => setOpen(false)}
                           >
                             {child.label}
@@ -111,8 +101,7 @@ export default function MobileMenu({
                 ) : (
                   <a
                     href={enPrefix + item.href}
-                    className="block py-3 text-sm font-bold text-white uppercase"
-                    style={{ letterSpacing: '0.06em' }}
+                    className="block py-3 text-sm font-bold text-white uppercase tracking-[0.06em]"
                     onClick={() => setOpen(false)}
                   >
                     {item.label}
@@ -124,11 +113,7 @@ export default function MobileMenu({
             <div className="mt-6">
               <a
                 href={locale === 'da' ? '/en' : '/'}
-                className="text-xs font-bold uppercase"
-                style={{
-                  color: 'rgba(255,255,255,0.3)',
-                  letterSpacing: '0.18em',
-                }}
+                className="text-xs font-bold uppercase text-white/30 tracking-[0.18em]"
                 onClick={() => setOpen(false)}
               >
                 {locale === 'da' ? 'Switch to English' : 'Skift til dansk'}

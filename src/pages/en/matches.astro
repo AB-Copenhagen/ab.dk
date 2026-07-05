@@ -36,13 +36,13 @@ const displayEvents =
     />
     <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 55%, transparent 100%);"></div>
     <div class="absolute inset-0 flex items-end px-8 lg:px-16 pb-10">
-      <h1 class="font-black text-white leading-none" style="font-size:clamp(3.5rem,10vw,8rem); letter-spacing:-0.04em; text-transform:none;">Matches</h1>
+      <h1 class="font-black text-white leading-none tracking-[-0.04em] normal-case" style="font-size:clamp(3.5rem,10vw,8rem);">Matches</h1>
     </div>
   </div>
 
   <!-- Tab bar -->
-  <div style="background:#fff; border-bottom:1px solid #E5E7EB;">
-    <div class="max-w-7xl mx-auto px-8 flex items-center justify-between" style="height:56px;">
+  <div class="bg-white border-b border-[#E5E7EB]">
+    <div class="max-w-7xl mx-auto px-8 flex items-center justify-between h-[56px]">
       <div class="flex items-center gap-1">
         {[
           { label: 'Upcoming', value: 'upcoming', href: '/en/matches' },
@@ -59,25 +59,25 @@ const displayEvents =
       </div>
       <div class="hidden md:flex items-center gap-3">
         <a href="https://billet.ab.dk/" target="_blank" rel="noreferrer" class="btn btn-sm btn-green">Buy Tickets</a>
-        <a href="https://billet.ab.dk/event/seasonal-ticket-pass-26-27-copy-u8hk6v" target="_blank" rel="noreferrer" class="btn btn-sm" style="background:#D3BC8D; color:#006A52;">Buy Season Card</a>
+        <a href="https://billet.ab.dk/event/seasonal-ticket-pass-26-27-copy-u8hk6v" target="_blank" rel="noreferrer" class="btn btn-sm bg-ab-beige text-ab-green">Buy Season Card</a>
       </div>
     </div>
   </div>
 
   <!-- CampoBet Division Banner -->
-  <div style="background:#006A52; padding:0;">
+  <div class="bg-ab-green p-0">
     <div class="max-w-7xl mx-auto px-8">
-      <div class="flex items-center justify-between" style="height:56px;">
+      <div class="flex items-center justify-between h-[56px]">
         <div class="flex items-center gap-3">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <rect width="20" height="20" rx="4" fill="rgba(255,255,255,0.15)"/>
             <path d="M4 6h12M4 10h12M4 14h8" stroke="#D3BC8D" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <span class="font-black text-white text-sm" style="letter-spacing:-0.02em;">Betinia Liga</span>
+          <span class="font-black text-white text-sm tracking-[-0.02em]">Betinia Liga</span>
         </div>
         <div class="flex items-center gap-4">
-          <span class="text-xs hidden sm:block" style="color:rgba(255,255,255,0.7);">Add AB's schedule to your calendar</span>
-          <button class="font-black text-sm px-4 py-1.5 rounded" style="background:#00FF1F; color:#006A52; border:none; cursor:pointer; letter-spacing:-0.02em;">Sync</button>
+          <span class="text-xs hidden sm:block text-white/70">Add AB's schedule to your calendar</span>
+          <button class="font-black text-sm px-4 py-1.5 rounded bg-ab-neon text-ab-green border-0 cursor-pointer tracking-[-0.02em]">Sync</button>
         </div>
       </div>
     </div>
@@ -86,9 +86,9 @@ const displayEvents =
   <MatchList locale={locale} events={displayEvents} filter={filter} />
 
   <!-- Standings section -->
-  <div id="standings" style="background:#EBEBEB; padding:40px 0 48px;">
+  <div id="standings" class="bg-[#EBEBEB] pt-[40px] pb-[48px]">
     <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <h2 class="font-black mb-6" style="font-size:clamp(1.75rem,4vw,2.5rem); letter-spacing:-0.04em; color:#111;">Standings</h2>
+      <h2 class="font-black mb-6 tracking-[-0.04em] text-[#111]" style="font-size:clamp(1.75rem,4vw,2.5rem);">Standings</h2>
       <div>
         <StandingsWidget locale="en" showHeader={false} />
       </div>

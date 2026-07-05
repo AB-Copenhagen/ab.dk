@@ -39,57 +39,57 @@ const lastName = parts.slice(1).join(' ');
          style="right:1%; top:50%; transform:translateY(-50%); z-index:1;
                 width:clamp(280px,29vw,500px); height:auto; opacity:0.45;" />
 
-    <div class="absolute inset-0 flex items-end justify-center pointer-events-none" style="z-index:2;">
+    <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
       <img src={staff.photo} alt={staff.name} loading="eager" class="h-full w-auto max-w-none" />
     </div>
 
     <!-- Name overlay -->
-    <div class="absolute inset-0 flex flex-col justify-end px-8 lg:px-16 pb-10 z-10" style="pointer-events:none;">
+    <div class="absolute inset-0 flex flex-col justify-end px-8 lg:px-16 pb-10 z-10 pointer-events-none">
       <p class="text-white/60 font-black text-sm tracking-widest mb-1" style="letter-spacing:0.12em;">
         {staff.role.da.toUpperCase()}
       </p>
-      <h1 class="font-black text-white leading-none" style="font-size:clamp(2.5rem,7vw,6rem); letter-spacing:-0.04em; text-transform:none;">
+      <h1 class="font-black text-white leading-none tracking-[-0.04em]" style="font-size:clamp(2.5rem,7vw,6rem); text-transform:none;">
         {firstName}<br />{lastName}
       </h1>
     </div>
   </div>
 
   <!-- ── Metadata bar ─────────────────────────────────────────────── -->
-  <div style="background:#006A52; color:#fff;">
+  <div class="bg-ab-green text-white">
     <div class="max-w-7xl mx-auto px-5 md:px-12 flex flex-wrap items-center gap-x-8 gap-y-2 py-4">
       <div>
-        <p class="text-xs font-bold" style="color:rgba(255,255,255,0.5); letter-spacing:0.08em;">ROLLE</p>
+        <p class="text-xs font-bold tracking-[0.08em]" style="color:rgba(255,255,255,0.5);">ROLLE</p>
         <p class="font-black text-sm">{staff.role.da}</p>
       </div>
       <div class="w-px h-8 bg-white/20 hidden sm:block"></div>
       <div>
-        <p class="text-xs font-bold" style="color:rgba(255,255,255,0.5); letter-spacing:0.08em;">NATIONALITET</p>
+        <p class="text-xs font-bold tracking-[0.08em]" style="color:rgba(255,255,255,0.5);">NATIONALITET</p>
         <p class="font-black text-sm">{staff.nationality.da}</p>
       </div>
     </div>
   </div>
 
   <!-- ── Bio ──────────────────────────────────────────────────────── -->
-  <section style="background:#fff;">
+  <section class="bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16">
       <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
         <div>
-          <h2 class="font-black text-xl mb-4" style="color:#111;">Om træneren</h2>
+          <h2 class="font-black text-xl mb-4 text-[#111]">Om træneren</h2>
           {bio ? (
             <div class="space-y-4">
               {bio.split('\n\n').filter(Boolean).map(para => (
-                <p style="color:#444; line-height:1.75; font-size:0.9375rem;">{para}</p>
+                <p class="text-[#444] leading-[1.75] text-[0.9375rem]">{para}</p>
               ))}
             </div>
           ) : (
-            <p style="color:#aaa; font-size:0.875rem; line-height:1.7;">Trænerprofil tilføjes snart.</p>
+            <p class="text-[#aaa] text-[0.875rem] leading-[1.7]">Trænerprofil tilføjes snart.</p>
           )}
         </div>
 
         <!-- Right: decorative initials block -->
-        <div class="hidden lg:flex items-center justify-center" style="min-height:200px;">
-          <span class="font-black select-none"
-                style="font-size:clamp(8rem,16vw,14rem); letter-spacing:-0.05em; color:#EBEBEB; line-height:1;">
+        <div class="hidden lg:flex items-center justify-center min-h-[200px]">
+          <span class="font-black select-none text-[#EBEBEB] leading-[1] tracking-[-0.05em]"
+                style="font-size:clamp(8rem,16vw,14rem);">
             {initials}
           </span>
         </div>

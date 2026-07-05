@@ -104,14 +104,9 @@ export default function SearchModal({ locale }: Props) {
 
   return (
     <div
+      className="fixed inset-0 z-[9999] flex items-start justify-center"
       style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
         background: 'rgba(0,0,0,0.6)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
         paddingTop: 'clamp(60px,12vh,140px)',
       }}
       onClick={(e) => {
@@ -119,32 +114,17 @@ export default function SearchModal({ locale }: Props) {
       }}
     >
       <div
-        style={{
-          background: '#fff',
-          borderRadius: '12px',
-          width: '100%',
-          maxWidth: '580px',
-          margin: '0 16px',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.35)',
-          overflow: 'hidden',
-        }}
+        className="bg-white rounded-[12px] w-full max-w-[580px] mx-[16px] overflow-hidden"
+        style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.35)' }}
       >
         {/* Input row */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: '16px 20px',
-            borderBottom: '1px solid #E5E7EB',
-          }}
-        >
+        <div className="flex items-center gap-[12px] py-[16px] px-[20px] border-b border-[#E5E7EB]">
           <svg
             width="18"
             height="18"
             viewBox="0 0 18 18"
             fill="none"
-            style={{ flexShrink: 0, color: '#888' }}
+            className="shrink-0 text-[#888]"
           >
             <circle
               cx="8"
@@ -171,42 +151,21 @@ export default function SearchModal({ locale }: Props) {
             placeholder={
               locale === 'da' ? 'Søg efter nyheder…' : 'Search news…'
             }
-            style={{
-              flex: 1,
-              border: 'none',
-              outline: 'none',
-              fontSize: '1rem',
-              fontWeight: 600,
-              color: '#111',
-              background: 'transparent',
-              fontFamily: 'inherit',
-            }}
+            className="flex-1 border-none outline-none text-[1rem] font-semibold text-[#111] bg-transparent font-[inherit]"
           />
           {loading && (
             <div
+              className="w-[16px] h-[16px] rounded-full shrink-0"
               style={{
-                width: 16,
-                height: 16,
                 border: '2px solid #E5E7EB',
                 borderTopColor: '#006A52',
-                borderRadius: '50%',
                 animation: 'spin 0.6s linear infinite',
-                flexShrink: 0,
               }}
             />
           )}
           <button
             onClick={closeModal}
-            style={{
-              background: 'none',
-              border: '1px solid #E5E7EB',
-              borderRadius: '6px',
-              padding: '2px 8px',
-              fontSize: '0.7rem',
-              color: '#888',
-              cursor: 'pointer',
-              flexShrink: 0,
-            }}
+            className="bg-none border border-[#E5E7EB] rounded-[6px] py-[2px] px-[8px] text-[0.7rem] text-[#888] cursor-pointer shrink-0"
           >
             ESC
           </button>
@@ -214,27 +173,14 @@ export default function SearchModal({ locale }: Props) {
 
         {/* Results */}
         {results.length > 0 && (
-          <ul
-            style={{
-              listStyle: 'none',
-              margin: 0,
-              padding: '8px 0',
-              maxHeight: '400px',
-              overflowY: 'auto',
-            }}
-          >
+          <ul className="list-none m-0 py-[8px] px-0 max-h-[400px] overflow-y-auto">
             {results.map((r, i) => (
               <li key={r.slug}>
                 <a
                   href={`${blogBase}/${r.slug}`}
+                  className="flex items-center gap-[14px] py-[10px] px-[20px] no-underline transition-[background] duration-150"
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '14px',
-                    padding: '10px 20px',
-                    textDecoration: 'none',
                     background: i === active ? '#F0F9F5' : 'transparent',
-                    transition: 'background 0.15s',
                   }}
                   onMouseEnter={() => setActive(i)}
                 >
@@ -242,76 +188,29 @@ export default function SearchModal({ locale }: Props) {
                     <img
                       src={r.imageUrl}
                       alt=""
-                      style={{
-                        width: 52,
-                        height: 40,
-                        objectFit: 'cover',
-                        borderRadius: '4px',
-                        flexShrink: 0,
-                      }}
+                      className="w-[52px] h-[40px] object-cover rounded-[4px] shrink-0"
                     />
                   ) : (
-                    <div
-                      style={{
-                        width: 52,
-                        height: 40,
-                        background: '#F3F4F6',
-                        borderRadius: '4px',
-                        flexShrink: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
+                    <div className="w-[52px] h-[40px] bg-[#F3F4F6] rounded-[4px] shrink-0 flex items-center justify-center">
                       <span
-                        style={{
-                          fontSize: '1.1rem',
-                          color: 'rgba(0,106,82,0.2)',
-                          fontWeight: 900,
-                        }}
+                        className="text-[1.1rem] font-black"
+                        style={{ color: 'rgba(0,106,82,0.2)' }}
                       >
                         AB
                       </span>
                     </div>
                   )}
-                  <div style={{ minWidth: 0 }}>
+                  <div className="min-w-0">
                     {r.category && (
-                      <p
-                        style={{
-                          fontSize: '0.68rem',
-                          fontWeight: 700,
-                          color: '#006A52',
-                          margin: '0 0 2px',
-                          letterSpacing: '0.04em',
-                        }}
-                      >
+                      <p className="text-[0.68rem] font-bold text-ab-green m-0 mb-[2px] tracking-[0.04em]">
                         {r.category}
                       </p>
                     )}
-                    <p
-                      style={{
-                        fontSize: '0.9rem',
-                        fontWeight: 700,
-                        color: '#111',
-                        margin: 0,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
+                    <p className="text-[0.9rem] font-bold text-[#111] m-0 whitespace-nowrap overflow-hidden text-ellipsis">
                       {r.title}
                     </p>
                     {r.excerpt && (
-                      <p
-                        style={{
-                          fontSize: '0.75rem',
-                          color: '#888',
-                          margin: '2px 0 0',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
+                      <p className="text-[0.75rem] text-[#888] mt-[2px] mb-0 whitespace-nowrap overflow-hidden text-ellipsis">
                         {r.excerpt}
                       </p>
                     )}
@@ -324,15 +223,7 @@ export default function SearchModal({ locale }: Props) {
 
         {/* Empty state */}
         {query.length >= 2 && !loading && results.length === 0 && (
-          <p
-            style={{
-              textAlign: 'center',
-              padding: '24px',
-              color: '#888',
-              fontSize: '0.875rem',
-              margin: 0,
-            }}
-          >
+          <p className="text-center p-[24px] text-[#888] text-[0.875rem] m-0">
             {locale === 'da'
               ? `Ingen resultater for "${query}"`
               : `No results for "${query}"`}
@@ -341,15 +232,7 @@ export default function SearchModal({ locale }: Props) {
 
         {/* Hint */}
         {query.length < 2 && (
-          <p
-            style={{
-              textAlign: 'center',
-              padding: '20px',
-              color: '#bbb',
-              fontSize: '0.8rem',
-              margin: 0,
-            }}
-          >
+          <p className="text-center p-[20px] text-[#bbb] text-[0.8rem] m-0">
             {locale === 'da'
               ? 'Skriv mindst 2 tegn for at søge'
               : 'Type at least 2 characters to search'}

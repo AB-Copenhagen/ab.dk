@@ -25,14 +25,14 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
 ---
 
 <Base locale="en" title="My profile | AB 1889">
-  <main class="min-h-screen px-4 py-24" style="background:#060806">
+  <main class="min-h-screen px-4 py-24 bg-[#060806]">
     <div class="max-w-2xl mx-auto">
 
       <div class="flex items-center gap-4 mb-10">
         {picture ? (
           <img src={picture} alt={name || 'Profile'} class="w-14 h-14 rounded-full object-cover" />
         ) : (
-          <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-black text-lg" style="background:#006A52">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-black text-lg bg-ab-green">
             {(name?.charAt(0) || email?.charAt(0) || '?').toUpperCase()}
           </div>
         )}

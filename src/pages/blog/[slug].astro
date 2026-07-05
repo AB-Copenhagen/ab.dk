@@ -40,7 +40,7 @@ function formatDate(str: string) {
 ---
 
 <Base locale="da" title={`${decodeHtml(article.title)} | Akademisk Boldklub`}>
-  <article style="color:#111;">
+  <article class="text-[#111]">
 
     <!-- ── Header: billede venstre | titel + uddrag + dato højre ── -->
     <div class="grid grid-cols-1 md:grid-cols-2" style="min-height:clamp(340px,45vw,560px);">
@@ -50,30 +50,29 @@ function formatDate(str: string) {
           <img src={strapiMediaUrl(article.image.url)} alt={decodeHtml(article.title)}
                loading="eager" class="absolute inset-0 w-full h-full object-cover object-center" />
         ) : (
-          <div class="absolute inset-0" style="background:#006A52;"></div>
+          <div class="absolute inset-0 bg-ab-green"></div>
         )}
       </div>
       <!-- Højre: centreret indhold på beige -->
-      <div class="flex flex-col items-center justify-center text-center px-10 md:px-16 py-14"
-           style="background:#F4F4F4;">
-        <h1 class="font-black leading-tight mb-6"
-            style="font-size:clamp(2rem,3.5vw,3.5rem); letter-spacing:-0.04em; color:#111; text-align:center;">
+      <div class="flex flex-col items-center justify-center text-center px-10 md:px-16 py-14 bg-[#F4F4F4]">
+        <h1 class="font-black leading-tight mb-6 text-[#111] text-center"
+            style="font-size:clamp(2rem,3.5vw,3.5rem); letter-spacing:-0.04em;">
           {decodeHtml(article.title)}
         </h1>
         {article.description && (
-          <p class="leading-relaxed mb-6"
-             style="font-size:clamp(1rem,1.5vw,1.15rem); color:#111; max-width:440px;">
+          <p class="leading-relaxed mb-6 text-[#111] max-w-[440px]"
+             style="font-size:clamp(1rem,1.5vw,1.15rem);">
             {truncate(decodeHtml(article.description), 220)}
           </p>
         )}
-        <time class="font-bold text-sm" style="color:#111;">
+        <time class="font-bold text-sm text-[#111]">
           {formatDate(article.publishedAt)}
         </time>
       </div>
     </div>
 
     <!-- ── Brødtekst: nav | indhold | sidebar ────────────────────── -->
-    <div style="background:#fff; color:#111;">
+    <div class="bg-white text-[#111]">
       <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-12 md:py-16">
         <div class="grid grid-cols-1 lg:grid-cols-[140px_1fr_320px] gap-10 lg:gap-12 items-start">
 
@@ -81,24 +80,24 @@ function formatDate(str: string) {
           <div class="hidden lg:block pt-1">
             <div class="mb-4">
               {nextArticle ? (
-                <a href={`/blog/${nextArticle.slug}`} class="font-black text-sm hover:underline" style="color:#111;">Næste indlæg</a>
+                <a href={`/blog/${nextArticle.slug}`} class="font-black text-sm hover:underline text-[#111]">Næste indlæg</a>
               ) : (
-                <p class="font-black text-sm" style="color:#9CA3AF;">Næste indlæg</p>
+                <p class="font-black text-sm text-gray-400">Næste indlæg</p>
               )}
             </div>
             <div>
               {prevArticle ? (
-                <a href={`/blog/${prevArticle.slug}`} class="font-black text-sm hover:underline" style="color:#111;">Forrige indlæg</a>
+                <a href={`/blog/${prevArticle.slug}`} class="font-black text-sm hover:underline text-[#111]">Forrige indlæg</a>
               ) : (
-                <p class="font-black text-sm" style="color:#9CA3AF;">Forrige indlæg</p>
+                <p class="font-black text-sm text-gray-400">Forrige indlæg</p>
               )}
             </div>
           </div>
 
           <!-- Centrum: kategori + artikelindhold + del -->
-          <div style="color:#111;">
+          <div class="text-[#111]">
             {article.categories?.[0] && (
-              <p class="font-bold mb-6 underline underline-offset-2" style="font-size:0.85rem; color:#006A52;">
+              <p class="font-bold mb-6 underline underline-offset-2 text-[0.85rem] text-ab-green">
                 {article.categories[0].name}
               </p>
             )}
@@ -114,20 +113,18 @@ function formatDate(str: string) {
               const shareTitle = encodeURIComponent(decodeHtml(article.title));
               return (
                 <div class="mt-10 pt-8 border-t border-gray-200">
-                  <p class="text-xs font-black mb-3" style="color:#111;">Del dette:</p>
+                  <p class="text-xs font-black mb-3 text-[#111]">Del dette:</p>
                   <div class="flex items-center gap-3">
                     <a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
                        target="_blank" rel="noopener noreferrer"
                        aria-label="Del på Facebook"
-                       class="flex items-center justify-center rounded-full transition-opacity hover:opacity-75"
-                       style="width:36px; height:36px; background:#006A52; color:#fff;">
+                       class="flex items-center justify-center rounded-full transition-opacity hover:opacity-75 w-[36px] h-[36px] bg-ab-green text-white">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                     </a>
                     <a href={`https://x.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
                        target="_blank" rel="noopener noreferrer"
                        aria-label="Del på X"
-                       class="flex items-center justify-center rounded-full transition-opacity hover:opacity-75"
-                       style="width:36px; height:36px; background:#006A52; color:#fff;">
+                       class="flex items-center justify-center rounded-full transition-opacity hover:opacity-75 w-[36px] h-[36px] bg-ab-green text-white">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                     </a>
                   </div>
@@ -138,20 +135,20 @@ function formatDate(str: string) {
             <!-- Mobil: næste/forrige -->
             <div class="flex justify-between mt-8 pt-6 border-t border-gray-100 lg:hidden text-sm font-bold">
               {prevArticle ? (
-                <a href={`/blog/${prevArticle.slug}`} style="color:#006A52;">← Forrige</a>
+                <a href={`/blog/${prevArticle.slug}`} class="text-ab-green">← Forrige</a>
               ) : <span />}
               {nextArticle ? (
-                <a href={`/blog/${nextArticle.slug}`} style="color:#006A52;">Næste →</a>
+                <a href={`/blog/${nextArticle.slug}`} class="text-ab-green">Næste →</a>
               ) : <span />}
             </div>
           </div>
 
           <!-- Højre: sidebar widgets -->
           <aside class="sticky top-6 space-y-4">
-            <div style="background:#fff; border:1px solid #E5E7EB; border-radius:4px; overflow:hidden;">
+            <div class="bg-white border border-[#E5E7EB] rounded-[4px] overflow-hidden">
               <FixturesWidget locale="da" limit={10} theme="light" />
             </div>
-            <div style="background:#fff; border:1px solid #E5E7EB; overflow:hidden;">
+            <div class="bg-white border border-[#E5E7EB] overflow-hidden">
               <StandingsWidget locale="da" showHeader={false} />
             </div>
           </aside>
@@ -162,15 +159,15 @@ function formatDate(str: string) {
 
     <!-- ── Relaterede nyheder ─────────────────────────────────── -->
     {related.length > 0 && (
-      <div style="background:#fff; border-top:1px solid #E5E7EB;">
+      <div class="bg-white border-t border-[#E5E7EB]">
         <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-12 md:py-16">
-          <h2 class="font-black mb-8" style="font-size:clamp(1.1rem,1.6vw,1.4rem); letter-spacing:-0.02em; color:#111;">
+          <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.1rem,1.6vw,1.4rem); letter-spacing:-0.02em;">
             Relaterede nyheder
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
             {related.map((a: any) => (
               <a href={`/blog/${a.slug}`} class="group block">
-                <div class="overflow-hidden mb-4" style="aspect-ratio:3/2; background:#F3F4F6;">
+                <div class="overflow-hidden mb-4 aspect-[3/2] bg-[#F3F4F6]">
                   {a.image?.url ? (
                     <img src={strapiMediaUrl(a.image.url)} alt={decodeHtml(a.title)}
                          loading="lazy"
@@ -180,11 +177,11 @@ function formatDate(str: string) {
                   )}
                 </div>
                 {a.categories?.[0] && (
-                  <p class="font-bold mb-2 underline underline-offset-2" style="font-size:0.8rem; color:#006A52;">
+                  <p class="font-bold mb-2 underline underline-offset-2 text-[0.8rem] text-ab-green">
                     {a.categories[0].name}
                   </p>
                 )}
-                <h3 class="font-black leading-snug" style="font-size:clamp(1.1rem,1.8vw,1.5rem); letter-spacing:-0.03em; color:#111;">
+                <h3 class="font-black leading-snug text-[#111]" style="font-size:clamp(1.1rem,1.8vw,1.5rem); letter-spacing:-0.03em;">
                   {decodeHtml(a.title)}
                 </h3>
               </a>

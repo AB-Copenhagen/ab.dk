@@ -78,13 +78,13 @@ function formatDate(dateStr: string) {
             </span>
 
             {isLive && (
-              <span class="inline-flex items-center gap-1 text-xs font-medium uppercase shrink-0" style="color:#00FF1F;letter-spacing:0.1em">
+              <span class="inline-flex items-center gap-1 text-xs font-medium uppercase shrink-0 text-ab-neon tracking-[0.1em]">
                 <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
                 LIVE
               </span>
             )}
             {isFinished && (
-              <span class="text-xs uppercase shrink-0" style={`color:${dateColor};letter-spacing:0.1em`}>FT</span>
+              <span class="text-xs uppercase shrink-0 tracking-[0.1em]" style={`color:${dateColor}`}>FT</span>
             )}
           </div>
         </div>

@@ -27,15 +27,15 @@ const [featured, ...rest] = allArticles;
           class="absolute inset-0 w-full h-full object-cover object-center"
         />
       ) : (
-        <div class="absolute inset-0" style="background:#006A52"></div>
+        <div class="absolute inset-0 bg-ab-green"></div>
       )}
       <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.42) 55%,transparent 100%)"></div>
       <div class="relative h-full max-w-7xl mx-auto px-5 md:px-12 flex items-end pb-14 md:pb-20">
         <div style="max-width:560px">
-          <p class="text-xs font-bold uppercase mb-3" style="color:#00FF1F;letter-spacing:0.2em">
+          <p class="text-xs font-bold uppercase mb-3 text-ab-neon tracking-[0.2em]">
             {featured.categories?.[0]?.name ?? 'Feature'}
           </p>
-          <h1 class="font-black text-white mb-4 leading-none" style="font-size:clamp(1.9rem,4.5vw,3.4rem);letter-spacing:-0.03em">
+          <h1 class="font-black text-white mb-4 leading-none tracking-[-0.03em]" style="font-size:clamp(1.9rem,4.5vw,3.4rem)">
             {decodeHtml(featured.title)}
           </h1>
           {featured.description && (
@@ -43,7 +43,7 @@ const [featured, ...rest] = allArticles;
               {truncate(decodeHtml(featured.description), 160)}
             </p>
           )}
-          <a href={`/en/blog/${featured.slug}`} class="inline-flex items-center px-8 py-3 text-sm font-bold text-black rounded-full transition-opacity hover:opacity-90" style="background:#D3BC8D; letter-spacing:-0.02em;">
+          <a href={`/en/blog/${featured.slug}`} class="inline-flex items-center px-8 py-3 text-sm font-bold text-black rounded-full transition-opacity hover:opacity-90 bg-ab-beige tracking-[-0.02em]">
             Read More
           </a>
         </div>
@@ -51,13 +51,13 @@ const [featured, ...rest] = allArticles;
     </section>
   ) : null}
 
-  <section style="background:#fff">
+  <section class="bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 md:py-16">
       {rest.length > 0 ? (
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-12">
           {rest.map((article: any) => (
             <a href={`/en/blog/${article.slug}`} class="group block">
-              <div class="overflow-hidden mb-4" style="aspect-ratio:4/3;background:#F3F4F6">
+              <div class="overflow-hidden mb-4 aspect-[4/3] bg-[#F3F4F6]">
                 {article.image?.url ? (
                   <img
                     src={strapiMediaUrl(article.image.url)}
@@ -69,17 +69,17 @@ const [featured, ...rest] = allArticles;
                   <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:rgba(0,106,82,0.15)">AB</div>
                 )}
               </div>
-              <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.16em">
+              <p class="text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.16em]">
                 {article.categories?.[0]?.name ?? 'News'}
               </p>
-              <h2 class="font-bold text-base leading-snug" style="color:#111;letter-spacing:-0.01em">
+              <h2 class="font-bold text-base leading-snug text-[#111] tracking-[-0.01em]">
                 {decodeHtml(article.title)}
               </h2>
             </a>
           ))}
         </div>
       ) : (
-        <p class="text-center py-24 text-sm" style="color:#9CA3AF">
+        <p class="text-center py-24 text-sm text-gray-400">
           {featured ? 'No further articles.' : 'No news yet.'}
         </p>
       )}

@@ -71,8 +71,7 @@ const seenDates = new Set<string>();
     {
       events.length === 0 && (
         <div
-          class="text-center py-12 text-sm"
-          style="color:#777;">
+          class="text-center py-12 text-sm text-[#777]">
           {emptyMessage(filter)}
         </div>
       )
@@ -91,21 +90,18 @@ const seenDates = new Set<string>();
         return (
           <div
             id={isFirst ? dateKey : undefined}
-            class="scroll-mt-24 md:scroll-mt-40"
-            style="background:#fff; border:1px solid #E5E7EB; border-radius:4px; overflow:hidden;">
+            class="scroll-mt-24 md:scroll-mt-40 bg-white border border-gray-200 rounded-[4px] overflow-hidden">
             <div
-              class="px-5 py-1.5 flex items-center justify-between"
-              style="background:#F0F4F0; border-bottom:1px solid #E5E7EB;">
+              class="px-5 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200">
               <span
-                class="text-xs font-bold"
-                style={`color:${isABHome ? '#006A52' : '#888'}; letter-spacing:0.04em;`}>
+                class="text-xs font-bold tracking-[0.04em]"
+                style={`color:${isABHome ? '#006A52' : '#888'};`}>
                 {isABHome
                   ? translate(locale, 'homeMatch')
                   : translate(locale, 'awayMatch')}
               </span>
               <span
-                class="text-xs"
-                style="color:#999;">
+                class="text-xs text-[#999]">
                 {translate(locale, 'secondDivision')}
               </span>
             </div>
@@ -134,8 +130,7 @@ const seenDates = new Set<string>();
                     />
                     <span class="match-team-logo-fallback">
                       <span
-                        class="text-xs font-bold"
-                        style="color:#555;">
+                        class="text-xs font-bold text-[#555]">
                         {event.homeName?.slice(0, 3).toUpperCase()}
                       </span>
                     </span>
@@ -153,8 +148,7 @@ const seenDates = new Set<string>();
                     />
                     <span class="match-team-logo-fallback">
                       <span
-                        class="text-xs font-bold"
-                        style="color:#555;">
+                        class="text-xs font-bold text-[#555]">
                         {event.awayName?.slice(0, 3).toUpperCase()}
                       </span>
                     </span>
@@ -204,27 +198,23 @@ const seenDates = new Set<string>();
               </div>
             </div>
             <div
-              class="px-5 py-2.5 flex items-center gap-4"
-              style="border-top:1px solid #F0F0F0;">
+              class="px-5 py-2.5 flex items-center gap-4 border-t border-[#F0F0F0]">
               <span
-                class="text-xs"
-                style="color:#999;">
+                class="text-xs text-[#999]">
                 {translate(locale, 'watchOn')}
               </span>
               <a
                 href="https://abtv.ab.dk"
                 target="_blank"
                 rel="noreferrer"
-                class="text-xs font-bold"
-                style="color:#006A52; text-decoration:none;">
+                class="text-xs font-bold text-ab-green no-underline">
                 {translate(locale, 'watchOnline')}
               </a>
               <a
                 href="https://abtv.ab.dk"
                 target="_blank"
                 rel="noreferrer"
-                class="text-xs font-bold"
-                style="color:#006A52; text-decoration:none;">
+                class="text-xs font-bold text-ab-green no-underline">
                 ABTV
               </a>
             </div>

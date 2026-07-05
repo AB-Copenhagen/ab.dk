@@ -63,18 +63,17 @@ if (dateOfBirth) {
 }
 ---
 
-<div style="background:#fff; border-bottom:1px solid #E5E7EB;">
+<div class="bg-white border-b border-gray-200">
   <div class="flex overflow-x-auto divide-x divide-gray-200">
     {
       cells.map((cell) => (
         <div class="py-5 px-6 flex-1 text-center" style={`min-width:${cell.minWidth};`}>
           <p
-            class="mb-1.5 uppercase"
-            style="font-size:0.65rem; color:#6B7280; letter-spacing:0.14em;"
+            class="mb-1.5 uppercase text-[0.65rem] text-[#6B7280] tracking-[0.14em]"
           >
             {cell.label}
           </p>
-          <p class="font-black" style="font-size:0.9rem; color:#111;">
+          <p class="font-black text-[0.9rem] text-[#111]">
             {cell.value}
           </p>
         </div>

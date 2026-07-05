@@ -63,9 +63,8 @@ const playerHref =
 -->
 <a
   href={playerHref}
-  class="squad-card block relative group"
-  data-position={player.position}
-  style="aspect-ratio:593/503;">
+  class="squad-card block relative group aspect-[593/503]"
+  data-position={player.position}>
   <!-- Position-coloured background rectangle (bottom 84% of card frame) -->
   <div
     class="absolute inset-x-0 bottom-0 transition-all duration-300 group-hover:brightness-110"
@@ -74,8 +73,7 @@ const playerHref =
 
   <!-- Player photo: right 51%, full height of card frame -->
   <div
-    class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl"
-    style="width:51%;">
+    class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[51%]">
     {
       photoUrl ? (
         <img
@@ -91,8 +89,7 @@ const playerHref =
 
   <!-- Text layer: left 53%, pinned to bottom 84% of frame -->
   <div
-    class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10"
-    style="height:84.1%; width:53%;">
+    class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10 h-[84.1%] w-[53%]">
     <!-- Name + position -->
     <div>
       <p

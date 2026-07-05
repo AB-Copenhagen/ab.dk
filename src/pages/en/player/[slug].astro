@@ -86,7 +86,7 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
 
     <!-- Player photo (no side gradients) -->
     {photoUrl && (
-      <div class="absolute inset-0 flex items-end justify-center pointer-events-none" style="z-index:2;">
+      <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
         <img src={photoUrl} alt={name} loading="eager" class="h-full w-auto max-w-none" />
       </div>
     )}
@@ -111,30 +111,29 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
   />
 
   <!-- ── Bio + Latest Results ───────────────────────────────────────── -->
-  <section style="background:#fff;">
+  <section class="bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16">
       <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
 
         <!-- Left: Player Bio + Quote -->
         <div>
-          <h2 class="font-black text-xl mb-4" style="color:#111;">Player Bio</h2>
+          <h2 class="font-black text-xl mb-4 text-[#111]">Player Bio</h2>
           {cmsPlayer?.bio ? (
             <div class="space-y-4">
               {cmsPlayer.bio.split('\n\n').filter(Boolean).map(para => (
-                <p style="color:#444; line-height:1.75; font-size:0.9375rem;">{para}</p>
+                <p class="text-[#444] leading-[1.75] text-[0.9375rem]">{para}</p>
               ))}
             </div>
           ) : (
-            <p style="color:#aaa; font-size:0.875rem; line-height:1.7;">
+            <p class="text-[#aaa] text-[0.875rem] leading-[1.7]">
               Player bio coming soon.
             </p>
           )}
           {cmsPlayer?.quote && (
             <div class="relative mt-8 pl-3">
-              <span aria-hidden="true" class="absolute top-0 left-0 font-black leading-none select-none pointer-events-none"
-                    style="font-size:5rem; color:#D3BC8D; opacity:0.25; line-height:1;">&ldquo;</span>
-              <blockquote class="relative font-medium italic leading-snug pt-5"
-                          style="font-size:clamp(1.1rem,2vw,1.5rem); color:#006A52; letter-spacing:-0.01em;">
+              <span aria-hidden="true" class="absolute top-0 left-0 font-black leading-none select-none pointer-events-none text-[5rem] text-ab-beige opacity-25">&ldquo;</span>
+              <blockquote class="relative font-medium italic leading-snug pt-5 text-ab-green tracking-[-0.01em]"
+                          style="font-size:clamp(1.1rem,2vw,1.5rem);">
                 {cmsPlayer.quote}
               </blockquote>
             </div>
@@ -152,7 +151,7 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
   {galleryImages.length > 0 && (
     <section>
       <!-- Full-width first image -->
-      <div class="w-full overflow-hidden" style="aspect-ratio:16/7;">
+      <div class="w-full overflow-hidden aspect-[16/7]">
         <img
           src={galleryImages[0].src}
           alt={galleryImages[0].alternativeText ?? name}
@@ -163,7 +162,7 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
       {galleryImages.length > 1 && (
         <div class="grid grid-cols-3">
           {galleryImages.slice(1, 4).map(img => (
-            <div class="overflow-hidden" style="aspect-ratio:1/1;">
+            <div class="overflow-hidden aspect-square">
               <img
                 src={img.src}
                 alt={img.alternativeText ?? name}
