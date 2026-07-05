@@ -48,6 +48,9 @@
     'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-sans:
     'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Body copy size — edit here to change all body text at once */
+  --text-body: 1.0625rem;
 }
 
 @utility text-banner-subtitle {
