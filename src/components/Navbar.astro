@@ -220,6 +220,7 @@ const enPath = switchLocalePath(currentPath, 'en');
         locale={locale}
         enPrefix={enPrefix}
         switchedLocalePath={locale === 'da' ? enPath : daPath}
+        loginHref={enPrefix + (locale === 'en' ? '/account' : '/konto')}
         toggleId="mobile-menu-open-btn"
       />
       <SearchModal
