@@ -47,27 +47,26 @@ const WIDGET_SEASON_ID = 16387;
 ---
 
 <Base locale="da" title={pageTitle}>
-  <div style="background:#fff">
+  <div class="bg-white">
     <div class="border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-5 md:px-12">
         <div class="pt-10 pb-8">
           <a
             href="/kampe"
-            class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8 hover:underline"
-            style="color:#006A52;letter-spacing:0.15em"
+            class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8 hover:underline text-ab-green tracking-[0.15em]"
           >
             ← Alle kampe
           </a>
-          <p class="text-xs font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
+          <p class="text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
             {tournamentName}
           </p>
           <h1
-            class="font-black"
-            style="font-size:clamp(2rem,6vw,4rem);letter-spacing:-0.03em;line-height:0.95;color:#111"
+            class="font-black text-[#111]"
+            style="font-size:clamp(2rem,6vw,4rem);letter-spacing:-0.03em;line-height:0.95"
           >
-            {homeName} <span style="color:#006A52">vs</span> {awayName}
+            {homeName} <span class="text-ab-green">vs</span> {awayName}
           </h1>
-          <p class="mt-3 text-sm" style="color:#6B7280">{matchDate}</p>
+          <p class="mt-3 text-sm text-[#6B7280]">{matchDate}</p>
           {score && (
             <p
               class="mt-3 text-2xl font-black tabular-nums"
@@ -75,14 +74,14 @@ const WIDGET_SEASON_ID = 16387;
             >
               {score}
               {isLive && (
-                <span class="ml-3 inline-flex items-center gap-1.5 text-sm font-bold uppercase" style="color:#00FF1F;letter-spacing:0.1em">
+                <span class="ml-3 inline-flex items-center gap-1.5 text-sm font-bold uppercase text-ab-neon tracking-[0.1em]">
                   <span class="w-2 h-2 rounded-full bg-current animate-pulse"></span>
                   LIVE
                 </span>
               )}
             </p>
           )}
-          <div class="mt-5 h-0.5 w-12" style="background:#006A52"></div>
+          <div class="mt-5 h-0.5 w-12 bg-ab-green"></div>
         </div>
       </div>
     </div>
@@ -90,7 +89,7 @@ const WIDGET_SEASON_ID = 16387;
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14 space-y-16">
 
       <section>
-        <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+        <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
           <SiWidget
             widget="SPDKMatchPageHeader"
             params={{ eventId, showTicketBtn: 'true', provider: 'unibet', teamId: WIDGET_TEAM_ID }}
@@ -101,22 +100,22 @@ const WIDGET_SEASON_ID = 16387;
       </section>
 
       <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
           Analyse
         </p>
         <h2
-          class="font-black mb-8"
-          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em;color:#111"
+          class="font-black mb-8 text-[#111]"
+          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
         >
           Før kampen
         </h2>
 
         <div class="space-y-6">
           <div>
-            <h3 class="text-[0.6rem] font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.18em">
+            <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">
               Formguide
             </h3>
-            <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
               <SiWidget
                 widget="MTSFormH2HSnap"
                 params={{ eventId, acrossAllTournaments: 'true', teamId: WIDGET_TEAM_ID }}
@@ -127,10 +126,10 @@ const WIDGET_SEASON_ID = 16387;
           </div>
 
           <div>
-            <h3 class="text-[0.6rem] font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.18em">
+            <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">
               Indbyrdes opgør
             </h3>
-            <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
               <SiWidget
                 widget="H2HTeams"
                 params={{ eventId, teamId: WIDGET_TEAM_ID }}
@@ -141,10 +140,10 @@ const WIDGET_SEASON_ID = 16387;
           </div>
 
           <div>
-            <h3 class="text-[0.6rem] font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.18em">
+            <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">
               Stilling
             </h3>
-            <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
               <SiWidget
                 widget="SPDKTournamentTable"
                 params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, teamId: WIDGET_TEAM_ID }}
@@ -155,10 +154,10 @@ const WIDGET_SEASON_ID = 16387;
           </div>
 
           <div>
-            <h3 class="text-[0.6rem] font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.18em">
+            <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">
               Sjove statistikker
             </h3>
-            <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
               <SiWidget
                 widget="EventTeamFunStats"
                 params={{ eventId, fault: 2, limit: 10, teamId: WIDGET_TEAM_ID }}
@@ -171,16 +170,16 @@ const WIDGET_SEASON_ID = 16387;
       </section>
 
       <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
           Hold
         </p>
         <h2
-          class="font-black mb-8"
-          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em;color:#111"
+          class="font-black mb-8 text-[#111]"
+          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
         >
           Opstilling
         </h2>
-        <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+        <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
           <SiWidget
             widget="SPDKLineup"
             params={{ eventId, teamId: WIDGET_TEAM_ID }}
@@ -191,12 +190,12 @@ const WIDGET_SEASON_ID = 16387;
       </section>
 
       <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
           {isLive ? 'Live nu' : isFinished ? 'Kampreferat' : 'Under kampen'}
         </p>
         <h2
-          class="font-black mb-8"
-          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em;color:#111"
+          class="font-black mb-8 text-[#111]"
+          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
         >
           {isLive ? (
             <span class="inline-flex items-center gap-3">
@@ -208,10 +207,10 @@ const WIDGET_SEASON_ID = 16387;
 
         <div class="space-y-6">
           <div>
-            <h3 class="text-[0.6rem] font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.18em">
+            <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">
               Momentum
             </h3>
-            <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
               <SiWidget
                 widget="MatchMomentum"
                 params={{ eventId, teamId: WIDGET_TEAM_ID }}
@@ -222,10 +221,10 @@ const WIDGET_SEASON_ID = 16387;
           </div>
 
           <div>
-            <h3 class="text-[0.6rem] font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.18em">
+            <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">
               Hændelser
             </h3>
-            <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
               <SiWidget
                 widget="IncidentListOpta"
                 params={{ eventId, header: 'true', card: 'true', initialCollapse: 'false', teamId: WIDGET_TEAM_ID }}
@@ -236,10 +235,10 @@ const WIDGET_SEASON_ID = 16387;
           </div>
 
           <div>
-            <h3 class="text-[0.6rem] font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.18em">
+            <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">
               Kampstatistik
             </h3>
-            <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
               <SiWidget
                 widget="LivePostMatchStatsOpta"
                 params={{ eventId, header: 'false', teamId: WIDGET_TEAM_ID }}
@@ -250,10 +249,10 @@ const WIDGET_SEASON_ID = 16387;
           </div>
 
           <div>
-            <h3 class="text-[0.6rem] font-bold uppercase mb-3" style="color:#9CA3AF;letter-spacing:0.18em">
+            <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">
               xG — Forventede mål
             </h3>
-            <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
               <SiWidget
                 widget="TwoTeamsXGoalsPitch"
                 params={{
@@ -272,16 +271,16 @@ const WIDGET_SEASON_ID = 16387;
       </section>
 
       <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2" style="color:#006A52;letter-spacing:0.2em">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
           Video
         </p>
         <h2
-          class="font-black mb-8"
-          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em;color:#111"
+          class="font-black mb-8 text-[#111]"
+          style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
         >
           Højdepunkter
         </h2>
-        <div style="background:#060806;border:1px solid #152214;overflow:hidden">
+        <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
           <SiWidget
             widget="SPDKMatchVideo"
             params={{ eventId, teamId: WIDGET_TEAM_ID, seasonId: WIDGET_SEASON_ID }}

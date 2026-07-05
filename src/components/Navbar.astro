@@ -2,7 +2,7 @@
 import MobileMenu from './islands/MobileMenu';
 import SearchModal from './islands/SearchModal';
 import { getNavConfig, isNavItemActive } from '@/lib/nav-config';
-import { translate, type Locale } from '@/lib/i18n';
+import { translate, switchLocalePath, type Locale } from '@/lib/i18n';
 
 interface Props {
   locale?: Locale;
@@ -12,22 +12,20 @@ const { locale = 'da' } = Astro.props;
 const nav = getNavConfig(locale);
 const enPrefix = locale === 'en' ? '/en' : '';
 const currentPath = Astro.url.pathname;
-const daPath = currentPath.replace(/^\/en/, '') || '/';
-const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
+const daPath = switchLocalePath(currentPath, 'da');
+const enPath = switchLocalePath(currentPath, 'en');
 ---
 
 <header class="sticky top-0 z-50">
   <!-- Utility bar: 45px, black -->
   <div
-    class="nav-utility hidden md:flex items-center"
-    style="background:#0A0A09;">
+    class="nav-utility hidden md:flex items-center bg-[#0A0A09]">
     <!-- Neon ABTV block -->
     <a
       href="https://abtv.ab.dk"
       target="_blank"
       rel="noreferrer"
-      class="flex items-center justify-center shrink-0 h-full font-black"
-      style="background:#00FF1F; width:171px; color:#006A52; text-decoration:none; font-size:15px; letter-spacing:-0.04em;">
+      class="flex items-center justify-center shrink-0 h-full font-black bg-ab-neon w-[171px] text-ab-green no-underline text-[15px] tracking-[-0.04em]">
       ABTV
     </a>
     <!-- Utility links -->
@@ -70,7 +68,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
       <div class="w-px h-4 bg-white/20 shrink-0"></div>
       <!-- Login -->
       <a
-        href={enPrefix + '/konto'}
+        href={enPrefix + (locale === 'en' ? '/account' : '/konto')}
         class="flex items-center gap-2 text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity">
         Login
         <svg
@@ -160,13 +158,11 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
               {item.children && (
                 <div class="absolute top-full left-0 hidden group-hover:block z-50 pt-3">
                   <div
-                    class="min-w-[200px] shadow-2xl"
-                    style="background:#004A3A; border-top:3px solid #D3BC8D;">
+                    class="min-w-[200px] shadow-2xl bg-[#004A3A] border-t-[3px] border-ab-beige">
                     {item.children.map((child) => (
                       <a
                         href={enPrefix + child.href}
-                        class="block px-5 py-3 font-black text-sm hover:bg-white/10 transition-colors"
-                        style="color:rgba(255,255,255,0.8); text-decoration:none; letter-spacing:-0.02em;">
+                        class="block px-5 py-3 font-black text-sm hover:bg-white/10 transition-colors text-white/80 no-underline tracking-[-0.02em]">
                         {child.label}
                       </a>
                     ))}
@@ -183,8 +179,7 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
     <div class="flex flex-1 items-center justify-end gap-3 min-w-0 shrink-0">
       <button
         id="search-open-btn"
-        class="hidden lg:flex items-center gap-2 font-black text-sm"
-        style="background:rgba(15,148,118,0.5); color:#fff; border:none; border-radius:22px; padding:10px 20px; cursor:pointer; letter-spacing:-0.03em;"
+        class="hidden lg:flex items-center gap-2 font-black text-sm bg-[rgba(15,148,118,0.5)] text-white border-none rounded-[22px] px-5 py-[10px] cursor-pointer tracking-[-0.03em]"
         aria-label={translate(locale, 'search')}>
         <svg
           width="14"
@@ -224,6 +219,8 @@ const enPath = '/en' + (currentPath.replace(/^\/en/, '') || '/');
         nav={nav}
         locale={locale}
         enPrefix={enPrefix}
+        switchedLocalePath={locale === 'da' ? enPath : daPath}
+        loginHref={enPrefix + (locale === 'en' ? '/account' : '/konto')}
         toggleId="mobile-menu-open-btn"
       />
       <SearchModal

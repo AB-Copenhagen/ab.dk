@@ -23,15 +23,15 @@ const uid = `siw-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <div
-  class="si-widget-wrapper"
-  style={`position:relative;width:100%;min-height:${minHeight}px;overflow:hidden;`}
+  class="si-widget-wrapper relative w-full overflow-hidden"
+  style={`min-height:${minHeight}px`}
   data-uid={uid}
 >
   {/* Green shimmer placeholder shown until IntersectionObserver fires */}
   <div
-    class="si-widget-shimmer"
+    class="si-widget-shimmer absolute inset-0"
     aria-hidden="true"
-    style="position:absolute;inset:0;background:linear-gradient(90deg,#0D1A10 25%,#122718 50%,#0D1A10 75%);background-size:200% 100%;animation:siShimmer 1.6s ease-in-out infinite;"
+    style="background:linear-gradient(90deg,#0D1A10 25%,#122718 50%,#0D1A10 75%);background-size:200% 100%;animation:siShimmer 1.6s ease-in-out infinite;"
   ></div>
 
   <iframe
@@ -41,7 +41,8 @@ const uid = `siw-${Math.random().toString(36).slice(2, 9)}`;
     height="100%"
     allowfullscreen
     aria-label={label ?? widget}
-    style={`position:relative;z-index:1;display:block;min-height:${minHeight}px;border:0;`}
+    class="relative z-[1] block border-0"
+    style={`min-height:${minHeight}px`}
     title={label ?? widget}
   ></iframe>
 </div>

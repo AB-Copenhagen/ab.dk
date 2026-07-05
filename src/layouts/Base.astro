@@ -41,7 +41,7 @@ try {
     <link rel="alternate" hreflang="da" href={Astro.url.href.replace('/en', '')} />
     <link rel="alternate" hreflang="en" href={Astro.url.href.includes('/en') ? Astro.url.href : `/en${Astro.url.pathname}`} />
   </head>
-  <body class="min-h-screen" style="background:#fff; color:#111;">
+  <body class="min-h-screen bg-white text-[#111]">
     <Navbar locale={locale} />
     <main>
       <slot />

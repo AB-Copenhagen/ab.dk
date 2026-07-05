@@ -93,7 +93,7 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
             onChange={(e) => setSearch(e.target.value)}
             placeholder={locale === 'da' ? 'Søg i nyheder…' : 'Search news…'}
             className="w-full pl-9 pr-3 py-2 text-sm bg-transparent border text-white focus:outline-none transition-colors"
-            style={{ borderColor: T.border, color: 'white' }}
+            style={{ borderColor: T.border }}
             onFocus={(e) => (e.target.style.borderColor = T.green)}
             onBlur={(e) => (e.target.style.borderColor = T.border)}
           />
@@ -111,7 +111,6 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
               key={article.slug + i}
               href={`${basePath}${article.slug}`}
               className="flex md:flex-row flex-col items-start justify-between md:items-center group py-5 gap-4"
-              style={{ display: 'flex' }}
             >
               <div className="flex-1 min-w-0">
                 <p
@@ -141,12 +140,8 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
                   {article.categories?.map((cat, idx) => (
                     <span
                       key={idx}
-                      className="text-[0.6rem] font-bold uppercase px-2 py-0.5"
-                      style={{
-                        color: T.green,
-                        background: 'rgba(0,106,82,0.1)',
-                        letterSpacing: '0.1em',
-                      }}
+                      className="text-[0.6rem] font-bold uppercase px-2 py-0.5 text-ab-green tracking-[0.1em]"
+                      style={{ background: 'rgba(0,106,82,0.1)' }}
                     >
                       {cat.name}
                     </span>
@@ -154,8 +149,7 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
                 </div>
               </div>
               <span
-                className="text-sm font-bold shrink-0 transition-transform group-hover:translate-x-1"
-                style={{ color: T.green }}
+                className="text-sm font-bold shrink-0 transition-transform group-hover:translate-x-1 text-ab-green"
               >
                 →
               </span>

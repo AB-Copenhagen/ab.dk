@@ -63,20 +63,15 @@ export default function SiWidget({
 
   return (
     <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        minHeight: `${minHeight}px`,
-        overflow: 'hidden',
-      }}
+      className="relative w-full overflow-hidden"
+      style={{ minHeight: `${minHeight}px` }}
     >
       {/* Green shimmer placeholder */}
       <div
         ref={shimmerRef}
         aria-hidden="true"
+        className="absolute inset-0"
         style={{
-          position: 'absolute',
-          inset: 0,
           background:
             'linear-gradient(90deg,#0D1A10 25%,#122718 50%,#0D1A10 75%)',
           backgroundSize: '200% 100%',
@@ -96,13 +91,8 @@ export default function SiWidget({
         allowFullScreen
         aria-label={label ?? widget}
         title={label ?? widget}
-        style={{
-          position: 'relative',
-          zIndex: 1,
-          display: 'block',
-          minHeight: `${minHeight}px`,
-          border: 0,
-        }}
+        className="relative z-[1] block border-0"
+        style={{ minHeight: `${minHeight}px` }}
       />
     </div>
   );
