@@ -228,36 +228,13 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               </div>
             </div>
 
-            <div class="relative z-10 px-4 pb-4 space-y-0.5">
+            <div class="relative z-10 px-4 pb-5 space-y-0.5">
               <p class="text-xs text-[#555]">
                 {fmtGridDate(event.startDate)} · {fmtTime(event.startDate)}
               </p>
               <p class="text-xs text-[#999] truncate">{venue}</p>
             </div>
 
-            {isABHome && (
-              <div class="relative z-10 px-4 pb-4">
-                <a
-                  href="https://billet.ab.dk/"
-                  target="_blank"
-                  rel="noreferrer"
-                  class="inline-flex items-center gap-1.5 text-xs font-bold rounded px-3 py-1.5 border transition-colors hover:bg-ab-green hover:text-white hover:border-ab-green"
-                  style="color:#006A52;border-color:#006A52;">
-                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/>
-                    <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2"/>
-                  </svg>
-                  {translate(locale, 'tickets')}
-                </a>
-              </div>
-            )}
-
-            <div class="relative z-10 mt-auto px-4 py-2.5 flex items-center gap-3 border-t border-[#F0F0F0]">
-              <a href="https://abtv.ab.dk" target="_blank" rel="noreferrer" class="text-xs font-bold text-ab-green no-underline">ABTV</a>
-              <span class="ml-auto text-xs font-bold text-[#444] transition-colors group-hover:text-ab-green">
-                {locale === 'en' ? 'View →' : 'Se →'}
-              </span>
-            </div>
           </div>
         );
       })}
