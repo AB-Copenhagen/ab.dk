@@ -90,9 +90,15 @@ const seenDates = new Set<string>();
         return (
           <div
             id={isFirst ? dateKey : undefined}
-            class="scroll-mt-24 md:scroll-mt-40 bg-white border border-gray-200 rounded-[4px] overflow-hidden">
+            class="group relative scroll-mt-24 md:scroll-mt-40 bg-white border border-gray-200 rounded-[4px] overflow-hidden transition-all duration-150 hover:border-gray-300 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
+            {/* Stretched link — covers the whole card; interactive elements sit above it via z-10 */}
+            <a
+              href={`${locale === 'en' ? '/en/match' : '/kamp'}/${event.eventId}`}
+              class="absolute inset-0 z-0"
+              aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${homeName} vs ${awayName}`}
+            />
             <div
-              class="px-5 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200">
+              class="relative z-10 px-5 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200">
               <span
                 class="text-xs font-bold tracking-[0.04em]"
                 style={`color:${isABHome ? '#006A52' : '#888'};`}>
@@ -160,7 +166,7 @@ const seenDates = new Set<string>();
                 </div>
               </div>
 
-              <div class="match-card-action">
+              <div class="match-card-action relative z-10">
                 {isABHome ? (
                   <a
                     href="https://billet.ab.dk/"
@@ -198,7 +204,7 @@ const seenDates = new Set<string>();
               </div>
             </div>
             <div
-              class="px-5 py-2.5 flex items-center gap-4 border-t border-[#F0F0F0]">
+              class="relative z-10 px-5 py-2.5 flex items-center gap-4 border-t border-[#F0F0F0]">
               <span
                 class="text-xs text-[#999]">
                 {translate(locale, 'watchOn')}
@@ -207,21 +213,19 @@ const seenDates = new Set<string>();
                 href="https://abtv.ab.dk"
                 target="_blank"
                 rel="noreferrer"
-                class="text-xs font-bold text-ab-green no-underline">
+                class="relative z-10 text-xs font-bold text-ab-green no-underline">
                 {translate(locale, 'watchOnline')}
               </a>
               <a
                 href="https://abtv.ab.dk"
                 target="_blank"
                 rel="noreferrer"
-                class="text-xs font-bold text-ab-green no-underline">
+                class="relative z-10 text-xs font-bold text-ab-green no-underline">
                 ABTV
               </a>
-              <a
-                href={`${locale === 'en' ? '/en/match' : '/kamp'}/${event.eventId}`}
-                class="ml-auto text-xs font-bold text-[#444] no-underline hover:text-ab-green transition-colors">
+              <span class="ml-auto text-xs font-bold text-[#444] transition-colors group-hover:text-ab-green">
                 {locale === 'en' ? 'View match →' : 'Se kamp →'}
-              </a>
+              </span>
             </div>
           </div>
         );
