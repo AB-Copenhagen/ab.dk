@@ -226,13 +226,8 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
                 href="https://abtv.ab.dk"
                 target="_blank"
                 rel="noreferrer"
-                class="text-xs font-bold text-ab-green no-underline mr-auto">
+                class="text-xs text-ab-green no-underline mr-auto">
                 {locale === 'en' ? 'Watch on ABTV' : 'Se på ABTV'}
-              </a>
-              <a
-                href={matchHref(event.eventId)}
-                class="text-xs font-bold px-3 py-1.5 rounded no-underline border border-ab-green text-ab-green hover:bg-ab-green hover:text-white transition-colors">
-                {locale === 'en' ? 'Details' : 'Detaljer'}
               </a>
               {isABHome && (
                 <a
@@ -244,6 +239,11 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
                   {translate(locale, 'tickets')}
                 </a>
               )}
+              <a
+                href={matchHref(event.eventId)}
+                class="text-xs font-bold px-3 py-1.5 rounded no-underline border border-ab-green text-ab-green hover:bg-ab-green hover:text-white transition-colors">
+                {locale === 'en' ? 'Details' : 'Detaljer'}
+              </a>
             </div>
 
           </div>
