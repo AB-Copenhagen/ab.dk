@@ -12,6 +12,7 @@ interface Props {
 }
 
 const { locale, events, filter = 'upcoming' } = Astro.props;
+const isPast = filter === 'results';
 
 const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB';
 
@@ -33,18 +34,22 @@ function fmtTime(d: string) {
   });
 }
 
-function emptyMessage(filter: MatchListFilter): string {
-  switch (filter) {
-    case 'home':
-      return translate(locale, 'noHomeFixtures');
-    case 'away':
-      return translate(locale, 'noAwayFixtures');
-    case 'results':
-      return translate(locale, 'noResultsFound');
-    case 'upcoming':
-      return translate(locale, 'noUpcomingFixtures');
+function fmtGridDate(d: string) {
+  return new Date(d).toLocaleDateString(dateLocale, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
+function emptyMessage(f: MatchListFilter): string {
+  switch (f) {
+    case 'home':    return translate(locale, 'noHomeFixtures');
+    case 'away':    return translate(locale, 'noAwayFixtures');
+    case 'results': return translate(locale, 'noResultsFound');
+    case 'upcoming':return translate(locale, 'noUpcomingFixtures');
     default: {
-      const _exhaustive: never = filter;
+      const _exhaustive: never = f;
       return _exhaustive;
     }
   }
@@ -64,20 +69,18 @@ function eventVenue(event: SIEvent, isABHome: boolean): string {
 }
 
 const seenDates = new Set<string>();
+const matchHref = (id: number) => `${locale === 'en' ? '/en/match' : '/kamp'}/${id}`;
+const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
 ---
 
 <div class="match-list">
-  <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col gap-y-8 md:gap-y-10">
-    {
-      events.length === 0 && (
-        <div
-          class="text-center py-12 text-sm text-[#777]">
-          {emptyMessage(filter)}
-        </div>
-      )
-    }
-    {
-      events.map((event) => {
+  {isPast ? (
+    <!-- ── Past matches: full-width list cards ── -->
+    <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col gap-y-8 md:gap-y-10">
+      {events.length === 0 && (
+        <div class="text-center py-12 text-sm text-[#777]">{emptyMessage(filter)}</div>
+      )}
+      {events.map((event) => {
         const isABHome = event.homeId === abConfig.teamId;
         const homeName = isABHome ? 'AB' : event.homeName;
         const awayName = isABHome ? event.awayName : 'AB';
@@ -91,25 +94,18 @@ const seenDates = new Set<string>();
           <div
             id={isFirst ? dateKey : undefined}
             class="group relative scroll-mt-24 md:scroll-mt-40 bg-white border border-gray-200 rounded-[4px] overflow-hidden transition-all duration-150 hover:border-gray-300 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
-            {/* Stretched link — covers the whole card; interactive elements sit above it via z-10 */}
             <a
-              href={`${locale === 'en' ? '/en/match' : '/kamp'}/${event.eventId}`}
+              href={matchHref(event.eventId)}
               class="absolute inset-0 z-0"
               aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${homeName} vs ${awayName}`}
             />
-            <div
-              class="relative z-10 px-5 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200">
+            <div class="relative z-10 px-5 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200">
               <span
                 class="text-xs font-bold tracking-[0.04em]"
                 style={`color:${isABHome ? '#006A52' : '#888'};`}>
-                {isABHome
-                  ? translate(locale, 'homeMatch')
-                  : translate(locale, 'awayMatch')}
+                {isABHome ? translate(locale, 'homeMatch') : translate(locale, 'awayMatch')}
               </span>
-              <span
-                class="text-xs text-[#999]">
-                {translate(locale, 'secondDivision')}
-              </span>
+              <span class="text-xs text-[#999]">{translate(locale, 'secondDivision')}</span>
             </div>
             <div class="match-card-body">
               <div class="match-card-date">
@@ -117,13 +113,10 @@ const seenDates = new Set<string>();
                 <p class="match-card-day">{fmtMonthDay(event.startDate)}</p>
                 <p class="match-card-time">{fmtTime(event.startDate)}</p>
               </div>
-
               <div class="match-teams">
                 <div class="match-teams-grid">
                   {round && <p class="match-teams-round">{round}</p>}
-                  <span class="match-team-name match-team-name--home">
-                    {homeName}
-                  </span>
+                  <span class="match-team-name match-team-name--home">{homeName}</span>
                   <span class="match-team-logo match-team-logo--home">
                     <img
                       src={getTeamLogoSrc(event.homeId)}
@@ -135,13 +128,14 @@ const seenDates = new Set<string>();
                       onerror="this.closest('.match-team-logo')?.classList.add('match-team-logo--fallback')"
                     />
                     <span class="match-team-logo-fallback">
-                      <span
-                        class="text-xs font-bold text-[#555]">
-                        {event.homeName?.slice(0, 3).toUpperCase()}
-                      </span>
+                      <span class="text-xs font-bold text-[#555]">{event.homeName?.slice(0, 3).toUpperCase()}</span>
                     </span>
                   </span>
-                  <span class="match-vs">VS</span>
+                  {event.score ? (
+                    <span class="match-vs font-black tabular-nums" style="font-size:1.15rem;color:#111;letter-spacing:-0.02em">{event.score}</span>
+                  ) : (
+                    <span class="match-vs">VS</span>
+                  )}
                   <span class="match-team-logo match-team-logo--away">
                     <img
                       src={getTeamLogoSrc(event.awayId)}
@@ -153,83 +147,127 @@ const seenDates = new Set<string>();
                       onerror="this.closest('.match-team-logo')?.classList.add('match-team-logo--fallback')"
                     />
                     <span class="match-team-logo-fallback">
-                      <span
-                        class="text-xs font-bold text-[#555]">
-                        {event.awayName?.slice(0, 3).toUpperCase()}
-                      </span>
+                      <span class="text-xs font-bold text-[#555]">{event.awayName?.slice(0, 3).toUpperCase()}</span>
                     </span>
                   </span>
-                  <span class="match-team-name match-team-name--away">
-                    {awayName}
-                  </span>
+                  <span class="match-team-name match-team-name--away">{awayName}</span>
                   <p class="match-teams-venue">{venue}</p>
                 </div>
               </div>
-
-              <div class="match-card-action relative z-10">
-                {isABHome ? (
-                  <a
-                    href="https://billet.ab.dk/"
-                    target="_blank"
-                    rel="noreferrer"
-                    class="match-card-cta match-card-cta--tickets">
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                      aria-hidden="true">
-                      <rect
-                        x="1"
-                        y="4"
-                        width="12"
-                        height="6"
-                        rx="1"
-                        stroke="currentColor"
-                        stroke-width="1.2"
-                      />
-                      <path
-                        d="M10 4v-.5a2 2 0 0 0-4 0V4"
-                        stroke="currentColor"
-                        stroke-width="1.2"
-                      />
-                    </svg>
-                    {translate(locale, 'tickets')}
-                  </a>
-                ) : (
-                  <span class="match-card-cta match-card-cta--away">
-                    {translate(locale, 'awayBadge')}
-                  </span>
-                )}
-              </div>
+              <div class="match-card-action relative z-10" />
             </div>
-            <div
-              class="relative z-10 px-5 py-2.5 flex items-center gap-4 border-t border-[#F0F0F0]">
-              <span
-                class="text-xs text-[#999]">
-                {translate(locale, 'watchOn')}
-              </span>
-              <a
-                href="https://abtv.ab.dk"
-                target="_blank"
-                rel="noreferrer"
-                class="relative z-10 text-xs font-bold text-ab-green no-underline">
+            <div class="relative z-10 px-5 py-2.5 flex items-center gap-4 border-t border-[#F0F0F0]">
+              <span class="text-xs text-[#999]">{translate(locale, 'watchOn')}</span>
+              <a href="https://abtv.ab.dk" target="_blank" rel="noreferrer" class="relative z-10 text-xs font-bold text-ab-green no-underline">
                 {translate(locale, 'watchOnline')}
               </a>
-              <a
-                href="https://abtv.ab.dk"
-                target="_blank"
-                rel="noreferrer"
-                class="relative z-10 text-xs font-bold text-ab-green no-underline">
-                ABTV
-              </a>
+              <a href="https://abtv.ab.dk" target="_blank" rel="noreferrer" class="relative z-10 text-xs font-bold text-ab-green no-underline">ABTV</a>
+              <span class="ml-auto text-xs font-bold text-[#444] transition-colors group-hover:text-ab-green">{viewLabel}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  ) : (
+    <!-- ── Upcoming/home/away: 3-column grid cards ── -->
+    <div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+      {events.length === 0 && (
+        <div class="col-span-full text-center py-12 text-sm text-[#777]">{emptyMessage(filter)}</div>
+      )}
+      {events.map((event) => {
+        const isABHome = event.homeId === abConfig.teamId;
+        const homeName = isABHome ? 'AB' : event.homeName;
+        const awayName = isABHome ? event.awayName : 'AB';
+        const venue = eventVenue(event, isABHome);
+        const dateKey = event.startDate.slice(0, 10);
+        const isFirst = !seenDates.has(dateKey);
+        if (isFirst) seenDates.add(dateKey);
+
+        return (
+          <div
+            id={isFirst ? dateKey : undefined}
+            class="group relative scroll-mt-24 bg-white border border-gray-200 rounded-[4px] overflow-hidden transition-all duration-150 hover:border-gray-300 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] flex flex-col">
+            <a
+              href={matchHref(event.eventId)}
+              class="absolute inset-0 z-0"
+              aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${homeName} vs ${awayName}`}
+            />
+
+            <!-- Header bar -->
+            <div class="relative z-10 px-4 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200 shrink-0">
+              <span
+                class="text-xs font-bold tracking-[0.04em]"
+                style={`color:${isABHome ? '#006A52' : '#888'};`}>
+                {isABHome ? translate(locale, 'homeMatch') : translate(locale, 'awayMatch')}
+              </span>
+              <span class="text-xs text-[#999]">{translate(locale, 'secondDivision')}</span>
+            </div>
+
+            <!-- Crests -->
+            <div class="relative z-10 flex items-center justify-center gap-3 px-4 pt-5 pb-3">
+              <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
+                <img
+                  src={getTeamLogoSrc(event.homeId)}
+                  alt=""
+                  width="56"
+                  height="56"
+                  class="w-14 h-14 object-contain"
+                  loading="lazy"
+                  onerror="this.style.opacity='0'"
+                />
+                <span class="text-[0.7rem] font-bold text-[#111] text-center leading-tight line-clamp-2">{homeName}</span>
+              </div>
+              <span class="text-[0.65rem] font-black text-[#BBB] shrink-0 px-1">VS</span>
+              <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
+                <img
+                  src={getTeamLogoSrc(event.awayId)}
+                  alt=""
+                  width="56"
+                  height="56"
+                  class="w-14 h-14 object-contain"
+                  loading="lazy"
+                  onerror="this.style.opacity='0'"
+                />
+                <span class="text-[0.7rem] font-bold text-[#111] text-center leading-tight line-clamp-2">{awayName}</span>
+              </div>
+            </div>
+
+            <!-- Date + venue -->
+            <div class="relative z-10 px-4 pb-4 space-y-0.5">
+              <p class="text-xs text-[#555]">
+                {fmtGridDate(event.startDate)} · {fmtTime(event.startDate)}
+              </p>
+              <p class="text-xs text-[#999] truncate">{venue}</p>
+            </div>
+
+            <!-- Ticket CTA (home only) -->
+            {isABHome && (
+              <div class="relative z-10 px-4 pb-4">
+                <a
+                  href="https://billet.ab.dk/"
+                  target="_blank"
+                  rel="noreferrer"
+                  class="inline-flex items-center gap-1.5 text-xs font-bold rounded px-3 py-1.5 border transition-colors hover:bg-ab-green hover:text-white hover:border-ab-green"
+                  style="color:#006A52;border-color:#006A52;">
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2"/>
+                  </svg>
+                  {translate(locale, 'tickets')}
+                </a>
+              </div>
+            )}
+
+            <!-- Footer -->
+            <div class="relative z-10 mt-auto px-4 py-2.5 flex items-center gap-3 border-t border-[#F0F0F0]">
+              <a href="https://abtv.ab.dk" target="_blank" rel="noreferrer" class="text-xs font-bold text-ab-green no-underline">ABTV</a>
               <span class="ml-auto text-xs font-bold text-[#444] transition-colors group-hover:text-ab-green">
-                {locale === 'en' ? 'View match →' : 'Se kamp →'}
+                {locale === 'en' ? 'View →' : 'Se →'}
               </span>
             </div>
           </div>
         );
-      })
-    }
-  </div>
+      })}
+    </div>
+  )}
 </div>
