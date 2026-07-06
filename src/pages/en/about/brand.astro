@@ -312,14 +312,57 @@ export const prerender = true;
     </div>
   </section>
 
+  <!-- Downloads -->
+  <section class="bg-white py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Brand Assets</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Download</h2>
+      <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-10">
+        Official master files for use of the AB 1889 identity. Always use the latest version and follow the brand rules above.
+      </p>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {([
+          { label: 'AB Logo', format: 'PDF', file: '/downloads/brand/ab-logo.pdf', size: '160 KB', desc: 'Logo for print and digital' },
+          { label: 'AB Logo', format: 'EPS', file: '/downloads/brand/ab-logo.eps', size: '440 KB', desc: 'Vector file for print' },
+          { label: 'AB Monogram', format: 'AI', file: '/downloads/brand/ab-monogram.ai', size: '1.1 MB', desc: 'Monogram CMYK master' },
+          { label: 'AB Colorway', format: 'PDF', file: '/downloads/brand/ab-colorway.pdf', size: '94 KB', desc: 'Colour palette reference' },
+          { label: 'AB Pattern', format: 'SVG', file: '/downloads/brand/ab-pattern.svg', size: '20 KB', desc: 'B-pattern for digital' },
+          { label: 'AB Pattern', format: 'AI', file: '/downloads/brand/ab-pattern.ai', size: '1.1 MB', desc: 'B-pattern master' },
+        ] as { label: string; format: string; file: string; size: string; desc: string }[]).map((asset) => (
+          <a
+            href={asset.file}
+            download
+            class="group flex items-center gap-4 p-5 rounded-lg border border-gray-200 hover:border-ab-green hover:bg-ab-green/5 transition-colors no-underline"
+          >
+            <div class="shrink-0 w-11 h-11 rounded-md bg-ab-black flex items-center justify-center">
+              <span class="font-black text-[0.6rem] text-ab-neon tracking-[0.08em] uppercase">{asset.format}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-black text-ab-black text-[0.95rem] leading-tight">{asset.label}</div>
+              <div class="text-[#888] text-[0.78rem] mt-0.5">{asset.desc}</div>
+            </div>
+            <div class="flex flex-col items-end gap-1 shrink-0">
+              <span class="text-[#bbb] text-[0.72rem]">{asset.size}</span>
+              <svg class="w-4 h-4 text-ab-green opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 2v9M4 8l4 4 4-4M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
-  <section class="bg-ab-black py-12 px-8 lg:px-20">
+  <section class="bg-[#F2F2F0] py-12 px-8 lg:px-20">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
       <div>
-        <div class="font-black text-white text-[1.1rem] tracking-[-0.02em]">AB 1889 Brand Guidelines 2026</div>
-        <div class="text-[#555] text-[0.83rem] mt-1">Akademisk Boldklub · Designed by Mark Pernice / Out Of Office · ooo-la.la</div>
+        <div class="font-black text-ab-black text-[1.1rem] tracking-[-0.02em]">AB 1889 Brand Guidelines 2026</div>
+        <div class="text-[#999] text-[0.83rem] mt-1">Akademisk Boldklub · Designed by Mark Pernice / Out Of Office · ooo-la.la</div>
       </div>
-      <img src="/images/ab-logo-alt.png" alt="AB 1889" class="h-10 w-auto opacity-60" />
     </div>
   </section>
 </Base>

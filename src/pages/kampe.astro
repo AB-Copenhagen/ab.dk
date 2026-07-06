@@ -8,12 +8,22 @@ export const prerender = false;
 
 const locale = 'da';
 
+const now = new Date();
+// Fetch the full current season: from ~11 months ago to ~3 months ahead
+const seasonFrom = new Date(now);
+seasonFrom.setMonth(seasonFrom.getMonth() - 11);
+const seasonTo = new Date(now);
+seasonTo.setMonth(seasonTo.getMonth() + 3);
+
 let events: Awaited<ReturnType<typeof fetchABEvents>> = [];
 try {
-  events = await fetchABEvents({ locale, limit: 100 });
+  events = await fetchABEvents({
+    locale,
+    limit: 200,
+    fromDate: seasonFrom.toISOString().slice(0, 10),
+    toDate: seasonTo.toISOString().slice(0, 10),
+  });
 } catch { /* SI API unavailable */ }
-
-const now = new Date();
 const filter = (Astro.url.searchParams.get('filter') ?? 'upcoming') as MatchListFilter;
 const upcoming = events.filter((e) => new Date(e.startDate) >= now);
 const finished = events.filter((e) => new Date(e.startDate) < now).reverse();
@@ -45,10 +55,10 @@ const displayEvents =
     <div class="max-w-7xl mx-auto px-8 flex items-center justify-between h-[56px]">
       <div class="flex items-center gap-1">
         {[
-          { label: 'Kommende', value: 'upcoming', href: '/kampe' },
+          { label: 'Alle',      value: 'upcoming', href: '/kampe' },
           { label: 'Hjemme',   value: 'home',     href: '/kampe?filter=home' },
           { label: 'Ude',      value: 'away',     href: '/kampe?filter=away' },
-          { label: 'Resultater', value: 'results', href: '/kampe?filter=results' },
+          { label: 'Tidligere', value: 'results', href: '/kampe?filter=results' },
         ].map(tab => (
           <a
             href={tab.href}

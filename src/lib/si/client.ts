@@ -13,6 +13,11 @@ export type Locale = 'da' | 'en';
 export type EventStatus =
   'notstarted' | 'inprogress' | 'finished' | 'cancelled';
 
+export interface SIScoreData {
+  home: number | string;
+  away: number | string;
+}
+
 export interface SIEvent {
   eventId: number;
   startDate: string;
@@ -22,8 +27,8 @@ export interface SIEvent {
   awayId: number;
   homeName: string;
   awayName: string;
-  score: string | null;
-  detailedScore: string | null;
+  score: SIScoreData | string | null;
+  detailedScore: unknown;
   tournamentName: string;
   tournamentId: number;
   sportId: number;
@@ -33,11 +38,21 @@ export interface SIEvent {
   };
 }
 
+/** Normalise the API's score field to a "H-A" string, or null if unavailable. */
+export function formatEventScore(score: SIScoreData | string | null | undefined): string | null {
+  if (!score) return null;
+  if (typeof score === 'string') return score;
+  const h = Number(score.home);
+  const a = Number(score.away);
+  if (isNaN(h) || isNaN(a)) return null;
+  return `${h}-${a}`;
+}
+
 const TEAM_LOGO_CDN =
   (import.meta.env.SI_TEAM_LOGO_BASE_URL as string | undefined)?.replace(
     /\/$/,
     ''
-  ) ?? 'https://dxugi372p6nmc.cloudfront.net/spdk/current/64x64';
+  ) ?? 'https://dxugi372p6nmc.cloudfront.net/spdk/current/256x256';
 
 /** Team crest URL — local AB asset or SI CloudFront CDN by team ID. */
 export function getTeamLogoSrc(teamId: number): string {
@@ -294,6 +309,77 @@ export async function fetchPlayerProfile(
   locale: Locale = 'da'
 ): Promise<SIPlayerProfile> {
   return siFetch<SIPlayerProfile>(`/players/${playerId}/profile`, { locale });
+}
+
+// ── Team form ─────────────────────────────────────────────────────────────────
+
+export interface TeamFormResult {
+  eventId: number;
+  startDate: string;
+  opponentId: number;
+  opponentName: string;
+  score: string;
+  isHome: boolean;
+  outcome: 'W' | 'D' | 'L';
+}
+
+/**
+ * Returns the last `limit` finished results for a team, oldest-first.
+ * Pass `beforeDate` (YYYY-MM-DD) to exclude the current match itself.
+ */
+export async function fetchTeamForm(
+  teamId: number,
+  options: { beforeDate?: string; limit?: number; locale?: Locale } = {}
+): Promise<TeamFormResult[]> {
+  const { limit = 5, locale = 'da' } = options;
+
+  const toDate =
+    options.beforeDate ??
+    new Date().toISOString().slice(0, 10);
+
+  const fromDate = new Date(
+    new Date(toDate).getTime() - 365 * 24 * 60 * 60 * 1000
+  )
+    .toISOString()
+    .slice(0, 10);
+
+  const data = await siFetch<{ events: SIEvent[] }>('/events-v2', {
+    teamId,
+    sportId: 1,
+    limit: 60,
+    locale,
+    fromDate,
+    toDate,
+  });
+
+  // API returns ASC; reverse to newest-first, take the most recent N, then
+  // reverse again so the component receives oldest-first for left→right display.
+  const recent = (data.events ?? [])
+    .filter(e => e.statusType === 'finished' && e.score)
+    .reverse()
+    .slice(0, limit)
+    .reverse();
+
+  return recent.map(e => {
+    const isHome = e.homeId === teamId;
+    const opponentName = isHome ? e.awayName : e.homeName;
+    const opponentId = isHome ? e.awayId : e.homeId;
+    const scoreStr = formatEventScore(e.score) ?? '0-0';
+    const [homeGoals, awayGoals] = scoreStr.split('-').map(Number);
+    const teamGoals = isHome ? homeGoals : awayGoals;
+    const oppGoals = isHome ? awayGoals : homeGoals;
+    const outcome: 'W' | 'D' | 'L' =
+      teamGoals > oppGoals ? 'W' : teamGoals < oppGoals ? 'L' : 'D';
+    return {
+      eventId: e.eventId,
+      startDate: e.startDate,
+      opponentId,
+      opponentName,
+      score: scoreStr,
+      isHome,
+      outcome,
+    };
+  });
 }
 
 // ── Highlights ────────────────────────────────────────────────────────────────

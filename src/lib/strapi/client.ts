@@ -127,6 +127,69 @@ export async function fetchPlayerCmsData(
   };
 }
 
+// ── Match day CMS content ─────────────────────────────────────────────────────
+
+export interface StrapiSocialEmbed {
+  platform: 'instagram' | 'twitter' | 'youtube' | 'facebook' | 'tiktok';
+  embedCode: string;
+  caption?: string;
+}
+
+export interface StrapiMatchArticle {
+  id: number;
+  title: string;
+  slug: string;
+  description?: string;
+  image?: { url: string; alternativeText?: string };
+}
+
+export interface StrapiMatchContent {
+  eventId: number;
+  ticketUrl?: string;
+  accentColor?: string;
+  bannerImage?: { url: string; alternativeText?: string; width?: number; height?: number };
+  articles?: StrapiMatchArticle[];
+  socialEmbeds?: StrapiSocialEmbed[];
+}
+
+/** Fetch optional CMS content for a match by SI event ID. Returns null if not found. */
+export async function fetchMatchContent(eventId: number): Promise<StrapiMatchContent | null> {
+  const results = await fetchCollectionType<StrapiMatchContent[]>('match-contents', {
+    filters: { eventId: { $eq: eventId } },
+    populate: ['bannerImage', 'articles', 'articles.image', 'socialEmbeds'],
+    status: 'published',
+  }).catch(() => []);
+  return results[0] ?? null;
+}
+
+// ── Partner / sponsor data ────────────────────────────────────────────────────
+
+export interface StrapiPartnerLogo {
+  url: string;
+  alternativeText?: string;
+  width: number;
+  height: number;
+}
+
+export interface StrapiPartner {
+  name: string;
+  logo: StrapiPartnerLogo;
+  url?: string;
+  logoWidth: number;
+  logoHeight: number;
+  sortOrder: number;
+  category: 'main' | 'kit' | 'media' | 'other';
+}
+
+/** Fetch all published partners ordered by sortOrder. Returns [] on error. */
+export async function fetchPartners(): Promise<StrapiPartner[]> {
+  return fetchCollectionType<StrapiPartner[]>('partners', {
+    populate: ['logo'],
+    sort: ['sortOrder:asc'],
+    status: 'published',
+  }).catch(() => []);
+}
+
 // ── Media helpers ─────────────────────────────────────────────────────────────
 
 const WASABI_HOST_RE = /^https?:\/\/[^/]*wasabisys\.com\//;

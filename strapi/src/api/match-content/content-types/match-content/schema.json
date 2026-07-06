@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "match_contents",
+  "info": {
+    "singularName": "match-content",
+    "pluralName": "match-contents",
+    "displayName": "Match Content"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "eventId": {
+      "type": "integer",
+      "required": true,
+      "unique": true
+    },
+    "ticketUrl": {
+      "type": "string"
+    },
+    "accentColor": {
+      "type": "string"
+    },
+    "bannerImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "articles": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::article.article"
+    },
+    "socialEmbeds": {
+      "type": "component",
+      "repeatable": true,
+      "component": "match.social-embed"
+    }
+  }
+}
