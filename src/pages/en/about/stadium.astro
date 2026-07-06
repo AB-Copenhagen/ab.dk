@@ -1,5 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
+import heroImage from '@/assets/images/gladsaxe.webp';
+import stadiumImage from '@/assets/images/pro-OPKh7A3o.webp';
+
 export const prerender = true;
 
 const facilities = [
@@ -16,8 +19,10 @@ const facilities = [
   <!-- Hero -->
   <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
     <img
-      src="/images/hero.jpg"
+      src={heroImage.src}
       alt="Gladsaxe Stadium"
+      width={heroImage.width}
+      height={heroImage.height}
       class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.5] saturate-[0.6]"
     />
     <div
@@ -32,7 +37,7 @@ const facilities = [
     </div>
   </div>
 
-  <!-- Tab breadcrumb -->
+  <!-- Tab breadcrumb — hidden for now
   <div class="bg-white border-b border-[#E5E7EB]">
     <div class="max-w-7xl mx-auto px-8 flex items-center gap-6 h-12">
       <a
@@ -46,6 +51,7 @@ const facilities = [
       >
     </div>
   </div>
+  -->
 
   <!-- Info grid -->
   <section class="bg-white py-[clamp(40px,6vw,72px)]">
@@ -111,20 +117,15 @@ const facilities = [
           </div>
         </div>
 
-        <!-- Right: map placeholder -->
-        <div
-          class="rounded overflow-hidden bg-[#EBEBEB] aspect-[4/3] flex items-center justify-center border border-[#E5E7EB]">
-          <div class="text-center px-8">
-            <img
-              src="/images/ab-crest.svg"
-              alt="AB 1889"
-              width="80"
-              height="80"
-              class="opacity-[0.12] mx-auto mb-4"
-            />
-            <p class="text-sm font-bold text-[#999]">Gladsaxe Stadium</p>
-            <p class="text-xs mt-1 text-[#BBB]">Gladsaxevej 202, 2860 Søborg</p>
-          </div>
+        <!-- Right: stadium photo -->
+        <div class="rounded overflow-hidden aspect-[4/3] border border-[#E5E7EB]">
+          <img
+            src={stadiumImage.src}
+            alt="Gladsaxe Stadium"
+            width={stadiumImage.width}
+            height={stadiumImage.height}
+            class="w-full h-full object-cover"
+          />
         </div>
       </div>
     </div>
