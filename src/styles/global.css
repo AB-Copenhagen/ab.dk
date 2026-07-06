@@ -37,18 +37,18 @@
 
 @theme {
   /* ── Brand palette (source: AB 1889 Brand Guidelines 2026) ── */
-  --color-ab-green: #006a52;   /* Pantone 3298 C · RGB 0/106/82 · CMYK 100/32/78/22 */
-  --color-ab-gold: #d6a02a;    /* Pantone 131 C  · RGB 212/158/43 · CMYK 17/38/100/0 */
-  --color-ab-beige: #d3bc8d;   /* Pantone 467 C  · RGB 211/188/141 — use minimally */
-  --color-ab-neon: #00ff1f;    /* Pantone 802 C  · RGB 0/255/31 — digital & spot only, never CMYK */
-  --color-ab-black: #0a0a0a;   /* Rich Black — type on light bg & rule lines */
-  --color-ab-white: #ffffff;   /* Marks on dark backgrounds */
+  --color-ab-green: #006a52; /* Pantone 3298 C · RGB 0/106/82 · CMYK 100/32/78/22 */
+  --color-ab-gold: #d6a02a; /* Pantone 131 C  · RGB 212/158/43 · CMYK 17/38/100/0 */
+  --color-ab-beige: #d3bc8d; /* Pantone 467 C  · RGB 211/188/141 — use minimally */
+  --color-ab-neon: #00ff1f; /* Pantone 802 C  · RGB 0/255/31 — digital & spot only, never CMYK */
+  --color-ab-black: #0a0a0a; /* Rich Black — type on light bg & rule lines */
+  --color-ab-white: #ffffff; /* Marks on dark backgrounds */
 
   /* ── Surface palette (dark-mode UI, derived from AB Green) ── */
-  --color-surface-ground: #060806;  /* page background */
-  --color-surface-base: #0d1a10;    /* cards, panels */
-  --color-surface-border: #152214;  /* borders */
-  --color-surface-muted: #8aa898;   /* secondary / placeholder text */
+  --color-surface-ground: #060806; /* page background */
+  --color-surface-base: #0d1a10; /* cards, panels */
+  --color-surface-border: #152214; /* borders */
+  --color-surface-muted: #8aa898; /* secondary / placeholder text */
 
   /* ── Legacy aliases — kept for backwards compat ── */
   --color-rich-black: #0a0a0a;

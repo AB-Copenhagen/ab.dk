@@ -9,7 +9,8 @@ const STRAPI_URL = import.meta.env.STRAPI_URL ?? 'http://localhost:1337';
 const STRAPI_TOKEN =
   (import.meta.env.STRAPI_API_TOKEN as string | undefined)?.trim() || undefined;
 const STRAPI_WEBHOOK_SECRET =
-  (import.meta.env.STRAPI_WEBHOOK_SECRET as string | undefined)?.trim() || undefined;
+  (import.meta.env.STRAPI_WEBHOOK_SECRET as string | undefined)?.trim() ||
+  undefined;
 // /tmp is writable on Vercel serverless; project dir is not.
 const CACHE_DIR = '/tmp/strapi-cache';
 

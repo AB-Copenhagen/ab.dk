@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
 
 export const prerender = false;

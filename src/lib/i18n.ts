@@ -38,7 +38,10 @@ export function localePath(locale: Locale, daPath: string): string {
 }
 
 /** Returns the URL for the current page translated to targetLocale. */
-export function switchLocalePath(currentPath: string, targetLocale: Locale): string {
+export function switchLocalePath(
+  currentPath: string,
+  targetLocale: Locale
+): string {
   let pathWithoutLocale = currentPath.replace(/^\/en(?=\/|$)/, '') || '/';
   if (pathWithoutLocale !== '/' && pathWithoutLocale.endsWith('/')) {
     pathWithoutLocale = pathWithoutLocale.slice(0, -1);
