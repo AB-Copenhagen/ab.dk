@@ -1,7 +1,7 @@
 import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import { fileURLToPath } from 'url';
 
 const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
@@ -10,6 +10,17 @@ export default defineConfig({
   output: 'server',
   adapter: vercel(),
   integrations: [react()],
+  // Block search engine crawlers until production launch.
+  // Set ALLOW_SEARCH_INDEXING=true in the production environment (see README).
+  env: {
+    schema: {
+      ALLOW_SEARCH_INDEXING: envField.boolean({
+        context: 'server',
+        access: 'public',
+        default: false,
+      }),
+    },
+  },
   i18n: {
     defaultLocale: 'da',
     locales: ['da', 'en'],
