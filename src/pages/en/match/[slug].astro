@@ -74,7 +74,7 @@ const WIDGET_SEASON_ID = 16387;
   <!-- Hero -->
   <div class="relative overflow-hidden" style="min-height:500px;background:#060806">
     <img
-      src={bannerImageUrl ?? '/images/matches-header-bg.png'}
+      src={bannerImageUrl ?? '/images/match-hero-default.jpg'}
       alt=""
       aria-hidden="true"
       class="absolute inset-0 w-full h-full object-cover object-center"
@@ -147,86 +147,36 @@ const WIDGET_SEASON_ID = 16387;
         <!-- Main content column -->
         <div class="space-y-14">
 
-          <section>
-            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
-              <SiWidget
-                widget="SPDKMatchPageHeader"
-                params={{ eventId, showTicketBtn: 'true', provider: 'unibet', teamId: WIDGET_TEAM_ID, lang: 'en' }}
-                minHeight={280}
-                label="Match header"
-              />
-            </div>
-          </section>
+          {isUpcoming && (
+            <>
+              <script is:inline>{`
+                (function(){
+                  if (window.__SI_LB_LOADED) return;
+                  window.__SI_LB_LOADED = true;
+                  var h = document.head;
+                  var s1 = document.createElement('script');
+                  s1.src = 'https://widgets.si-ab.com/c/5b6ab6f5eb84c60031bbbd24/config.js';
+                  h.appendChild(s1);
+                  var s2 = document.createElement('script');
+                  s2.src = 'https://widgets.si-ab.com/superliga24/bundle.superliga24.js?ver=2.5.3';
+                  s2.defer = true;
+                  h.appendChild(s2);
+                })();
+              `}</script>
 
-          <section>
-            <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
-              Analysis
-            </p>
-            <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
-              Before the match
-            </h2>
-            <div class="space-y-6">
-              <div>
-                <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Form guide</h3>
-                <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
-                  <SiWidget
-                    widget="MTSFormH2HSnap"
-                    params={{ eventId, acrossAllTournaments: 'true', teamId: WIDGET_TEAM_ID, lang: 'en' }}
-                    minHeight={200}
-                    label="Form guide"
-                  />
-                </div>
-              </div>
-              <div>
-                <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Head to head</h3>
-                <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
-                  <SiWidget
-                    widget="H2HTeams"
-                    params={{ eventId, teamId: WIDGET_TEAM_ID, lang: 'en' }}
-                    minHeight={260}
-                    label="Head to head"
-                  />
-                </div>
-              </div>
-              <div>
-                <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Table</h3>
-                <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
-                  <SiWidget
-                    widget="SPDKTournamentTable"
-                    params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, teamId: WIDGET_TEAM_ID, lang: 'en' }}
-                    minHeight={420}
-                    label="Table"
-                  />
-                </div>
-              </div>
-              <div>
-                <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Fun stats</h3>
-                <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
-                  <SiWidget
-                    widget="EventTeamFunStats"
-                    params={{ eventId, fault: 2, limit: 10, teamId: WIDGET_TEAM_ID, lang: 'en' }}
-                    minHeight={300}
-                    label="Fun stats"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
+              <section>
+                <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Form guide</p>
+                <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">Recent form</h2>
+                <Fragment set:html={`<si-lb-widget widget-id="MTSTeamsForm" event-id="${eventId}" across-all-tournaments="false" nopadding="true" transparent="false" card="false" width="100%"></si-lb-widget>`} />
+              </section>
 
-          <section>
-            <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Squad</p>
-            <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
-              Line-up
-            </h2>
-            <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
-              <SiWidget
-                widget="SPDKLineup"
-                params={{ eventId, teamId: WIDGET_TEAM_ID, lang: 'en' }}
-                minHeight={520}
-                label="Line-up"
-              />
-            </div>
-          </section>
+              <section>
+                <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Standings</p>
+                <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">Table</h2>
+                <Fragment set:html={`<si-lb-widget widget-id="SPDKTournamentTable" tournament-id="${WIDGET_TOURNAMENT_ID}" event-id="${eventId}" nopadding="true" transparent="true" card="true" width="100%"></si-lb-widget>`} />
+              </section>
+            </>
+          )}
 
           {!isUpcoming && (
             <>
