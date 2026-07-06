@@ -1,7 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
 import SiWidget from '@/components/widgets/SiWidget.astro';
-import { fetchEvent, getTeamLogoSrc } from '@/lib/si/client';
+import TeamForm from '@/components/TeamForm.astro';
+import { fetchEvent, fetchTeamForm, formatEventScore, getTeamLogoSrc } from '@/lib/si/client';
 import type { SIEvent } from '@/lib/si/client';
 import { fetchMatchContent, strapiMediaUrl } from '@/lib/strapi/client';
 import { abConfig } from '@/lib/config/ab';
@@ -28,7 +29,8 @@ if (!event) {
   return Astro.redirect('/kampe');
 }
 
-const { homeName, awayName, startDate, statusType, score, tournamentName } = event;
+const { homeName, awayName, startDate, statusType, tournamentName } = event;
+const score = formatEventScore(event.score);
 
 const pageTitle = `${homeName} vs ${awayName} | AB 1889`;
 
@@ -68,72 +70,89 @@ const venueName = event.properties?.venueName ?? (isHome ? 'Gladsaxe Stadion' : 
 const WIDGET_TEAM_ID = 10202;
 const WIDGET_TOURNAMENT_ID = 46;
 const WIDGET_SEASON_ID = 16387;
+
+const beforeDate = startDate.slice(0, 10);
+const [homeForm, awayForm] = await Promise.all([
+  fetchTeamForm(event.homeId, { beforeDate, locale: 'da' }).catch(() => []),
+  fetchTeamForm(event.awayId, { beforeDate, locale: 'da' }).catch(() => []),
+]);
 ---
 
 <Base locale="da" title={pageTitle}>
 
   <!-- Hero -->
-  <div class="relative overflow-hidden" style="min-height:500px;background:#060806">
-    <img
-      src={bannerImageUrl ?? '/images/match-hero-default.jpg'}
-      alt=""
-      aria-hidden="true"
-      class="absolute inset-0 w-full h-full object-cover object-center"
-    />
-    <div class="absolute inset-0 bg-gradient-to-t from-[#060806] from-20% via-[#060806]/70 to-[#060806]/20" />
-
-    <a
-      href="/kampe"
-      class="absolute top-6 left-5 md:left-12 z-10 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-white/75 hover:text-white transition-colors"
-    >
-      ← Alle kampe
-    </a>
-
-    <div class="relative z-10 flex flex-col items-center text-center px-5 pb-10 pt-44 md:pt-52">
-      <div class="flex items-center justify-center gap-8 md:gap-16 mb-6 w-full max-w-lg">
-        <div class="flex flex-col items-center gap-3 flex-1 min-w-0">
-          <img
-            src={getTeamLogoSrc(event.homeId)}
-            alt={homeName}
-            width="96"
-            height="96"
-            class="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-lg"
-          />
-          <span class="font-black text-white text-sm md:text-base leading-tight">{homeName}</span>
-        </div>
-
-        <div class="flex flex-col items-center gap-2 shrink-0">
-          {(isLive || isFinished) && score ? (
-            <p
-              class="font-black tabular-nums"
-              style={`font-size:clamp(2.5rem,6vw,3.5rem);color:${isLive ? '#00FF1F' : 'white'}`}
-            >
-              {score}
-            </p>
-          ) : (
-            <p class="text-xl font-black text-white/40 tracking-widest">VS</p>
-          )}
-          {isLive && (
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-ab-neon tracking-[0.1em]">
-              <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
-              LIVE
-            </span>
+  <div style="background:#003D2A">
+    <!-- Photo with bottom gradient -->
+    <div class="relative overflow-hidden" style="height:clamp(220px,36vw,340px)">
+      <img
+        src={bannerImageUrl ?? '/images/match-hero-default.jpg'}
+        alt=""
+        aria-hidden="true"
+        class="w-full h-full object-cover object-[center_25%]"
+      />
+      <!-- Gradient fades photo into the band below -->
+      <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to bottom, transparent 40%, #003D2A 100%)"></div>
+      <a
+        href="/kampe"
+        class="absolute top-6 left-5 md:left-12 z-10 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-white hover:opacity-75 transition-opacity"
+        style="text-shadow:0 1px 4px rgba(0,0,0,0.9)"
+      >
+        ← Alle kampe
+      </a>
+      {(isLive || isFinished) && score && (
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style="padding-bottom:4rem">
+          <p
+            class="font-black tabular-nums"
+            style={`font-size:clamp(4rem,11vw,7rem);line-height:1;text-shadow:0 3px 24px rgba(0,0,0,0.65);color:${isLive ? '#00FF1F' : 'white'}`}
+          >{score}</p>
+          {isFinished && (
+            <span class="mt-2 font-bold text-white/60 uppercase tracking-[0.2em]" style="font-size:0.65rem;text-shadow:0 1px 8px rgba(0,0,0,0.6)">Slutresultat</span>
           )}
         </div>
+      )}
+    </div>
 
-        <div class="flex flex-col items-center gap-3 flex-1 min-w-0">
-          <img
-            src={getTeamLogoSrc(event.awayId)}
-            alt={awayName}
-            width="96"
-            height="96"
-            class="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-lg"
-          />
-          <span class="font-black text-white text-sm md:text-base leading-tight">{awayName}</span>
-        </div>
+    <!-- Crests pulled up into photo, VS sits in green band -->
+    <div class="flex items-center justify-center gap-5 md:gap-8 px-4 pb-8" style="margin-top:clamp(-56px,-7vw,-72px)">
+
+      <!-- Home -->
+      <div class="relative z-10 flex flex-col items-center gap-3">
+        <img
+          src={getTeamLogoSrc(event.homeId)}
+          alt={homeName}
+          width="112" height="112"
+          class="w-24 h-24 md:w-28 md:h-28 object-contain"
+          style={isHome ? 'filter:brightness(0) invert(1)' : ''}
+        />
+        <span class="font-black text-white text-center leading-tight" style="font-size:clamp(0.7rem,1.8vw,0.9rem);max-width:120px">{homeName}</span>
       </div>
 
-      <p class="text-sm text-white/50">{matchDate}</p>
+      <!-- VS / FT / LIVE — in the green band between crests -->
+      <div class="relative z-0 flex flex-col items-center gap-1">
+        {isUpcoming ? (
+          <span class="font-black text-white tracking-[0.15em]" style="font-size:clamp(0.9rem,2.2vw,1.2rem)">VS</span>
+        ) : isLive ? (
+          <span class="inline-flex items-center gap-1.5 font-black uppercase tracking-[0.12em] text-ab-neon" style="font-size:0.75rem">
+            <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+            LIVE
+          </span>
+        ) : (
+          <span class="font-bold text-white/50 uppercase tracking-[0.15em]" style="font-size:0.7rem">FT</span>
+        )}
+      </div>
+
+      <!-- Away -->
+      <div class="relative z-10 flex flex-col items-center gap-3">
+        <img
+          src={getTeamLogoSrc(event.awayId)}
+          alt={awayName}
+          width="112" height="112"
+          class="w-24 h-24 md:w-28 md:h-28 object-contain"
+          style={!isHome ? 'filter:brightness(0) invert(1)' : ''}
+        />
+        <span class="font-black text-white text-center leading-tight" style="font-size:clamp(0.7rem,1.8vw,0.9rem);max-width:120px">{awayName}</span>
+      </div>
+
     </div>
   </div>
 
@@ -146,6 +165,18 @@ const WIDGET_SEASON_ID = 16387;
 
         <!-- Main content column -->
         <div class="space-y-14">
+
+          {isUpcoming && (
+            <TeamForm
+              homeId={event.homeId}
+              homeName={homeName}
+              homeForm={homeForm}
+              awayId={event.awayId}
+              awayName={awayName}
+              awayForm={awayForm}
+              locale="da"
+            />
+          )}
 
           {!isUpcoming && (
             <>
@@ -164,13 +195,13 @@ const WIDGET_SEASON_ID = 16387;
                 <div class="space-y-6">
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Momentum</h3>
-                    <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
+                    <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                       <SiWidget widget="MatchMomentum" params={{ eventId, teamId: WIDGET_TEAM_ID }} minHeight={220} label="Momentum" />
                     </div>
                   </div>
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Hændelser</h3>
-                    <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
+                    <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                       <SiWidget
                         widget="IncidentListOpta"
                         params={{ eventId, header: 'true', card: 'true', initialCollapse: 'false', teamId: WIDGET_TEAM_ID }}
@@ -181,7 +212,7 @@ const WIDGET_SEASON_ID = 16387;
                   </div>
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Kampstatistik</h3>
-                    <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
+                    <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                       <SiWidget
                         widget="LivePostMatchStatsOpta"
                         params={{ eventId, header: 'false', teamId: WIDGET_TEAM_ID }}
@@ -192,7 +223,7 @@ const WIDGET_SEASON_ID = 16387;
                   </div>
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">xG — Forventede mål</h3>
-                    <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
+                    <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                       <SiWidget
                         widget="TwoTeamsXGoalsPitch"
                         params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, dotSize: 32.5, header: 'true', teamId: WIDGET_TEAM_ID }}
@@ -209,7 +240,7 @@ const WIDGET_SEASON_ID = 16387;
                 <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
                   Højdepunkter
                 </h2>
-                <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
+                <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                   <SiWidget
                     widget="SPDKMatchVideo"
                     params={{ eventId, teamId: WIDGET_TEAM_ID, seasonId: WIDGET_SEASON_ID }}
@@ -218,6 +249,15 @@ const WIDGET_SEASON_ID = 16387;
                   />
                 </div>
               </section>
+            <TeamForm
+              homeId={event.homeId}
+              homeName={homeName}
+              homeForm={homeForm}
+              awayId={event.awayId}
+              awayName={awayName}
+              awayForm={awayForm}
+              locale="da"
+            />
             </>
           )}
 
@@ -245,9 +285,9 @@ const WIDGET_SEASON_ID = 16387;
                 alt=""
                 aria-hidden="true"
                 class="absolute inset-0 w-full h-full object-cover object-center"
-                style="opacity:0.55"
+                style="opacity:0.75"
               />
-              <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(6,8,6,0.78) 30%,rgba(6,8,6,0.45))" />
+              <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(6,8,6,0.72) 30%,rgba(6,8,6,0.35))" />
               <div class="relative z-10 flex flex-col items-center text-center px-8 py-14">
                 <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-4" style="color:#00FF1F">Gladsaxe Stadion</p>
                 <h2 class="font-black text-white uppercase mb-4" style="font-size:clamp(1.75rem,4vw,2.75rem);letter-spacing:-0.02em">

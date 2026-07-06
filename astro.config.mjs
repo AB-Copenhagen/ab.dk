@@ -8,6 +8,7 @@ const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
 
 export default defineConfig({
   output: 'server',
+  server: { port: 1889 },
   adapter: vercel(),
   integrations: [react()],
   i18n: {

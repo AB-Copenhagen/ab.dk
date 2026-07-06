@@ -1,0 +1,84 @@
+---
+import type { TeamFormResult } from '@/lib/si/client';
+import { getTeamLogoSrc } from '@/lib/si/client';
+
+interface Props {
+  homeId: number;
+  homeName: string;
+  homeForm: TeamFormResult[];
+  awayId: number;
+  awayName: string;
+  awayForm: TeamFormResult[];
+  locale?: 'da' | 'en';
+}
+
+const { homeId, homeName, homeForm, awayId, awayName, awayForm, locale = 'da' } = Astro.props;
+
+const outcomeStyle = (o: 'W' | 'D' | 'L') => {
+  if (o === 'W') return 'background:#006A52;color:#00FF1F;';
+  if (o === 'D') return 'background:#555;color:#fff;';
+  return 'background:#8B1A1A;color:#fff;';
+};
+
+const label = locale === 'en' ? 'Form Guide' : 'Holdform';
+const sublabel = locale === 'en' ? 'Last 5 matches' : 'Seneste 5 kampe';
+const homeLabel = locale === 'en' ? 'H' : 'H';
+const awayLabel = locale === 'en' ? 'A' : 'U';
+---
+
+<section>
+  <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style="color:#006A52">{locale === 'en' ? 'Form' : 'Form'}</p>
+  <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
+    {label}
+  </h2>
+
+  <div class="rounded-[4px] overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
+    <div class="px-5 py-4 border-b border-[#E5E7EB]">
+      <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#999]">{sublabel}</p>
+    </div>
+
+    {[
+      { teamId: homeId, teamName: homeName, form: homeForm },
+      { teamId: awayId, teamName: awayName, form: awayForm },
+    ].map(({ teamId, teamName, form }) => (
+      <div class="flex items-center gap-4 px-5 py-4 border-b border-[#E5E7EB] last:border-0">
+        <img
+          src={getTeamLogoSrc(teamId)}
+          alt=""
+          width="32"
+          height="32"
+          class="w-8 h-8 object-contain shrink-0"
+          loading="lazy"
+          onerror="this.style.opacity='0'"
+        />
+        <span class="text-sm font-bold text-[#111] w-36 truncate shrink-0">{teamName}</span>
+
+        <div class="flex items-center gap-1.5 flex-1">
+          {form.length === 0 ? (
+            <span class="text-xs text-[#bbb]">{locale === 'en' ? 'No data' : 'Ingen data'}</span>
+          ) : (
+            form.map(r => (
+              <span
+                class="w-7 h-7 rounded-full flex items-center justify-center text-[0.6rem] font-black shrink-0 cursor-default"
+                style={outcomeStyle(r.outcome)}
+                title={`${r.isHome ? homeLabel : awayLabel} ${r.opponentName}  ${r.score}`}
+              >
+                {r.outcome}
+              </span>
+            ))
+          )}
+        </div>
+
+        {form.length > 0 && (
+          <span class="text-xs font-bold text-[#999] shrink-0 tabular-nums">
+            {form.filter(r => r.outcome === 'W').length}W
+            {' '}
+            {form.filter(r => r.outcome === 'D').length}D
+            {' '}
+            {form.filter(r => r.outcome === 'L').length}L
+          </span>
+        )}
+      </div>
+    ))}
+  </div>
+</section>
