@@ -151,37 +151,6 @@ const WIDGET_SEASON_ID = 16387;
         <!-- Main content column -->
         <div class="space-y-14">
 
-          {isUpcoming && (
-            <>
-              <script is:inline>{`
-                (function(){
-                  if (window.__SI_LB_LOADED) return;
-                  window.__SI_LB_LOADED = true;
-                  var h = document.head;
-                  var s1 = document.createElement('script');
-                  s1.src = 'https://widgets.si-ab.com/c/5b6ab6f5eb84c60031bbbd24/config.js';
-                  h.appendChild(s1);
-                  var s2 = document.createElement('script');
-                  s2.src = 'https://widgets.si-ab.com/superliga24/bundle.superliga24.js?ver=2.5.3';
-                  s2.defer = true;
-                  h.appendChild(s2);
-                })();
-              `}</script>
-
-              <section>
-                <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Formguide</p>
-                <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">Seneste form</h2>
-                <Fragment set:html={`<si-lb-widget widget-id="MTSTeamsForm" event-id="${eventId}" across-all-tournaments="false" nopadding="true" transparent="false" card="false" width="100%"></si-lb-widget>`} />
-              </section>
-
-              <section>
-                <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Stilling</p>
-                <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">Tabel</h2>
-                <Fragment set:html={`<si-lb-widget widget-id="SPDKTournamentTable" tournament-id="${WIDGET_TOURNAMENT_ID}" event-id="${eventId}" nopadding="true" transparent="true" card="true" width="100%"></si-lb-widget>`} />
-              </section>
-            </>
-          )}
-
           {!isUpcoming && (
             <>
               <section>
@@ -276,13 +245,13 @@ const WIDGET_SEASON_ID = 16387;
           {isHome && (
             <section class="relative overflow-hidden rounded-[4px]" style="min-height:280px;background:#060806">
               <img
-                src="/images/match-hero-default.jpg"
+                src="/images/matchday-guide-bg.jpg"
                 alt=""
                 aria-hidden="true"
                 class="absolute inset-0 w-full h-full object-cover object-center"
-                style="opacity:0.22"
+                style="opacity:0.3"
               />
-              <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(6,8,6,0.88) 40%,rgba(6,8,6,0.55))" />
+              <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(6,8,6,0.85) 40%,rgba(6,8,6,0.5))" />
               <div class="relative z-10 flex flex-col items-center text-center px-8 py-14">
                 <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-4" style="color:#00FF1F">Gladsaxe Stadion</p>
                 <h2 class="font-black text-white uppercase mb-4" style="font-size:clamp(1.75rem,4vw,2.75rem);letter-spacing:-0.02em">
