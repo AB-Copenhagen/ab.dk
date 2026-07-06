@@ -1,0 +1,16 @@
+---
+interface Props {
+  locale?: 'da' | 'en';
+  class?: string;
+}
+
+const { locale = 'da', class: className = '' } = Astro.props as Props;
+
+const caption = locale === 'da' ? 'Foto tilføjes snart' : 'Photo coming soon';
+---
+
+<div
+  class={`overflow-hidden rounded-md aspect-4/3 bg-[#EBEBEB] border border-[#E0E0E0] flex flex-col items-center justify-center gap-3 ${className}`}>
+  <img src="/images/ab-crest.svg" alt="" aria-hidden="true" class="w-14 h-14 opacity-15" />
+  <span class="text-xs font-bold text-[#999] tracking-widest uppercase">{caption}</span>
+</div>

@@ -1,5 +1,7 @@
 import { defineMiddleware } from 'astro:middleware';
 
+import { isSearchIndexingBlocked } from '@/lib/config/seo';
+
 export const onRequest = defineMiddleware(async (context, next) => {
   // Locale resolution — stored in locals for use in layouts
   const locale = context.url.pathname.startsWith('/en') ? 'en' : 'da';
@@ -28,5 +30,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // context.locals.user = data;
   }
 
-  return next();
+  const response = await next();
+
+  if (isSearchIndexingBlocked()) {
+    const blocked = new Response(response.body, response);
+    blocked.headers.set(
+      'X-Robots-Tag',
+      'noindex, nofollow, noarchive, nosnippet'
+    );
+    return blocked;
+  }
+
+  return response;
 });

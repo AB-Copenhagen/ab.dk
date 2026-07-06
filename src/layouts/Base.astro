@@ -2,6 +2,7 @@
 import Navbar from '@/components/Navbar.astro';
 import Footer from '@/components/Footer.astro';
 import '@/styles/global.css';
+import { isSearchIndexingBlocked } from '@/lib/config/seo';
 import { fetchSingleType } from '@/lib/strapi/client';
 import type { Locale } from '@/lib/i18n';
 
@@ -34,6 +35,14 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {
+      isSearchIndexingBlocked() && (
+        <>
+          <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+          <meta name="googlebot" content="noindex, nofollow" />
+        </>
+      )
+    }
     {ogImage && <meta property="og:image" content={ogImage} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

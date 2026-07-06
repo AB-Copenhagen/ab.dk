@@ -26,7 +26,7 @@ export const COACHING_STAFF: StaffMember[] = [
     role: { da: 'Assistenttræner', en: 'Assistant Coach' },
     nationality: { da: 'Dansk', en: 'Danish' },
     bio: {
-      en: 'Benjamin Chor has over 10 years of coaching experience and was most recently assistant coach at Fremad Amager from March 2024 to March 2025. He worked as an academy coach at FK Bodø/Glimt in Norway between 2022–2024 and was also head coach for Brøndby\'s U13 team from 2020–21.',
+      en: "Benjamin Chor has over 10 years of coaching experience and was most recently assistant coach at Fremad Amager from March 2024 to March 2025. He worked as an academy coach at FK Bodø/Glimt in Norway between 2022–2024 and was also head coach for Brøndby's U13 team from 2020–21.",
       da: 'Benjamin Chor har over 10 års trænerfaring og var senest assistenttræner i Fremad Amager fra marts 2024 til marts 2025. Han arbejdede som akademitræner i FK Bodø/Glimt i Norge i perioden 2022–2024 og var desuden cheftræner for Brøndbys U13-hold i 2020–21.',
     },
   },
@@ -59,7 +59,7 @@ export const COACHING_STAFF: StaffMember[] = [
     role: { da: 'Fysisk træner', en: 'Fitness Coach' },
     nationality: { da: 'Græsk', en: 'Greek' },
     bio: {
-      en: 'Ntolaptsis is the fitness coach for the first team and joined AB in July 2025. He was previously a performance and fitness coach for FC Würzburger, where he worked with their U19 team. He holds a master\'s degree in Exercise Science & Training from Julius-Maximilians-University in Würzburg and a bachelor\'s degree in sports science from Aristotle University of Thessaloniki.',
+      en: "Ntolaptsis is the fitness coach for the first team and joined AB in July 2025. He was previously a performance and fitness coach for FC Würzburger, where he worked with their U19 team. He holds a master's degree in Exercise Science & Training from Julius-Maximilians-University in Würzburg and a bachelor's degree in sports science from Aristotle University of Thessaloniki.",
       da: 'Ntolaptsis er første holds fysiske træner og tiltrådte AB i juli 2025. Han var tidligere performance- og fitness-coach for FC Würzburger, hvor han arbejdede med U19-holdet. Han har en kandidatgrad i Exercise Science & Training fra Julius-Maximilians-Universität i Würzburg og en bachelorgrad i sportvidenskab fra Aristoteles Universitetet i Thessaloniki.',
     },
   },
