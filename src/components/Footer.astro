@@ -1,4 +1,6 @@
 ---
+import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
+
 interface Props {
   locale?: string;
   globalData?: any;
@@ -19,6 +21,25 @@ const footerHeadingClass =
   'font-black text-base text-white tracking-[-0.02em] mb-5';
 const footerItemClass = 'text-sm leading-6 tracking-[-0.01em] text-white/80';
 const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 transition-opacity no-underline`;
+
+const FALLBACK_PARTNERS = [
+  { name: 'Carlsberg',  src: '/images/sponsors/carlsberg.png', url: 'https://carlsbergdanmark.dk/', logoWidth: 210, logoHeight: 70 },
+  { name: 'Datum',      src: '/images/sponsors/datum.png',     url: 'https://datum.net/',           logoWidth: 240, logoHeight: 80 },
+  { name: 'Myriad360', src: '/images/sponsors/myriad360.png', url: 'https://myriad360.com/',        logoWidth: 185, logoHeight: 62 },
+  { name: 'Unisport',   src: '/images/sponsors/unisport.png',  url: 'https://dk.select-sport.com/', logoWidth: 160, logoHeight: 52 },
+  { name: 'Plane',      src: '/images/sponsors/plane.png',     url: 'https://plane.so/',            logoWidth: 160, logoHeight: 52 },
+];
+
+const strapiPartners = await fetchPartners();
+const partners = strapiPartners.length > 0
+  ? strapiPartners.map((p) => ({
+      name: p.name,
+      src: strapiMediaUrl(p.logo?.url),
+      url: p.url ?? '',
+      logoWidth: p.logoWidth,
+      logoHeight: p.logoHeight,
+    }))
+  : FALLBACK_PARTNERS;
 ---
 
 <!-- Sponsor row (white bg) -->
@@ -26,18 +47,15 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
   <div class="max-w-7xl mx-auto px-8">
     <div class="flex flex-wrap items-center justify-center gap-8 md:flex-nowrap md:justify-between">
       {
-        [
-          { src: '/images/sponsors/carlsberg.png', alt: 'Carlsberg',  href: 'https://carlsbergdanmark.dk/', sz: 'w-[210px] h-[70px]' },
-          { src: '/images/sponsors/datum.png',     alt: 'Datum',      href: 'https://datum.net/',           sz: 'w-[240px] h-[80px]' },
-          { src: '/images/sponsors/myriad360.png', alt: 'Myriad360', href: 'https://myriad360.com/',        sz: 'w-[185px] h-[62px]' },
-          { src: '/images/sponsors/unisport.png',  alt: 'Unisport',   href: 'https://dk.select-sport.com/', sz: 'w-[160px] h-[52px]' },
-          { src: '/images/sponsors/plane.png',     alt: 'Plane',      href: 'https://plane.so/',            sz: 'w-[160px] h-[52px]' },
-        ].map(({ src, alt, href, sz }) => (
-          <a href={href} target="_blank" rel="noreferrer" aria-label={alt} class="shrink-0">
+        partners.map(({ src, name, url, logoWidth, logoHeight }) => (
+          <a href={url} target="_blank" rel="noreferrer" aria-label={name} class="shrink-0">
             <img
               src={src}
-              alt={alt}
-              class:list={['sponsor-logo object-contain object-center', sz]}
+              alt={name}
+              width={logoWidth}
+              height={logoHeight}
+              class="sponsor-logo object-contain object-center"
+              style={`width:${logoWidth}px;height:${logoHeight}px`}
             />
           </a>
         ))

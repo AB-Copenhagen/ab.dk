@@ -127,6 +127,34 @@ export async function fetchPlayerCmsData(
   };
 }
 
+// ── Partner / sponsor data ────────────────────────────────────────────────────
+
+export interface StrapiPartnerLogo {
+  url: string;
+  alternativeText?: string;
+  width: number;
+  height: number;
+}
+
+export interface StrapiPartner {
+  name: string;
+  logo: StrapiPartnerLogo;
+  url?: string;
+  logoWidth: number;
+  logoHeight: number;
+  sortOrder: number;
+  category: 'main' | 'kit' | 'media' | 'other';
+}
+
+/** Fetch all published partners ordered by sortOrder. Returns [] on error. */
+export async function fetchPartners(): Promise<StrapiPartner[]> {
+  return fetchCollectionType<StrapiPartner[]>('partners', {
+    populate: ['logo'],
+    sort: ['sortOrder:asc'],
+    status: 'published',
+  }).catch(() => []);
+}
+
 // ── Media helpers ─────────────────────────────────────────────────────────────
 
 const WASABI_HOST_RE = /^https?:\/\/[^/]*wasabisys\.com\//;
