@@ -184,14 +184,9 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
         return (
           <div
             id={isFirst ? dateKey : undefined}
-            class="group relative scroll-mt-24 bg-white border border-gray-200 rounded-[4px] overflow-hidden transition-all duration-150 hover:border-gray-300 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] flex flex-col">
-            <a
-              href={matchHref(event.eventId)}
-              class="absolute inset-0 z-0"
-              aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${homeName} vs ${awayName}`}
-            />
+            class="scroll-mt-24 bg-white border border-gray-200 rounded-[4px] overflow-hidden transition-all duration-150 hover:border-gray-300 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] flex flex-col">
 
-            <div class="relative z-10 px-4 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200 shrink-0">
+            <div class="px-4 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200 shrink-0">
               <span
                 class="text-xs font-bold tracking-[0.04em]"
                 style={`color:${isABHome ? '#006A52' : '#888'};`}>
@@ -200,7 +195,7 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               <span class="text-xs text-[#999]">{translate(locale, 'secondDivision')}</span>
             </div>
 
-            <div class="relative z-10 flex items-center justify-center gap-3 px-4 pt-5 pb-3">
+            <div class="flex items-center justify-center gap-3 px-4 pt-5 pb-3">
               <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
                 <img
                   src={getTeamLogoSrc(event.homeId)}
@@ -228,11 +223,36 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               </div>
             </div>
 
-            <div class="relative z-10 px-4 pb-5 space-y-0.5">
+            <div class="px-4 pb-4 space-y-0.5">
               <p class="text-xs text-[#555]">
                 {fmtGridDate(event.startDate)} · {fmtTime(event.startDate)}
               </p>
               <p class="text-xs text-[#999] truncate">{venue}</p>
+            </div>
+
+            <div class="mt-auto px-4 py-3 flex items-center gap-2 border-t border-[#F0F0F0]">
+              <a
+                href="https://abtv.ab.dk"
+                target="_blank"
+                rel="noreferrer"
+                class="text-xs font-bold text-ab-green no-underline mr-auto">
+                {translate(locale, 'watchOnline')}
+              </a>
+              {isABHome && (
+                <a
+                  href="https://billet.ab.dk/"
+                  target="_blank"
+                  rel="noreferrer"
+                  class="text-xs font-bold px-3 py-1.5 rounded border border-ab-green text-ab-green hover:bg-ab-green hover:text-white transition-colors no-underline">
+                  {translate(locale, 'tickets')}
+                </a>
+              )}
+              <a
+                href={matchHref(event.eventId)}
+                class="text-xs font-bold px-3 py-1.5 rounded no-underline text-white transition-opacity hover:opacity-80"
+                style="background:#006A52">
+                {locale === 'en' ? 'Details' : 'Detaljer'}
+              </a>
             </div>
 
           </div>
