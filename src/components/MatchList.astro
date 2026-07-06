@@ -75,7 +75,6 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
 
 <div class="match-list">
   {isPast ? (
-    <!-- ── Past matches: full-width list cards ── -->
     <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col gap-y-8 md:gap-y-10">
       {events.length === 0 && (
         <div class="text-center py-12 text-sm text-[#777]">{emptyMessage(filter)}</div>
@@ -169,7 +168,6 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
       })}
     </div>
   ) : (
-    <!-- ── Upcoming/home/away: 3-column grid cards ── -->
     <div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
       {events.length === 0 && (
         <div class="col-span-full text-center py-12 text-sm text-[#777]">{emptyMessage(filter)}</div>
@@ -193,7 +191,6 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${homeName} vs ${awayName}`}
             />
 
-            <!-- Header bar -->
             <div class="relative z-10 px-4 py-1.5 flex items-center justify-between bg-[#F0F4F0] border-b border-gray-200 shrink-0">
               <span
                 class="text-xs font-bold tracking-[0.04em]"
@@ -203,7 +200,6 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               <span class="text-xs text-[#999]">{translate(locale, 'secondDivision')}</span>
             </div>
 
-            <!-- Crests -->
             <div class="relative z-10 flex items-center justify-center gap-3 px-4 pt-5 pb-3">
               <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
                 <img
@@ -232,7 +228,6 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               </div>
             </div>
 
-            <!-- Date + venue -->
             <div class="relative z-10 px-4 pb-4 space-y-0.5">
               <p class="text-xs text-[#555]">
                 {fmtGridDate(event.startDate)} · {fmtTime(event.startDate)}
@@ -240,7 +235,6 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               <p class="text-xs text-[#999] truncate">{venue}</p>
             </div>
 
-            <!-- Ticket CTA (home only) -->
             {isABHome && (
               <div class="relative z-10 px-4 pb-4">
                 <a
@@ -258,7 +252,6 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               </div>
             )}
 
-            <!-- Footer -->
             <div class="relative z-10 mt-auto px-4 py-2.5 flex items-center gap-3 border-t border-[#F0F0F0]">
               <a href="https://abtv.ab.dk" target="_blank" rel="noreferrer" class="text-xs font-bold text-ab-green no-underline">ABTV</a>
               <span class="ml-auto text-xs font-bold text-[#444] transition-colors group-hover:text-ab-green">
