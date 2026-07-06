@@ -1,0 +1,165 @@
+---
+interface Props {
+  locale?: 'da' | 'en';
+}
+
+const { locale = 'da' } = Astro.props as Props;
+
+const years = [
+  '1883',
+  '1887',
+  '1889',
+  '1894',
+  '1919',
+  '1924',
+  '1940',
+  '1946',
+  '1960',
+  '1963',
+  '1974',
+  '1990',
+  '2004',
+  '2022',
+  '2023',
+  '2025',
+];
+
+const navLabel = locale === 'da' ? 'Historisk tidslinje' : 'Historical timeline';
+---
+
+<nav
+  aria-label={navLabel}
+  class="sticky z-40 bg-white border-b border-[#E5E7EB]"
+  style="top: var(--nav-height, 92px)">
+  <div class="relative max-w-7xl mx-auto">
+    <div
+      id="timeline-scroll"
+      class="flex items-center overflow-x-auto whitespace-nowrap py-3 px-8 lg:px-20 scrollbar-none">
+      <ul class="flex items-center shrink-0">
+        {
+          years.map((year, i) => (
+            <li class="flex items-center shrink-0">
+              <a
+                href={`#${year}`}
+                data-year={year}
+                class="timeline-link flex items-center gap-2 px-3 py-1.5 text-xs font-black tracking-[-0.02em] text-[#999] transition-colors hover:text-ab-green">
+                <span class="timeline-dot w-1.5 h-1.5 rounded-full bg-[#CCC] transition-colors" />
+                {year}
+              </a>
+              {i < years.length - 1 && (
+                <span class="w-5 h-px bg-[#DDD] shrink-0" aria-hidden="true" />
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <!-- Edge fades — hint that the strip scrolls further, hidden via JS when there's nothing more to reveal -->
+    <div
+      id="timeline-fade-left"
+      class="pointer-events-none absolute inset-y-0 left-0 w-10 bg-[linear-gradient(to_right,white,transparent)] opacity-0 transition-opacity"
+      aria-hidden="true"
+    />
+    <div
+      id="timeline-fade-right"
+      class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-[linear-gradient(to_left,white,transparent)] opacity-0 transition-opacity"
+      aria-hidden="true"
+    />
+  </div>
+</nav>
+
+<script>
+  const scrollEl = document.getElementById('timeline-scroll');
+  const fadeLeft = document.getElementById('timeline-fade-left');
+  const fadeRight = document.getElementById('timeline-fade-right');
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.timeline-link'));
+
+  const updateFades = () => {
+    if (!scrollEl) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollEl;
+    fadeLeft?.style.setProperty('opacity', scrollLeft > 4 ? '1' : '0');
+    fadeRight?.style.setProperty(
+      'opacity',
+      scrollLeft < scrollWidth - clientWidth - 4 ? '1' : '0',
+    );
+  };
+
+  scrollEl?.addEventListener('scroll', updateFades, { passive: true });
+  window.addEventListener('resize', updateFades);
+  updateFades();
+
+  const navEl = document.querySelector<HTMLElement>('nav[aria-label$="timeline"], nav[aria-label$="tidslinje"]');
+
+  const scrollToSection = (id: string) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+    const navHeight =
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) ||
+      92;
+    const timelineHeight = navEl?.offsetHeight ?? 0;
+    const top =
+      target.getBoundingClientRect().top + window.scrollY - navHeight - timelineHeight - 16;
+    window.scrollTo({ top, behavior: 'smooth' });
+    history.pushState(null, '', `#${id}`);
+  };
+
+  links.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const id = link.dataset.year;
+      if (!id) return;
+      event.preventDefault();
+      scrollToSection(id);
+    });
+  });
+
+  if (links.length) {
+    const sections = links
+      .map((link) => document.getElementById(link.dataset.year ?? ''))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    let activeId = '';
+
+    const setActive = (id: string) => {
+      if (id === activeId) return;
+      activeId = id;
+      links.forEach((link) => {
+        const isActive = link.dataset.year === id;
+        link.classList.toggle('text-ab-green', isActive);
+        link.classList.toggle('text-[#999]', !isActive);
+        const dot = link.querySelector<HTMLElement>('.timeline-dot');
+        dot?.classList.toggle('bg-ab-green', isActive);
+        dot?.classList.toggle('bg-[#CCC]', !isActive);
+        if (isActive) {
+          link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    };
+
+    const updateActiveFromScroll = () => {
+      const threshold = window.innerHeight * 0.35;
+      let current = sections[0];
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= threshold) {
+          current = section;
+        }
+      }
+      if (current) setActive(current.id);
+    };
+
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          updateActiveFromScroll();
+          ticking = false;
+        });
+      },
+      { passive: true },
+    );
+
+    updateActiveFromScroll();
+  }
+</script>
