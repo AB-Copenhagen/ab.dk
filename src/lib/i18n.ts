@@ -39,11 +39,14 @@ export function localePath(locale: Locale, daPath: string): string {
 
 /** Returns the URL for the current page translated to targetLocale. */
 export function switchLocalePath(currentPath: string, targetLocale: Locale): string {
-  if (targetLocale === 'en') {
-    return `/en${translateSlug(currentPath, daToEn)}`;
+  let pathWithoutLocale = currentPath.replace(/^\/en(?=\/|$)/, '') || '/';
+  if (pathWithoutLocale !== '/' && pathWithoutLocale.endsWith('/')) {
+    pathWithoutLocale = pathWithoutLocale.slice(0, -1);
   }
-  const enPath = currentPath.replace(/^\/en/, '') || '/';
-  return translateSlug(enPath, enToDa);
+  if (targetLocale === 'en') {
+    return `/en${translateSlug(pathWithoutLocale, daToEn)}`;
+  }
+  return translateSlug(pathWithoutLocale, enToDa);
 }
 
 // UI strings dictionary
