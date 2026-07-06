@@ -113,6 +113,31 @@ Secrets are injected as environment variables on the compute instance — never 
 
 ---
 
+## Search engine indexing (preview / staging)
+
+The site **blocks search engine crawlers by default** while in development. The public preview deployment at [strapi-website-mikzcoqln-ab1889.vercel.app](https://strapi-website-mikzcoqln-ab1889.vercel.app/) is covered by this block.
+
+Configuration lives in `astro.config.mjs` (`env.schema.ALLOW_SEARCH_INDEXING`, default `false`).
+
+Protection is applied in three layers:
+
+- `/robots.txt` — `Disallow: /` for all user agents
+- `<meta name="robots" content="noindex, …">` on every page
+- `X-Robots-Tag: noindex, nofollow` HTTP response header
+
+### Before production launch
+
+1. Set `ALLOW_SEARCH_INDEXING=true` in the **production** environment (Vercel / datum-cloud)
+2. Redeploy and verify:
+   - `GET /robots.txt` returns `Allow: /`
+   - HTML pages no longer include `noindex` meta tags
+   - Response headers no longer include `X-Robots-Tag: noindex`
+3. Submit the production sitemap in Google Search Console when ready
+
+Do **not** set `ALLOW_SEARCH_INDEXING=true` on preview or staging URLs.
+
+---
+
 ## Deploy
 
 The app runs as a Docker container on datum-cloud/compute.
