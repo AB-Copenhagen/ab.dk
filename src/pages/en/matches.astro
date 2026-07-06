@@ -8,12 +8,21 @@ export const prerender = false;
 
 const locale = 'en';
 
+const now = new Date();
+const seasonFrom = new Date(now);
+seasonFrom.setMonth(seasonFrom.getMonth() - 11);
+const seasonTo = new Date(now);
+seasonTo.setMonth(seasonTo.getMonth() + 3);
+
 let events: Awaited<ReturnType<typeof fetchABEvents>> = [];
 try {
-  events = await fetchABEvents({ locale, limit: 100 });
+  events = await fetchABEvents({
+    locale,
+    limit: 200,
+    fromDate: seasonFrom.toISOString().slice(0, 10),
+    toDate: seasonTo.toISOString().slice(0, 10),
+  });
 } catch { /* SI API unavailable */ }
-
-const now = new Date();
 const filter = (Astro.url.searchParams.get('filter') ?? 'upcoming') as MatchListFilter;
 const upcoming = events.filter((e) => new Date(e.startDate) >= now);
 const finished = events.filter((e) => new Date(e.startDate) < now).reverse();
