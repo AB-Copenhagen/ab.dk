@@ -127,6 +127,41 @@ export async function fetchPlayerCmsData(
   };
 }
 
+// ── Match day CMS content ─────────────────────────────────────────────────────
+
+export interface StrapiSocialEmbed {
+  platform: 'instagram' | 'twitter' | 'youtube' | 'facebook' | 'tiktok';
+  embedCode: string;
+  caption?: string;
+}
+
+export interface StrapiMatchArticle {
+  id: number;
+  title: string;
+  slug: string;
+  description?: string;
+  image?: { url: string; alternativeText?: string };
+}
+
+export interface StrapiMatchContent {
+  eventId: number;
+  ticketUrl?: string;
+  accentColor?: string;
+  bannerImage?: { url: string; alternativeText?: string; width?: number; height?: number };
+  articles?: StrapiMatchArticle[];
+  socialEmbeds?: StrapiSocialEmbed[];
+}
+
+/** Fetch optional CMS content for a match by SI event ID. Returns null if not found. */
+export async function fetchMatchContent(eventId: number): Promise<StrapiMatchContent | null> {
+  const results = await fetchCollectionType<StrapiMatchContent[]>('match-contents', {
+    filters: { eventId: { $eq: eventId } },
+    populate: ['bannerImage', 'articles', 'articles.image', 'socialEmbeds'],
+    status: 'published',
+  }).catch(() => []);
+  return results[0] ?? null;
+}
+
 // ── Partner / sponsor data ────────────────────────────────────────────────────
 
 export interface StrapiPartnerLogo {

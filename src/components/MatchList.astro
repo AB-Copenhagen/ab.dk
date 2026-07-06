@@ -217,6 +217,11 @@ const seenDates = new Set<string>();
                 class="text-xs font-bold text-ab-green no-underline">
                 ABTV
               </a>
+              <a
+                href={`${locale === 'en' ? '/en/match' : '/kamp'}/${event.eventId}`}
+                class="ml-auto text-xs font-bold text-[#444] no-underline hover:text-ab-green transition-colors">
+                {locale === 'en' ? 'View match →' : 'Se kamp →'}
+              </a>
             </div>
           </div>
         );

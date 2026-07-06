@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import SiWidget from '@/components/widgets/SiWidget.astro';
 import { fetchEvent } from '@/lib/si/client';
 import type { SIEvent } from '@/lib/si/client';
+import { fetchMatchContent, strapiMediaUrl } from '@/lib/strapi/client';
 
 export const prerender = false;
 
@@ -19,7 +20,7 @@ let event: SIEvent | null = null;
 try {
   event = await fetchEvent(eventId, 'da');
 } catch {
-  // SI unavailable — redirect below
+  // SI unavailable
 }
 
 if (!event) {
@@ -40,6 +41,13 @@ const matchDate = new Date(startDate).toLocaleDateString('da-DK', {
 
 const isLive = statusType === 'inprogress';
 const isFinished = statusType === 'finished';
+const cmsMatch = await fetchMatchContent(eventId).catch(() => null);
+const accentColor = cmsMatch?.accentColor ?? '#006a52';
+const bannerImageUrl = cmsMatch?.bannerImage ? strapiMediaUrl(cmsMatch.bannerImage.url) : null;
+// Only show custom ticket CTA when editor explicitly sets a URL per match
+const customTicketUrl = cmsMatch?.ticketUrl ?? null;
+const articles = cmsMatch?.articles ?? [];
+const socialEmbeds = cmsMatch?.socialEmbeds ?? [];
 
 const WIDGET_TEAM_ID = 10202;
 const WIDGET_TOURNAMENT_ID = 46;
@@ -47,31 +55,69 @@ const WIDGET_SEASON_ID = 16387;
 ---
 
 <Base locale="da" title={pageTitle}>
-  <div class="bg-white">
-    <div class="border-b border-gray-200">
+
+  {bannerImageUrl ? (
+    <div class="relative overflow-hidden flex flex-col justify-end" style="min-height:400px">
+      <img
+        src={bannerImageUrl}
+        alt={`${homeName} vs ${awayName}`}
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#060806]/95 via-[#060806]/55 to-transparent" />
+      <div class="relative z-10 max-w-7xl mx-auto w-full px-5 md:px-12 pb-12 pt-28">
+        <a
+          href="/kampe"
+          class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8 hover:opacity-70 transition-opacity tracking-[0.15em]"
+          style={`color:${accentColor}`}
+        >
+          ← Alle kampe
+        </a>
+        <p class="text-xs font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
+          {tournamentName}
+        </p>
+        <h1
+          class="font-black text-white"
+          style="font-size:clamp(2rem,6vw,4rem);letter-spacing:-0.03em;line-height:0.95"
+        >
+          {homeName} <span style={`color:${accentColor}`}>vs</span> {awayName}
+        </h1>
+        <p class="mt-3 text-sm text-white/60">{matchDate}</p>
+        {score && (
+          <p class="mt-3 text-2xl font-black tabular-nums" style={`color:${isLive ? '#00FF1F' : accentColor}`}>
+            {score}
+            {isLive && (
+              <span class="ml-3 inline-flex items-center gap-1.5 text-sm font-bold uppercase text-ab-neon tracking-[0.1em]">
+                <span class="w-2 h-2 rounded-full bg-current animate-pulse"></span>
+                LIVE
+              </span>
+            )}
+          </p>
+        )}
+      </div>
+    </div>
+  ) : (
+    <div class="bg-white border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-5 md:px-12">
         <div class="pt-10 pb-8">
           <a
             href="/kampe"
-            class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8 hover:underline text-ab-green tracking-[0.15em]"
+            class="inline-flex items-center gap-2 text-xs font-bold uppercase mb-8 hover:underline tracking-[0.15em]"
+            style={`color:${accentColor}`}
           >
             ← Alle kampe
           </a>
-          <p class="text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
+          <p class="text-xs font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
             {tournamentName}
           </p>
           <h1
             class="font-black text-[#111]"
             style="font-size:clamp(2rem,6vw,4rem);letter-spacing:-0.03em;line-height:0.95"
           >
-            {homeName} <span class="text-ab-green">vs</span> {awayName}
+            {homeName} <span style={`color:${accentColor}`}>vs</span> {awayName}
           </h1>
           <p class="mt-3 text-sm text-[#6B7280]">{matchDate}</p>
           {score && (
-            <p
-              class="mt-3 text-2xl font-black tabular-nums"
-              style={`color:${isLive ? '#00FF1F' : '#D6A02A'}`}
-            >
+            <p class="mt-3 text-2xl font-black tabular-nums" style={`color:${isLive ? '#00FF1F' : accentColor}`}>
               {score}
               {isLive && (
                 <span class="ml-3 inline-flex items-center gap-1.5 text-sm font-bold uppercase text-ab-neon tracking-[0.1em]">
@@ -81,12 +127,67 @@ const WIDGET_SEASON_ID = 16387;
               )}
             </p>
           )}
-          <div class="mt-5 h-0.5 w-12 bg-ab-green"></div>
+          <div class="mt-5 h-0.5 w-12" style={`background:${accentColor}`}></div>
         </div>
       </div>
     </div>
+  )}
 
+  <div class="bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14 space-y-16">
+
+      {customTicketUrl && (
+        <div class="-mt-4">
+          <a
+            href={customTicketUrl}
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-white rounded-md transition-opacity hover:opacity-80"
+            style={`background:${accentColor}`}
+          >
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2" />
+              <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2" />
+            </svg>
+            Køb billetter
+          </a>
+        </div>
+      )}
+
+      {articles.length > 0 && (
+        <section>
+          <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
+            Kampnyheder
+          </p>
+          <h2
+            class="font-black mb-8 text-[#111]"
+            style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+          >
+            Artikler
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article) => (
+              <a href={`/blog/${article.slug}`} class="group block no-underline">
+                {article.image && (
+                  <div class="aspect-video overflow-hidden rounded-lg mb-4 bg-gray-100">
+                    <img
+                      src={strapiMediaUrl(article.image.url)}
+                      alt={article.image.alternativeText ?? article.title}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                )}
+                <h3 class="font-bold text-[#111] group-hover:underline mb-2 leading-snug">
+                  {article.title}
+                </h3>
+                {article.description && (
+                  <p class="text-sm text-[#6B7280] line-clamp-2">{article.description}</p>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section>
         <div class="overflow-hidden" style="background:#060806;border:1px solid #152214">
@@ -100,7 +201,7 @@ const WIDGET_SEASON_ID = 16387;
       </section>
 
       <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
           Analyse
         </p>
         <h2
@@ -170,7 +271,7 @@ const WIDGET_SEASON_ID = 16387;
       </section>
 
       <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
           Hold
         </p>
         <h2
@@ -190,7 +291,7 @@ const WIDGET_SEASON_ID = 16387;
       </section>
 
       <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
           {isLive ? 'Live nu' : isFinished ? 'Kampreferat' : 'Under kampen'}
         </p>
         <h2
@@ -271,7 +372,7 @@ const WIDGET_SEASON_ID = 16387;
       </section>
 
       <section>
-        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
           Video
         </p>
         <h2
@@ -289,6 +390,28 @@ const WIDGET_SEASON_ID = 16387;
           />
         </div>
       </section>
+
+      {socialEmbeds.length > 0 && (
+        <section>
+          <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>
+            Social
+          </p>
+          <h2
+            class="font-black mb-8 text-[#111]"
+            style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+          >
+            Fra sociale medier
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+            {socialEmbeds.map((embed) => (
+              <div class="flex flex-col gap-3">
+                <div set:html={embed.embedCode} />
+                {embed.caption && <p class="text-sm text-[#6B7280]">{embed.caption}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
     </div>
   </div>

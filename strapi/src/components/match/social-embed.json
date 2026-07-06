@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_match_social_embeds",
+  "info": {
+    "displayName": "Social Embed",
+    "icon": "twitter"
+  },
+  "options": {},
+  "attributes": {
+    "platform": {
+      "type": "enumeration",
+      "enum": ["instagram", "twitter", "youtube", "facebook", "tiktok"],
+      "required": true
+    },
+    "embedCode": {
+      "type": "text",
+      "required": true
+    },
+    "caption": {
+      "type": "string"
+    }
+  }
+}
