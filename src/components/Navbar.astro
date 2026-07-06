@@ -86,36 +86,58 @@ const enPath = switchLocalePath(currentPath, 'en');
       <div class="w-px h-4 bg-white/20 shrink-0"></div>
       <!-- Language selector -->
       <div class="flex items-center gap-4">
-        <a
-          href={daPath}
-          class:list={[
-            'no-underline hover:opacity-100 transition-opacity',
-            locale === 'da' ? 'opacity-100' : 'opacity-45',
-          ]}
-          aria-label="Dansk">
-          <img
-            src="/flags/da.jpg"
-            alt=""
-            width="18"
-            height="14"
-            class="block h-3.5 w-auto"
-          />
-        </a>
-        <a
-          href={enPath}
-          class:list={[
-            'no-underline hover:opacity-100 transition-opacity',
-            locale === 'en' ? 'opacity-100' : 'opacity-45',
-          ]}
-          aria-label="English">
-          <img
-            src="/flags/en.jpg"
-            alt=""
-            width="21"
-            height="14"
-            class="block h-3.5 w-auto"
-          />
-        </a>
+        {
+          locale === 'da' ? (
+            <span class="opacity-100 cursor-default" aria-current="true" aria-label="Dansk">
+              <img
+                src="/flags/da.jpg"
+                alt=""
+                width="18"
+                height="14"
+                class="block h-3.5 w-auto"
+              />
+            </span>
+          ) : (
+            <a
+              href={daPath}
+              class="no-underline opacity-45 hover:opacity-100 transition-opacity"
+              aria-label="Skift til dansk">
+              <img
+                src="/flags/da.jpg"
+                alt=""
+                width="18"
+                height="14"
+                class="block h-3.5 w-auto"
+              />
+            </a>
+          )
+        }
+        {
+          locale === 'en' ? (
+            <span class="opacity-100 cursor-default" aria-current="true" aria-label="English">
+              <img
+                src="/flags/en.jpg"
+                alt=""
+                width="21"
+                height="14"
+                class="block h-3.5 w-auto"
+              />
+            </span>
+          ) : (
+            <a
+              href={enPath}
+              class="no-underline opacity-45 hover:opacity-100 transition-opacity"
+              aria-label="Switch to English">
+              <img
+                src="/flags/en.jpg"
+                alt=""
+                width="21"
+                height="14"
+                class="block h-3.5 w-auto"
+              />
+            </a>
+          )
+        }
       </div>
     </div>
   </div>

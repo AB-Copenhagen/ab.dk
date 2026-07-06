@@ -1,6 +1,39 @@
 ---
 import Base from '@/layouts/Base.astro';
+import TimelineNav from '@/components/history/TimelineNav.astro';
+import PlaceholderImage from '@/components/history/PlaceholderImage.astro';
+
 export const prerender = true;
+
+const olympiskeLondon1948 = [
+  'Knud Lundberg',
+  'Georg Dahlfelt',
+  'Karl Aage Hansen',
+  'Ivan Jensen',
+  'Poul Petersen',
+  'Knud Bastrup-Birk',
+];
+
+const treStoreSpillere = [
+  { navn: 'René Henriksen', note: 'Landsholdsdebut som 28-årig' },
+  { navn: 'Peter Frandsen', note: '392 kampe for AB' },
+  { navn: 'Peter Rasmussen', note: 'Klubrekord: 394 kampe' },
+];
+
+const fiveCastlesLedelse = [
+  { navn: 'Erik Stover', rolle: 'CEO', note: 'Tidl. CEO, New York Red Bulls' },
+  { navn: 'Jen Hsiang Chang', rolle: 'Formand & Sporting Director', note: 'Tidl. CEO, New York Cosmos' },
+  { navn: 'Ben Lyttleton', rolle: 'Fodboldskribent', note: '' },
+  { navn: 'Simon Young', rolle: 'Medstifter, ClipperData', note: '' },
+  { navn: 'Andy Glockner', rolle: 'Sportsanalyse-konsulent', note: '' },
+  { navn: 'Alex Lee', rolle: 'Talentchef, Dell', note: '' },
+];
+
+const trenerregnskab = [
+  { navn: 'Patrick Braune', note: '13 S – 9 U – 10 N' },
+  { navn: 'David Roufpanah (23/24)', note: '9 S – 13 U – 10 N' },
+  { navn: 'Joey Guðjónsson (24/25)', note: '14 S – 9 U – 9 N · 4. plads' },
+];
 ---
 
 <Base
@@ -25,8 +58,10 @@ export const prerender = true;
     </div>
   </div>
 
+  <TimelineNav locale="da" />
+
   <!-- 1883: White bg — tekst venstre, billede højre -->
-  <section class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1883" class="bg-white py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
         <div>
@@ -65,7 +100,7 @@ export const prerender = true;
   </section>
 
   <!-- 1887: Beige bg — billede venstre, tekst højre -->
-  <section class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
+  <section id="1887" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
         <div class="overflow-hidden order-2 lg:order-1 rounded-md aspect-4/3">
@@ -104,7 +139,7 @@ export const prerender = true;
   </section>
 
   <!-- 1889: Lysegrå bg — tekst venstre, billede højre -->
-  <section class="bg-[#E7E7E7] py-[clamp(64px,9vw,112px)]">
+  <section id="1889" class="bg-[#E7E7E7] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
         <div>
@@ -137,7 +172,7 @@ export const prerender = true;
   </section>
 
   <!-- 1889 sort: Ny bestyrelse -->
-  <section class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+  <section id="1889-board" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
         <div class="overflow-hidden rounded-md aspect-4/3">
@@ -178,7 +213,7 @@ export const prerender = true;
   </section>
 
   <!-- 1889 hvid: To kolonner -->
-  <section class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1889-dues" class="bg-white py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-start">
         <div>
@@ -246,15 +281,15 @@ export const prerender = true;
   </section>
 
   <!-- 1894: Grøn bg — crest venstre, tekst højre -->
-  <section class="bg-ab-green py-[clamp(64px,9vw,112px)]">
+  <section id="1894" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
-      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+      <div class="grid lg:grid-cols-[minmax(0,400px)_1.35fr] gap-16 lg:gap-20 items-center">
         <div
-          class="flex items-center justify-center aspect-square max-h-[500px]">
+          class="flex items-center justify-center aspect-square max-h-[420px]">
           <img
             src="/images/about-crest-original.png"
             alt="AB 1889 crest"
-            class="w-[min(480px,90%)]"
+            class="w-[min(360px,90%)]"
           />
         </div>
         <div>
@@ -279,6 +314,619 @@ export const prerender = true;
             I løbet af afdelingens første år steg antallet af medlemmer til
             næsten 70. Edmond Andersen holdt en omhyggelig dagbog over de
             enkelte træningssessioner — både store og små.
+          </p>
+        </div>
+      </div>
+
+      <!-- 1919: Træningsdagbog og opsigelsen af Tagensvej -->
+      <div
+        id="1919"
+        class="mt-16 lg:mt-20 border-l-[3px] border-ab-neon pl-6 lg:pl-8">
+        <p
+          class="text-[0.8rem] font-black text-ab-neon tracking-widest uppercase mb-4">
+          1919 · Fra dagbogen
+        </p>
+        <p class="italic text-[1.05rem] leading-[1.8] text-white/90 mb-1">
+          "Træningsdagbog og skarnsalderen (1919)"
+        </p>
+        <ul
+          class="italic text-[1.05rem] leading-[1.8] text-white/80 mt-4 flex flex-col gap-1 list-none">
+          <li>
+            22-12: 10 mand. Femmands-fodbold. For 50. gang blev det
+            konstateret, at X er i skarnsalderen.
+          </li>
+          <li>27-12: 20 spillere. Fint vejr. God kamp!</li>
+          <li>3.-1.-01: Ingen spillere mødt op. Frost. Skøjteføre. Sæsonen sluttede.</li>
+          <li>14.-6.: 23 mand til træning. Harald Bohr tog en dukkert.</li>
+        </ul>
+        <p class="italic text-[1.05rem] leading-[1.8] text-white/90 mt-5">
+          "I 1919 begyndte skyerne at trække sig sammen over banerne på
+          Tagensvej. Københavns Kommune opsagde lejemålet, men klubben fik det
+          udskudt flere gange på grund af lange forhandlinger! Men i maj 1922
+          var det slut. AB blev henvist til Fælleden og fik nådigst lov til at
+          bruge et stykke af Rigshospitalets grund. I denne periode lå
+          omklædningsrummene i et skur uden vand."
+        </p>
+        <p class="text-[0.95rem] text-white/60 mt-3">
+          — Fra Edmond Andersens dagbog
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1924: Beige bg — floating billede-placeholder i tekstflow -->
+  <section id="1924" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <div
+          class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
+          <span class="font-black text-[1.4rem] text-white tracking-[-0.04em]"
+            >1924</span
+          >
+        </div>
+        <h2
+          class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+          Flytningen til Nørre Allé
+        </h2>
+        <PlaceholderImage
+          locale="da"
+          class="w-full sm:w-[300px] lg:w-[380px] sm:float-right sm:ml-8 lg:ml-10 mb-6"
+        />
+        <p class="text-[1.1rem] leading-[1.75] text-[#111]">
+          Flytningen til Nørre Allé blev kun muliggjort gennem stor økonomisk
+          velvilje fra kendte navne i de akademiske kredse, og ikke mindst
+          fra fodboldklubben FREM, der gav AB et stort lån til opførelsen af
+          nye baner og et klubhus, som stod færdigt den 13. september 1924.
+          At det havde kostet klubben dyrt, kan ses af invitationen til
+          indvielsesfesten samme aften: "Sandwiches skal medbringes, kun den
+          åndelige føde vil udvalget sørge for."
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+          Året før var P.W. Degner kommet til klubben, og fra starten tog han
+          over ledelsen af ungdomsafdelingen. Antallet af medlemmer i
+          ungdomsafdelingen voksede støt — fra 130 i 1925 til over 200 i
+          midten af 30'erne.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+          AB vandt juniorturneringen 7 gange under ledelse af den navnkundige
+          Carl Skomager Hansen, som også var den første dansker, der blev
+          professionel i udlandet, da han i 1921 skrev kontrakt med Glasgow
+          Rangers for en transfersum på £20!
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+          Klublivet blomstrede i mellemkrigsårene, og årets store fest var
+          "Rusgildet". Her blev de nyoprykkede seniorer indviet i klubbens
+          regler og skikke gennem taler, sange, en revy og — ikke mindst —
+          masser af drinks!
+        </p>
+        <div class="clear-both" aria-hidden="true" />
+    </div>
+  </section>
+
+  <!-- 1940: Sort bg — billede-placeholder venstre, tekst højre -->
+  <section id="1940" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
+        <div class="order-2 lg:order-1">
+          <PlaceholderImage locale="da" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div
+            class="inline-flex items-center mb-7 bg-ab-gold rounded-full py-[9px] px-[22px]">
+            <span
+              class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+              >1940</span
+            >
+          </div>
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-ab-beige">
+            AB fylder 50 år
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85">
+            AB's 50-års fødselsdag blev fejret på den mest fashionable
+            restaurant på den tid, Nimb, hvor formand O. Thieslen bød gæsterne
+            velkommen. Blandt andet afspillede formanden den grammofonplade,
+            som professor og nobelprisvinder Niels Bohr havde sendt hjem fra
+            sin rejse i USA — en hyldest til fødselaren.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5">
+            At spille bold under krigen var anderledes end før 1940. Man
+            trænede hårdere, nød kammeratskabet i klubben og følte sig del af
+            fællesskabet på en helt anden måde end tidligere. I sæsonen 1942-43
+            vandt AB "Double'en", og holdet talte blandt andre Knud Lundberg,
+            lægen der samtidig spillede på tre landshold — fodbold, håndbold og
+            basketball — Karl Aage Hansen, senere professionel i Juventus, Ivan
+            Jensen og Georg Dahlfelt, der spillede sammen med Lundberg på
+            landsholdet i håndbold.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1946: Hvid bg — floating billede-placeholder i tekstflow -->
+  <section id="1946" class="bg-white py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <div
+          class="inline-flex items-center mb-7 bg-ab-beige rounded-full py-[9px] px-[22px]">
+          <span
+            class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+            >1946</span
+          >
+        </div>
+        <h2
+          class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+          Bordtennis kommer til AB
+        </h2>
+        <PlaceholderImage
+          locale="da"
+          class="w-full sm:w-[300px] lg:w-[380px] sm:float-right sm:ml-8 lg:ml-10 mb-6"
+        />
+        <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+          I 1946 kom bordtennis til AB. Med forskellige cricket- og
+          fodboldspillere på holdet lykkedes det at vinde
+          Københavnsmesterskabet i 1946 og '47, og kronen på værket blev
+          "Double'en" (DM og pokal) i både 1948 og 1949. Trods de flotte
+          resultater blev afdelingen nedlagt i begyndelsen af 50'erne.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+          AB's guldalder lå i tiden efter 2. Verdenskrig. Medlemstallet lå på
+          over 1.000, og strømmen af danske mesterskaber tog til — med sejre
+          i 1945, 1947, 1951 og 1952. Og fodbold var populært: 30.000
+          tilskuere til de fleste kampe i Idrætsparken.
+        </p>
+
+        <p
+          class="text-[0.78rem] font-black text-[#999] tracking-widest uppercase mt-8 mb-3 clear-both">
+          1948 London-OL — AB-truppen
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {
+            olympiskeLondon1948.map((navn) => (
+              <div class="border border-[#E5E7EB] py-3 px-4">
+                <p class="font-black text-[0.95rem] text-[#111] tracking-[-0.02em]">
+                  {navn}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-8">
+          Da mange af disse spillere trak sig tilbage — Lundberg blev til
+          1960 — blev resultaterne lidt mere jævne, trods tilgangen af nye
+          spillere: Chr. Brøgger, Dan Ohland Andersen, Frank Rechendorf,
+          Ejler og Poul Koch samt Jens Carl Christensen.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+          Med tiden blev omgivelserne for små, da der blev bygget boliger på
+          mange af de tidligere baner, så man undersøgte muligheden for at
+          flytte til nye og større omgivelser. Da AB's aftale med
+          Undervisningsministeriet blev opsagt, måtte man se sig om efter
+          andre arealer. Der blev skrevet breve til mange kommuner, men det
+          var kun i Gladsaxe Kommune, at klubbens anmodning blev mødt med
+          velvilje, og snart lå planerne på bordet.
+        </p>
+    </div>
+  </section>
+
+  <!-- 1960: Beige bg — billede-placeholder venstre, tekst højre -->
+  <section id="1960" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
+        <div class="order-2 lg:order-1">
+          <PlaceholderImage locale="da" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div
+            class="inline-flex items-center mb-7 bg-rich-black rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-ab-neon tracking-[-0.04em]"
+              >1960</span
+            >
+          </div>
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+            Fusionen med BIF
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111]">
+            Bagsværd Idrætsforening tilbød at fusionere med AB, og da Gladsaxe
+            Kommunes dynamiske borgmester, Erhard Jacobsen, og resten af
+            kommunalbestyrelsen støttede idéen, førte det til de første
+            forhandlinger mellem AB's formand C.V. Jensen, kommunen og BIF.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+            Den oprindelige plan var at udvide Bagsværd Stadion, men den blev
+            opgivet, da Gladsaxe Kommune tilbød at købe et 12 hektar stort
+            areal ved Skovbrynet i Bagsværd — på betingelse af, at AB's og
+            BIF's fodboldafdelinger blev slået sammen.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+            Lange og hårde forhandlinger mellem de to fodboldklubber førte i
+            slutningen af 1961 til, at begge foreningers generalforsamlinger
+            godkendte fusionen — på det gamle Nørre Allé krævede det dog hele
+            tre generalforsamlinger!
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1963: Grøn bg — floating billede-placeholder i tekstflow -->
+  <section id="1963" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <div
+          class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
+          <span
+            class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+            >1963</span
+          >
+        </div>
+        <h2
+          class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-white">
+          8 baner og AB Hallen
+        </h2>
+        <PlaceholderImage
+          locale="da"
+          class="w-full sm:w-[300px] lg:w-[380px] sm:float-right sm:ml-8 lg:ml-10 mb-6"
+        />
+        <p class="text-[1.1rem] leading-[1.75] text-white/85">
+          På det smukt beliggende areal ved Skovbrynet blev der anlagt 8
+          fodboldbaner, og der blev bygget en idrætshal med 3 tennisbaner,
+          restaurant, omklædningsrum og mødelokaler — den største i
+          Nordeuropa på det tidspunkt! AB Hallen stod færdig i 1966, men
+          anlægget blev indviet allerede i efteråret 1963, da de to
+          grusbaner blev taget i brug.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5">
+          Starten på vores æra i Gladsaxe Kommune faldt sammen med, at
+          klubben blev danske mestre i 1967. Holdet bestod af unge spillere,
+          der havde spillet i klubben siden ungdommen, og i 1970 vandt de
+          sølv — kun ét mål fra endnu et dansk mesterskab.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5">
+          I denne periode var klubben konstant involveret i europæisk
+          fodbold, hvilket blandt andet resulterede i en flot samlet sejr
+          over FC Zürich samt lige opgør med AEK Athen, Anderlecht og Dundee
+          United. I 1970 havde AB trukket maltesiske Sliema Wanderers i
+          Fairs Cup-turneringen og vandt det første hjemme opgør 7-0. I
+          returkampen, på en håbløs grusbane, havde AB's træner beordret
+          afventende og forsigtigt spil de første 15 minutter, men formand
+          Hans Frost greb ind og foreslog i stedet pres fra start, en tidlig
+          scoring og derefter underholdning af malteserne resten af kampen
+          med små bolde i trekanter. Søren Jensen, bedre kendt som "Søren
+          Sutsko", adlød ordren og scorede allerede efter 3 minutter — i eget
+          mål!
+        </p>
+
+        <div class="mt-8 border-l-[3px] border-ab-neon pl-6 clear-both">
+          <p class="italic text-[1.05rem] leading-[1.7] text-white/90">
+            "Søren skal have ros. Han fulgte formandens råd!"
+          </p>
+          <p class="text-[0.9rem] text-white/60 mt-2">
+            — Anfører Niels Yde, i sin tale ved middagen efterfølgende
+          </p>
+        </div>
+
+        <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-8">
+          AB vandt dog kampen 3-2. Mange af de dygtige spillere blev solgt
+          til udlandet (blandt andre Kresten Bjerre, Flemming Kjærsgaard,
+          Finn Wiberg, Johnny Petersen, Aage Hansen og Benny Nielsen), og det
+          var svært at finde kvalificerede afløsere.
+        </p>
+    </div>
+  </section>
+
+  <!-- 1974-1985: Muted bg — dæmpet, tekst-only, ingen billede -->
+  <section id="1974" class="bg-[#E7E7E7] py-[clamp(56px,8vw,96px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="max-w-[64ch] mx-auto text-center">
+        <div
+          class="inline-flex items-center mb-7 border border-[#B5B5B5] rounded-full py-[8px] px-[20px]">
+          <span
+            class="font-black text-[1.1rem] text-[#555] tracking-[-0.04em]"
+            >1974–1985</span
+          >
+        </div>
+        <h2
+          class="font-black mb-7 text-[clamp(1.6rem,3.5vw,2.4rem)] tracking-[-0.04em] leading-[1.1] text-[#333]">
+          Nedgangsårene
+        </h2>
+        <p class="text-[1.05rem] leading-[1.8] text-[#666]">
+          Efter 1960'ernes glansperiode gik det nedad, og klubben tilbragte
+          tid i både Danmarks 2. og 3. bedste liga. Fra 1974 til 1985 lå AB's
+          1. hold konstant i landets næstbedste række, trods talrige chancer
+          for oprykning. I 1986-sæsonen blev klubben rykket ned i 3. division,
+          og ét år var man tæt på at ryge helt ned i den danske amatørliga.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1990: Hvid bg — floating billede-placeholder i tekstflow -->
+  <section id="1990" class="bg-white py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <div
+          class="inline-flex items-center mb-7 bg-ab-gold rounded-full py-[9px] px-[22px]">
+          <span
+            class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+            >1990</span
+          >
+        </div>
+        <h2
+          class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+          Tre spillere, der blev i AB
+        </h2>
+        <PlaceholderImage
+          locale="da"
+          class="w-full sm:w-[300px] lg:w-[380px] sm:float-right sm:ml-8 lg:ml-10 mb-6"
+        />
+        <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+          I begyndelsen af 90'erne begyndte det at gå fremad for AB igen —
+          primært fordi en gruppe dygtige spillere, der havde spillet i
+          klubben i mange år, valgte at blive og genopbygge AB, selv om de
+          fik tilbud om lukrative kontrakter hos andre topklubber. Disse
+          spillere satte kammeratskabet og den særlige AB-ånd højere end
+          pengene andre steder. Tre spillere skal især nævnes: René
+          Henriksen, der som 28-årig debuterede på det danske landshold,
+          Peter Frandsen og Peter Rasmussen — som indehaver klubrekorden i AB
+          med 394 kampe, blot 2 flere end Peter Frandsen.
+        </p>
+
+        <div class="grid sm:grid-cols-3 gap-4 mt-8 clear-both">
+          {
+            treStoreSpillere.map(({ navn, note }) => (
+              <div class="border border-[#E5E7EB] py-4 px-5">
+                <p class="font-black text-[1rem] text-[#111] tracking-[-0.03em] mb-1">
+                  {navn}
+                </p>
+                <p class="text-[0.85rem] text-[#666] leading-[1.4]">{note}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-8">
+          Disse tre store spillere hjalp AB tilbage i landets bedste liga i
+          1996, hvor de vandt bronze i 1999 og 2000, samt en pokaltriumf i
+          1999 med en 2-1-sejr over AaB.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+          I 2001 nåede AB sin tredje pokalfinale på syv år, men tabte 1-4 til
+          Silkeborg i Parken.
+        </p>
+    </div>
+  </section>
+
+  <!-- 2004: Beige bg — tekst venstre, billede-placeholder højre -->
+  <section id="2004" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[1.65fr_minmax(0,360px)] gap-16 lg:gap-20 items-start">
+        <div>
+          <div
+            class="inline-flex items-center mb-7 bg-rich-black rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-ab-neon tracking-[-0.04em]"
+              >2004</span
+            >
+          </div>
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+            Vision 2010
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111]">
+            Efter 8 sæsoner i landets bedste liga forlod AB Superligaen i 2004 og
+            blev rykket ned i 1. division. AB begyndte at genopbygge og satte
+            kurs mod oprykning i 2010 — og mobiliserede fans og spillere med
+            kampråbet:
+          </p>
+          <div class="border-l-[3px] border-ab-green pl-6 my-6">
+            <p
+              class="font-black italic text-[1.6rem] tracking-[-0.03em] text-ab-green">
+              "Vision 2010"
+            </p>
+          </div>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111]">
+            Det var tæt på at lykkes, men til sidst måtte klubben indse, at det
+            store væddemål ikke bar frugt. Det blev efterfulgt af nogle år, hvor
+            AB's trup bestod af halv-professionelle spillere. Herefter fulgte 3
+            sæsoner, hvor klubben sikrede sin overlevelse i sidste spillerunde
+            på stregen. Hver gang var der eufori, med nogle flotte afslutninger
+            på pointkontoen, og det virkede, som om AB var skabt til at
+            overleve.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+            I sæsonen 2014/15 gik det dog galt. Efter endnu en flot slutspurt
+            tabte AB den sidste kamp og røg ned i 2. division. Det blev en
+            hurtig tur retur til 1. division for akademikerne, der efter en
+            blandet høst spillede fantastisk fodbold i foråret og vandt 12 ud af
+            16 kampe med 38 scorede mål. Det var desværre ikke nok, og den
+            følgende sæson røg klubben igen ned i 2. division.
+          </p>
+        </div>
+        <div class="pt-[calc(1.4rem+18px+1.75rem)]">
+          <PlaceholderImage locale="da" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2022: Sort bg — billede-placeholder venstre, tekst + liste højre -->
+  <section id="2022" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
+        <div class="order-2 lg:order-1">
+          <PlaceholderImage locale="da" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div
+            class="inline-flex items-center mb-7 bg-ab-gold rounded-full py-[9px] px-[22px]">
+            <span
+              class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+              >2022</span
+            >
+          </div>
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-ab-beige">
+            Five Castles Football Group LLC
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85">
+            I november 2022 blev AB solgt til den britisk-amerikanske
+            investorgruppe Five Castles Football Group LLC. Konsortiet bestod
+            af individuelle investorer, hvoraf de fleste var baseret i New
+            York City. Den tidligere bestyrelsesformand, Torben Oldenborg,
+            forblev i klubben som minoritetsaktionær.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5 mb-6">
+            Ledelsen af investeringsgruppen talte blandt andre:
+          </p>
+          <ul class="flex flex-col gap-3">
+            {
+              fiveCastlesLedelse.map(({ navn, rolle, note }) => (
+                <li class="border-l-2 border-ab-neon/50 pl-4">
+                  <p class="font-black text-[1rem] text-ab-beige tracking-[-0.02em]">
+                    {navn} <span class="text-white/60 font-medium">— {rolle}</span>
+                  </p>
+                  {note && <p class="text-[0.85rem] text-white/50 mt-0.5">{note}</p>}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2023-2025: Hvid bg — tekst venstre, billede-placeholder højre -->
+  <section id="2023" class="bg-white py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[1.35fr_minmax(0,400px)] gap-16 lg:gap-20 items-start">
+        <div>
+          <div
+            class="inline-flex items-center mb-7 bg-ab-beige rounded-full py-[9px] px-[22px]">
+            <span
+              class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]"
+              >2023–2025</span
+            >
+          </div>
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">
+            Nye trænere, ny ledelse
+          </h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+            Sportsligt set var Patrick Braune cheftræner i AB på tidspunktet
+            for Five Castles-overtagelsen, med et regnskab på 13 sejre, 9
+            uafgjorte og 10 nederlag.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            AB hyrede cheftræner David Roufpanah til sæsonen 2023-24, som havde
+            omfattende trænererfaring fra Allsvenskan, Superettan, den svenske
+            2. division og Damallsvenskan. AB afsluttede sæsonen med 9 sejre,
+            13 uafgjorte og 10 nederlag.
+          </p>
+
+          <div class="grid sm:grid-cols-3 gap-4 mt-8">
+            {
+              trenerregnskab.map(({ navn, note }) => (
+                <div class="border border-[#E5E7EB] py-4 px-5">
+                  <p class="font-black text-[0.95rem] text-[#111] tracking-[-0.02em] mb-1">
+                    {navn}
+                  </p>
+                  <p class="text-[0.85rem] text-[#666]">{note}</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-8">
+            I november 2023 afløste Sofie Brandi Petersen Erik Stover, der
+            valgte at trække sig fra sin position som CEO. For at kunne give
+            sin fulde opmærksomhed til det sportslige trak Chang sig som
+            formand, og AB A/S-bestyrelsesmedlem Brian Grieco blev valgt som AB
+            A/S' formand — begge poster, de stadig besidder i dag.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            AB skiltes med cheftræner David Roufpanah efter én sæson. I maj
+            2024 blev Joey Guðjónsson klubbens nye cheftræner. Guðjónsson har
+            været assistenttræner for det islandske landshold siden 2022 og
+            blev udnævnt til islandsk årets træner i 2018. Guðjónsson har også
+            haft en imponerende spillerkarriere som central midtbanespiller,
+            hvor han spillede på højeste niveau i England, Holland og
+            Spanien, blandt andet 10 sæsoner i engelsk fodbold — heriblandt
+            Aston Villa i Premier League samt Wolves og Burnley. Han
+            repræsenterede desuden det islandske A-landshold 34 gange. AB
+            afsluttede 24/25-sæsonen med positiv medvind: en 4. plads og et
+            regnskab på 14 sejre, 9 uafgjorte og 9 nederlag.
+          </p>
+        </div>
+        <div class="pt-[calc(1.4rem+18px+1.75rem)]">
+          <PlaceholderImage locale="da" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2025-nu: Grøn bg — finale -->
+  <section id="2025" class="bg-ab-green py-[clamp(64px,9vw,120px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[1.35fr_minmax(0,400px)] gap-16 lg:gap-20 items-center">
+        <div>
+          <div
+            class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-ab-green tracking-[-0.04em]"
+              >2025–nu</span
+            >
+          </div>
+          <h2
+            class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-white">
+            Tilbage i 1. division
+          </h2>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85">
+            I april 2025 blev Green Owls Football Holdings ("Green Owls")
+            minoritetsaktionær. Investeringen understøttede klubbens mission
+            ved at styrke truppen, forbedre fanoplevelsen, udvide
+            sponsorpartnerskaber og fordybe det lokale engagement — samtidig
+            med at man udnyttede teknologiske og infrastrukturelle
+            opgraderinger til at optimere klubben.
+          </p>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85 mt-5">
+            Efter en bumpy start, hvor AB tabte til Helsingør i
+            hjemmeåbningen, sluttede AB første halvdel af sæsonen solidt som
+            nummer ét i ligaen — med sejr i 8 af de sidste 9 kampe.
+          </p>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85 mt-5">
+            I december 2025 forlod Guðjónsson klubben af familiemæssige
+            årsager, og AB hyrede Fannar Berg Gunnólfsson som ny cheftræner.
+            Han havde tidligere været assistenttræner under Guðjónssons
+            ledelse.
+          </p>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85 mt-5">
+            I andet ledelsesnyt blev Henrik Bom, tidligere chef for Det
+            Dansk-Amerikanske Handelskammer i New York City, i februar 2026
+            udnævnt til ny President, Head of Commercial i AB A/S, for at
+            spydspidse AB A/S' kommercielle strategi og omsætningsvækst — i
+            tæt samarbejde med CEO Sofie Brandi Petersen om at skabe
+            strategiske alliancer og partnerskaber i Danmark og udlandet.
+          </p>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85 mt-5">
+            AB afsluttede den ordinære sæson med 4 sejre, 2 uafgjorte og 0
+            nederlag i de sidste 6 kampe samt et oprykningsregnskab på 7 sejre
+            og 3 nederlag. På trods af et 2-1-nederlag til FC Roskilde i runde
+            28 slog HIK tredjeplads-holdet Næstved, hvilket sikrede AB
+            oprykning til 1. division med fire runder tilbage af sæsonen. Og i
+            runde 30 mod HIK skulle AB kun bruge ét point for at sikre
+            mesterskabet i 2. division. AB leverede en overbevisende 5-0-sejr
+            og blev mestre.
+          </p>
+        </div>
+        <div class="flex flex-col items-center text-center gap-6">
+          <img
+            src="/images/about-crest-original.png"
+            alt="AB 1889 crest"
+            class="w-[min(280px,70%)]"
+          />
+          <p
+            class="font-black text-[clamp(1.4rem,2.6vw,1.9rem)] tracking-[-0.03em] leading-[1.2] text-white">
+            For første gang i 10 år er AB tilbage i landets næstbedste række —
+            en bedrift opnået på blot 3 hele sæsoner under Five Castles'
+            ejerskab.
           </p>
         </div>
       </div>

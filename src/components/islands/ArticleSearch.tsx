@@ -148,9 +148,7 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
                   ))}
                 </div>
               </div>
-              <span
-                className="text-sm font-bold shrink-0 transition-transform group-hover:translate-x-1 text-ab-green"
-              >
+              <span className="text-sm font-bold shrink-0 transition-transform group-hover:translate-x-1 text-ab-green">
                 →
               </span>
             </a>

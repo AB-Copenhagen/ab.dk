@@ -1,4 +1,5 @@
 import { defineMiddleware } from 'astro:middleware';
+
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
 
 export const onRequest = defineMiddleware(async (context, next) => {
