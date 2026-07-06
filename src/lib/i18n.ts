@@ -11,6 +11,7 @@ const daToEn: Record<string, string> = {
   '/nyheder': '/news',
   '/om/historik': '/about/history',
   '/om/stadion': '/about/stadium',
+  '/bliv-involveret/sponsorer': '/get-involved/sponsor',
   '/kamp/': '/match/',
   '/spiller/': '/player/',
   '/stab/': '/staff/',
