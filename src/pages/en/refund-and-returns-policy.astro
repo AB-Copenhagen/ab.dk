@@ -1,0 +1,135 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+---
+
+<Base locale="en" title="Refund and Return Policy | AB 1889">
+
+  <!-- Slim header -->
+  <div class="bg-ab-black border-b border-white/10 py-10 px-8 lg:px-20">
+    <div class="max-w-4xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">AB 1889</span>
+      <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Refund and Return Policy</h1>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-4xl mx-auto px-8 lg:px-20">
+      <div class="prose-content">
+
+        <h2>30-Day Return Policy</h2>
+        <p>
+          You have 30 days from the date of receipt to request a return. To be eligible, items must be in the same condition as received — unworn or unused, with tags attached, and in original packaging. Proof of purchase is required.
+        </p>
+        <p>
+          To initiate a return, contact us at <a href="mailto:info@ab.dk">info@ab.dk</a>. Once your return is accepted, we will provide a return shipping label and instructions. Unsolicited returns will not be accepted.
+        </p>
+
+        <h2>Returns Address</h2>
+        <div class="address-block">
+          <p>AB 1889</p>
+          <p>Gladsaxevej 202</p>
+          <p>2860 Søborg, Denmark</p>
+        </div>
+
+        <h2>Damages and Issues</h2>
+        <p>
+          Please inspect your order immediately upon receipt. If an item arrives defective, damaged, or incorrect, contact us straight away so we can evaluate the issue and arrange a prompt resolution.
+        </p>
+
+        <h2>Non-Returnable Items</h2>
+        <p>The following items cannot be returned:</p>
+        <ul>
+          <li>Perishable goods (food, flowers, plants)</li>
+          <li>Custom or personalised products (special orders)</li>
+          <li>Sale items</li>
+          <li>Gift cards</li>
+        </ul>
+        <p>If you have questions about whether a specific item is eligible, please contact us before purchasing.</p>
+
+        <h2>Exchanges</h2>
+        <p>
+          The fastest way to exchange an item is to return the original item and, once the return is approved, purchase the replacement separately.
+        </p>
+
+        <h2>EU 14-Day Cooling-Off Period</h2>
+        <p>
+          For orders shipped to the European Union, you have the right to cancel or return your order within 14 days of receipt, for any reason and without justification. Items must meet the same condition requirements as above.
+        </p>
+
+        <h2>Refunds</h2>
+        <p>
+          After we receive and inspect your returned item, we will notify you of the approval or rejection of your refund. If approved, the refund will be processed to your original payment method within 10 business days. Please allow additional time for your bank or card provider to process the transaction.
+        </p>
+        <p>
+          If more than 15 business days have passed since your return was approved, contact us at <a href="mailto:info@ab.dk">info@ab.dk</a>.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .prose-content {
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .prose-content h2 {
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #111;
+    letter-spacing: -0.03em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-top: 2rem;
+    border-top: 1px solid #E5E7EB;
+  }
+  .prose-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .prose-content p {
+    margin-bottom: 1rem;
+  }
+  .prose-content ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+  .prose-content ul li {
+    padding-left: 1.25rem;
+    position: relative;
+    margin-bottom: 0.4rem;
+  }
+  .prose-content ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #2E7D32;
+    font-weight: 900;
+  }
+  .prose-content a {
+    color: #2E7D32;
+    text-decoration: none;
+  }
+  .prose-content a:hover {
+    opacity: 0.7;
+  }
+  .address-block {
+    background: #F5F5F3;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    font-weight: 700;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.95rem;
+  }
+</style>

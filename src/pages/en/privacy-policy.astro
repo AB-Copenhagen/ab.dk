@@ -1,0 +1,161 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+---
+
+<Base locale="en" title="Privacy Policy | AB 1889">
+
+  <!-- Slim header -->
+  <div class="bg-ab-black border-b border-white/10 py-10 px-8 lg:px-20">
+    <div class="max-w-4xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">AB 1889</span>
+      <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Privacy Policy</h1>
+      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 1 · January 2026</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-4xl mx-auto px-8 lg:px-20">
+      <div class="prose-content">
+
+        <h2>1. General</h2>
+        <p>
+          AB A/S has published this policy to describe how we collect and process personal data. This policy covers information you provide directly to us, or that we gather through ab.dk. AB A/S acts as the data controller. Contact details can be found in section 7.
+        </p>
+
+        <h2>2. Data Collection, Purposes, and Legal Basis</h2>
+
+        <h3>2.1 Website Usage Data</h3>
+        <p>
+          When you visit ab.dk, we automatically collect information such as browser type, search terms, IP address, network location, and computer information. This data is used to optimise your user experience and website functionality, and to conduct targeted marketing. Legal basis: Article 6(1)(f) GDPR (legitimate interests).
+        </p>
+
+        <h3>2.2 Purchase and Communications Data</h3>
+        <p>
+          When you make a purchase or contact us, we collect your name, address, email, phone number, payment method, product information, delivery requests, and IP address. This is used to deliver products, fulfil agreements, manage returns and complaints, comply with legal requirements, and prevent fraud. Legal basis: Articles 6(1)(b), (c), and (f) GDPR.
+        </p>
+
+        <h3>2.3 Newsletter Signup Data</h3>
+        <p>
+          When you sign up for our newsletter, we collect your name, email address, and possibly your mobile number. This data is used solely to deliver newsletters. Legal basis: Article 6(1)(f) GDPR.
+        </p>
+
+        <h2>3. Data Recipients</h2>
+        <p>
+          We may share your information with delivery carriers such as PostNord and GLS as needed to fulfil orders. Website data is processed by Google Analytics (USA), which operates under EU-U.S. Privacy Shield certification. All processors have written data processing agreements in place.
+        </p>
+
+        <h2>4. Your Rights</h2>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Request access to your personal data</li>
+          <li>Correct inaccurate information</li>
+          <li>Request erasure (subject to legal limitations)</li>
+          <li>Restrict processing</li>
+          <li>Receive your data in a portable format</li>
+          <li>Object to direct marketing</li>
+          <li>Withdraw consent at any time</li>
+          <li>File a complaint with the Danish data protection authority</li>
+        </ul>
+
+        <h2>5. Data Deletion Timelines</h2>
+        <ul>
+          <li><strong>Website usage data:</strong> Deleted after 2 years of non-use</li>
+          <li><strong>Newsletter data:</strong> Deleted upon withdrawal of consent</li>
+          <li><strong>Purchase data:</strong> Generally deleted 3 years after the end of the purchase year; accounting records retained for 5 years</li>
+        </ul>
+
+        <h2>6. Security</h2>
+        <p>
+          We apply appropriate technical and organisational security measures to protect your personal data against unauthorised access or damage. Only personnel who require access to personal information in the course of their work are granted such access.
+        </p>
+
+        <h2>7. Contact Information</h2>
+        <div class="contact-block">
+          <p class="font-black text-[#111]">AB A/S</p>
+          <p>Gladsaxevej 200, 2860 Søborg</p>
+          <a href="mailto:info@ab.dk">info@ab.dk</a>
+        </div>
+
+        <h2>8. Policy Changes</h2>
+        <p>
+          We may update this policy from time to time. Any changes will be communicated on your next visit to the website.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .prose-content {
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .prose-content h2 {
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #111;
+    letter-spacing: -0.03em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-top: 2rem;
+    border-top: 1px solid #E5E7EB;
+  }
+  .prose-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .prose-content h3 {
+    font-weight: 900;
+    font-size: 1rem;
+    color: #333;
+    letter-spacing: -0.02em;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose-content p {
+    margin-bottom: 1rem;
+  }
+  .prose-content ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+  .prose-content ul li {
+    padding-left: 1.25rem;
+    position: relative;
+    margin-bottom: 0.4rem;
+  }
+  .prose-content ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #4CAF50;
+    font-weight: 900;
+  }
+  .prose-content a {
+    color: #2E7D32;
+    text-decoration: none;
+  }
+  .prose-content a:hover {
+    opacity: 0.7;
+  }
+  .prose-content strong {
+    font-weight: 900;
+    color: #111;
+  }
+  .contact-block {
+    background: #F5F5F3;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+</style>

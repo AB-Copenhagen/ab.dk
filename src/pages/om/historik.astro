@@ -36,6 +36,13 @@ const trenerregnskab = [
 ];
 ---
 
+<style>
+  section[id],
+  div[id] {
+    scroll-margin-top: calc(var(--nav-height, 92px) + 56px);
+  }
+</style>
+
 <Base
   locale="da"
   title="Historik | AB 1889">
@@ -627,7 +634,7 @@ const trenerregnskab = [
           >
         </div>
         <h2
-          class="font-black mb-7 text-[clamp(1.6rem,3.5vw,2.4rem)] tracking-[-0.04em] leading-[1.1] text-[#333]">
+          class="font-black mb-7 text-[clamp(1.6rem,3.5vw,2.4rem)] tracking-[-0.04em] leading-[1.1] text-[#333] text-center">
           Nedgangsårene
         </h2>
         <p class="text-[1.05rem] leading-[1.8] text-[#666]">
