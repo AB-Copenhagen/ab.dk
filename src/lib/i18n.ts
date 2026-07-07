@@ -17,6 +17,12 @@ const daToEn: Record<string, string> = {
   '/stab/': '/staff/',
   '/konto': '/account',
   '/konto/profil': '/account/profile',
+  '/om/brand': '/brand',
+  '/om/ledelse': '/about/leadership',
+  '/om/kontakt': '/contact',
+  '/bliv-involveret/events': '/get-involved/events',
+  '/om/privatlivspolitik': '/privacy-policy',
+  '/om/returpolitik': '/refund-and-returns-policy',
 };
 
 const enToDa: Record<string, string> = Object.fromEntries(

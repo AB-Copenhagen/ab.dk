@@ -25,7 +25,7 @@ const enPath = switchLocalePath(currentPath, 'en');
       href="https://abtv.ab.dk"
       target="_blank"
       rel="noreferrer"
-      class="flex items-center justify-center shrink-0 h-full font-black bg-ab-neon w-[171px] text-ab-green no-underline text-[15px] tracking-[-0.04em]">
+      class="flex items-center justify-center shrink-0 h-full font-black bg-ab-neon w-[171px] text-ab-green no-underline text-[15px] tracking-[-0.04em] hover:bg-ab-beige transition-colors">
       ABTV
     </a>
     <!-- Utility links -->
@@ -150,7 +150,7 @@ const enPath = switchLocalePath(currentPath, 'en');
       <a
         href={enPrefix + '/'}
         aria-label={translate(locale, 'logoHome')}
-        class="shrink-0">
+        class="shrink-0 hover:[filter:sepia(45%)_saturate(1.4)_brightness(0.9)] transition-all">
         <img
           src="/images/ab-logo.svg"
           alt="AB 1889"
@@ -171,7 +171,7 @@ const enPath = switchLocalePath(currentPath, 'en');
             <div class="relative group">
               <a
                 href={enPrefix + item.href}
-                class:list={['text-[17px] font-bold tracking-[-0.02em] no-underline transition-colors', isActive ? 'text-[#D3BC8D]' : 'text-white']}>
+                class:list={['text-[17px] font-bold tracking-[-0.02em] no-underline transition-colors hover:text-[#D3BC8D]', isActive ? 'text-[#D3BC8D]' : 'text-white']}>
                 {item.label}
               </a>
               {isActive && (
@@ -201,7 +201,7 @@ const enPath = switchLocalePath(currentPath, 'en');
     <div class="flex flex-1 items-center justify-end gap-3 min-w-0 shrink-0">
       <button
         id="search-open-btn"
-        class="hidden lg:flex items-center gap-2 font-black text-sm bg-[rgba(15,148,118,0.5)] text-white border-none rounded-[22px] px-5 py-[10px] cursor-pointer tracking-[-0.03em]"
+        class="hidden lg:flex items-center gap-2 font-black text-sm bg-[rgba(15,148,118,0.5)] text-white border-none rounded-[22px] px-5 py-[10px] cursor-pointer tracking-[-0.03em] hover:bg-[rgba(15,148,118,0.8)] transition-colors"
         aria-label={translate(locale, 'search')}>
         <svg
           width="14"

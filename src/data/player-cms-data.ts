@@ -94,7 +94,7 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
   },
 
   1140925: {
-    // #21 Travian Sousa
+    // #3 Travian Sousa
     nickname: 'Tra',
     formerClubs: 'MLS Seattle Sounders, Tacoma Defiance, Hamburger SV II',
     bio: {

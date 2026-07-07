@@ -121,9 +121,9 @@ const en: NavConfig = {
       children: [
         { label: 'History', href: '/about/history' },
         { label: 'Stadium', href: '/about/stadium' },
-        { label: 'Leadership', href: '/om/ledelse' },
+        { label: 'Leadership', href: '/about/leadership' },
         { label: 'Media Resources', href: '/om/medier' },
-        { label: 'Contact', href: '/om/kontakt' },
+        { label: 'Contact', href: '/contact' },
       ],
     },
     {
@@ -134,7 +134,7 @@ const en: NavConfig = {
         { label: 'Community', href: '/om/faellesskab' },
         { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Sponsor', href: '/get-involved/sponsor' },
-        { label: 'Events', href: '/bliv-involveret/events' },
+        { label: 'Events', href: '/get-involved/events' },
         { label: 'Hospitality', href: '/bliv-involveret/hospitality' },
       ],
     },
