@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import Img from '@/components/Img.astro';
 export const prerender = true;
 ---
 
@@ -140,11 +141,11 @@ export const prerender = true;
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg p-8 flex flex-col items-center gap-4">
-          <img src="/images/ab-logo.svg" alt="AB Logo — green on white" class="h-24 w-auto" />
+          <img src="/images/ab-logo-green.svg" alt="AB Logo — green on white" class="h-24 w-auto" />
           <span class="text-[0.78rem] text-[#666] tracking-[0.05em] font-black uppercase">Green on white</span>
         </div>
         <div class="bg-ab-green rounded-lg p-8 flex flex-col items-center gap-4">
-          <img src="/images/ab-logo-alt.png" alt="AB Logo — white on green" class="h-24 w-auto" />
+          <img src="/images/ab-crest-white.svg" alt="AB Crest — white on green" class="h-24 w-auto" />
           <span class="text-[0.78rem] text-white/70 tracking-[0.05em] font-black uppercase">White on green</span>
         </div>
         <div class="bg-ab-black rounded-lg p-8 flex flex-col items-center gap-4">
@@ -325,6 +326,8 @@ export const prerender = true;
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {([
+          { label: 'AB Crest', format: 'SVG', file: '/images/ab-crest.svg', size: '28 KB', desc: 'Crest for digital use' },
+          { label: 'AB Logo', format: 'SVG', file: '/images/ab-logo.svg', size: '12 KB', desc: 'Logo for digital use' },
           { label: 'AB Logo', format: 'PDF', file: '/downloads/brand/ab-logo.pdf', size: '160 KB', desc: 'Logo for print and digital' },
           { label: 'AB Logo', format: 'EPS', file: '/downloads/brand/ab-logo.eps', size: '440 KB', desc: 'Vector file for print' },
           { label: 'AB Monogram', format: 'AI', file: '/downloads/brand/ab-monogram.ai', size: '1.1 MB', desc: 'Monogram CMYK master' },

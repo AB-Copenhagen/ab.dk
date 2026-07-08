@@ -5,161 +5,126 @@ interface Props {
 
 const { locale = 'da' } = Astro.props as Props;
 
-const years = [
-  '1883',
-  '1887',
-  '1889',
-  '1894',
-  '1919',
-  '1924',
-  '1940',
-  '1946',
-  '1960',
-  '1963',
-  '1974',
-  '1990',
-  '2004',
-  '2022',
-  '2023',
-  '2025',
+const eras = [
+  {
+    label: locale === 'da' ? 'Begyndelse' : 'Beginning',
+    range: '1883–1924',
+    id: 'era-beginning',
+    years: ['1883', '1887', '1889', '1894', '1919', '1924'],
+  },
+  {
+    label: locale === 'da' ? 'Efterkrigstid' : 'Post War',
+    range: '1940–1974',
+    id: 'era-postwar',
+    years: ['1940', '1946', '1960', '1963', '1974'],
+  },
+  {
+    label: locale === 'da' ? 'Nu' : 'Present',
+    range: locale === 'da' ? '1990–nu' : '1990–now',
+    id: 'era-present',
+    years: ['1990', '2004', '2022', '2023', '2025'],
+  },
 ];
 
 const navLabel = locale === 'da' ? 'Historisk tidslinje' : 'Historical timeline';
 ---
 
+<!-- ── Top bar: 3 era pills ──────────────────────────────────────────── -->
 <nav
+  id="timeline-topbar"
   aria-label={navLabel}
   class="sticky z-40 bg-white border-b border-[#E5E7EB]"
   style="top: var(--nav-height, 92px)">
-  <div class="relative max-w-7xl mx-auto">
-    <div
-      id="timeline-scroll"
-      class="flex items-center overflow-x-auto whitespace-nowrap py-3 px-8 lg:px-20 scrollbar-none">
-      <ul class="flex items-center shrink-0">
-        {
-          years.map((year, i) => (
-            <li class="flex items-center shrink-0">
-              <a
-                href={`#${year}`}
-                data-year={year}
-                class="timeline-link flex items-center gap-2 px-3 py-1.5 text-xs font-black tracking-[-0.02em] text-[#999] transition-colors hover:text-ab-green">
-                <span class="timeline-dot w-1.5 h-1.5 rounded-full bg-[#CCC] transition-colors" />
-                {year}
-              </a>
-              {i < years.length - 1 && (
-                <span class="w-5 h-px bg-[#DDD] shrink-0" aria-hidden="true" />
-              )}
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-    <!-- Edge fades — hint that the strip scrolls further, hidden via JS when there's nothing more to reveal -->
-    <div
-      id="timeline-fade-left"
-      class="pointer-events-none absolute inset-y-0 left-0 w-10 bg-[linear-gradient(to_right,white,transparent)] opacity-0 transition-opacity"
-      aria-hidden="true"
-    />
-    <div
-      id="timeline-fade-right"
-      class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-[linear-gradient(to_left,white,transparent)] opacity-0 transition-opacity"
-      aria-hidden="true"
-    />
+  <div class="max-w-7xl mx-auto px-8 lg:px-20 h-12 flex items-center gap-1">
+    {
+      eras.map((era, i) => (
+        <>
+          <a
+            href={`#${era.id}`}
+            data-era={era.id}
+            class="era-top-link flex items-baseline gap-2 px-3 py-1.5 font-black text-[0.72rem] tracking-[-0.01em] text-[#999] transition-colors hover:text-ab-green whitespace-nowrap">
+            {era.label}
+            <span class="era-top-range text-[0.65rem] font-medium tracking-[0] text-[#CCC] transition-colors">{era.range}</span>
+          </a>
+          {i < eras.length - 1 && (
+            <span class="text-[#DDD] text-xs select-none mx-1" aria-hidden="true">|</span>
+          )}
+        </>
+      ))
+    }
   </div>
 </nav>
 
 <script>
-  const scrollEl = document.getElementById('timeline-scroll');
-  const fadeLeft = document.getElementById('timeline-fade-left');
-  const fadeRight = document.getElementById('timeline-fade-right');
-  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.timeline-link'));
+  const topNav    = document.getElementById('timeline-topbar');
+  const sidebar   = document.getElementById('timeline-sidebar');
+  const topLinks  = Array.from(document.querySelectorAll<HTMLAnchorElement>('.era-top-link'));
+  const eraLinks  = Array.from(document.querySelectorAll<HTMLAnchorElement>('.era-side-link'));
+  const yearLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.sidebar-year-link'));
 
-  const updateFades = () => {
-    if (!scrollEl) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollEl;
-    fadeLeft?.style.setProperty('opacity', scrollLeft > 4 ? '1' : '0');
-    fadeRight?.style.setProperty(
-      'opacity',
-      scrollLeft < scrollWidth - clientWidth - 4 ? '1' : '0',
-    );
-  };
-
-  scrollEl?.addEventListener('scroll', updateFades, { passive: true });
-  window.addEventListener('resize', updateFades);
-  updateFades();
-
-  const navEl = document.querySelector<HTMLElement>('nav[aria-label$="timeline"], nav[aria-label$="tidslinje"]');
-
+  // ── Smooth scroll helper ─────────────────────────────────────────────
   const scrollToSection = (id: string) => {
     const target = document.getElementById(id);
     if (!target) return;
-    const navHeight =
-      parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) ||
-      92;
-    const timelineHeight = navEl?.offsetHeight ?? 0;
-    const top =
-      target.getBoundingClientRect().top + window.scrollY - navHeight - timelineHeight - 16;
+    const navH = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--nav-height')
+    ) || 92;
+    const barH = topNav?.offsetHeight ?? 48;
+    const top  = target.getBoundingClientRect().top + window.scrollY - navH - barH - 16;
     window.scrollTo({ top, behavior: 'smooth' });
     history.pushState(null, '', `#${id}`);
   };
 
-  links.forEach((link) => {
-    link.addEventListener('click', (event) => {
-      const id = link.dataset.year;
-      if (!id) return;
-      event.preventDefault();
-      scrollToSection(id);
+  topLinks.forEach(l => l.addEventListener('click', e => { e.preventDefault(); scrollToSection(l.dataset.era!); }));
+  eraLinks.forEach(l => l.addEventListener('click', e => { e.preventDefault(); scrollToSection(l.dataset.era!); }));
+  yearLinks.forEach(l => l.addEventListener('click', e => { e.preventDefault(); scrollToSection(l.dataset.year!); }));
+
+  // ── Active state ──────────────────────────────────────────────────────
+  const sections = yearLinks
+    .map(l => document.getElementById(l.dataset.year ?? ''))
+    .filter((el): el is HTMLElement => Boolean(el));
+
+  let activeId = '';
+
+  const setActive = (id: string) => {
+    activeId = id;
+    const activeEra = yearLinks.find(l => l.dataset.year === id)?.dataset.era ?? '';
+
+    // Sidebar year dots + links
+    yearLinks.forEach(l => {
+      const on = l.dataset.year === id;
+      l.classList.toggle('active', on);
+      l.querySelector('.sidebar-dot')?.classList.toggle('active', on);
+      if (on) l.scrollIntoView({ block: 'nearest' });
     });
-  });
 
-  if (links.length) {
-    const sections = links
-      .map((link) => document.getElementById(link.dataset.year ?? ''))
-      .filter((el): el is HTMLElement => Boolean(el));
+    // Sidebar era labels
+    eraLinks.forEach(l => {
+      l.classList.toggle('active', l.dataset.era === activeEra);
+    });
 
-    let activeId = '';
-
-    const setActive = (id: string) => {
-      if (id === activeId) return;
-      activeId = id;
-      links.forEach((link) => {
-        const isActive = link.dataset.year === id;
-        link.classList.toggle('text-ab-green', isActive);
-        link.classList.toggle('text-[#999]', !isActive);
-        const dot = link.querySelector<HTMLElement>('.timeline-dot');
-        dot?.classList.toggle('bg-ab-green', isActive);
-        dot?.classList.toggle('bg-[#CCC]', !isActive);
-        if (isActive) {
-          link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }
-      });
-    };
-
-    const updateActiveFromScroll = () => {
-      const threshold = window.innerHeight * 0.35;
-      let current = sections[0];
-      for (const section of sections) {
-        if (section.getBoundingClientRect().top <= threshold) {
-          current = section;
-        }
+    // Top bar era labels
+    topLinks.forEach(l => {
+      const on = l.dataset.era === activeEra;
+      l.classList.toggle('text-ab-green', on);
+      l.classList.toggle('text-[#999]', !on);
+      const range = l.querySelector<HTMLElement>('.era-top-range');
+      if (range) {
+        range.classList.toggle('text-ab-green/60', on);
+        range.classList.toggle('text-[#CCC]', !on);
       }
-      if (current) setActive(current.id);
-    };
+    });
+  };
 
-    let ticking = false;
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          updateActiveFromScroll();
-          ticking = false;
-        });
-      },
-      { passive: true },
-    );
+  const updateActive = () => {
+    const threshold = window.innerHeight * 0.35;
+    let current = sections[0];
+    for (const s of sections) {
+      if (s.getBoundingClientRect().top <= threshold) current = s;
+    }
+    if (current && current.id !== activeId) setActive(current.id);
+  };
 
-    updateActiveFromScroll();
-  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
 </script>

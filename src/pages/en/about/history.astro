@@ -1,7 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro';
 import TimelineNav from '@/components/history/TimelineNav.astro';
+import TimelineSidebar from '@/components/history/TimelineSidebar.astro';
 import PlaceholderImage from '@/components/history/PlaceholderImage.astro';
+import Img from '@/components/Img.astro';
 
 export const prerender = true;
 
@@ -46,7 +48,7 @@ const coachRecords = [
 <Base locale="en" title="History | AB 1889">
   <!-- Hero -->
   <div class="relative w-full">
-    <img
+    <Img
       src="/images/about-history-hero.png"
       alt="AB 1889 History"
       class="w-full h-auto block"
@@ -60,8 +62,26 @@ const coachRecords = [
 
   <TimelineNav locale="en" />
 
+  <div class="lg:flex lg:items-start">
+    <!-- Left: sticky sidebar column -->
+    <div
+      class="hidden lg:block w-[240px] shrink-0 pl-20"
+      style="position: sticky; top: calc(var(--nav-height, 92px) + 48px); align-self: start; max-height: calc(100vh - var(--nav-height, 92px) - 48px - 1rem); overflow-y: auto; scrollbar-width: none;">
+      <TimelineSidebar locale="en" />
+    </div>
+    <!-- Right: content column -->
+    <div class="flex-1 min-w-0">
+
+  <!-- Era: Beginning -->
+  <div id="era-beginning" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">The Beginning</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1883–1924</span>
+    </div>
+  </div>
+
   <!-- 1883: White bg — text left, image right -->
-  <section id="1883" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1883" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
         <div>
@@ -77,7 +97,7 @@ const coachRecords = [
           </p>
         </div>
         <div class="overflow-hidden rounded-md aspect-[4/3]">
-          <img src="/images/about-frederician-latin-school-building.png" alt="Frederician Latin School" class="w-full h-full object-cover" />
+          <Img src="/images/about-frederician-latin-school-building.png" alt="Frederician Latin School" class="w-full h-full object-cover" />
         </div>
       </div>
     </div>
@@ -87,8 +107,8 @@ const coachRecords = [
   <section id="1887" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
-        <div class="overflow-hidden order-2 lg:order-1 rounded-md aspect-[4/3]">
-          <img src="/images/about-board-of-directors.png" alt="AB team 1887" class="w-full h-full object-cover" />
+        <div class="overflow-hidden order-2 lg:order-1 rounded-md">
+          <Img src="/images/about-board-of-directors.png" alt="AB team 1887" class="w-full h-auto block" />
         </div>
         <div class="order-1 lg:order-2">
           <div class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
@@ -120,18 +140,18 @@ const coachRecords = [
           </p>
         </div>
         <div class="overflow-hidden rounded-md aspect-[4/3]">
-          <img src="/images/about-stadium-seat.png" alt="AB stadium" class="w-full h-full object-cover" />
+          <Img src="/images/about-stadium-seat.png" alt="AB stadium" class="w-full h-full object-cover" />
         </div>
       </div>
     </div>
   </section>
 
   <!-- 1889 black: Board of directors -->
-  <section id="1889-board" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+  <section id="1889-board" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
-        <div class="overflow-hidden rounded-md aspect-[4/3]">
-          <img src="/images/about-board-of-directors.png" alt="AB board of directors 1889" class="w-full h-full object-cover" />
+        <div class="overflow-hidden rounded-md">
+          <Img src="/images/about-board-of-directors.png" alt="AB board of directors 1889" class="w-full h-auto block" />
         </div>
         <div>
           <div class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
@@ -152,7 +172,7 @@ const coachRecords = [
   </section>
 
   <!-- 1889 white: Two columns -->
-  <section id="1889-dues" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1889-dues" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-start">
         <div>
@@ -192,7 +212,7 @@ const coachRecords = [
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-[minmax(0,400px)_1.35fr] gap-16 lg:gap-20 items-center">
         <div class="flex items-center justify-center aspect-square max-h-[420px]">
-          <img src="/images/about-crest-original.png" alt="AB 1889 crest" class="w-[min(360px,90%)]" />
+          <Img src="/images/about-crest-original.png" alt="AB 1889 crest" class="w-[min(360px,90%)]" />
         </div>
         <div>
           <div class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
@@ -252,8 +272,16 @@ const coachRecords = [
     </div>
   </section>
 
+  <!-- Era: Post War -->
+  <div id="era-postwar" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">Post War</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1940–1974</span>
+    </div>
+  </div>
+
   <!-- 1940: Black bg — placeholder image left, text right -->
-  <section id="1940" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+  <section id="1940" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
         <div class="order-2 lg:order-1">
@@ -276,7 +304,7 @@ const coachRecords = [
   </section>
 
   <!-- 1946: White bg — floating placeholder image within the text flow -->
-  <section id="1946" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1946" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
         <div class="inline-flex items-center mb-7 bg-ab-beige rounded-full py-[9px] px-[22px]">
           <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1946</span>
@@ -318,7 +346,7 @@ const coachRecords = [
           <PlaceholderImage locale="en" />
         </div>
         <div class="order-1 lg:order-2">
-          <div class="inline-flex items-center mb-7 bg-rich-black rounded-full py-[9px] px-[22px]">
+          <div class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
             <span class="font-black text-[1.4rem] text-ab-neon tracking-[-0.04em]">1960</span>
           </div>
           <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">Merger with Bagsværd</h2>
@@ -380,8 +408,16 @@ const coachRecords = [
     </div>
   </section>
 
+  <!-- Era: Present -->
+  <div id="era-present" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">Present</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1990–now</span>
+    </div>
+  </div>
+
   <!-- 1990: White bg — text + stat cards left, placeholder image right -->
-  <section id="1990" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1990" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
         <div class="inline-flex items-center mb-7 bg-ab-gold rounded-full py-[9px] px-[22px]">
           <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1990</span>
@@ -417,7 +453,7 @@ const coachRecords = [
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-[1.65fr_minmax(0,360px)] gap-16 lg:gap-20 items-start">
         <div>
-          <div class="inline-flex items-center mb-7 bg-rich-black rounded-full py-[9px] px-[22px]">
+          <div class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
             <span class="font-black text-[1.4rem] text-ab-neon tracking-[-0.04em]">2004</span>
           </div>
           <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">The Fall from Superliga and Vision 2010</h2>
@@ -442,7 +478,7 @@ const coachRecords = [
   </section>
 
   <!-- 2022: Black bg — placeholder image left, text + list right -->
-  <section id="2022" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+  <section id="2022" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
         <div class="order-2 lg:order-1">
@@ -454,7 +490,7 @@ const coachRecords = [
           </div>
           <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-ab-beige">Five Castles Ownership and New Approach</h2>
           <p class="text-[1.1rem] leading-[1.75] text-white/85">
-            In November 2022, AB was sold to the British-American investor group Five Castles Football Group LLC. The consortium consisted of individual investors, most of whom were based in New York City. The former chairman of the board, Torben Oldenborg, remained with the club as a minority shareholder.
+            In November 2022, AB was sold to the American investor group Five Castles Football Group LLC, who acquired 95% of the club's shares. Five Castles' vision for the club included a plan to revamp the commercial operations, modernise the player recruitment and scouting operations, and establish a clear playing identity.
           </p>
           <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5 mb-6">
             Leadership of the investment group included:
@@ -477,7 +513,7 @@ const coachRecords = [
   </section>
 
   <!-- 2023-2025: White bg — text left, placeholder image right -->
-  <section id="2023" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="2023" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-[1.35fr_minmax(0,400px)] gap-16 lg:gap-20 items-start">
         <div>
@@ -489,7 +525,7 @@ const coachRecords = [
             From a sporting perspective, Patrick Braune was head coach of AB at the time of the Five Castles acquisition, with a record of 13 wins, 9 draws and 10 losses.
           </p>
           <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
-            AB hired head coach David Roufpanah for the 2023-2024 season, who brought extensive coaching experience from Allsvenskan, Superettan, the Swedish 2nd division and Damallsvenskan. AB finished that season with 9 wins, 13 draws and 10 losses.
+            AB hired Swedish head coach David Roufpanah for the 2023-2024 season. AB finished that season 5th in the league with 9 wins, 13 draws and 10 losses. AB also reached the quarterfinals of the Danish Cup for the first time in 22 years.
           </p>
 
           <div class="grid sm:grid-cols-3 gap-4 mt-8">
@@ -543,7 +579,7 @@ const coachRecords = [
           </p>
         </div>
         <div class="flex flex-col items-center text-center gap-6">
-          <img src="/images/about-crest-original.png" alt="AB 1889 crest" class="w-[min(280px,70%)]" />
+          <Img src="/images/about-crest-original.png" alt="AB 1889 crest" class="w-[min(280px,70%)]" />
           <p class="font-black text-[clamp(1.4rem,2.6vw,1.9rem)] tracking-[-0.03em] leading-[1.2] text-white">
             For the first time in 10 years, AB has returned to the 2nd tier (Betinia Liga, 1. Division) — a feat achieved in only 3 full seasons under Five Castles' ownership.
           </p>
@@ -551,4 +587,7 @@ const coachRecords = [
       </div>
     </div>
   </section>
+
+    </div><!-- /content column -->
+  </div><!-- /xl:flex -->
 </Base>

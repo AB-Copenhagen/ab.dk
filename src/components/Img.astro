@@ -1,0 +1,95 @@
+---
+/**
+ * Universal drop-in for <img> that auto-serves WebP.
+ *
+ * - Local public paths (/images/foo.png): outputs <picture> with .webp source + .png fallback
+ * - Imported ImageMetadata: delegates to astro:assets <Image> (Vercel optimizer)
+ * - Remote URLs: plain <img> (proxy or CDN handle format)
+ *
+ * Usage:
+ *   <Img src="/images/hero.png" alt="Hero" width={1200} height={600} />
+ *   <Img src={importedAsset} alt="Logo" />
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata | string;
+  alt: string;
+  width?: number | string;
+  height?: number | string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
+  style?: string;
+  [key: string]: unknown;
+}
+
+const {
+  src,
+  alt,
+  width: widthProp,
+  height: heightProp,
+  class: className,
+  loading = 'lazy',
+  decoding = 'async',
+  style,
+  ...rest
+} = Astro.props;
+
+// <Image> from astro:assets requires numeric width/height; HTML attrs arrive as strings
+const width = widthProp !== undefined ? Number(widthProp) : undefined;
+const height = heightProp !== undefined ? Number(heightProp) : undefined;
+
+const isImageMetadata = src !== null && typeof src === 'object' && 'src' in src;
+const isLocalPublicPng =
+  typeof src === 'string' && src.startsWith('/') && src.endsWith('.png');
+
+const webpSrc = isLocalPublicPng
+  ? (src as string).replace(/\.png$/, '.webp')
+  : null;
+---
+
+{
+  isImageMetadata ? (
+    <Image
+      src={src as ImageMetadata}
+      alt={alt}
+      width={width}
+      height={height}
+      class={className}
+      loading={loading}
+      decoding={decoding}
+      style={style}
+      format="webp"
+      {...rest}
+    />
+  ) : isLocalPublicPng && webpSrc ? (
+    <picture>
+      <source srcset={webpSrc} type="image/webp" />
+      <img
+        src={src as string}
+        alt={alt}
+        width={width}
+        height={height}
+        class={className}
+        loading={loading}
+        decoding={decoding}
+        style={style}
+        {...rest}
+      />
+    </picture>
+  ) : (
+    <img
+      src={src as string}
+      alt={alt}
+      width={width}
+      height={height}
+      class={className}
+      loading={loading}
+      decoding={decoding}
+      style={style}
+      {...rest}
+    />
+  )
+}

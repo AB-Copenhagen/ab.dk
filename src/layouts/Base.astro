@@ -49,6 +49,7 @@ try {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" hreflang="da" href={Astro.url.href.replace('/en', '')} />
     <link rel="alternate" hreflang="en" href={Astro.url.href.includes('/en') ? Astro.url.href : `/en${Astro.url.pathname}`} />
+    <script is:inline src="https://vivenu.com/web/deliver/js/v1/embed.js"></script>
   </head>
   <body class="min-h-screen bg-white text-[#111]">
     <Navbar locale={locale} />

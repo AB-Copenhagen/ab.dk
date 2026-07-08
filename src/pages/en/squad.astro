@@ -3,6 +3,8 @@ import Base from '@/layouts/Base.astro';
 import SquadCard from '@/components/SquadCard.astro';
 import { fetchABPlayers, type SIPlayer } from '@/lib/si/client';
 import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
+import Img from '@/components/Img.astro';
+import { EXCLUDED_PLAYER_SLUGS } from '@/lib/si/player-photos';
 export const prerender = false;
 
 const locale = 'en' as const;
@@ -24,7 +26,12 @@ const GROUP_ORDER: PositionKey[] = [
 
 let players: SIPlayer[] = [];
 try {
-  players = await fetchABPlayers(locale);
+  const raw = await fetchABPlayers(locale);
+  players = raw.filter(p => {
+    if (!p.name) return true;
+    const slug = p.name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return !EXCLUDED_PLAYER_SLUGS.has(slug);
+  });
 } catch {
   /* SI unavailable */
 }
@@ -50,7 +57,7 @@ for (const p of players) {
   <div class="bg-white">
     <!-- Squad banner (image with embedded title) -->
     <div class="w-full">
-      <img
+      <Img
         src="/images/squad-banner.png"
         alt="AB 1889 The Squad"
         class="w-full h-auto block"

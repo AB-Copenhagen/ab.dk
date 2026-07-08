@@ -4,6 +4,8 @@ import MatchList, { type MatchListFilter } from '@/components/MatchList.astro';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 import { fetchABEvents } from '@/lib/si/client';
 import { abConfig } from '@/lib/config/ab';
+import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+import Img from '@/components/Img.astro';
 export const prerender = false;
 
 const locale = 'en';
@@ -32,12 +34,21 @@ const displayEvents =
   filter === 'away'    ? upcoming.filter((e) => e.homeId !== abConfig.teamId) :
   filter === 'results' ? finished :
   upcoming;
+
+const billetMap = await fetchBilletTicketMap().catch(() => new Map<string, string>());
+const ticketByEventId: Record<number, string> = {};
+for (const event of upcoming) {
+  if (event.homeId === abConfig.teamId) {
+    const url = findTicketUrl(billetMap, event.awayName ?? '');
+    if (url) ticketByEventId[event.eventId] = url;
+  }
+}
 ---
 
 <Base locale={locale} title="Matches | Akademisk Boldklub">
   <!-- Hero -->
   <div class="relative w-full">
-    <img
+    <Img
       src="/images/matches-header-bg.png"
       alt="AB 1889 Matches"
       class="w-full h-auto block"
@@ -67,8 +78,8 @@ const displayEvents =
         ))}
       </div>
       <div class="hidden md:flex items-center gap-3">
-        <a href="https://billet.ab.dk/" target="_blank" rel="noreferrer" class="btn btn-sm btn-green">Buy Tickets</a>
-        <a href="https://billet.ab.dk/event/seasonal-ticket-pass-26-27-copy-u8hk6v" target="_blank" rel="noreferrer" class="btn btn-sm bg-ab-beige text-ab-green">Buy Season Card</a>
+        <a class="vivenu-btn btn btn-sm btn-green" href="https://billet.ab.dk/?useEmbed=true">Buy Tickets</a>
+        <a class="vivenu-btn btn btn-sm bg-ab-beige text-ab-green" href="https://billet.ab.dk/event/seasonal-ticket-pass-26-27-copy-u8hk6v?useEmbed=true">Buy Season Card</a>
       </div>
     </div>
   </div>
@@ -84,15 +95,11 @@ const displayEvents =
           </svg>
           <span class="font-black text-white text-sm tracking-[-0.02em]">Betinia Liga</span>
         </div>
-        <div class="flex items-center gap-4">
-          <span class="text-xs hidden sm:block text-white/70">Add AB's schedule to your calendar</span>
-          <button class="font-black text-sm px-4 py-1.5 rounded bg-ab-neon text-ab-green border-0 cursor-pointer tracking-[-0.02em]">Sync</button>
-        </div>
       </div>
     </div>
   </div>
 
-  <MatchList locale={locale} events={displayEvents} filter={filter} />
+  <MatchList locale={locale} events={displayEvents} filter={filter} ticketByEventId={ticketByEventId} />
 
   <!-- Standings section -->
   <div id="standings" class="bg-[#EBEBEB] pt-[40px] pb-[48px]">

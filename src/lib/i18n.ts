@@ -11,7 +11,8 @@ const daToEn: Record<string, string> = {
   '/nyheder': '/news',
   '/om/historik': '/about/history',
   '/om/stadion': '/about/stadium',
-  '/bliv-involveret/sponsorer': '/get-involved/sponsor',
+  '/sponsorer': '/partners',
+  '/hospitality': '/hospitality',
   '/kamp/': '/match/',
   '/spiller/': '/player/',
   '/stab/': '/staff/',
@@ -20,7 +21,7 @@ const daToEn: Record<string, string> = {
   '/om/brand': '/brand',
   '/om/ledelse': '/about/leadership',
   '/om/kontakt': '/contact',
-  '/bliv-involveret/events': '/get-involved/events',
+  '/events': '/events',
   '/om/privatlivspolitik': '/privacy-policy',
   '/om/returpolitik': '/refund-and-returns-policy',
 };

@@ -1,0 +1,113 @@
+---
+import Base from '@/layouts/Base.astro';
+import { fetchABEvents } from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
+import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+
+export const prerender = false;
+
+const now = new Date();
+const toDate = new Date(now);
+toDate.setMonth(toDate.getMonth() + 4);
+
+let upcomingHome: Awaited<ReturnType<typeof fetchABEvents>> = [];
+try {
+  const events = await fetchABEvents({
+    locale: 'da',
+    limit: 50,
+    fromDate: now.toISOString().slice(0, 10),
+    toDate: toDate.toISOString().slice(0, 10),
+  });
+  upcomingHome = events.filter((e) => e.homeId === abConfig.teamId);
+} catch { /* SI API utilgængelig */ }
+
+const billetMap = await fetchBilletTicketMap().catch(() => new Map<string, string>());
+function ticketUrl(opponentName: string): string {
+  return findTicketUrl(billetMap, opponentName) ?? 'https://billet.ab.dk/';
+}
+
+function fmtDate(d: string) {
+  return new Date(d).toLocaleDateString('da-DK', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  });
+}
+function fmtTime(d: string) {
+  return new Date(d).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
+}
+---
+
+<Base locale="da" title="Arrangementer | AB 1889">
+
+  <!-- Hero -->
+  <div class="bg-rich-black py-16 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
+      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7rem)] tracking-[-0.04em]">Arrangementer</h1>
+      <p class="mt-4 text-white/60 text-[1rem] max-w-[44ch]">Kommende hjemmekampe og klubbegivenheder på Gladsaxe Stadion.</p>
+    </div>
+  </div>
+
+  <!-- Events list -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+
+      {upcomingHome.length > 0 ? (
+        <div class="flex flex-col gap-0 divide-y divide-[#F0F0F0]">
+          {upcomingHome.map((event) => {
+            const opponent = event.awayId === abConfig.teamId ? event.homeName : event.awayName;
+            const venue = event.properties?.venueName ?? 'Gladsaxe Stadion';
+            return (
+              <div class="group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 py-6 hover:bg-[#FAFAFA] transition-colors -mx-4 px-4">
+                <a href={`/kamp/${event.eventId}`} class="absolute inset-0 z-0" aria-label={`Se kamp: AB 1889 mod ${opponent}`} />
+                <div class="shrink-0 sm:w-40 relative z-10 pointer-events-none">
+                  <p class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-neon mb-0.5">Kampdag</p>
+                  <p class="font-black text-[1rem] text-[#111] tracking-[-0.03em] leading-tight">{fmtDate(event.startDate)}</p>
+                  <p class="text-[0.85rem] text-[#888] mt-0.5">{fmtTime(event.startDate)}</p>
+                </div>
+                <div class="flex-1 min-w-0 relative z-10 pointer-events-none">
+                  <p class="font-black text-[1.15rem] text-[#111] tracking-[-0.03em]">AB 1889 mod {opponent}</p>
+                  <p class="text-[0.88rem] text-[#666] mt-0.5">{venue}</p>
+                </div>
+                <div class="shrink-0 flex items-center gap-3 relative z-10">
+                  <a
+                    class="vivenu-btn text-[0.75rem] font-black uppercase tracking-[0.08em] bg-ab-neon text-ab-green px-4 py-2.5 no-underline hover:opacity-80 transition-opacity"
+                    href={`${ticketUrl(event.awayName ?? '')}?useEmbed=true`}>
+                    Billetter
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="py-20 text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#F5F5F5] mb-6">
+            <svg class="w-7 h-7 text-[#CCC]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em] mb-2">Ingen kommende events</p>
+          <p class="text-[0.9rem] text-[#888]">Kig forbi igen snart — flere events annonceres her.</p>
+        </div>
+      )}
+
+    </div>
+  </section>
+
+  <!-- Hospitality CTA -->
+  <section class="bg-ab-green py-[clamp(40px,6vw,64px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div>
+        <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-2">Private arrangementer</p>
+        <h2 class="font-black text-white text-[clamp(1.4rem,3vw,2.2rem)] tracking-[-0.04em] leading-tight">Hold dit event på Gladsaxe Stadion</h2>
+        <p class="text-white/70 text-[0.95rem] mt-2 max-w-[44ch]">Vores Knud Lundberg og René Henriksen lounges kan lejes til konferencer, middage og private events.</p>
+      </div>
+      <a
+        href="/hospitality"
+        class="shrink-0 inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-neon text-ab-green px-7 py-3.5 no-underline hover:opacity-90 transition-opacity whitespace-nowrap">
+        Se gæsteoplevelser →
+      </a>
+    </div>
+  </section>
+
+</Base>

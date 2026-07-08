@@ -11,12 +11,20 @@ function toSlug(name: string): string {
     .replace(/^-|-$/g, '');
 }
 
-// Explicit overrides for names that differ between SI API and the WP site
+// Explicit overrides for names that differ between SI API and the WP site,
+// or whose names contain non-ASCII characters that slug poorly.
 const OVERRIDES: Record<string, string> = {
   'emil-mygind': 'players/emil-mygind-jensen.png',
   'milan-rasmussen': 'players/milan-silva-rasmussen.png',
   'noah-engell': 'players/noah-engell-christensen.png',
+  // SI API returns "Soeren Ilsoee" (ASCII, double-e) → mapped to uploaded file
+  'soeren-ilsoee': 'players/soren-ilsoe.png',
 };
+
+// Players to hide from squad display (e.g. out of contract).
+export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
+  'daniel-a-pedersen',
+]);
 
 export function getPlayerPhotoKey(
   name: string | null | undefined

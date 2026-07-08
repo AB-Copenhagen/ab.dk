@@ -9,7 +9,17 @@ const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
 export default defineConfig({
   output: 'server',
   server: { port: 1889 },
-  adapter: vercel(),
+  adapter: vercel({
+    imageService: true,
+  }),
+  image: {
+    remotePatterns: [
+      // SI API team logos (CloudFront CDN)
+      { protocol: 'https', hostname: '**.cloudfront.net' },
+      // Strapi media uploaded to Wasabi S3
+      { protocol: 'https', hostname: '**.wasabisys.com' },
+    ],
+  },
   integrations: [react()],
   // Block search engine crawlers until production launch.
   // Set ALLOW_SEARCH_INDEXING=true in the production environment (see README).
