@@ -1,7 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro';
 import TimelineNav from '@/components/history/TimelineNav.astro';
+import TimelineSidebar from '@/components/history/TimelineSidebar.astro';
 import PlaceholderImage from '@/components/history/PlaceholderImage.astro';
+import Img from '@/components/Img.astro';
 
 export const prerender = true;
 
@@ -48,7 +50,7 @@ const trenerregnskab = [
   title="Historik | AB 1889">
   <!-- Hero -->
   <div class="relative w-full">
-    <img
+    <Img
       src="/images/about-history-hero.png"
       alt="AB 1889 Historie"
       class="w-full h-auto block"
@@ -67,8 +69,26 @@ const trenerregnskab = [
 
   <TimelineNav locale="da" />
 
+  <div class="lg:flex lg:items-start">
+    <!-- Venstre: sticky sidebjælke -->
+    <div
+      class="hidden lg:block w-[240px] shrink-0 pl-20"
+      style="position: sticky; top: calc(var(--nav-height, 92px) + 48px); align-self: start; max-height: calc(100vh - var(--nav-height, 92px) - 48px - 1rem); overflow-y: auto; scrollbar-width: none;">
+      <TimelineSidebar locale="da" />
+    </div>
+    <!-- Højre: indholdskolonne -->
+    <div class="flex-1 min-w-0">
+
+  <!-- Era: Begyndelse -->
+  <div id="era-beginning" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">Begyndelse</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1883–1924</span>
+    </div>
+  </div>
+
   <!-- 1883: White bg — tekst venstre, billede højre -->
-  <section id="1883" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1883" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
         <div>
@@ -96,7 +116,7 @@ const trenerregnskab = [
           </p>
         </div>
         <div class="overflow-hidden rounded-md aspect-4/3">
-          <img
+          <Img
             src="/images/about-frederician-latin-school-building.png"
             alt="Fredericia Latinskole"
             class="w-full h-full object-cover"
@@ -110,11 +130,11 @@ const trenerregnskab = [
   <section id="1887" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
-        <div class="overflow-hidden order-2 lg:order-1 rounded-md aspect-4/3">
-          <img
+        <div class="overflow-hidden order-2 lg:order-1 rounded-md">
+          <Img
             src="/images/about-board-of-directors.png"
             alt="AB hold 1887"
-            class="w-full h-full object-cover"
+            class="w-full h-auto block"
           />
         </div>
         <div class="order-1 lg:order-2">
@@ -168,7 +188,7 @@ const trenerregnskab = [
           </p>
         </div>
         <div class="overflow-hidden rounded-md aspect-4/3">
-          <img
+          <Img
             src="/images/about-stadium-seat.png"
             alt="AB stadion"
             class="w-full h-full object-cover"
@@ -179,14 +199,14 @@ const trenerregnskab = [
   </section>
 
   <!-- 1889 sort: Ny bestyrelse -->
-  <section id="1889-board" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+  <section id="1889-board" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
-        <div class="overflow-hidden rounded-md aspect-4/3">
-          <img
+        <div class="overflow-hidden rounded-md">
+          <Img
             src="/images/about-board-of-directors.png"
             alt="AB bestyrelse 1889"
-            class="w-full h-full object-cover"
+            class="w-full h-auto block"
           />
         </div>
         <div>
@@ -220,7 +240,7 @@ const trenerregnskab = [
   </section>
 
   <!-- 1889 hvid: To kolonner -->
-  <section id="1889-dues" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1889-dues" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-start">
         <div>
@@ -293,7 +313,7 @@ const trenerregnskab = [
       <div class="grid lg:grid-cols-[minmax(0,400px)_1.35fr] gap-16 lg:gap-20 items-center">
         <div
           class="flex items-center justify-center aspect-square max-h-[420px]">
-          <img
+          <Img
             src="/images/about-crest-original.png"
             alt="AB 1889 crest"
             class="w-[min(360px,90%)]"
@@ -409,8 +429,16 @@ const trenerregnskab = [
     </div>
   </section>
 
+  <!-- Era: Efterkrigstid -->
+  <div id="era-postwar" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">Efterkrigstid</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1940–1974</span>
+    </div>
+  </div>
+
   <!-- 1940: Sort bg — billede-placeholder venstre, tekst højre -->
-  <section id="1940" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+  <section id="1940" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
         <div class="order-2 lg:order-1">
@@ -451,7 +479,7 @@ const trenerregnskab = [
   </section>
 
   <!-- 1946: Hvid bg — floating billede-placeholder i tekstflow -->
-  <section id="1946" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1946" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
         <div
           class="inline-flex items-center mb-7 bg-ab-beige rounded-full py-[9px] px-[22px]">
@@ -525,7 +553,7 @@ const trenerregnskab = [
         </div>
         <div class="order-1 lg:order-2">
           <div
-            class="inline-flex items-center mb-7 bg-rich-black rounded-full py-[9px] px-[22px]">
+            class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
             <span class="font-black text-[1.4rem] text-ab-neon tracking-[-0.04em]"
               >1960</span
             >
@@ -648,8 +676,16 @@ const trenerregnskab = [
     </div>
   </section>
 
+  <!-- Era: Nu -->
+  <div id="era-present" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">Nu</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1990–nu</span>
+    </div>
+  </div>
+
   <!-- 1990: Hvid bg — floating billede-placeholder i tekstflow -->
-  <section id="1990" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="1990" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
         <div
           class="inline-flex items-center mb-7 bg-ab-gold rounded-full py-[9px] px-[22px]">
@@ -709,7 +745,7 @@ const trenerregnskab = [
       <div class="grid lg:grid-cols-[1.65fr_minmax(0,360px)] gap-16 lg:gap-20 items-start">
         <div>
           <div
-            class="inline-flex items-center mb-7 bg-rich-black rounded-full py-[9px] px-[22px]">
+            class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
             <span class="font-black text-[1.4rem] text-ab-neon tracking-[-0.04em]"
               >2004</span
             >
@@ -756,7 +792,7 @@ const trenerregnskab = [
   </section>
 
   <!-- 2022: Sort bg — billede-placeholder venstre, tekst + liste højre -->
-  <section id="2022" class="bg-rich-black py-[clamp(64px,9vw,112px)]">
+  <section id="2022" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
         <div class="order-2 lg:order-1">
@@ -775,11 +811,11 @@ const trenerregnskab = [
             Five Castles Football Group LLC
           </h2>
           <p class="text-[1.1rem] leading-[1.75] text-white/85">
-            I november 2022 blev AB solgt til den britisk-amerikanske
-            investorgruppe Five Castles Football Group LLC. Konsortiet bestod
-            af individuelle investorer, hvoraf de fleste var baseret i New
-            York City. Den tidligere bestyrelsesformand, Torben Oldenborg,
-            forblev i klubben som minoritetsaktionær.
+            I november 2022 blev AB solgt til den amerikanske investorgruppe
+            Five Castles Football Group LLC, som erhvervede 95% af klubbens
+            aktier. Five Castles' vision for klubben omfattede en plan om at
+            opgradere de kommercielle aktiviteter, modernisere spillerrekruttering
+            og scouting samt etablere en klar spilleidentitet.
           </p>
           <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5 mb-6">
             Ledelsen af investeringsgruppen talte blandt andre:
@@ -802,7 +838,7 @@ const trenerregnskab = [
   </section>
 
   <!-- 2023-2025: Hvid bg — tekst venstre, billede-placeholder højre -->
-  <section id="2023" class="bg-white py-[clamp(64px,9vw,112px)]">
+  <section id="2023" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="grid lg:grid-cols-[1.35fr_minmax(0,400px)] gap-16 lg:gap-20 items-start">
         <div>
@@ -823,10 +859,10 @@ const trenerregnskab = [
             uafgjorte og 10 nederlag.
           </p>
           <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
-            AB hyrede cheftræner David Roufpanah til sæsonen 2023-24, som havde
-            omfattende trænererfaring fra Allsvenskan, Superettan, den svenske
-            2. division og Damallsvenskan. AB afsluttede sæsonen med 9 sejre,
-            13 uafgjorte og 10 nederlag.
+            AB hyrede den svenske cheftræner David Roufpanah til sæsonen
+            2023-24. AB afsluttede sæsonen på en 5. plads med 9 sejre, 13
+            uafgjorte og 10 nederlag. AB nåede også kvartfinalerne i DBU Pokalen
+            for første gang i 22 år.
           </p>
 
           <div class="grid sm:grid-cols-3 gap-4 mt-8">
@@ -924,7 +960,7 @@ const trenerregnskab = [
           </p>
         </div>
         <div class="flex flex-col items-center text-center gap-6">
-          <img
+          <Img
             src="/images/about-crest-original.png"
             alt="AB 1889 crest"
             class="w-[min(280px,70%)]"
@@ -939,4 +975,7 @@ const trenerregnskab = [
       </div>
     </div>
   </section>
+
+    </div><!-- /indholdskolonne -->
+  </div><!-- /xl:flex -->
 </Base>

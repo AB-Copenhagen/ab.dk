@@ -54,7 +54,7 @@ export default function MobileMenu({
               {/* ── Utility row: ABTV + Login ── */}
               <div className="flex items-center gap-3 mb-4">
                 <a
-                  href="https://abtv.ab.dk"
+                  href="/abtv"
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center justify-center bg-ab-neon text-ab-green font-black text-sm px-5 py-2 no-underline tracking-[-0.03em]"

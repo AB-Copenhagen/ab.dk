@@ -1,0 +1,396 @@
+---
+import Base from '@/layouts/Base.astro';
+import heroImage from '@/assets/images/IMG_7926.jpeg';
+
+export const prerender = true;
+
+interface Partner {
+  name: string;
+  src: string;
+  href?: string;
+  sz?: string;
+  description: string;
+  howLong: string;
+  contacts: string;
+  highlights: string;
+}
+
+const mainPartners: Partner[] = [
+  {
+    name: 'Myriad360',
+    src: '/images/sponsors/myriad360.png',
+    href: 'https://myriad360.com/',
+    sz: 'w-[230px] h-[78px]',
+    description: '-',
+    howLong: '-',
+    contacts: '-',
+    highlights: '-',
+  },
+  {
+    name: 'Plane',
+    src: '/images/sponsors/plane.png',
+    href: 'https://plane.so/',
+    sz: 'w-[200px] h-[65px]',
+    description: '-',
+    howLong: '-',
+    contacts: '-',
+    highlights: '-',
+  },
+  {
+    name: 'Datum',
+    src: '/images/sponsors/datum.png',
+    href: 'https://datum.net/',
+    sz: 'w-[300px] h-[100px]',
+    description: '-',
+    howLong: '-',
+    contacts: '-',
+    highlights: '-',
+  },
+  {
+    name: 'Select Sport',
+    src: '/images/sponsors/select-sport.png',
+    href: 'https://dk.select-sport.com/',
+    sz: 'w-[200px] h-[65px]',
+    description: '-',
+    howLong: '-',
+    contacts: '-',
+    highlights: '-',
+  },
+  {
+    name: 'Carlsberg',
+    src: '/images/sponsors/carlsberg.png',
+    href: 'https://carlsbergdanmark.dk/',
+    sz: 'w-[262px] h-[88px]',
+    description: '-',
+    howLong: '-',
+    contacts: '-',
+    highlights: '-',
+  },
+];
+
+const networkPartners: Partner[] = [
+  { name: 'T4C A/S',                           src: '/images/sponsors/partners/t4c.jpg',                            description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'K/S Jydekrogen',                    src: '/images/sponsors/partners/ks-jydekrogen.png',                  description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Fodeksperterne',                    src: '/images/sponsors/partners/fodeksperterne.png',                 description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Weibel Data og overvågning',        src: '/images/sponsors/partners/weibel-data.png',                   description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Unisport',                          src: '/images/sponsors/partners/unisport.png',                      description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Lomax',                             src: '/images/sponsors/partners/lomax.jpeg',                        description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Waseen',                            src: '/images/sponsors/partners/waseen.jpeg',                       description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Steaking',                          src: '/images/sponsors/partners/steaking.jpg',                      description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Kasper Svenstrup Media',            src: '/images/sponsors/partners/kasper-svenstrup-media.png',        description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Poul Holm Sport',                   src: '/images/sponsors/partners/poul-holm-sport.gif',               description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Lind Advokater',                    src: '/images/sponsors/partners/lind-advokater.png',                description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Laudrup Vin',                       src: '/images/sponsors/partners/laudrup-vin.png',                   description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Symbion',                           src: '/images/sponsors/partners/symbion.png',                      description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Pure Shots',                        src: '/images/sponsors/partners/pure-shots.png',                    description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Baker Tilly',                       src: '/images/sponsors/partners/baker-tilly.png',                   description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Virum Torv Advokater',              src: '/images/sponsors/partners/virum-torv-advokater.svg',          description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'SoccerZoom',                        src: '/images/sponsors/partners/soccerzoom.png',                    description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Apo Pharm',                         src: '/images/sponsors/partners/apo-pharm.png',                    description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Plus Leasing',                      src: '/images/sponsors/partners/plus-leasing.png',                  description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Dancontainer',                      src: '/images/sponsors/partners/dancontainer.jpg',                  description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Søpromenaden',                      src: '/images/sponsors/partners/soepromenaden.webp',                description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'View2net',                          src: '/images/sponsors/partners/view2net.png',                      description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Buffetkompagniet',                  src: '/images/sponsors/partners/buffetkompagniet.png',              description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Weibel El-teknik',                  src: '/images/sponsors/partners/weibel-el-teknik.png',              description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Meny Kaffe',                        src: '/images/sponsors/partners/meny-kaffe.png',                    description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Nordsjælland Sportsfysioterapi',    src: '/images/sponsors/partners/nordsjaelland-sportsfysioterapi.png', description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Meny Søborg',                       src: '/images/sponsors/partners/meny-soeborg.png',                  description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Capio Privathospital',              src: '/images/sponsors/partners/capio-privathospital.png',          description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Bella — Skilte & Print',            src: '/images/sponsors/partners/bella-skilte-print.png',            description: '-', howLong: '-', contacts: '-', highlights: '-' },
+  { name: 'Ejendomsfoto',                      src: '/images/sponsors/partners/ejendomsfoto.png',                  description: '-', howLong: '-', contacts: '-', highlights: '-' },
+];
+---
+
+<Base
+  locale="en"
+  title="Partners | AB 1889"
+  description="Meet the companies and partners supporting Akademisk Boldklub — from principal partners to the AB Partner network.">
+
+  <!-- Hero -->
+  <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
+    <img
+      src={heroImage.src}
+      alt="Partner boards at Gladsaxe Stadium"
+      width={heroImage.width}
+      height={heroImage.height}
+      class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.5] saturate-[0.6]"
+    />
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_70%)]"></div>
+    <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
+      <h1 class="font-black text-white text-[clamp(3rem,9vw,7rem)] tracking-[-0.04em] leading-[0.9]">
+        Partners
+      </h1>
+    </div>
+  </div>
+
+  <!-- Principal partners -->
+  <section class="bg-white py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Principal Partners</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Our principal partners</h2>
+      <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-14">
+        These companies are most closely tied to AB 1889 and contribute directly to the club's sporting and commercial development.
+      </p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        {mainPartners.map((p) => (
+          <button
+            class="partner-card group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_rgba(0,106,82,0.1)] transition-all text-left cursor-pointer p-0"
+            data-name={p.name}
+            data-src={p.src}
+            data-description={p.description}
+            data-how-long={p.howLong}
+            data-contacts={p.contacts}
+            data-highlights={p.highlights}
+            data-website={p.href ?? ''}>
+            <!-- Logo area -->
+            <div class="flex items-center justify-center px-6 py-10 flex-1">
+              <img
+                src={p.src}
+                alt={p.name}
+                class:list={['object-contain object-center', p.sz ?? 'max-h-16 max-w-full']}
+                loading="lazy"
+              />
+            </div>
+            <!-- Footer bar -->
+            <div class="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-[#FAFAFA]">
+              <span class="font-black text-[0.72rem] text-[#555] tracking-[-0.01em] truncate pr-2">{p.name}</span>
+              <svg class="w-3.5 h-3.5 text-[#CCC] group-hover:text-ab-green transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- AB Partner network -->
+  <section class="bg-surface-base py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 border border-ab-green/40 rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-surface-muted tracking-[0.1em] uppercase">AB Partner</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-white mb-4">The AB Partner network</h2>
+      <p class="text-surface-muted text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-14">
+        A strong network of local and national companies that have supported AB 1889 year after year — spanning sport, health, advisory, and hospitality.
+      </p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {networkPartners.map((p) => (
+          <button
+            class="partner-card group relative flex flex-col bg-white border border-surface-border rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_rgba(0,106,82,0.12)] transition-all text-left cursor-pointer p-0"
+            data-name={p.name}
+            data-src={p.src}
+            data-description={p.description}
+            data-how-long={p.howLong}
+            data-contacts={p.contacts}
+            data-highlights={p.highlights}
+            data-website="">
+            <!-- Logo area -->
+            <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
+              <img
+                src={p.src}
+                alt={p.name}
+                class="max-h-14 max-w-full object-contain"
+                loading="lazy"
+              />
+            </div>
+            <!-- Footer bar -->
+            <div class="flex items-center justify-between px-3.5 py-2.5 border-t border-[#f0f0f0]">
+              <span class="font-black text-[0.68rem] text-[#555] tracking-[-0.01em] truncate pr-1.5 leading-tight">{p.name}</span>
+              <svg class="w-3 h-3 text-[#CCC] group-hover:text-ab-green transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Partner lightbox -->
+  <dialog id="partner-lb" aria-label="Partner details">
+    <div id="plb-backdrop">
+      <div id="plb-card">
+        <button id="plb-close" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
+        </button>
+
+        <!-- Top: logo + name + description -->
+        <div id="plb-top">
+          <div id="plb-logo-wrap">
+            <img id="plb-logo" src="" alt="" />
+          </div>
+          <div id="plb-info">
+            <span id="plb-label">Partner</span>
+            <h3 id="plb-name"></h3>
+            <p id="plb-description"></p>
+            <a id="plb-website" href="" target="_blank" rel="noreferrer" class="plb-website-link">Visit website →</a>
+          </div>
+        </div>
+
+        <!-- Bottom: 3 info blocks -->
+        <div id="plb-meta">
+          <div class="plb-meta-block">
+            <p class="plb-meta-label">How long</p>
+            <p id="plb-how-long" class="plb-meta-value"></p>
+          </div>
+          <div class="plb-meta-block">
+            <p class="plb-meta-label">Key contacts</p>
+            <p id="plb-contacts" class="plb-meta-value"></p>
+          </div>
+          <div class="plb-meta-block">
+            <p class="plb-meta-label">Highlights</p>
+            <p id="plb-highlights" class="plb-meta-value"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+</Base>
+
+<style>
+  /* ── Dialog shell ── */
+  #partner-lb {
+    border: none; padding: 0; margin: 0; background: transparent;
+    max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh;
+  }
+  #partner-lb::backdrop { background: rgba(0,0,0,0.88); }
+
+  /* ── Centering wrapper ── */
+  #plb-backdrop {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; box-sizing: border-box;
+  }
+
+  /* ── Card ── */
+  #plb-card {
+    background: #fff;
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    overflow: hidden;
+  }
+
+  /* ── Close button ── */
+  #plb-close {
+    position: absolute; top: 12px; right: 12px; z-index: 10;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.07); border: none; cursor: pointer;
+    color: #444; transition: background 0.15s;
+  }
+  #plb-close:hover { background: rgba(0,0,0,0.14); }
+
+  /* ── Top section: logo + text ── */
+  #plb-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  @media (min-width: 480px) {
+    #plb-top { grid-template-columns: 200px 1fr; }
+  }
+
+  #plb-logo-wrap {
+    background: #F8F8F8;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 28px;
+    border-right: 1px solid #F0F0F0;
+    min-height: 160px;
+  }
+  #plb-logo {
+    max-width: 140px; max-height: 80px;
+    object-fit: contain; display: block;
+  }
+
+  #plb-info {
+    padding: 28px 28px 24px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  #plb-label {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: 0.58rem; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #006a52; display: block;
+  }
+  #plb-name {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: 1.25rem; color: #111; line-height: 1.15;
+    margin: 0 0 8px; letter-spacing: -0.04em;
+  }
+  #plb-description {
+    font-size: 0.85rem; line-height: 1.75; color: #666; margin: 0;
+    flex: 1;
+  }
+  .plb-website-link {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: 0.72rem; color: #006a52;
+    text-decoration: none; margin-top: 8px; display: inline-block;
+    transition: opacity 0.15s;
+  }
+  .plb-website-link:hover { opacity: 0.7; }
+  .plb-website-link.hidden { display: none; }
+
+  /* ── Bottom: 3 meta blocks ── */
+  #plb-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .plb-meta-block {
+    padding: 18px 20px;
+    border-right: 1px solid #F0F0F0;
+  }
+  .plb-meta-block:last-child { border-right: none; }
+  .plb-meta-label {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: 0.58rem; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #BBBBB; margin: 0 0 6px;
+    color: #BBB;
+  }
+  .plb-meta-value {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 0.82rem; color: #333; margin: 0;
+    line-height: 1.5;
+  }
+</style>
+
+<script>
+  const lb         = document.getElementById('partner-lb') as HTMLDialogElement;
+  const backdrop   = document.getElementById('plb-backdrop') as HTMLElement;
+  const logo       = document.getElementById('plb-logo') as HTMLImageElement;
+  const name       = document.getElementById('plb-name') as HTMLElement;
+  const description = document.getElementById('plb-description') as HTMLElement;
+  const howLong    = document.getElementById('plb-how-long') as HTMLElement;
+  const contacts   = document.getElementById('plb-contacts') as HTMLElement;
+  const highlights = document.getElementById('plb-highlights') as HTMLElement;
+  const website    = document.getElementById('plb-website') as HTMLAnchorElement;
+
+  document.querySelectorAll<HTMLButtonElement>('.partner-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const d = card.dataset;
+      logo.src        = d.src ?? '';
+      logo.alt        = d.name ?? '';
+      name.textContent = d.name ?? '';
+      description.textContent = d.description ?? '-';
+      howLong.textContent     = d.howLong ?? '-';
+      contacts.textContent    = d.contacts ?? '-';
+      highlights.textContent  = d.highlights ?? '-';
+
+      if (d.website) {
+        website.href = d.website;
+        website.classList.remove('hidden');
+      } else {
+        website.classList.add('hidden');
+      }
+
+      lb.showModal();
+    });
+  });
+
+  document.getElementById('plb-close')?.addEventListener('click', () => lb.close());
+  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) lb.close(); });
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') lb.close(); });
+</script>

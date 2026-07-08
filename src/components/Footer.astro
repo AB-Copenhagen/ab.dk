@@ -149,7 +149,7 @@ const partners = strapiPartners.length > 0
           ) : (
             <ul class="flex flex-col">
               {([
-                { label: locale === 'da' ? 'Book event' : 'Book an event', href: locale === 'en' ? '/en/get-involved/events' : '/bliv-involveret/events', external: false },
+                { label: locale === 'da' ? 'Hospitality' : 'Hospitality', href: locale === 'en' ? '/en/hospitality' : '/hospitality', external: false },
                 { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/om/brand', external: false },
                 { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspolitik', external: false },
                 { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/om/returpolitik', external: false },
@@ -163,10 +163,10 @@ const partners = strapiPartners.length > 0
         </div>
       </div>
 
-      <!-- Right: AB circular crest -->
+      <!-- Right: AB circular crest — white on transparent -->
       <div class="hidden lg:block shrink-0 self-start">
         <img
-          src="/images/ab-crest.svg"
+          src="/images/ab-crest-white.svg"
           alt="AB 1889"
           class="w-[clamp(120px,12vw,180px)] h-auto"
         />

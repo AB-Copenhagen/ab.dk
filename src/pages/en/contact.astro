@@ -2,13 +2,6 @@
 import Base from '@/layouts/Base.astro';
 
 export const prerender = true;
-
-const departments = [
-  { label: 'General enquiries', email: 'info@ab.dk' },
-  { label: 'Club operations', email: 'creinhardt@ab.dk' },
-  { label: 'Accounting', email: 'regnskab@ab.dk' },
-  { label: 'Partnerships', email: 'partners@ab.dk' },
-];
 ---
 
 <Base locale="en" title="Contact | AB 1889">
@@ -72,19 +65,40 @@ const departments = [
           </div>
         </div>
 
-        <!-- Right: Departments -->
+        <!-- Right: Contact form -->
         <div>
           <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
-            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Departments</span>
+            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Send a message</span>
           </div>
-          <div class="flex flex-col gap-3">
-            {departments.map(({ label, email }) => (
-              <div class="border border-[#E5E7EB] py-4 px-5 flex items-center justify-between gap-4">
-                <p class="font-black text-[0.9rem] text-[#111] tracking-[-0.02em]">{label}</p>
-                <a href={`mailto:${email}`} class="text-[0.82rem] text-ab-green font-medium tracking-[-0.01em] no-underline hover:opacity-70 shrink-0">{email}</a>
+          <form id="contact-form" class="flex flex-col gap-4" novalidate>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="cf-name" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Name</label>
+                <input id="cf-name" name="name" type="text" required autocomplete="name"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="Your name" />
               </div>
-            ))}
-          </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="cf-email" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Email</label>
+                <input id="cf-email" name="email" type="email" required autocomplete="email"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="your@email.com" />
+              </div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="cf-subject" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Subject</label>
+              <input id="cf-subject" name="subject" type="text"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="What is this about?" />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="cf-message" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Message</label>
+              <textarea id="cf-message" name="message" required rows="5"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors resize-none" placeholder="How can we help?"></textarea>
+            </div>
+            <div id="cf-status" class="hidden text-[0.85rem] font-medium px-4 py-3"></div>
+            <button type="submit" id="cf-submit"
+              class="self-start inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-green text-white px-7 py-3.5 transition-opacity hover:opacity-80 disabled:opacity-50">
+              Send message
+            </button>
+          </form>
         </div>
       </div>
     </div>
@@ -104,17 +118,52 @@ const departments = [
           </div>
         </div>
 
-        <!-- AB Forever -->
-        <div class="bg-white border border-[#E5E7EB] p-6">
-          <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-4">AB Forever — Stadium Venue</p>
-          <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em] mb-3">Chairman: Kasper V. Petersen</p>
-          <div class="flex flex-col gap-1.5 text-[0.88rem] text-[#555]">
-            <p>Gladsaxevej 200, 2860 Søborg</p>
-            <a href="mailto:formand@abforever.dk" class="text-ab-green no-underline hover:opacity-70">formand@abforever.dk</a>
-          </div>
-        </div>
       </div>
     </div>
   </section>
 
 </Base>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const statusEl = document.getElementById('cf-status');
+  const submitBtn = document.getElementById('cf-submit') as HTMLButtonElement | null;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !submitBtn || !statusEl) return;
+
+    const data = {
+      name: (form.elements.namedItem('name') as HTMLInputElement).value.trim(),
+      email: (form.elements.namedItem('email') as HTMLInputElement).value.trim(),
+      subject: (form.elements.namedItem('subject') as HTMLInputElement).value.trim(),
+      message: (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim(),
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    statusEl.className = 'hidden text-[0.85rem] font-medium px-4 py-3';
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (json.success) {
+        statusEl.textContent = "Thanks — we'll be in touch shortly.";
+        statusEl.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#F0FAF4] text-ab-green border border-ab-green/20';
+        form.reset();
+      } else {
+        throw new Error(json.error || 'Error');
+      }
+    } catch {
+      statusEl.textContent = 'Something went wrong — please email info@ab.dk directly.';
+      statusEl.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#FFF0F0] text-red-600 border border-red-200';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send message';
+    }
+  });
+</script>

@@ -4,6 +4,8 @@ import MatchList, { type MatchListFilter } from '@/components/MatchList.astro';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 import { fetchABEvents } from '@/lib/si/client';
 import { abConfig } from '@/lib/config/ab';
+import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+import Img from '@/components/Img.astro';
 export const prerender = false;
 
 const locale = 'da';
@@ -33,12 +35,21 @@ const displayEvents =
   filter === 'away'    ? upcoming.filter((e) => e.homeId !== abConfig.teamId) :
   filter === 'results' ? finished :
   upcoming;
+
+const billetMap = await fetchBilletTicketMap().catch(() => new Map<string, string>());
+const ticketByEventId: Record<number, string> = {};
+for (const event of upcoming) {
+  if (event.homeId === abConfig.teamId) {
+    const url = findTicketUrl(billetMap, event.awayName ?? '');
+    if (url) ticketByEventId[event.eventId] = url;
+  }
+}
 ---
 
 <Base locale={locale} title="Kampe | Akademisk Boldklub">
   <!-- Hero -->
   <div class="relative w-full">
-    <img
+    <Img
       src="/images/matches-header-bg.png"
       alt="AB 1889 Kampe"
       class="w-full h-auto block"
@@ -68,8 +79,8 @@ const displayEvents =
         ))}
       </div>
       <div class="hidden md:flex items-center gap-3">
-        <a href="https://billet.ab.dk/" target="_blank" rel="noreferrer" class="btn btn-sm btn-green">Køb billetter</a>
-        <a href="https://billet.ab.dk/event/seasonal-ticket-pass-26-27-copy-u8hk6v" target="_blank" rel="noreferrer" class="btn btn-sm bg-ab-beige text-ab-green">Køb sæsonkort</a>
+        <a class="vivenu-btn btn btn-sm btn-green" href="https://billet.ab.dk/?useEmbed=true">Køb billetter</a>
+        <a class="vivenu-btn btn btn-sm bg-ab-beige text-ab-green" href="https://billet.ab.dk/event/seasonal-ticket-pass-26-27-copy-u8hk6v?useEmbed=true">Køb sæsonkort</a>
       </div>
     </div>
   </div>
@@ -93,7 +104,7 @@ const displayEvents =
     </div>
   </div>
 
-  <MatchList locale={locale} events={displayEvents} filter={filter} />
+  <MatchList locale={locale} events={displayEvents} filter={filter} ticketByEventId={ticketByEventId} />
 
   <!-- Standings section -->
   <div id="stilling" class="bg-[#EBEBEB] pt-[40px] pb-[48px]">

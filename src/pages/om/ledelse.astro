@@ -8,13 +8,13 @@ const board = [
     name: 'Brian Grieco',
     role: 'Bestyrelsesformand',
     photo: '/images/team/brian-grieco.jpg',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: 'Brian Grieco har fungeret som bestyrelsesformand siden august 2024. Han er desuden General Counsel og Director of Treasury and Risk i AB A/S. I disse roller varetager Brian klubbens governance, overvåger den daglige ledelse og håndterer juridiske, compliance-mæssige og kontraktuelle forhold samt bankrelationer.',
   },
   {
     name: 'Jen Chang',
     role: 'Sportslig direktør',
-    photo: null,
+    photo: '/images/team/jen-chang.jpg',
     photoPos: 'object-center',
     bio: 'Jen Chang er sportslig direktør i AB og har arbejdet med talentidentifikation, scouting og spillerrekruttering i mere end 12 år i europæisk fodbold. Han har en M.Phil i International Relations fra Queens\' College, University of Cambridge, en MSc i Industrial Relations fra London School of Economics og en BA (Hons) i History fra Queen Mary University of London.',
   },
@@ -22,27 +22,27 @@ const board = [
     name: 'Zachary Smith',
     role: 'Bestyrelsesmedlem',
     photo: '/images/team/zac-smith.jpg',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: 'Zachary er iværksætter inden for digital infrastruktur og cloud computing. Han grundlagde i 2014 Packet, der blev markedsleder inden for bare metal-automatisering og opkøbt af Equinix i 2020. I slutningen af 2024 medstiftede han Datum, støttet af Amplify, Encoded og CRV.',
   },
   {
     name: 'Ben Lyttleton',
     role: 'Bestyrelsesmedlem',
     photo: 'https://www.a-speakers.com/media/yphmj2zp/ben-lyttleton-hero.jpg',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: 'Ben Lyttleton er bestyrelsesmedlem i AB, bestsellerforfatter og keynote speaker om psykologien bag høj præstation. Hans bog Twelve Yards (2014) bidrog til Englands første World Cup-straffesparksgevinst. Hans Football School-bøger er solgt i over én million eksemplarer i Storbritannien.',
   },
   {
     name: 'Harrison Oellrich',
     role: 'Bestyrelsesmedlem',
     photo: 'https://bebglobal.org/wp-content/uploads/2025/06/BEB_Headshots_0001_Oellrich.jpg',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: null,
   },
   {
     name: 'Joseph Gordon',
     role: 'Bestyrelsesmedlem',
-    photo: null,
+    photo: '/images/team/joseph-gordon.jpg',
     photoPos: 'object-center',
     bio: null,
   },
@@ -50,7 +50,7 @@ const board = [
     name: 'Sofie Brandi Petersen',
     role: 'Rådgiver',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/10/Sofie-Brandi-Petersen.jpg?fit=300%2C450&ssl=1',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: null,
   },
 ];
@@ -60,20 +60,13 @@ const exec = [
     name: 'Henrik Bom',
     role: 'President',
     photo: '/images/team/henrik-bom.jpg',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: null,
   },
-  {
-    name: 'Sofie Brandi Petersen',
-    role: 'CEO',
-    photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/10/Sofie-Brandi-Petersen.jpg?fit=300%2C450&ssl=1',
-    photoPos: 'object-top',
-    bio: null,
-  },
-  { name: 'Cynthia Lee', role: 'Marketing & Brand', photo: '/images/team/cynthia-lee.jpg', photoPos: 'object-top', bio: null },
-  { name: 'Jen Chang', role: 'Sportslig direktør', photo: null, photoPos: 'object-center', bio: null },
-  { name: 'Simon Taylor', role: '', photo: null, photoPos: 'object-center', bio: null },
-  { name: 'Rasmus Granzow', role: '', photo: null, photoPos: 'object-center', bio: null },
+  { name: 'Cynthia Lee', role: 'Marketing & Brand', photo: '/images/team/cynthia-lee.jpg', photoPos: 'object-center', bio: null },
+  { name: 'Jen Chang', role: 'Sportslig direktør', photo: '/images/team/jen-chang.jpg', photoPos: 'object-center', bio: null },
+  { name: 'Simon Taylor', role: 'Partnerskaber', photo: '/images/team/simon-taylor.jpg', photoPos: 'object-center', bio: null },
+  { name: 'Rasmus Granzow', role: 'Stadionoplevelse & Hospitality', photo: null, photoPos: 'object-center', bio: null },
 ];
 
 const sporting = [
@@ -81,21 +74,21 @@ const sporting = [
     name: 'Fannar Berg Gunnólfsson',
     role: 'Cheftræner',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2024/07/Fannar-Berg-Gunnolfsson-scaled.png?fit=618%2C1024&ssl=1',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: 'Gunnólfsson har erfaring fra senior- og ungdomsfodbold på Island og i Norge. Senest var han cheftræner i Volde Turn og Idrottslag og assistenttræner i Knattspyrnufélag ÍA.',
   },
   {
     name: 'Joakim Sternas',
     role: 'Målmandstræner',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/03/Joakim-Starnas-scaled.png?fit=578%2C1024&ssl=1',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: 'Sternas var målmandstræner i Täby FK i den svenske Ettan Norra i to år inden AB. Han startede sin trænerbane i Spånga IS FK.',
   },
   {
     name: 'Konstantinos Ntolaptsis',
     role: 'Styrke & Kondition',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2025/07/Konstatinos-Ntolaptsis-scaled.png?fit=624%2C1024&ssl=1',
-    photoPos: 'object-top',
+    photoPos: 'object-center',
     bio: 'Ntolaptsis tiltrådte i AB i juli 2025 fra FV Wurzburger U19. Han har en kandidatgrad i Exercise Science & Training fra Julius-Maximilians Universität Würzburg.',
   },
 ];
@@ -105,7 +98,7 @@ const investors = [
     name: 'Five Castles Football Group',
     since: 'November 2022',
     stake: 'Majoritetsaktionær',
-    description: 'Den britisk-amerikanske investorgruppe, der overtog AB i november 2022. Konsortiet, bestående af individuelle investorer primært baseret i New York City, bragte en langsigtet forpligtelse til at bygge AB som en bæredygtig fodboldklub.',
+    description: 'Den amerikanske investorgruppe, der erhvervede 95% af AB i november 2022, med en vision om at opgradere kommercielle aktiviteter, modernisere spillerrekruttering og scouting samt etablere en klar spilleidentitet.',
   },
   {
     name: 'Green Owls Football Holdings',
@@ -147,14 +140,11 @@ function initials(name: string) {
               data-bio={bio}
               data-initials={initials(name)}
             >
-              <div class="w-20 h-20 flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
-                {photo ? (
-                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center bg-ab-green">
-                    <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
-                  </div>
-                )}
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
+                  <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                </div>
               </div>
               <div class="flex-1 px-4 min-w-0">
                 {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
@@ -164,7 +154,7 @@ function initials(name: string) {
             </button>
           ) : (
             <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
-              <div class="w-20 h-20 flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo ? (
                   <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
                 ) : (
@@ -201,14 +191,11 @@ function initials(name: string) {
               data-bio={bio}
               data-initials={initials(name)}
             >
-              <div class="w-20 h-20 flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
-                {photo ? (
-                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center bg-ab-green">
-                    <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
-                  </div>
-                )}
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
+                  <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                </div>
               </div>
               <div class="flex-1 px-4 min-w-0">
                 {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
@@ -218,7 +205,7 @@ function initials(name: string) {
             </button>
           ) : (
             <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
-              <div class="w-20 h-20 flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo ? (
                   <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
                 ) : (
@@ -255,14 +242,11 @@ function initials(name: string) {
               data-bio={bio}
               data-initials={initials(name)}
             >
-              <div class="w-20 h-20 flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
-                {photo ? (
-                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center bg-ab-green">
-                    <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
-                  </div>
-                )}
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
+                  <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                </div>
               </div>
               <div class="flex-1 px-4 min-w-0">
                 {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
@@ -272,7 +256,7 @@ function initials(name: string) {
             </button>
           ) : (
             <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
-              <div class="w-20 h-20 flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo ? (
                   <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
                 ) : (
@@ -407,7 +391,7 @@ function initials(name: string) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: top;
+    object-position: center;
     display: block;
   }
   #bio-lb-initials {

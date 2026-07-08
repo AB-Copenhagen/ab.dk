@@ -1,5 +1,6 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { APIRoute } from 'astro';
+import sharp from 'sharp';
 
 export const prerender = false;
 
@@ -17,7 +18,7 @@ const s3 = new S3Client({
   },
 });
 
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, request }) => {
   const key = params.key;
   if (!key || key.includes('..')) {
     return new Response('Not found', { status: 404 });
@@ -32,6 +33,24 @@ export const GET: APIRoute = async ({ params }) => {
     const cacheControl = isFont
       ? 'public, max-age=31536000, immutable'
       : 'public, max-age=86400';
+
+    const isPng = /\.png$/i.test(key);
+    const acceptsWebp = request.headers.get('Accept')?.includes('image/webp');
+
+    if (isPng && acceptsWebp && res.Body) {
+      const bytes = await (res.Body as { transformToByteArray(): Promise<Uint8Array> }).transformToByteArray();
+      const webpBuffer = await sharp(bytes).webp({ quality: 85 }).toBuffer();
+      return new Response(webpBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/webp',
+          'Content-Length': String(webpBuffer.byteLength),
+          'Cache-Control': cacheControl,
+          'Access-Control-Allow-Origin': '*',
+          Vary: 'Accept',
+        },
+      });
+    }
 
     const headers: Record<string, string> = {
       'Cache-Control': cacheControl,
