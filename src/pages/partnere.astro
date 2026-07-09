@@ -5,15 +5,15 @@ import { principalPartners, networkPartners } from '@/data/partners';
 ---
 
 <Base
-  locale="en"
-  title="Partners | AB 1889"
-  description="Meet the companies and partners supporting Akademisk Boldklub — from principal partners to the AB Partner network.">
+  locale="da"
+  title="Partnere | AB 1889"
+  description="Mød de virksomheder og partnere, der støtter Akademisk Boldklub — fra hovedpartnere til AB Partner-netværket.">
 
   <!-- Hero -->
   <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
     <img
       src={heroImage.src}
-      alt="Partner boards at Gladsaxe Stadium"
+      alt="Partnerskilte på Gladsaxe Stadion"
       width={heroImage.width}
       height={heroImage.height}
       class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.5] saturate-[0.6]"
@@ -21,8 +21,20 @@ import { principalPartners, networkPartners } from '@/data/partners';
     <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_70%)]"></div>
     <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
       <h1 class="font-black text-white text-[clamp(3rem,9vw,7rem)] tracking-[-0.04em] leading-[0.9]">
-        Partners
+        Partnere
       </h1>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <div class="w-full bg-ab-black px-8 lg:px-20 py-12 lg:py-16">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-surface-muted text-[1.0625rem] leading-[1.7] max-w-[56ch]">
+        AB 1889 er stolte af at samarbejde med en bred vifte af virksomheder,
+        der støtter klubben — fra hovedpartnere til lokale AB Partner-brands.
+        Sammen gør de det muligt at udvikle talentet, faciliteterne og
+        fællesskabet omkring Akademisk Boldklub.
+      </p>
     </div>
   </div>
 
@@ -30,17 +42,18 @@ import { principalPartners, networkPartners } from '@/data/partners';
   <section class="bg-white py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
       <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
-        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Principal Partners</span>
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Hovedpartnere</span>
       </div>
-      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Our principal partners</h2>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Vores hovedpartnere</h2>
       <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-14">
-        These companies are most closely tied to AB 1889 and contribute directly to the club's sporting and commercial development.
+        Disse virksomheder er tættest knyttet til AB 1889 og bidrager
+        direkte til klubbens sportslige og kommercielle udvikling.
       </p>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {principalPartners.map((p) => (
           <a
-            href={`/en/partners/${p.slug}`}
+            href={`/partnere/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_rgba(0,106,82,0.1)] transition-all">
             <div class="flex items-center justify-center px-6 py-10 flex-1">
               <img
@@ -66,15 +79,17 @@ import { principalPartners, networkPartners } from '@/data/partners';
       <div class="inline-flex items-center mb-6 border border-ab-green/40 rounded-full py-[7px] px-[18px]">
         <span class="font-black text-[0.75rem] text-surface-muted tracking-[0.1em] uppercase">AB Partner</span>
       </div>
-      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-white mb-4">The AB Partner network</h2>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-white mb-4">AB Partner-netværket</h2>
       <p class="text-surface-muted text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-14">
-        A strong network of local and national companies that have supported AB 1889 year after year — spanning sport, health, advisory, and hospitality.
+        Et stærkt netværk af lokale og landsdækkende virksomheder, der
+        støtter AB 1889 år efter år — inden for alt fra sport og sundhed til
+        rådgivning og gastronomi.
       </p>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {networkPartners.map((p) => (
           <a
-            href={`/en/partners/${p.slug}`}
+            href={`/partnere/${p.slug}`}
             class="group relative flex flex-col bg-white border border-surface-border rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_rgba(0,106,82,0.12)] transition-all">
             <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
               <img

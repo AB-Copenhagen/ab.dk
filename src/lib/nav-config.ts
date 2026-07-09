@@ -91,7 +91,7 @@ const da: NavConfig = {
         { label: 'Join MyAB', href: '/bliv-involveret/myab' },
         { label: 'Fællesskab', href: '/om/faellesskab' },
         { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
-        { label: 'Partnere', href: '/sponsorer' },
+        { label: 'Partnere', href: '/partnere' },
         { label: 'Arrangementer', href: '/events' },
         { label: 'Gæsteoplevelser', href: '/hospitality' },
       ],
