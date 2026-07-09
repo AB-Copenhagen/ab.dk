@@ -50,7 +50,7 @@ const board = [
     name: 'Sofie Brandi Petersen',
     role: 'Rådgiver',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/10/Sofie-Brandi-Petersen.jpg?fit=300%2C450&ssl=1',
-    photoPos: 'object-center',
+    photoPos: 'object-top',
     bio: null,
   },
 ];
@@ -74,21 +74,21 @@ const sporting = [
     name: 'Fannar Berg Gunnólfsson',
     role: 'Cheftræner',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2024/07/Fannar-Berg-Gunnolfsson-scaled.png?fit=618%2C1024&ssl=1',
-    photoPos: 'object-center',
+    photoPos: 'object-top',
     bio: 'Gunnólfsson har erfaring fra senior- og ungdomsfodbold på Island og i Norge. Senest var han cheftræner i Volde Turn og Idrottslag og assistenttræner i Knattspyrnufélag ÍA.',
   },
   {
     name: 'Joakim Sternas',
     role: 'Målmandstræner',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/03/Joakim-Starnas-scaled.png?fit=578%2C1024&ssl=1',
-    photoPos: 'object-center',
+    photoPos: 'object-top',
     bio: 'Sternas var målmandstræner i Täby FK i den svenske Ettan Norra i to år inden AB. Han startede sin trænerbane i Spånga IS FK.',
   },
   {
     name: 'Konstantinos Ntolaptsis',
     role: 'Styrke & Kondition',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2025/07/Konstatinos-Ntolaptsis-scaled.png?fit=624%2C1024&ssl=1',
-    photoPos: 'object-center',
+    photoPos: 'object-top',
     bio: 'Ntolaptsis tiltrådte i AB i juli 2025 fra FV Wurzburger U19. Han har en kandidatgrad i Exercise Science & Training fra Julius-Maximilians Universität Würzburg.',
   },
 ];
@@ -139,6 +139,7 @@ function initials(name: string) {
               data-photo={photo ?? ''}
               data-bio={bio}
               data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
@@ -190,6 +191,7 @@ function initials(name: string) {
               data-photo={photo ?? ''}
               data-bio={bio}
               data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
@@ -241,6 +243,7 @@ function initials(name: string) {
               data-photo={photo ?? ''}
               data-bio={bio}
               data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
@@ -452,7 +455,7 @@ function initials(name: string) {
 
   document.querySelectorAll<HTMLButtonElement>('.person-card').forEach(card => {
     card.addEventListener('click', () => {
-      const { name = '', role = '', photo = '', bio = '', initials = '' } = card.dataset;
+      const { name = '', role = '', photo = '', bio = '', initials = '', photoPos = 'object-center' } = card.dataset;
 
       lbName.textContent = name;
       lbRole.textContent = role;
@@ -461,6 +464,7 @@ function initials(name: string) {
 
       if (photo) {
         lbImg.src = photo;
+        lbImg.style.objectPosition = photoPos.replace('object-', '');
         lbImg.style.display = 'block';
         lbInitials.style.display = 'none';
       } else {

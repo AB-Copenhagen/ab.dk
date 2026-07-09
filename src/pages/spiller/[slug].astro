@@ -4,26 +4,68 @@ import PlayerHeroContent from '@/components/player/PlayerHeroContent.astro';
 import PlayerMetadataBar from '@/components/player/PlayerMetadataBar.astro';
 import PlayerSeasonStatsTable from '@/components/player/PlayerSeasonStatsTable.astro';
 import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
-import type { SIPlayerProfile } from '@/lib/si/client';
+import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
 import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
+import type { StrapiPlayer } from '@/lib/strapi/client';
 import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
+import { resolveShirtNumber } from '@/data/player-cms-data';
+import { findManualPlayer } from '@/data/manual-players';
 
 export const prerender = false;
 
 // Slug format: {playerId}-{name}  e.g. "987654-mikkel-hansen"
 const { slug } = Astro.params;
-const playerId = slug ? parseInt(slug.split('-')[0], 10) : NaN;
+// parseInt (not split('-')[0]) so negative synthetic IDs for manual players parse correctly
+const playerId = slug ? parseInt(slug, 10) : NaN;
 
 if (isNaN(playerId)) {
   return Astro.redirect('/hold');
 }
 
-let player: SIPlayerProfile | null = null;
+const manualPlayer = findManualPlayer(playerId);
 
-try {
-  player = await fetchPlayerProfile(playerId, 'da');
-} catch {
-  // fall through to redirect
+let player: SIPlayerProfile | null = null;
+let shirtNumber: number | null = null;
+let seasonStats: SISeasonStats[] = [];
+let cmsPlayer: StrapiPlayer | null = null;
+
+if (manualPlayer) {
+  player = {
+    id: manualPlayer.id,
+    name: manualPlayer.name,
+    position: manualPlayer.position,
+    countryName: manualPlayer.countryName.da,
+    birthDate: manualPlayer.birthDate,
+    height: manualPlayer.height,
+  };
+  shirtNumber = manualPlayer.shirtNumber;
+  cmsPlayer = {
+    siPlayerId: manualPlayer.id,
+    nickname: manualPlayer.nickname,
+    formerClubs: manualPlayer.formerClubs,
+    bio: manualPlayer.bio.da,
+    quote: manualPlayer.quote?.da,
+  };
+} else {
+  try {
+    player = await fetchPlayerProfile(playerId, 'da');
+  } catch {
+    // fall through to redirect
+  }
+
+  if (!player) {
+    return Astro.redirect('/hold');
+  }
+
+  const [squadPlayers, matchStats, fetchedCms] = await Promise.all([
+    fetchABPlayers('da').catch(() => []),
+    fetchPlayerStats(playerId).catch(() => []),
+    fetchPlayerCmsData(playerId, 'da').catch(() => null),
+  ]);
+
+  shirtNumber = resolveShirtNumber(playerId, squadPlayers.find(p => p.id === playerId)?.shirtNumber ?? null);
+  seasonStats = aggregateSeasonStats(matchStats);
+  cmsPlayer = fetchedCms;
 }
 
 if (!player) {
@@ -31,17 +73,7 @@ if (!player) {
 }
 
 const { name, position, countryName, birthDate, height } = player;
-
-// Fetch in parallel: jersey number, season stats, CMS content
-const [squadPlayers, matchStats, cmsPlayer] = await Promise.all([
-  fetchABPlayers('da').catch(() => []),
-  fetchPlayerStats(playerId).catch(() => []),
-  fetchPlayerCmsData(playerId, 'da').catch(() => null),
-]);
-
-const shirtNumber = squadPlayers.find(p => p.id === playerId)?.shirtNumber;
 const photoUrl = getPlayerPhotoUrl(name);
-const seasonStats = aggregateSeasonStats(matchStats);
 
 const posLabels: Record<string, string> = {
   keeper:     'Målmand',
@@ -88,7 +120,13 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
     <!-- Player photo (no side gradients) -->
     {photoUrl && (
       <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
-        <img src={photoUrl} alt={name} loading="eager" class="h-full w-auto max-w-none" />
+        <img
+          src={photoUrl}
+          alt={name}
+          loading="eager"
+          class="h-full w-auto max-w-none"
+          onerror="this.onerror=null;this.src='/images/player-placeholder.png';"
+        />
       </div>
     )}
 

@@ -50,7 +50,7 @@ const board = [
     name: 'Sofie Brandi Petersen',
     role: 'Advisor',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/10/Sofie-Brandi-Petersen.jpg?fit=300%2C450&ssl=1',
-    photoPos: 'object-center',
+    photoPos: 'object-top',
     bio: null,
   },
 ];
@@ -74,21 +74,21 @@ const sporting = [
     name: 'Fannar Berg Gunnólfsson',
     role: 'Head Coach',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2024/07/Fannar-Berg-Gunnolfsson-scaled.png?fit=618%2C1024&ssl=1',
-    photoPos: 'object-center',
+    photoPos: 'object-top',
     bio: 'Gunnólfsson has experience from both senior and youth football in Iceland and Norway. Prior to AB, he was most recently head coach of Volde Turn and Idrottslag and assistant coach of Knattspyrnufélag ÍA.',
   },
   {
     name: 'Joakim Sternas',
     role: 'Goalkeeper Coach',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/03/Joakim-Starnas-scaled.png?fit=578%2C1024&ssl=1',
-    photoPos: 'object-center',
+    photoPos: 'object-top',
     bio: 'Prior to AB, Sternas was head goalkeeper coach at Täby FK in the Swedish Ettan Norra for two years. He started his coaching career with Spånga IS FK.',
   },
   {
     name: 'Konstantinos Ntolaptsis',
     role: 'Strength & Conditioning',
     photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2025/07/Konstatinos-Ntolaptsis-scaled.png?fit=624%2C1024&ssl=1',
-    photoPos: 'object-center',
+    photoPos: 'object-top',
     bio: 'Ntolaptsis joined AB in July 2025. He holds a Master\'s in Exercise Science & Training from Julius-Maximilians University Würzburg and a Bachelor of Sport Science from Aristotle University of Thessaloniki.',
   },
 ];
@@ -139,6 +139,7 @@ function initials(name: string) {
               data-photo={photo ?? ''}
               data-bio={bio}
               data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
@@ -187,6 +188,7 @@ function initials(name: string) {
               data-photo={photo ?? ''}
               data-bio={bio}
               data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
@@ -235,6 +237,7 @@ function initials(name: string) {
               data-photo={photo ?? ''}
               data-bio={bio}
               data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
@@ -456,7 +459,7 @@ function initials(name: string) {
 
   document.querySelectorAll<HTMLButtonElement>('.person-card').forEach(card => {
     card.addEventListener('click', () => {
-      const { name = '', role = '', photo = '', bio = '', initials = '' } = card.dataset;
+      const { name = '', role = '', photo = '', bio = '', initials = '', photoPos = 'object-center' } = card.dataset;
 
       lbName.textContent = name;
       lbRole.textContent = role;
@@ -465,6 +468,7 @@ function initials(name: string) {
 
       if (photo) {
         lbImg.src = photo;
+        lbImg.style.objectPosition = photoPos.replace('object-', '');
         lbImg.style.display = 'block';
         lbInitials.style.display = 'none';
       } else {
