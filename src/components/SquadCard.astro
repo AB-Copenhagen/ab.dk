@@ -81,7 +81,7 @@ const playerHref =
           alt={player.name}
           loading="lazy"
           class="absolute inset-0 w-full h-full object-cover object-top"
-          onerror="this.style.opacity='0'"
+          onerror="this.onerror=null;this.src='/images/player-placeholder.png';"
         />
       ) : null
     }

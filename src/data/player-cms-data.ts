@@ -6,6 +6,19 @@ export interface StaticPlayerEntry {
   formerClubs?: string;
   bio?: { da: string; en: string };
   quote?: { da: string; en: string };
+  /**
+   * Overrides a stale shirt number from the SI API — e.g. when a player
+   * changes number mid-season and SI hasn't caught up yet.
+   */
+  shirtNumber?: number;
+}
+
+/** Prefers a manual shirt-number override over the (possibly stale) SI API value. */
+export function resolveShirtNumber(
+  siPlayerId: number,
+  apiShirtNumber: number | null
+): number | null {
+  return PLAYER_CMS_DATA[siPlayerId]?.shirtNumber ?? apiShirtNumber;
 }
 
 export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
@@ -94,9 +107,11 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
   },
 
   1140925: {
-    // #3 Travian Sousa
+    // #3 Travian Sousa — changed from #21; SI API still reports 21
     nickname: 'Tra',
-    formerClubs: 'MLS Seattle Sounders, Tacoma Defiance, Hamburger SV II',
+    shirtNumber: 3,
+    formerClubs:
+      'MLS Seattle Sounders, FC Tulsa, Tacoma Defiance, Hamburger SV II',
     bio: {
       en: 'Middle child of 4 siblings (all girls). A fun fact about Tra: he has a black belt in Brazilian Jiu Jitsu. His biggest inspiration is Denzel Washington because of his versatility, integrity, and hard work. In his spare time, he enjoys school, boxing, and reading books.',
       da: 'Midterste barn af 4 søskende (alle piger). En sjov kendsgerning om Tra: han har et sort bælte i brasiliansk jiu-jitsu. Hans største inspiration er Denzel Washington på grund af hans alsidighed, integritet og hårde arbejde. I fritiden nyder han skole, boksning og at læse bøger.',
