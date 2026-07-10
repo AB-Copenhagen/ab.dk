@@ -11,7 +11,7 @@ const photos = [
   },
   {
     src: 'https://i0.wp.com/ab.dk/wp-content/uploads/2026/01/DSC09813.jpeg?ssl=1',
-    alt: 'René Henriksen Lounge interior',
+    alt: 'The Mad Owl Pub interior',
   },
   {
     src: 'https://i0.wp.com/ab.dk/wp-content/uploads/2026/01/DSC09940.jpeg?ssl=1',
@@ -53,78 +53,97 @@ const photos = [
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
 
       <!-- Intro -->
-      <div class="mb-12">
+      <div class="mb-14">
         <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
           <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Gladsaxe Stadion</span>
         </div>
-        <div class="flex flex-col gap-4">
-          <p class="text-[1.05rem] leading-[1.75] text-[#444]">
-            If you need a venue for a conference, wedding, Christmas party, confirmation, company party or anything else, we have the network and experience to tailor your party, conference or event.
-          </p>
-          <p class="text-[1rem] leading-[1.75] text-[#666]">
-            In stand 4 at Gladsaxe Stadium, Gladsaxevej 202, 2860 Søborg, we have 2 lounges that we rent out when AB is not playing matches on the pitch.
-          </p>
-          <p class="text-[1rem] leading-[1.75] text-[#666]">
-            You can rent the lounges and order catering from us and we'll take care of everything for you.
-          </p>
+        <h2 class="font-black text-[clamp(1.75rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-4 max-w-[26ch]">
+          A Great Experience at Gladsaxe Stadium
+        </h2>
+        <p class="text-[1.05rem] leading-[1.75] text-[#444] max-w-[62ch]">
+          Whether you are here for a match, a networking event or a big
+          celebration, Gladsaxe Stadium offers a unique setting and
+          multiple spaces overlooking one of Denmark's most historic
+          football clubs.
+        </p>
+      </div>
+
+      <!-- Match Day Experience -->
+      <div class="mb-14 bg-[#F2F2F0] p-6 sm:p-10">
+        <h2 class="font-black text-[clamp(1.4rem,2.8vw,2rem)] tracking-[-0.03em] text-[#111] mb-3">Match Day Experience</h2>
+        <p class="text-[0.95rem] leading-[1.75] text-[#666] max-w-[64ch] mb-8">
+          From cheering in Section E with AB Forever to a special VIP
+          atmosphere, we offer a variety of options to enjoy the match to
+          suit your needs and budget.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-8">
+
+          <!-- Knud Lundberg Lounge -->
+          <div class="border border-[#E5E7EB] overflow-hidden bg-white">
+            <div class="bg-white border-b border-[#E5E7EB] px-6 py-5">
+              <span class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-green block mb-1">1st floor</span>
+              <h3 class="font-black text-[1.4rem] tracking-[-0.04em] text-[#111] leading-tight">Knud Lundberg Lounge</h3>
+            </div>
+            <div class="p-6">
+              <p class="text-[0.9rem] text-[#555] leading-relaxed">
+                Enjoy delicious, organic food and drinks in a premium
+                lounge atmosphere while soaking up the electric atmosphere
+                of the stadium. New this year is a coffee bar.
+              </p>
+            </div>
+          </div>
+
+          <!-- The Mad Owl Pub -->
+          <div class="border border-[#E5E7EB] overflow-hidden bg-white">
+            <div class="bg-white border-b border-[#E5E7EB] px-6 py-5">
+              <span class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-green block mb-1">2nd floor · Wed–Sat evenings</span>
+              <h3 class="font-black text-[1.4rem] tracking-[-0.04em] text-[#111] leading-tight">The Mad Owl Pub</h3>
+            </div>
+            <div class="p-6">
+              <p class="text-[0.9rem] text-[#555] leading-relaxed">
+                Prefer a more intimate setting? Our new pub serves a great
+                selection of beers and features a stage for live
+                performances. Open Wednesday through Saturday evening, it
+                offers camaraderie outside the pitch.
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- Lounge cards -->
+      <!-- Business and Networking / Celebrations and Parties -->
       <div class="grid md:grid-cols-2 gap-8 mb-14">
-
-        <!-- Knud Lundberg Lounge -->
-        <div class="border border-[#E5E7EB] overflow-hidden">
-          <div class="bg-[#F5F5F3] border-b border-[#E5E7EB] px-6 py-5">
-            <span class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-green block mb-1">Main Lounge</span>
-            <h2 class="font-black text-[1.4rem] tracking-[-0.04em] text-[#111] leading-tight">Knud Lundberg Lounge</h2>
-          </div>
-          <div class="p-6 flex flex-col gap-4">
-            <div class="grid grid-cols-2 gap-3">
-              <div class="bg-white border border-[#E5E7EB] p-3">
-                <p class="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#999] mb-1">Capacity</p>
-                <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em]">180 guests</p>
-              </div>
-              <div class="bg-white border border-[#E5E7EB] p-3">
-                <p class="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#999] mb-1">Bars</p>
-                <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em]">2 bars</p>
-              </div>
-            </div>
-            <p class="text-[0.9rem] text-[#555] leading-relaxed">
-              The Knud Lundberg Lounge can accommodate up to 180 dining guests and has 2 bars. Here you get a beautiful view of Denmark's greenest stadium.
-            </p>
-            <p class="text-[0.9rem] text-[#555] leading-relaxed">
-              Our lounge is equipped with quality furniture, projector and all AV equipment so we're ready to take charge of your event.
-            </p>
-          </div>
+        <div>
+          <h2 class="font-black text-[clamp(1.4rem,2.8vw,2rem)] tracking-[-0.03em] text-[#111] mb-3">Business and Networking</h2>
+          <p class="text-[0.95rem] leading-[1.75] text-[#666]">
+            Whether you're planning a company meeting, networking event,
+            team building or need a private gathering, the Knud Lundberg
+            Lounge on the 1st floor offers flexible event space, modern
+            amenities, and views of Gladsaxe Stadion.
+          </p>
         </div>
 
-        <!-- René Henriksen Lounge -->
-        <div class="border border-[#E5E7EB] overflow-hidden">
-          <div class="bg-[#F5F5F3] border-b border-[#E5E7EB] px-6 py-5">
-            <span class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-green block mb-1">Second Floor Lounge</span>
-            <h2 class="font-black text-[1.4rem] tracking-[-0.04em] text-[#111] leading-tight">René Henriksen Lounge</h2>
-          </div>
-          <div class="p-6 flex flex-col gap-4">
-            <div class="grid grid-cols-2 gap-3">
-              <div class="bg-white border border-[#E5E7EB] p-3">
-                <p class="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#999] mb-1">Capacity</p>
-                <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em]">70 guests</p>
-              </div>
-              <div class="bg-white border border-[#E5E7EB] p-3">
-                <p class="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#999] mb-1">Floor</p>
-                <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em]">2nd floor</p>
-              </div>
+        <div>
+          <h2 class="font-black text-[clamp(1.4rem,2.8vw,2rem)] tracking-[-0.03em] text-[#111] mb-3">Celebrations and Parties</h2>
+          <p class="text-[0.95rem] leading-[1.75] text-[#666] mb-6">
+            Lounges were made for celebrating, and The Knud Lundberg Lounge
+            can accommodate up to 180 dining guests and has 2 bars. Take in
+            the beautiful view of Denmark's greenest stadium. Our events are
+            equipped with event furniture, a projector and AV equipment.
+          </p>
+          <div class="grid grid-cols-2 sm:w-fit sm:grid-cols-2 gap-3">
+            <div class="bg-white border border-[#E5E7EB] p-4">
+              <p class="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#999] mb-1">Capacity</p>
+              <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em]">180 guests</p>
             </div>
-            <p class="text-[0.9rem] text-[#555] leading-relaxed">
-              The René Henriksen Lounge is located on the 2nd floor and can accommodate up to 70 dining guests.
-            </p>
-            <p class="text-[0.9rem] text-[#555] leading-relaxed">
-              You can rent the lounges and order catering from us and we'll take care of everything for you.
-            </p>
+            <div class="bg-white border border-[#E5E7EB] p-4">
+              <p class="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#999] mb-1">Bars</p>
+              <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em]">2 bars</p>
+            </div>
           </div>
         </div>
-
       </div>
 
       <!-- Photo gallery -->
@@ -159,7 +178,9 @@ const photos = [
   <!-- Contact / CTA -->
   <section class="bg-ab-green py-[clamp(48px,7vw,80px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
-      <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
+
+        <!-- Left: Pitch + contact info -->
         <div>
           <div class="inline-flex items-center mb-6 bg-ab-neon rounded-full py-[7px] px-[18px]">
             <span class="font-black text-[0.75rem] text-ab-green tracking-[0.1em] uppercase">Enquiries</span>
@@ -167,32 +188,94 @@ const photos = [
           <h2 class="font-black text-white text-[clamp(1.8rem,4vw,3rem)] tracking-[-0.04em] leading-[1.05] mb-4">
             Let's plan your event.
           </h2>
-          <p class="text-white/80 text-[1rem] leading-[1.75] max-w-[44ch]">
-            Get in touch to discuss availability, catering options, and pricing. Our team will help you create an unforgettable event at Gladsaxe Stadion.
+          <p class="text-white/80 text-[1rem] leading-[1.75] max-w-[44ch] mb-8">
+            Fill out the form and our team will get back to you with availability, catering options, and pricing for your event at Gladsaxe Stadion.
           </p>
+          <div class="flex flex-col gap-4">
+            <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4">
+              <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <div>
+                <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Email</p>
+                <a href="mailto:info@ab.dk" class="font-black text-white text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">info@ab.dk</a>
+              </div>
+            </div>
+            <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4">
+              <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.5 2 2 0 0 1 3.6 1.5h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <div>
+                <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Phone</p>
+                <a href="tel:+4560399901" class="font-black text-white text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">+45 60399901</a>
+              </div>
+            </div>
+            <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4">
+              <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div>
+                <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Location</p>
+                <p class="font-black text-white text-[1rem] tracking-[-0.02em] leading-snug">Gladsaxevej 202<br>2860 Søborg (Stand 4)</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col gap-4">
-          <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4">
-            <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            <div>
-              <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Email</p>
-              <a href="mailto:info@ab.dk" class="font-black text-white text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">info@ab.dk</a>
+
+        <!-- Right: Event inquiry form -->
+        <div class="bg-white p-6 sm:p-8">
+          <form id="ei-form" class="flex flex-col gap-4" novalidate>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="ei-name" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Name</label>
+                <input id="ei-name" name="name" type="text" required autocomplete="name"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="Your name" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="ei-email" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Email</label>
+                <input id="ei-email" name="email" type="email" required autocomplete="email"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="you@email.com" />
+              </div>
             </div>
-          </div>
-          <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4">
-            <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.5 2 2 0 0 1 3.6 1.5h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <div>
-              <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Phone</p>
-              <a href="tel:+4560399901" class="font-black text-white text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">+45 60399901</a>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="ei-phone" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Phone (optional)</label>
+                <input id="ei-phone" name="phone" type="tel" autocomplete="tel"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="+45 ..." />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="ei-type" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Event type</label>
+                <select id="ei-type" name="eventType"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium bg-white focus:outline-none focus:border-ab-green transition-colors">
+                  <option value="">Select a type</option>
+                  <option value="Business meeting / networking">Business meeting / networking</option>
+                  <option value="Celebration / party">Celebration / party</option>
+                  <option value="Match day experience">Match day experience</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4">
-            <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div>
-              <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Location</p>
-              <p class="font-black text-white text-[1rem] tracking-[-0.02em] leading-snug">Gladsaxevej 202<br>2860 Søborg (Stand 4)</p>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="ei-date" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Preferred date (optional)</label>
+                <input id="ei-date" name="eventDate" type="date"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium focus:outline-none focus:border-ab-green transition-colors" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="ei-guests" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Number of guests (optional)</label>
+                <input id="ei-guests" name="guestCount" type="number" min="1"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="e.g. 50" />
+              </div>
             </div>
-          </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label for="ei-message" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Message</label>
+              <textarea id="ei-message" name="message" required rows="4"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors resize-none" placeholder="Tell us about your event..."></textarea>
+            </div>
+
+            <div id="ei-status" class="hidden text-[0.85rem] font-medium px-4 py-3"></div>
+            <button type="submit" id="ei-submit"
+              class="self-start inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-green text-white px-7 py-3.5 transition-opacity hover:opacity-80 disabled:opacity-50">
+              Send inquiry
+            </button>
+          </form>
         </div>
       </div>
     </div>
@@ -356,5 +439,52 @@ const photos = [
 
   document.getElementById('lb-backdrop')?.addEventListener('click', e => {
     if (e.target === e.currentTarget) lb.close();
+  });
+</script>
+
+<script>
+  const eiForm = document.getElementById('ei-form') as HTMLFormElement | null;
+  const eiStatus = document.getElementById('ei-status');
+  const eiSubmit = document.getElementById('ei-submit') as HTMLButtonElement | null;
+
+  eiForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!eiForm || !eiSubmit || !eiStatus) return;
+
+    const data = {
+      name: (eiForm.elements.namedItem('name') as HTMLInputElement).value.trim(),
+      email: (eiForm.elements.namedItem('email') as HTMLInputElement).value.trim(),
+      phone: (eiForm.elements.namedItem('phone') as HTMLInputElement).value.trim(),
+      eventType: (eiForm.elements.namedItem('eventType') as HTMLSelectElement).value,
+      eventDate: (eiForm.elements.namedItem('eventDate') as HTMLInputElement).value,
+      guestCount: (eiForm.elements.namedItem('guestCount') as HTMLInputElement).value,
+      message: (eiForm.elements.namedItem('message') as HTMLTextAreaElement).value.trim(),
+    };
+
+    eiSubmit.disabled = true;
+    eiSubmit.textContent = 'Sending…';
+    eiStatus.className = 'hidden text-[0.85rem] font-medium px-4 py-3';
+
+    try {
+      const res = await fetch('/api/event-inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (json.success) {
+        eiStatus.textContent = 'Thanks — we will get back to you shortly.';
+        eiStatus.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#F0FAF4] text-ab-green border border-ab-green/20';
+        eiForm.reset();
+      } else {
+        throw new Error(json.error || 'Error');
+      }
+    } catch {
+      eiStatus.textContent = 'Something went wrong — email us directly at info@ab.dk.';
+      eiStatus.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#FFF0F0] text-red-600 border border-red-200';
+    } finally {
+      eiSubmit.disabled = false;
+      eiSubmit.textContent = 'Send inquiry';
+    }
   });
 </script>
