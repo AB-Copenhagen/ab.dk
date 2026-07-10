@@ -37,7 +37,7 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  const to = import.meta.env.CONTACT_EMAIL ?? 'kontakt@ab.dk';
+  const to = import.meta.env.CONTACT_EMAIL ?? 'info@ab.dk';
 
   try {
     await sendMail({
