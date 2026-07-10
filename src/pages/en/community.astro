@@ -1,0 +1,107 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+
+interface Way {
+  title: string;
+  body?: string;
+  cta?: { label: string; href: string; external?: boolean };
+  extra?: { label: string; href: string };
+}
+
+const ways: Way[] = [
+  {
+    title: 'Join the AB Forever Fan Club',
+    body: 'Founded on August 17, 1995, AB Forever is the official fan club of AB.',
+    cta: { label: 'Visit abforever.dk →', href: 'https://abforever.dk', external: true },
+    extra: { label: 'Email Chairman Kasper V. Petersen →', href: 'mailto:formand@abforever.dk' },
+  },
+  {
+    title: 'Partner with AB',
+    body: 'See our partnerships and how your business can become part of AB.',
+    cta: { label: 'See partners →', href: '/en/partners' },
+  },
+  {
+    title: 'Join the AB Business Network',
+  },
+  {
+    title: 'Learn more about the AB Academy',
+  },
+  {
+    title: 'Volunteer at Gladsaxe',
+  },
+  {
+    title: 'Students and Alumni Events',
+  },
+];
+---
+
+<Base
+  locale="en"
+  title="Community | AB 1889"
+  description="For more than 137 years, AB has been a place where football brings people together. Find your place in the AB community.">
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
+      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7rem)] tracking-[-0.04em]">Community</h1>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">More Than a Football Club</span>
+      </div>
+      <div class="max-w-3xl space-y-5 text-[#333]" style="font-size:clamp(1rem,1.6vw,1.1875rem);line-height:1.7">
+        <p>For more than 137 years, AB has been a place where football brings people together.</p>
+        <p>Whether you're attending your first match, cheering from the stands every weekend, having your child in the Academy, volunteering, partnering with the club, or simply looking to meet new people, there's a place for you in the AB community.</p>
+        <p class="font-black text-[#111]">Together, we're building the next chapter of AB.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ways to get involved -->
+  <section class="bg-[#F2F2F0] border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <h2 class="font-black mb-10 text-[#111]" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+        Ways to be part of AB
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {ways.map((way, i) => (
+          <div class="bg-white border border-[#E5E7EB] p-7 flex flex-col">
+            <span class="font-black leading-none select-none mb-4" style="font-size:2.75rem;letter-spacing:-0.04em;color:rgba(0,106,82,0.18)">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="font-black text-[1.05rem] text-[#111] tracking-[-0.02em] leading-snug mb-2">{way.title}</h3>
+            {way.body ? (
+              <p class="text-[0.875rem] text-[#666] leading-relaxed mb-4 flex-1">{way.body}</p>
+            ) : (
+              <p class="text-[0.875rem] text-[#BBB] italic mb-4 flex-1">Content coming soon.</p>
+            )}
+            {way.cta && (
+              <a
+                href={way.cta.href}
+                target={way.cta.external ? '_blank' : undefined}
+                rel={way.cta.external ? 'noreferrer noopener' : undefined}
+                aria-label={way.cta.external ? `${way.cta.label.replace(' →', '')} (opens in new tab)` : undefined}
+                class="text-[0.8rem] font-black text-ab-green no-underline hover:opacity-70 tracking-[-0.01em]"
+              >
+                {way.cta.label}
+              </a>
+            )}
+            {way.extra && (
+              <a href={way.extra.href} class="text-[0.8rem] font-black text-ab-green no-underline hover:opacity-70 tracking-[-0.01em] mt-2">
+                {way.extra.label}
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Base>

@@ -131,7 +131,7 @@ const en: NavConfig = {
       href: '/bliv-involveret',
       children: [
         { label: 'Join MyAB', href: '/bliv-involveret/myab' },
-        { label: 'Community', href: '/om/faellesskab' },
+        { label: 'Community', href: '/community' },
         { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Partners', href: '/partners' },
         { label: 'Events', href: '/events' },

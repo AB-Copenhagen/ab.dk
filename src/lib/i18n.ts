@@ -21,6 +21,7 @@ const daToEn: Record<string, string> = {
   '/konto/profil': '/account/profile',
   '/om/brand': '/brand',
   '/om/ledelse': '/about/leadership',
+  '/om/faellesskab': '/community',
   '/om/kontakt': '/contact',
   '/events': '/events',
   '/om/privatlivspolitik': '/privacy-policy',
