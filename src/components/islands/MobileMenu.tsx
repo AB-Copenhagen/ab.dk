@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import type { NavConfig } from '@/lib/nav-config';
+import { isNavLeafActive, isNavItemActive } from '@/lib/nav-config';
 
 interface Props {
   nav: NavConfig;
   locale: string;
   enPrefix: string;
+  currentPath?: string;
   switchedLocalePath?: string;
   loginHref?: string;
   toggleId?: string;
@@ -16,12 +18,18 @@ export default function MobileMenu({
   nav,
   locale,
   enPrefix,
+  currentPath = '',
   switchedLocalePath,
   loginHref,
   toggleId = 'mobile-menu-open-btn',
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(() => {
+    const activeParent = nav.primary.find(
+      (item) => item.children && isNavItemActive(currentPath, item, enPrefix)
+    );
+    return activeParent?.href ?? null;
+  });
 
   useEffect(() => {
     const toggle = document.getElementById(toggleId);
@@ -100,56 +108,62 @@ export default function MobileMenu({
               <div className="my-3 h-px bg-[#152214]" />
 
               {/* ── Primary nav ── */}
-              {nav.primary.map((item) => (
-                <div key={item.href}>
-                  {item.children ? (
-                    <>
-                      <button
-                        onClick={() =>
-                          setExpanded(expanded === item.href ? null : item.href)
-                        }
-                        className="w-full flex items-center justify-between py-3 text-sm font-bold text-white uppercase tracking-[0.06em]"
+              {nav.primary.map((item) => {
+                const isActive = isNavItemActive(currentPath, item, enPrefix);
+                return (
+                  <div key={item.href}>
+                    {item.children ? (
+                      <>
+                        <button
+                          onClick={() =>
+                            setExpanded(expanded === item.href ? null : item.href)
+                          }
+                          className={`w-full flex items-center justify-between py-3 text-sm font-bold uppercase tracking-[0.06em] ${isActive ? 'text-ab-beige' : 'text-white'}`}
+                        >
+                          {item.label}
+                          <span
+                            className="text-ab-green"
+                            style={{
+                              transform:
+                                expanded === item.href
+                                  ? 'rotate(180deg)'
+                                  : 'none',
+                              transition: 'transform 0.2s',
+                            }}
+                          >
+                            ▾
+                          </span>
+                        </button>
+                        {expanded === item.href && (
+                          <div className="pl-4 mb-2 flex flex-col gap-0.5">
+                            {item.children.map((child) => {
+                              const isChildActive = isNavLeafActive(currentPath, child.href, enPrefix);
+                              return (
+                                <a
+                                  key={child.href}
+                                  href={enPrefix + child.href}
+                                  className={`py-2 text-xs tracking-[0.04em] ${isChildActive ? 'text-ab-beige font-bold' : 'text-white/50'}`}
+                                  onClick={() => setOpen(false)}
+                                >
+                                  {child.label}
+                                </a>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <a
+                        href={enPrefix + item.href}
+                        className={`block py-3 text-sm font-bold uppercase tracking-[0.06em] ${isActive ? 'text-ab-beige' : 'text-white'}`}
+                        onClick={() => setOpen(false)}
                       >
                         {item.label}
-                        <span
-                          className="text-ab-green"
-                          style={{
-                            transform:
-                              expanded === item.href
-                                ? 'rotate(180deg)'
-                                : 'none',
-                            transition: 'transform 0.2s',
-                          }}
-                        >
-                          ▾
-                        </span>
-                      </button>
-                      {expanded === item.href && (
-                        <div className="pl-4 mb-2 flex flex-col gap-0.5">
-                          {item.children.map((child) => (
-                            <a
-                              key={child.href}
-                              href={enPrefix + child.href}
-                              className="py-2 text-xs text-white/50 tracking-[0.04em]"
-                              onClick={() => setOpen(false)}
-                            >
-                              {child.label}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <a
-                      href={enPrefix + item.href}
-                      className="block py-3 text-sm font-bold text-white uppercase tracking-[0.06em]"
-                      onClick={() => setOpen(false)}
-                    >
-                      {item.label}
-                    </a>
-                  )}
-                </div>
-              ))}
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
 
               <div className="mt-4 h-px bg-[#152214]" />
 

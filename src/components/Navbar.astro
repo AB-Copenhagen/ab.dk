@@ -1,7 +1,7 @@
 ---
 import MobileMenu from './islands/MobileMenu';
 import SearchModal from './islands/SearchModal';
-import { getNavConfig, isNavItemActive } from '@/lib/nav-config';
+import { getNavConfig, isNavItemActive, isNavLeafActive } from '@/lib/nav-config';
 import { translate, switchLocalePath, type Locale } from '@/lib/i18n';
 
 interface Props {
@@ -179,13 +179,21 @@ const enPath = switchLocalePath(currentPath, 'en');
                 <div class="absolute top-full left-0 hidden group-hover:block z-50 pt-3">
                   <div
                     class="min-w-[200px] shadow-2xl bg-[#004A3A] border-t-[3px] border-ab-beige">
-                    {item.children.map((child) => (
-                      <a
-                        href={enPrefix + child.href}
-                        class="block px-5 py-3 font-black text-sm hover:bg-white/10 transition-colors text-white/80 no-underline tracking-[-0.02em]">
-                        {child.label}
-                      </a>
-                    ))}
+                    {item.children.map((child) => {
+                      const isChildActive = isNavLeafActive(currentPath, child.href, enPrefix);
+                      return (
+                        <a
+                          href={enPrefix + child.href}
+                          class:list={[
+                            'block px-5 py-3 font-black text-sm transition-colors no-underline tracking-[-0.02em] border-l-2',
+                            isChildActive
+                              ? 'bg-white/10 text-white border-ab-beige'
+                              : 'text-white/80 border-transparent hover:bg-white/10',
+                          ]}>
+                          {child.label}
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -239,6 +247,7 @@ const enPath = switchLocalePath(currentPath, 'en');
         nav={nav}
         locale={locale}
         enPrefix={enPrefix}
+        currentPath={currentPath}
         switchedLocalePath={locale === 'da' ? enPath : daPath}
         loginHref={enPrefix + (locale === 'en' ? '/account' : '/konto')}
         toggleId="mobile-menu-open-btn"

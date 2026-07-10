@@ -20,6 +20,8 @@ const {
   ogImage,
 } = Astro.props;
 
+const resolvedOgImage = ogImage ?? `${Astro.url.origin}/images/og-default.png`;
+
 let globalData: any = null;
 try {
   globalData = await fetchSingleType('global', { locale });
@@ -43,7 +45,7 @@ try {
         </>
       )
     }
-    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:image" content={resolvedOgImage} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

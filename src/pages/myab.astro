@@ -1,0 +1,142 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+
+interface Group {
+  title: string;
+  intro: string;
+  items: string[];
+}
+
+const groups: Group[] = [
+  {
+    title: 'Eksklusivt indhold',
+    intro: 'Et MyAB-abonnement giver dig eksklusivt indhold og et kig bag kulisserne, som:',
+    items: [
+      'Udvidede interviews',
+      'Første kig på ABTV Originals',
+      "Spiller-Q&A'er",
+      'Kampdags- eller kampreferat-features',
+    ],
+  },
+  {
+    title: 'Medlemsfordele',
+    intro: 'Særlige fordele og goder, der kun er tilgængelige for abonnenter:',
+    items: [
+      'Særlige kampdagstilbud, fx happy hour på øl',
+      'Tidlig adgang til flash-sales i appen',
+      'Merchandise-tilbud og limited edition-drops',
+    ],
+  },
+  {
+    title: 'Partnertilbud',
+    intro: "Eksklusive kampdags- og efter-kamp-tilbud fra AB's partnere:",
+    items: ['Restauranter', 'Kaffe', 'Butikker', 'Osv.'],
+  },
+];
+---
+
+<Base
+  locale="da"
+  title="MyAB | AB 1889"
+  description="Bliv AB Insider med MyAB — eksklusivt indhold, medlemsfordele og partnerrabatter i AB's fan-app, for kun 69 kr./måned.">
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
+      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7rem)] tracking-[-0.04em] mb-6">MyAB</h1>
+      <p class="font-black text-white max-w-[42ch]" style="font-size:clamp(1.1rem,2.2vw,1.4rem);line-height:1.4">
+        Bliv AB Insider med MyAB — kun i AB's fan-app!
+      </p>
+    </div>
+  </div>
+
+  <!-- Price + pitch + app download -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div>
+          <p class="text-[#333] max-w-[62ch] mb-8" style="font-size:clamp(1rem,1.6vw,1.1875rem);line-height:1.7">
+            Vil du følge med i alt om AB og være den ultimative fan? Kom tættere
+            på klubben med eksklusivt indhold, medlemsfordele, partnerrabatter
+            og premium app-funktioner.
+          </p>
+          <div class="border border-ab-green/30 bg-[#F0FAF4] px-8 py-7 text-center w-fit mb-8">
+            <p class="font-black text-ab-green leading-none" style="font-size:clamp(2.5rem,5vw,3.5rem);letter-spacing:-0.04em">69 kr.</p>
+            <p class="font-black text-[0.7rem] uppercase tracking-[0.14em] text-[#888] mt-1">Per måned</p>
+            <p class="text-[0.8rem] text-[#666] mt-3 max-w-[16ch] mx-auto">Billigere end 2 øl!</p>
+          </div>
+          <p class="text-[#666] text-[0.9rem] mb-4">
+            MyAB findes udelukkende i AB's officielle fan-app — hent den nedenfor.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a
+              href="https://apps.apple.com/id/app/myab/id6760774439"
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="Download på App Store (åbner i nyt vindue)"
+              class="inline-flex items-center gap-2.5 bg-[#111] text-white px-5 py-2.5 no-underline hover:opacity-85 transition-opacity"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.87-1.99 1.55-2.987 1.55-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.45zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.63 0 2.85.06 4.35 2.15-.115.07-2.55 1.51-2.52 4.4.03 3.5 3.05 4.65 3.11 4.66z"/></svg>
+              <span>
+                <span class="block text-[0.55rem] leading-none text-white/60">Download på</span>
+                <span class="block font-black text-[0.9rem] leading-tight tracking-[-0.02em]">App Store</span>
+              </span>
+            </a>
+            <a
+              href="https://play.google.com/store/apps/details?id=dk.ab.club&hl=en_US&pli=1"
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="Hent på Google Play (åbner i nyt vindue)"
+              class="inline-flex items-center gap-2.5 bg-[#111] text-white px-5 py-2.5 no-underline hover:opacity-85 transition-opacity"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.6 2.2c-.4.2-.6.6-.6 1.1v17.4c0 .5.2.9.6 1.1l9.9-9.8L3.6 2.2zm11 9.7 2.7-2.7-9.5-5.4c-.2-.1-.5-.2-.7-.2l7.5 8.3zm0 1.4-7.5 8.3c.2 0 .5-.1.7-.2l9.5-5.4-2.7-2.7zm3.6-3.6-3-1.7-2.9 2.9 2.9 2.9 3-1.7c.6-.4.9-.9.9-1.4s-.3-1-.9-1.4z"/></svg>
+              <span>
+                <span class="block text-[0.55rem] leading-none text-white/60">Hent på</span>
+                <span class="block font-black text-[0.9rem] leading-tight tracking-[-0.02em]">Google Play</span>
+              </span>
+            </a>
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <img
+            src="/images/myab-app-preview.png"
+            alt="Skærmbillede af AB's fan-app"
+            class="w-full max-w-[280px] h-auto"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="bg-[#F2F2F0] border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <h2 class="font-black mb-10 text-[#111]" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+        Det får du med et MyAB-abonnement
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {groups.map((group) => (
+          <div class="bg-white border border-[#E5E7EB] p-7">
+            <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-4">{group.title}</p>
+            <p class="text-[0.85rem] text-[#666] leading-relaxed mb-4">{group.intro}</p>
+            <ul class="space-y-2.5">
+              {group.items.map((item) => (
+                <li class="flex items-start gap-2.5 text-[0.9rem] text-[#333] leading-snug">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M13.5 4.5 6.5 12 2.5 8" stroke="#006A52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Base>

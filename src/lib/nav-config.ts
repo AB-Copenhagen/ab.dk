@@ -64,7 +64,7 @@ export interface NavConfig {
 const da: NavConfig = {
   preHeader: {
     left: [
-      { label: 'Join MyAB', href: '/da/bliv-involveret/myab', highlight: true },
+      { label: 'Join MyAB', href: '/myab', highlight: true },
       { label: 'Billetter', href: 'https://billet.ab.dk/', external: true },
       { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
@@ -80,15 +80,15 @@ const da: NavConfig = {
         { label: 'Historik', href: '/om/historik' },
         { label: 'Stadion', href: '/om/stadion' },
         { label: 'Ledelse', href: '/om/ledelse' },
-        { label: 'Medieressourcer', href: '/om/medier' },
+        { label: 'Medier & Presse', href: '/medier' },
         { label: 'Kontakt', href: '/om/kontakt' },
       ],
     },
     {
       label: 'Bliv involveret',
-      href: '/bliv-involveret',
+      href: '/myab',
       children: [
-        { label: 'Join MyAB', href: '/bliv-involveret/myab' },
+        { label: 'Join MyAB', href: '/myab' },
         { label: 'Fællesskab', href: '/om/faellesskab' },
         { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Partnere', href: '/partnere' },
@@ -106,7 +106,7 @@ const da: NavConfig = {
 const en: NavConfig = {
   preHeader: {
     left: [
-      { label: 'Join MyAB', href: '/en/bliv-involveret/myab', highlight: true },
+      { label: 'Join MyAB', href: '/en/myab', highlight: true },
       { label: 'Tickets', href: 'https://billet.ab.dk/', external: true },
       { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
@@ -122,16 +122,16 @@ const en: NavConfig = {
         { label: 'History', href: '/about/history' },
         { label: 'Stadium', href: '/about/stadium' },
         { label: 'Leadership', href: '/about/leadership' },
-        { label: 'Media Resources', href: '/om/medier' },
+        { label: 'Media & Press', href: '/media' },
         { label: 'Contact', href: '/contact' },
       ],
     },
     {
       label: 'Get Involved',
-      href: '/bliv-involveret',
+      href: '/myab',
       children: [
-        { label: 'Join MyAB', href: '/bliv-involveret/myab' },
-        { label: 'Community', href: '/om/faellesskab' },
+        { label: 'Join MyAB', href: '/myab' },
+        { label: 'Community', href: '/community' },
         { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Partners', href: '/partners' },
         { label: 'Events', href: '/events' },

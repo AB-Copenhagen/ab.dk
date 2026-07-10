@@ -1,0 +1,119 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+
+interface Contact {
+  name: string;
+  role: string;
+  location: string;
+  email: string;
+}
+
+const contacts: Contact[] = [
+  {
+    name: 'Henrik Bom',
+    role: 'President, Head of Commercial',
+    location: 'Copenhagen, Denmark',
+    email: 'hbom@ab.dk',
+  },
+  {
+    name: 'Brian Grieco',
+    role: 'Chairman',
+    location: 'New York, NY',
+    email: 'bgrieco@ab.dk',
+  },
+  {
+    name: 'Cynthia Lee',
+    role: 'Head of Marketing',
+    location: 'New York, NY',
+    email: 'clee@ab.dk',
+  },
+];
+
+interface Resource {
+  title: string;
+  body: string;
+  cta?: { label: string; href: string };
+}
+
+const resources: Resource[] = [
+  {
+    title: 'Full Press Kit',
+    body: 'Club history, key facts, and official statements.',
+  },
+  {
+    title: 'Assets',
+    body: 'Logos, squad photos, and imagery from Gladsaxe Stadion.',
+  },
+  {
+    title: 'Brand Guide',
+    body: 'Our visual identity — colors, typography, and logo usage.',
+    cta: { label: 'View brand guide →', href: '/en/brand' },
+  },
+];
+---
+
+<Base
+  locale="en"
+  title="Media & Press | AB 1889"
+  description="Media contacts, press kit, assets, and brand guide for Akademisk Boldklub.">
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
+      <h1 class="font-black text-white leading-none text-[clamp(3rem,7vw,5.5rem)] tracking-[-0.04em]">Media &amp; Press</h1>
+    </div>
+  </div>
+
+  <!-- Media contacts -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Media Contacts</span>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {contacts.map((contact) => (
+          <div class="bg-white border border-[#E5E7EB] p-6">
+            <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em] mb-1">{contact.name}</p>
+            <p class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-green mb-4">{contact.role}</p>
+            <div class="flex items-center gap-2 text-[0.85rem] text-[#666] mb-2">
+              <svg class="shrink-0" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 1.5C5.515 1.5 3.5 3.515 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.485-2.015-4.5-4.5-4.5Z" stroke="#999" stroke-width="1.3"/>
+                <circle cx="8" cy="6" r="1.5" stroke="#999" stroke-width="1.3"/>
+              </svg>
+              <span>{contact.location}</span>
+            </div>
+            <a href={`mailto:${contact.email}`} class="text-[0.85rem] font-black text-ab-green no-underline hover:opacity-70">{contact.email}</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources -->
+  <section class="bg-[#F2F2F0] border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <h2 class="font-black mb-10 text-[#111]" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+        Resources
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {resources.map((resource) => (
+          <div class="bg-white border border-[#E5E7EB] p-7 flex flex-col">
+            <p class="font-black text-[1.05rem] text-[#111] tracking-[-0.02em] mb-2">{resource.title}</p>
+            <p class="text-[0.875rem] text-[#666] leading-relaxed mb-4 flex-1">{resource.body}</p>
+            {resource.cta ? (
+              <a href={resource.cta.href} class="text-[0.8rem] font-black text-ab-green no-underline hover:opacity-70 tracking-[-0.01em]">
+                {resource.cta.label}
+              </a>
+            ) : (
+              <p class="text-[0.8rem] text-[#BBB] italic">Coming soon</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Base>
