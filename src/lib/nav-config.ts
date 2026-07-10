@@ -64,7 +64,7 @@ export interface NavConfig {
 const da: NavConfig = {
   preHeader: {
     left: [
-      { label: 'Join MyAB', href: '/da/bliv-involveret/myab', highlight: true },
+      { label: 'Join MyAB', href: '/bliv-involveret/myab', highlight: true },
       { label: 'Billetter', href: 'https://billet.ab.dk/', external: true },
       { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
