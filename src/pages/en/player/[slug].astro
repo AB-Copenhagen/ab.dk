@@ -124,7 +124,7 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
           alt={name}
           loading="eager"
           class="h-full w-auto max-w-none"
-          onerror="this.onerror=null;this.src='/images/player-placeholder.png';"
+          onerror="this.style.display='none'"
         />
       </div>
     )}
