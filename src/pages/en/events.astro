@@ -45,59 +45,77 @@ function fmtTime(d: string) {
     </div>
   </div>
 
-  <!-- Watch parties -->
+  <!-- Event Calendar + Watch Parties -->
   <section class="bg-[#F2F2F0] py-[clamp(48px,7vw,80px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
-      <div class="grid lg:grid-cols-2 gap-12 items-center mb-16 lg:mb-20">
-        <div>
-          <h2 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-[#111] mb-4">
-            Find Your Local Watch Party
-          </h2>
-          <p class="text-[1rem] leading-[1.75] text-[#555] max-w-[48ch] mb-3">
-            Can't make it to the stadium or to the away match?
-          </p>
-          <p class="text-[1rem] leading-[1.75] text-[#555] max-w-[48ch]">
-            AB hosts global and local watch parties, everywhere from London,
-            New York City, Washington D.C., Los Alamos and more! Be sure to
-            check the calendar to see if there is a city near you.
-          </p>
-        </div>
-        <img
-          src="/images/watch-party-2.jpg"
-          alt="AB fans gathered for a watch party"
-          class="w-full h-full object-cover aspect-[4/3]"
-          loading="lazy"
-        />
-      </div>
-
-      <!-- Club calendar -->
       <div class="grid lg:grid-cols-2 gap-12 items-center">
-        <img
-          src="/images/watch-party-1.jpg"
-          alt="AB fans at a local watch party"
-          class="w-full h-full object-cover aspect-[4/3]"
-          loading="lazy"
-        />
         <div>
           <h2 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-[#111] mb-4">
             Event Calendar
           </h2>
-          <p class="text-[1.0625rem] leading-[1.75] text-[#444] max-w-[48ch] mb-6">
-            Want to stay updated on everything happening at AB and Gladsaxe Stadium? AB regularly holds a number of great events throughout the year.
+          <p class="text-[1.0625rem] leading-[1.75] text-[#444] max-w-[48ch] mb-4">
+            Want to stay updated on everything happening at AB — including a
+            watch party near you? AB regularly holds events throughout the
+            year, and hosts watch parties around the world, from London to
+            New York City, Washington D.C., Los Alamos, and more.
+          </p>
+          <p class="text-[1rem] leading-[1.75] text-[#555] max-w-[48ch] mb-6">
+            Check our calendar to see what's coming up and find a watch
+            party near you.
           </p>
           <a
             href="https://luma.com/abdk"
             target="_blank"
             rel="noreferrer noopener"
-            aria-label="View our club calendar on Luma (opens in new tab)"
+            aria-label="View our calendar on Luma (opens in new tab)"
             class="inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-green text-white px-7 py-3.5 no-underline transition-opacity hover:opacity-80"
           >
-            View club calendar →
+            View calendar →
           </a>
+        </div>
+
+        <div class="relative overflow-hidden aspect-[4/3]" id="events-slider">
+          <div class="events-slider-track flex h-full transition-transform duration-500 ease-in-out">
+            <img src="/images/watch-party-2.jpg" alt="AB fans gathered for a watch party" class="w-full h-full object-cover shrink-0" loading="lazy" />
+            <img src="/images/watch-party-1.jpg" alt="AB fans at a local watch party" class="w-full h-full object-cover shrink-0" loading="lazy" />
+          </div>
+          <button type="button" class="events-slider-prev absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors" aria-label="Previous photo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button type="button" class="events-slider-next absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors" aria-label="Next photo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <div class="absolute bottom-3 inset-x-0 flex justify-center gap-2">
+            <button type="button" class="events-slider-dot w-2 h-2 rounded-full bg-white transition-opacity" data-index="0" aria-label="Photo 1"></button>
+            <button type="button" class="events-slider-dot w-2 h-2 rounded-full bg-white/50 transition-opacity" data-index="1" aria-label="Photo 2"></button>
+          </div>
         </div>
       </div>
     </div>
   </section>
+
+  <script>
+    const slider = document.getElementById('events-slider');
+    const track = slider?.querySelector<HTMLElement>('.events-slider-track');
+    const dots = slider?.querySelectorAll<HTMLButtonElement>('.events-slider-dot');
+    const slideCount = track?.children.length ?? 0;
+    let current = 0;
+
+    function goTo(index: number) {
+      current = (index + slideCount) % slideCount;
+      if (track) track.style.transform = `translateX(-${current * 100}%)`;
+      dots?.forEach((dot, i) => {
+        dot.classList.toggle('bg-white', i === current);
+        dot.classList.toggle('bg-white/50', i !== current);
+      });
+    }
+
+    slider?.querySelector('.events-slider-prev')?.addEventListener('click', () => goTo(current - 1));
+    slider?.querySelector('.events-slider-next')?.addEventListener('click', () => goTo(current + 1));
+    dots?.forEach((dot) => {
+      dot.addEventListener('click', () => goTo(Number(dot.dataset.index)));
+    });
+  </script>
 
   <!-- Events list -->
   <section class="bg-white py-[clamp(48px,7vw,80px)]">

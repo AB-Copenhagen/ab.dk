@@ -90,7 +90,6 @@ const da: NavConfig = {
       children: [
         { label: 'Join MyAB', href: '/myab' },
         { label: 'Fællesskab', href: '/om/faellesskab' },
-        { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Partnere', href: '/partnere' },
         { label: 'Arrangementer', href: '/events' },
         { label: 'Gæsteoplevelser', href: '/hospitality' },
@@ -132,7 +131,6 @@ const en: NavConfig = {
       children: [
         { label: 'Join MyAB', href: '/myab' },
         { label: 'Community', href: '/community' },
-        { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Partners', href: '/partners' },
         { label: 'Events', href: '/events' },
         { label: 'Hospitality', href: '/hospitality' },
