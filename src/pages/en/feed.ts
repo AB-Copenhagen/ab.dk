@@ -21,7 +21,7 @@ export async function GET(context: APIContext) {
   const site = (context.site?.toString() ?? context.url.origin).replace(/\/$/, '');
 
   const articles = await fetchCollectionType<StrapiArticle[]>('articles', {
-    locale: 'da',
+    locale: 'en',
     sort: ['publishedAt:desc'],
     populate: ['image', 'categories'],
     pagination: { pageSize: 50 },
@@ -30,10 +30,10 @@ export async function GET(context: APIContext) {
 
   const body = buildWpRssFeed({
     title: 'Akademisk Boldklub – AB 1889',
-    link: `${site}/nyheder`,
+    link: `${site}/en/news`,
     description: 'Official Website of 9 Times Danish Champions',
-    feedUrl: `${site}/feed`,
-    language: 'da-DK',
+    feedUrl: `${site}/en/feed`,
+    language: 'en-US',
     items: articles.map((article) => {
       const mediaUrl = article.image?.url ? strapiMediaUrl(article.image.url) : '';
       const absoluteMediaUrl = mediaUrl.startsWith('http') ? mediaUrl : `${site}${mediaUrl}`;
@@ -43,10 +43,10 @@ export async function GET(context: APIContext) {
       const categories = article.categories?.map((c) => c.name) ?? [];
       return {
         title: decodeHtml(article.title),
-        link: `${site}/blog/${article.slug}`,
+        link: `${site}/en/blog/${article.slug}`,
         creator: 'Akademisk Boldklub',
         pubDate: new Date(article.publishedAt ?? article.createdAt),
-        categories: categories.length ? categories : ['Nyheder'],
+        categories: categories.length ? categories : ['News'],
         excerpt: decodeHtml(article.description ?? ''),
         contentHtml: imgTag + blocksToHtml(article.content),
       };
