@@ -8,6 +8,8 @@ export interface PreHeaderItem {
 export interface NavLeaf {
   label: string;
   href: string;
+  /** Extra path prefixes that should also count as active — e.g. detail pages living under a different URL segment than the listing page. */
+  activePrefixes?: string[];
 }
 
 export interface NavItemSimple extends NavLeaf {
@@ -24,15 +26,18 @@ export function isDropdown(item: NavItem): item is NavItemDropdown {
   return Array.isArray(item.children) && item.children.length > 0;
 }
 
-/** True when pathname matches this nav href exactly or as a sub-path. */
+/** True when pathname matches this nav href (or one of its activePrefixes) exactly or as a sub-path. */
 export function isNavLeafActive(
   currentPath: string,
   href: string,
-  enPrefix = ''
+  enPrefix = '',
+  activePrefixes: string[] = []
 ): boolean {
-  const fullHref = enPrefix + href;
-  if (currentPath === fullHref) return true;
-  return currentPath.startsWith(`${fullHref}/`);
+  const matches = (h: string) => {
+    const full = enPrefix + h;
+    return currentPath === full || currentPath.startsWith(`${full}/`);
+  };
+  return matches(href) || activePrefixes.some(matches);
 }
 
 /** True when pathname matches the item or any of its dropdown children. */
@@ -41,11 +46,12 @@ export function isNavItemActive(
   item: NavItem,
   enPrefix = ''
 ): boolean {
-  if (isNavLeafActive(currentPath, item.href, enPrefix)) return true;
+  if (isNavLeafActive(currentPath, item.href, enPrefix, item.activePrefixes))
+    return true;
 
   if (item.children?.length) {
     return item.children.some((child) =>
-      isNavLeafActive(currentPath, child.href, enPrefix)
+      isNavLeafActive(currentPath, child.href, enPrefix, child.activePrefixes)
     );
   }
 
@@ -72,7 +78,7 @@ const da: NavConfig = {
   primary: [
     { label: 'Hold', href: '/hold' },
     { label: 'Kampe', href: '/kampe' },
-    { label: 'Nyheder', href: '/nyheder' },
+    { label: 'Nyheder', href: '/nyheder', activePrefixes: ['/blog'] },
     {
       label: 'Om',
       href: '/om/historik',
@@ -90,7 +96,6 @@ const da: NavConfig = {
       children: [
         { label: 'Join MyAB', href: '/myab' },
         { label: 'Fællesskab', href: '/om/faellesskab' },
-        { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Partnere', href: '/partnere' },
         { label: 'Arrangementer', href: '/events' },
         { label: 'Gæsteoplevelser', href: '/hospitality' },
@@ -114,7 +119,7 @@ const en: NavConfig = {
   primary: [
     { label: 'Squad', href: '/squad' },
     { label: 'Matches', href: '/matches' },
-    { label: 'News', href: '/news' },
+    { label: 'News', href: '/news', activePrefixes: ['/blog'] },
     {
       label: 'About',
       href: '/about/history',
@@ -132,7 +137,6 @@ const en: NavConfig = {
       children: [
         { label: 'Join MyAB', href: '/myab' },
         { label: 'Community', href: '/community' },
-        { label: 'Watch Parties', href: '/bliv-involveret/watch-parties' },
         { label: 'Partners', href: '/partners' },
         { label: 'Events', href: '/events' },
         { label: 'Hospitality', href: '/hospitality' },

@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 
 import { sendMail } from '@/lib/mailgun';
+import { escapeHtml } from '@/lib/utils';
 
 export const prerender = false;
 
@@ -44,7 +45,7 @@ export const POST: APIRoute = async ({ request }) => {
       to,
       subject: subject?.trim() || `Kontaktformular: ${name.trim()}`,
       text: `Navn: ${name.trim()}\nE-mail: ${email.trim()}\n\n${message.trim()}`,
-      html: `<p><strong>Navn:</strong> ${name.trim()}</p><p><strong>E-mail:</strong> <a href="mailto:${email.trim()}">${email.trim()}</a></p><hr><p>${message.trim().replace(/\n/g, '<br>')}</p>`,
+      html: `<p><strong>Navn:</strong> ${escapeHtml(name.trim())}</p><p><strong>E-mail:</strong> <a href="mailto:${escapeHtml(email.trim())}">${escapeHtml(email.trim())}</a></p><hr><p>${escapeHtml(message.trim()).replace(/\n/g, '<br>')}</p>`,
       replyTo: email.trim(),
     });
     return new Response(JSON.stringify({ success: true }), {

@@ -37,9 +37,43 @@ function formatDate(str: string) {
     return new Date(str).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   } catch { return ''; }
 }
+
+const articleDescription = article.description
+  ? truncate(decodeHtml(article.description), 160)
+  : undefined;
+const articleImageUrl = article.image?.url ? strapiMediaUrl(article.image.url) : undefined;
+const absoluteImageUrl = articleImageUrl
+  ? articleImageUrl.startsWith('http')
+    ? articleImageUrl
+    : `https://ab.dk${articleImageUrl}`
+  : undefined;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: decodeHtml(article.title),
+  description: articleDescription,
+  image: absoluteImageUrl ? [absoluteImageUrl] : undefined,
+  datePublished: article.publishedAt,
+  dateModified: article.updatedAt ?? article.publishedAt,
+  author: { '@type': 'Organization', name: 'Akademisk Boldklub' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Akademisk Boldklub',
+    logo: { '@type': 'ImageObject', url: 'https://ab.dk/images/ab-logo.svg' },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': `https://ab.dk/en/blog/${article.slug}` },
+};
 ---
 
-<Base locale="en" title={`${decodeHtml(article.title)} | Akademisk Boldklub`}>
+<Base
+  locale="en"
+  title={`${decodeHtml(article.title)} | Akademisk Boldklub`}
+  description={articleDescription}
+  ogImage={absoluteImageUrl}
+  ogType="article"
+  structuredData={articleSchema}
+>
   <article class="text-[#111]">
 
     <!-- ── Header: image left | title + excerpt + date right ──── -->
@@ -55,6 +89,12 @@ function formatDate(str: string) {
       </div>
       <!-- Right: centred content on beige -->
       <div class="flex flex-col items-center justify-center text-center px-10 md:px-16 py-14 bg-[#F4F4F4]">
+        <a
+          href="/en/news"
+          class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-[#111]/50 hover:text-[#111]/90 transition-colors mb-6"
+        >
+          ← All News
+        </a>
         <h1 class="font-black leading-tight mb-6 text-[#111] text-center"
             style="font-size:clamp(2rem,3.5vw,3.5rem); letter-spacing:-0.04em;">
           {decodeHtml(article.title)}

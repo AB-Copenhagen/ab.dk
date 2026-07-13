@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));
 
 export default defineConfig({
+  site: 'https://ab.dk',
   output: 'server',
   server: { port: 1889 },
   adapter: vercel({

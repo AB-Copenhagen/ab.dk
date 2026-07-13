@@ -1,0 +1,128 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+---
+
+<Base locale="da" title="Retur- og Refusionspolitik | AB 1889" description="Læs AB 1889's retningslinjer for retur, ombytning og refusion af varer købt via ab.dk.">
+
+  <!-- Slim header -->
+  <div class="bg-ab-black border-b border-white/10 py-10 px-8 lg:px-20">
+    <div class="max-w-4xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">AB 1889</span>
+      <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Retur- og Refusionspolitik</h1>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-4xl mx-auto px-8 lg:px-20">
+      <div class="prose-content">
+
+        <h2>30 dages returret</h2>
+        <p>
+          Du har 30 dage fra modtagelsen til at anmode om en returnering. For at være berettiget skal varen være i samme stand, som da du modtog den — ubrugt, med mærker i behold og i original emballage. Kvittering eller anden dokumentation for købet er påkrævet.
+        </p>
+        <p>
+          For at igangsætte en returnering, kontakt os på <a href="mailto:info@ab.dk">info@ab.dk</a>. Når din returnering er godkendt, sender vi en returlabel og instruktioner. Uopfordrede returneringer accepteres ikke.
+        </p>
+
+        <h2>Skader og problemer</h2>
+        <p>
+          Undersøg venligst din ordre straks ved modtagelsen. Hvis en vare ankommer defekt, beskadiget eller forkert, bedes du kontakte os med det samme, så vi kan vurdere problemet og finde en hurtig løsning.
+        </p>
+
+        <h2>Varer der ikke kan returneres</h2>
+        <p>Følgende varer kan ikke returneres:</p>
+        <ul>
+          <li>Letfordærvelige varer (mad, blomster, planter)</li>
+          <li>Specialfremstillede eller personaliserede produkter (specialbestillinger)</li>
+          <li>Udsalgsvarer</li>
+          <li>Gavekort</li>
+        </ul>
+        <p>Hvis du er i tvivl om, hvorvidt en bestemt vare kan returneres, bedes du kontakte os inden købet.</p>
+
+        <h2>Ombytning</h2>
+        <p>
+          Den hurtigste måde at ombytte en vare på er at returnere den oprindelige vare og, når returneringen er godkendt, købe erstatningsvaren separat.
+        </p>
+
+        <h2>EU's 14-dages fortrydelsesret</h2>
+        <p>
+          For ordrer leveret inden for EU har du ret til at annullere eller returnere din ordre inden for 14 dage efter modtagelsen, uden grund eller begrundelse. Varen skal opfylde de samme krav til stand som beskrevet ovenfor.
+        </p>
+
+        <h2>Refusion</h2>
+        <p>
+          Når vi har modtaget og gennemgået din returnerede vare, giver vi dig besked om, hvorvidt din refusion er godkendt eller afvist. Ved godkendelse tilbageføres beløbet til din oprindelige betalingsmetode inden for 10 hverdage. Vær opmærksom på, at det kan tage yderligere tid, før din bank eller kortudbyder behandler transaktionen.
+        </p>
+        <p>
+          Hvis der er gået mere end 15 hverdage, siden din returnering blev godkendt, bedes du kontakte os på <a href="mailto:info@ab.dk">info@ab.dk</a>.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .prose-content {
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .prose-content h2 {
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #111;
+    letter-spacing: -0.03em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-top: 2rem;
+    border-top: 1px solid #E5E7EB;
+  }
+  .prose-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .prose-content p {
+    margin-bottom: 1rem;
+  }
+  .prose-content ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+  .prose-content ul li {
+    padding-left: 1.25rem;
+    position: relative;
+    margin-bottom: 0.4rem;
+  }
+  .prose-content ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #2E7D32;
+    font-weight: 900;
+  }
+  .prose-content a {
+    color: #2E7D32;
+    text-decoration: none;
+  }
+  .prose-content a:hover {
+    opacity: 0.7;
+  }
+  .address-block {
+    background: #F5F5F3;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    font-weight: 700;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.95rem;
+  }
+</style>

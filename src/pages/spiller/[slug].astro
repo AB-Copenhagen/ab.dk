@@ -98,9 +98,33 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
   ...img,
   src: strapiMediaUrl(img.url),
 }));
+
+const playerDescription = cmsPlayer?.bio
+  ? cmsPlayer.bio.slice(0, 160)
+  : `${name}${posLabel ? `, ${posLabel}` : ''} for Akademisk Boldklub (AB 1889).`;
+const absolutePhotoUrl = photoUrl ? `https://ab.dk${photoUrl}` : undefined;
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name,
+  jobTitle: posLabel,
+  nationality: countryName,
+  birthDate: birthDate ?? undefined,
+  image: absolutePhotoUrl,
+  memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
+  url: `https://ab.dk/spiller/${slug}`,
+};
 ---
 
-<Base locale="da" title={pageTitle}>
+<Base
+  locale="da"
+  title={pageTitle}
+  description={playerDescription}
+  ogImage={absolutePhotoUrl}
+  ogType="profile"
+  structuredData={personSchema}
+>
   <!-- ── Hero ───────────────────────────────────────────────────────── -->
   <div class="relative w-full overflow-hidden"
        style="background:linear-gradient(to right, #002A1A 0%, #006A52 42%, #00C018 100%); min-height:clamp(460px,36vw,560px);">

@@ -180,7 +180,7 @@ const enPath = switchLocalePath(currentPath, 'en');
                   <div
                     class="min-w-[200px] shadow-2xl bg-[#004A3A] border-t-[3px] border-ab-beige">
                     {item.children.map((child) => {
-                      const isChildActive = isNavLeafActive(currentPath, child.href, enPrefix);
+                      const isChildActive = isNavLeafActive(currentPath, child.href, enPrefix, child.activePrefixes);
                       return (
                         <a
                           href={enPrefix + child.href}
