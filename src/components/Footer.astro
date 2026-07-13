@@ -119,10 +119,10 @@ const partners = strapiPartners.length > 0
 
         <!-- Explore -->
         <div>
-          <p class={footerHeadingClass}>Explore</p>
+          <p class={footerHeadingClass}>{locale === 'da' ? 'Udforsk' : 'Explore'}</p>
           <ul class="flex flex-col">
             <li>
-              <a href={locale === 'en' ? '/en/matchday' : '/kampe'} class={footerLinkClass}>Matchday</a>
+              <a href={locale === 'en' ? '/en/matchday' : '/kampdag'} class={footerLinkClass}>Matchday</a>
             </li>
             <li>
               <a href="https://billet.ab.dk/" target="_blank" rel="noreferrer" class={footerLinkClass}>
@@ -137,7 +137,7 @@ const partners = strapiPartners.length > 0
 
         <!-- Resources -->
         <div>
-          <p class={footerHeadingClass}>Resources</p>
+          <p class={footerHeadingClass}>{locale === 'da' ? 'Ressourcer' : 'Resources'}</p>
           {resourceLinks?.length ? (
             <ul class="flex flex-col">
               {resourceLinks.map((link) => (
@@ -149,7 +149,6 @@ const partners = strapiPartners.length > 0
           ) : (
             <ul class="flex flex-col">
               {([
-                { label: locale === 'da' ? 'Hospitality' : 'Hospitality', href: locale === 'en' ? '/en/hospitality' : '/hospitality', external: false },
                 { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/om/brand', external: false },
                 { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspolitik', external: false },
                 { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/om/returpolitik', external: false },
