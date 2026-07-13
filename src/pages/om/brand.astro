@@ -1,6 +1,5 @@
 ---
 import Base from '@/layouts/Base.astro';
-import Img from '@/components/Img.astro';
 export const prerender = true;
 ---
 
@@ -20,7 +19,7 @@ export const prerender = true;
         </p>
       </div>
       <div class="shrink-0 hidden md:block">
-        <img src="/images/ab-crest.svg" alt="AB 1889 Mærke" class="w-36 lg:w-44 h-auto opacity-90" />
+        <img src="/images/ab-crest.svg" alt="AB 1889 Logo" class="w-36 lg:w-44 h-auto opacity-90" />
       </div>
     </div>
   </div>
@@ -128,41 +127,159 @@ export const prerender = true;
     </div>
   </section>
 
-  <!-- Logos & Crest -->
-  <section class="bg-surface-base py-[clamp(64px,9vw,112px)]">
+  <!-- Visuel identitet: Logoer, Monogram, Logo med monogram, Download -->
+  <section class="bg-[#F2F2F0] py-[clamp(64px,9vw,112px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
-      <div class="inline-flex items-center mb-6 border border-ab-green/40 rounded-full py-[7px] px-[18px]">
-        <span class="font-black text-[0.75rem] text-surface-muted tracking-[0.1em] uppercase">Visuel identitet</span>
+
+      <!-- Logoer -->
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Visuel identitet</span>
       </div>
-      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-white mb-4">Logoer &amp; Mærke</h2>
-      <p class="text-surface-muted text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-12">
-        AB-monogrammet er en fuldt brugerdefineret bogstavform — genskab det aldrig fra nogen typografi. Brug altid godkendte masterfiler.
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Logoer</h2>
+      <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-12">
+        AB-logoet er klubbens primære mærke. Brug altid godkendte masterfiler — genskab det aldrig fra bunden.
       </p>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg p-8 flex flex-col items-center gap-4">
-          <img src="/images/ab-logo.svg" alt="AB Logo — grøn på hvid" class="h-24 w-auto" />
-          <span class="text-[0.78rem] text-[#666] tracking-[0.05em] font-black uppercase">Grøn på hvid</span>
-        </div>
-        <div class="bg-ab-green rounded-lg p-8 flex flex-col items-center gap-4">
-          <Img src="/images/ab-logo-alt.png" alt="AB Logo — hvid på grøn" class="h-24 w-auto" />
-          <span class="text-[0.78rem] text-white/70 tracking-[0.05em] font-black uppercase">Hvid på grøn</span>
-        </div>
-        <div class="bg-ab-black rounded-lg p-8 flex flex-col items-center gap-4">
-          <img src="/images/ab-logo.svg" alt="AB Logo — på sort" class="h-24 w-auto" />
-          <span class="text-[0.78rem] text-surface-muted tracking-[0.05em] font-black uppercase">På sort</span>
-        </div>
-        <div class="bg-white rounded-lg p-8 flex flex-col items-center gap-4">
-          <img src="/images/ab-crest.svg" alt="AB Mærke" class="h-24 w-auto" />
-          <span class="text-[0.78rem] text-[#666] tracking-[0.05em] font-black uppercase">AB Mærke</span>
+        {([
+          { src: '/images/ab-crest.svg', alt: 'AB Logo — på hvid', bg: 'bg-white border border-gray-200', label: 'På hvid', text: 'text-[#666]' },
+          { src: '/images/ab-crest.svg', alt: 'AB Logo — på grå', bg: 'bg-[#D9D9D6]', label: 'På grå', text: 'text-[#555]' },
+          { src: '/images/ab-crest-white.svg', alt: 'AB Logo — på grøn', bg: 'bg-ab-green', label: 'På grøn', text: 'text-white/70' },
+          { src: '/images/ab-crest-white.svg', alt: 'AB Logo — på sort', bg: 'bg-ab-black', label: 'På sort', text: 'text-surface-muted' },
+        ]).map((tile) => (
+          <div class={`${tile.bg} rounded-lg p-8 flex flex-col items-center gap-4`}>
+            <img src={tile.src} alt={tile.alt} class="h-24 w-auto" />
+            <span class={`text-[0.78rem] ${tile.text} tracking-[0.05em] font-black uppercase`}>{tile.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <!-- Monogram -->
+      <div class="mt-14 pt-14 border-t border-gray-300">
+        <h3 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-ab-black mb-4">Monogram</h3>
+        <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-10">
+          AB-monogrammet er en fuldt brugerdefineret bogstavform — genskab det aldrig fra nogen typografi. Brug altid godkendte masterfiler.
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {([
+            { src: '/images/ab-monogram-color.svg', alt: 'AB Monogram — på hvid', bg: 'bg-white border border-gray-200', label: 'På hvid', text: 'text-[#666]' },
+            { src: '/images/ab-monogram-color.svg', alt: 'AB Monogram — på grå', bg: 'bg-[#D9D9D6]', label: 'På grå', text: 'text-[#555]' },
+            { src: '/images/ab-monogram-white.svg', alt: 'AB Monogram — på grøn', bg: 'bg-ab-green', label: 'På grøn', text: 'text-white/70' },
+            { src: '/images/ab-monogram-white.svg', alt: 'AB Monogram — på sort', bg: 'bg-ab-black', label: 'På sort', text: 'text-surface-muted' },
+          ]).map((tile) => (
+            <div class={`${tile.bg} rounded-lg p-8 flex flex-col items-center gap-4`}>
+              <img src={tile.src} alt={tile.alt} class="h-24 w-auto" />
+              <span class={`text-[0.78rem] ${tile.text} tracking-[0.05em] font-black uppercase`}>{tile.label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div class="mt-10 p-6 rounded-lg border border-ab-gold/30 bg-ab-gold/5">
-        <p class="text-ab-gold text-[0.9rem] leading-[1.6]">
-          <strong>Vigtig regel:</strong> Brug ikke AB-monogrammet og mærket samtidigt i en sponsor-lockup. De tjener forskellige institutionelle roller og skaber forvirring, når de kombineres med et partnerlogo.
+      <!-- Logo med monogram -->
+      <div class="mt-14 pt-14 border-t border-gray-300">
+        <h3 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-ab-black mb-4">Logo med monogram</h3>
+        <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-10">
+          Den kombinerede lockup parrer logoet og monogrammet side om side. Brug kun de godkendte masterfiler nedenfor — gendan eller omarrangér aldrig lockuppen.
         </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {([
+            { src: '/images/ab-logo-monogram-color.svg', alt: 'AB Logo med monogram — på hvid', bg: 'bg-white border border-gray-200', label: 'På hvid', text: 'text-[#666]' },
+            { src: '/images/ab-logo-monogram-color.svg', alt: 'AB Logo med monogram — på grå', bg: 'bg-[#D9D9D6]', label: 'På grå', text: 'text-[#555]' },
+            { src: '/images/ab-logo-monogram-white.svg', alt: 'AB Logo med monogram — på grøn', bg: 'bg-ab-green', label: 'På grøn', text: 'text-white/70' },
+            { src: '/images/ab-logo-monogram-white.svg', alt: 'AB Logo med monogram — på sort', bg: 'bg-ab-black', label: 'På sort', text: 'text-surface-muted' },
+          ]).map((tile) => (
+            <div class={`${tile.bg} rounded-lg p-8 flex flex-col items-center justify-center gap-4`}>
+              <img src={tile.src} alt={tile.alt} class="h-16 w-auto max-w-full" />
+              <span class={`text-[0.78rem] ${tile.text} tracking-[0.05em] font-black uppercase`}>{tile.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-10 p-6 rounded-lg border border-ab-gold/30 bg-ab-gold/5">
+          <p class="text-ab-gold text-[0.9rem] leading-[1.6]">
+            <strong>Vigtig regel:</strong> Brug ikke AB-monogrammet og logoet samtidigt i en sponsor-lockup. De tjener forskellige institutionelle roller og skaber forvirring, når de kombineres med et partnerlogo.
+          </p>
+        </div>
       </div>
+
+      <!-- Download -->
+      <div class="mt-14 pt-14 border-t border-gray-300">
+        <h3 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-ab-black mb-4">Download</h3>
+        <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-10">
+          Officielle masterfiler til brug af AB 1889-identiteten. Brug altid den seneste version og overhold brandreglerne ovenfor.
+        </p>
+
+        {([
+          {
+            title: 'Logo',
+            assets: [
+              { variant: 'Farve', format: 'SVG', file: '/downloads/brand/ab-crest.svg', size: '39 KB' },
+              { variant: 'Hvid', format: 'SVG', file: '/downloads/brand/ab-crest-white.svg', size: '21 KB' },
+              { variant: 'Farve', format: 'PNG', file: '/downloads/brand/ab-crest-color.png', size: '228 KB' },
+              { variant: 'Hvid', format: 'PNG', file: '/downloads/brand/ab-crest-white.png', size: '160 KB' },
+              { variant: 'Printklar', format: 'PDF', file: '/downloads/brand/ab-crest.pdf', size: '160 KB' },
+              { variant: 'Vektor til print', format: 'EPS', file: '/downloads/brand/ab-crest.eps', size: '441 KB' },
+            ],
+          },
+          {
+            title: 'Monogram',
+            assets: [
+              { variant: 'Farve', format: 'SVG', file: '/downloads/brand/ab-monogram-color.svg', size: '4 KB' },
+              { variant: 'Hvid', format: 'SVG', file: '/downloads/brand/ab-monogram-white.svg', size: '5 KB' },
+              { variant: 'Farve', format: 'PNG', file: '/downloads/brand/ab-monogram-color.png', size: '196 KB' },
+              { variant: 'Hvid', format: 'PNG', file: '/downloads/brand/ab-monogram-white.png', size: '164 KB' },
+              { variant: 'CMYK-master', format: 'AI', file: '/downloads/brand/ab-monogram.ai', size: '1.1 MB' },
+            ],
+          },
+          {
+            title: 'Logo og Monogram',
+            assets: [
+              { variant: 'Farve', format: 'SVG', file: '/downloads/brand/ab-logo-monogram-color.svg', size: '30 KB' },
+              { variant: 'Hvid', format: 'SVG', file: '/downloads/brand/ab-logo-monogram-white.svg', size: '25 KB' },
+              { variant: 'Farve', format: 'PNG', file: '/downloads/brand/ab-logo-monogram-color.png', size: '814 KB' },
+              { variant: 'Hvid', format: 'PNG', file: '/downloads/brand/ab-logo-monogram-white.png', size: '575 KB' },
+            ],
+          },
+          {
+            title: 'Diverse',
+            assets: [
+              { variant: 'Farvepalet', format: 'PDF', file: '/downloads/brand/ab-colorway.pdf', size: '94 KB' },
+              { variant: 'Mønster', format: 'SVG', file: '/downloads/brand/ab-pattern.svg', size: '21 KB' },
+              { variant: 'Mønster', format: 'AI', file: '/downloads/brand/ab-pattern.ai', size: '1.2 MB' },
+            ],
+          },
+        ] as { title: string; assets: { variant: string; format: string; file: string; size: string }[] }[]).map((group, i) => (
+          <div class={i > 0 ? 'mt-10 pt-10 border-t border-gray-200' : ''}>
+            <h4 class="font-black text-[1.1rem] tracking-[-0.02em] text-ab-black mb-5 uppercase">{group.title}</h4>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {group.assets.map((asset) => (
+                <a
+                  href={asset.file}
+                  download
+                  class="group flex items-center gap-4 p-5 rounded-lg border border-gray-200 bg-white hover:border-ab-green hover:bg-ab-green/5 transition-colors no-underline"
+                >
+                  <div class="shrink-0 w-11 h-11 rounded-md bg-ab-black flex items-center justify-center">
+                    <span class="font-black text-[0.6rem] text-ab-neon tracking-[0.08em] uppercase">{asset.format}</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-black text-ab-black text-[0.95rem] leading-tight">{asset.variant}</div>
+                    <div class="font-black text-[#999] text-[0.72rem] tracking-[0.08em] uppercase mt-0.5">{asset.format}</div>
+                  </div>
+                  <div class="flex flex-col items-end gap-1 shrink-0">
+                    <span class="text-[#bbb] text-[0.72rem]">{asset.size}</span>
+                    <svg class="w-4 h-4 text-ab-green opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M8 2v9M4 8l4 4 4-4M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
     </div>
   </section>
 
@@ -291,7 +408,7 @@ export const prerender = true;
         </div>
         <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
           <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">03</span>
-          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Brug ikke monogrammet og mærket samtidigt i sponsor-lockups.</strong> De tjener forskellige institutionelle roller og skaber forvirring.</p>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Brug ikke monogrammet og logoet samtidigt i en sponsor-lockup.</strong> De tjener forskellige institutionelle roller og skaber forvirring.</p>
         </div>
         <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
           <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">04</span>
@@ -299,7 +416,7 @@ export const prerender = true;
         </div>
         <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
           <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">05</span>
-          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Stræk, forvreng eller skaler ikke logoer uensartet.</strong> Alle logoer, mærker og monogrammer skal til enhver tid skaleres proportionalt.</p>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Stræk, forvreng eller skaler ikke logoer uensartet.</strong> Alle logoer, monogrammer og lockups skal til enhver tid skaleres proportionalt.</p>
         </div>
         <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
           <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">06</span>
@@ -309,50 +426,6 @@ export const prerender = true;
           <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">07</span>
           <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Rediger ikke klubbens historiske oplysninger.</strong> Mesterskabsår og hæder er officielle registreringer. Forkort, udelad eller tilnærm ikke historien.</p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Downloads -->
-  <section class="bg-white py-[clamp(64px,9vw,112px)]">
-    <div class="max-w-7xl mx-auto px-8 lg:px-20">
-      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
-        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Brand Assets</span>
-      </div>
-      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Download</h2>
-      <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-10">
-        Officielle masterfiler til brug af AB 1889-identiteten. Brug altid den seneste version og overhold brandreglerne ovenfor.
-      </p>
-
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {([
-          { label: 'AB Logo', format: 'PDF', file: '/downloads/brand/ab-logo.pdf', size: '160 KB', desc: 'Logo til tryk og digitalt' },
-          { label: 'AB Logo', format: 'EPS', file: '/downloads/brand/ab-logo.eps', size: '440 KB', desc: 'Vektorfil til print' },
-          { label: 'AB Monogram', format: 'AI', file: '/downloads/brand/ab-monogram.ai', size: '1.1 MB', desc: 'Monogram CMYK master' },
-          { label: 'AB Colorway', format: 'PDF', file: '/downloads/brand/ab-colorway.pdf', size: '94 KB', desc: 'Farvepalet reference' },
-          { label: 'AB Pattern', format: 'SVG', file: '/downloads/brand/ab-pattern.svg', size: '20 KB', desc: 'B-mønster til digital' },
-          { label: 'AB Pattern', format: 'AI', file: '/downloads/brand/ab-pattern.ai', size: '1.1 MB', desc: 'B-mønster master' },
-        ] as { label: string; format: string; file: string; size: string; desc: string }[]).map((asset) => (
-          <a
-            href={asset.file}
-            download
-            class="group flex items-center gap-4 p-5 rounded-lg border border-gray-200 hover:border-ab-green hover:bg-ab-green/5 transition-colors no-underline"
-          >
-            <div class="shrink-0 w-11 h-11 rounded-md bg-ab-black flex items-center justify-center">
-              <span class="font-black text-[0.6rem] text-ab-neon tracking-[0.08em] uppercase">{asset.format}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="font-black text-ab-black text-[0.95rem] leading-tight">{asset.label}</div>
-              <div class="text-[#888] text-[0.78rem] mt-0.5">{asset.desc}</div>
-            </div>
-            <div class="flex flex-col items-end gap-1 shrink-0">
-              <span class="text-[#bbb] text-[0.72rem]">{asset.size}</span>
-              <svg class="w-4 h-4 text-ab-green opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M8 2v9M4 8l4 4 4-4M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-          </a>
-        ))}
       </div>
     </div>
   </section>
