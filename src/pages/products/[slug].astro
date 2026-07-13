@@ -24,9 +24,46 @@ if (!product) {
 const { name, description, price, buyLink, category } = product;
 const imageUrl = product.image?.url ? strapiMediaUrl(product.image.url) : null;
 const gallery: any[] = product.gallery ?? [];
+
+const productDescription = description
+  ? String(description).slice(0, 160)
+  : `${name} — officielt AB 1889-merchandise.`;
+const absoluteImageUrl = imageUrl
+  ? imageUrl.startsWith('http')
+    ? imageUrl
+    : `https://ab.dk${imageUrl}`
+  : undefined;
+const numericPrice =
+  typeof price === 'string' ? price.replace(/[^0-9.,]/g, '').replace(',', '.') : price;
+
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name,
+  description: productDescription,
+  image: absoluteImageUrl,
+  category,
+  brand: { '@type': 'Brand', name: 'AB 1889' },
+  offers:
+    buyLink && numericPrice
+      ? {
+          '@type': 'Offer',
+          price: numericPrice,
+          priceCurrency: 'DKK',
+          url: buyLink,
+          availability: 'https://schema.org/InStock',
+        }
+      : undefined,
+};
 ---
 
-<Base locale="da" title={`${name} | AB 1889`}>
+<Base
+  locale="da"
+  title={`${name} | AB 1889`}
+  description={productDescription}
+  ogImage={absoluteImageUrl}
+  structuredData={productSchema}
+>
   <div style="background:#fff">
     <div class="border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-5 md:px-12 pt-10 pb-6">

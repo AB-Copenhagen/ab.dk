@@ -37,9 +37,43 @@ function formatDate(str: string) {
     return new Date(str).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' });
   } catch { return ''; }
 }
+
+const articleDescription = article.description
+  ? truncate(decodeHtml(article.description), 160)
+  : undefined;
+const articleImageUrl = article.image?.url ? strapiMediaUrl(article.image.url) : undefined;
+const absoluteImageUrl = articleImageUrl
+  ? articleImageUrl.startsWith('http')
+    ? articleImageUrl
+    : `https://ab.dk${articleImageUrl}`
+  : undefined;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: decodeHtml(article.title),
+  description: articleDescription,
+  image: absoluteImageUrl ? [absoluteImageUrl] : undefined,
+  datePublished: article.publishedAt,
+  dateModified: article.updatedAt ?? article.publishedAt,
+  author: { '@type': 'Organization', name: 'Akademisk Boldklub' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Akademisk Boldklub',
+    logo: { '@type': 'ImageObject', url: 'https://ab.dk/images/ab-logo.svg' },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': `https://ab.dk/blog/${article.slug}` },
+};
 ---
 
-<Base locale="da" title={`${decodeHtml(article.title)} | Akademisk Boldklub`}>
+<Base
+  locale="da"
+  title={`${decodeHtml(article.title)} | Akademisk Boldklub`}
+  description={articleDescription}
+  ogImage={absoluteImageUrl}
+  ogType="article"
+  structuredData={articleSchema}
+>
   <article class="text-[#111]">
 
     <!-- ── Header: billede venstre | titel + uddrag + dato højre ── -->

@@ -22,9 +22,32 @@ const initials = staffInitials(staff.name);
 const parts = staff.name.trim().split(' ');
 const firstName = parts[0];
 const lastName = parts.slice(1).join(' ');
+
+const staffDescription = bio
+  ? bio.slice(0, 160)
+  : `${staff.name}, ${staff.role.da} hos Akademisk Boldklub (AB 1889).`;
+const absolutePhotoUrl = staff.photo.startsWith('http') ? staff.photo : `https://ab.dk${staff.photo}`;
+
+const staffSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: staff.name,
+  jobTitle: staff.role.da,
+  nationality: staff.nationality.da,
+  image: absolutePhotoUrl,
+  memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
+  url: `https://ab.dk/stab/${slug}`,
+};
 ---
 
-<Base locale="da" title={`${staff.name} | Akademisk Boldklub`}>
+<Base
+  locale="da"
+  title={`${staff.name} | Akademisk Boldklub`}
+  description={staffDescription}
+  ogImage={absolutePhotoUrl}
+  ogType="profile"
+  structuredData={staffSchema}
+>
   <!-- ── Hero ───────────────────────────────────────────────────────── -->
   <div class="relative w-full overflow-hidden"
        style="background:linear-gradient(to right, #002A1A 0%, #006A52 42%, #00C018 100%); min-height:clamp(460px,36vw,560px);">

@@ -80,9 +80,34 @@ const [homeForm, awayForm] = await Promise.all([
   fetchTeamForm(event.homeId, { beforeDate, locale: 'en' }).catch(() => []),
   fetchTeamForm(event.awayId, { beforeDate, locale: 'en' }).catch(() => []),
 ]);
+
+const matchDescription = `${homeName} vs ${awayName} — ${matchDate} at ${venueName}.`;
+
+const matchSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SportsEvent',
+  name: `${homeName} vs ${awayName}`,
+  startDate,
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  location: { '@type': 'Place', name: venueName },
+  homeTeam: { '@type': 'SportsTeam', name: homeName },
+  awayTeam: { '@type': 'SportsTeam', name: awayName },
+  competitor: [
+    { '@type': 'SportsTeam', name: homeName },
+    { '@type': 'SportsTeam', name: awayName },
+  ],
+  organizer: { '@type': 'SportsOrganization', name: tournamentName },
+  url: `https://ab.dk/en/match/${eventId}`,
+};
 ---
 
-<Base locale="en" title={pageTitle}>
+<Base
+  locale="en"
+  title={pageTitle}
+  description={matchDescription}
+  structuredData={matchSchema}
+>
 
   <!-- Hero -->
   <div style="background:#060806">
