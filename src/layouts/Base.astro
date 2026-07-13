@@ -25,7 +25,15 @@ const {
   structuredData,
 } = Astro.props;
 
-const resolvedOgImage = ogImage ?? `${Astro.url.origin}/images/og-default.png`;
+// Canonical/hreflang always point at the production domain. og:image, however, must be
+// reachable by whatever host actually served this response — on local dev or a Vercel
+// preview/staging deployment that's the local/preview URL, not ab.dk (which won't resolve
+// to this app pre-launch).
+const isVercelProduction = import.meta.env.VERCEL_ENV === 'production';
+const assetOrigin = isVercelProduction ? (Astro.site?.origin ?? Astro.url.origin) : Astro.url.origin;
+const resolvedOgImage = ogImage
+  ? (ogImage.startsWith('http') ? ogImage : `${assetOrigin}${ogImage}`)
+  : `${assetOrigin}/images/og-default.png`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const hreflangDaUrl = new URL(switchLocalePath(Astro.url.pathname, 'da'), Astro.site).href;
 const hreflangEnUrl = new URL(switchLocalePath(Astro.url.pathname, 'en'), Astro.site).href;

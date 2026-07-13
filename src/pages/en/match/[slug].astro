@@ -82,6 +82,17 @@ const [homeForm, awayForm] = await Promise.all([
 ]);
 
 const matchDescription = `${homeName} vs ${awayName} — ${matchDate} at ${venueName}.`;
+const ogImageParams = new URLSearchParams({
+  home: homeName,
+  away: awayName,
+  homeLogo: getTeamLogoSrc(event.homeId),
+  awayLogo: getTeamLogoSrc(event.awayId),
+  tournament: tournamentName ?? '',
+  date: matchDateDay,
+  time: matchTime,
+  venue: venueName,
+});
+const ogCardImageUrl = `/api/og/match.png?${ogImageParams.toString()}`;
 
 const matchSchema = {
   '@context': 'https://schema.org',
@@ -106,6 +117,7 @@ const matchSchema = {
   locale="en"
   title={pageTitle}
   description={matchDescription}
+  ogImage={ogCardImageUrl}
   structuredData={matchSchema}
 >
 
@@ -123,7 +135,10 @@ const matchSchema = {
 
       <!-- Competition / round label -->
       {tournamentName && (
-        <p class="text-[0.6rem] font-bold uppercase tracking-[0.22em] text-ab-neon mb-6">{tournamentName}</p>
+        <div class="flex items-center gap-2 mb-6">
+          <img src="/images/division-1-logo-white.svg" alt="" aria-hidden="true" class="h-4 w-auto" />
+          <p class="text-[0.6rem] font-bold uppercase tracking-[0.22em] text-ab-neon">{tournamentName}</p>
+        </div>
       )}
 
       <!-- Teams row -->
@@ -415,7 +430,7 @@ const matchSchema = {
               <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">Match news</p>
               <div class="space-y-4">
                 {articles.slice(0, 3).map((article) => (
-                  <a href={`/en/blog/${article.slug}`} class="flex items-start gap-3 group no-underline">
+                  <a href={`/en/news/${article.slug}`} class="flex items-start gap-3 group no-underline">
                     {article.image ? (
                       <div class="w-16 h-16 rounded overflow-hidden shrink-0 bg-gray-100">
                         <img
