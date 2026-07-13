@@ -4,6 +4,7 @@ import Footer from '@/components/Footer.astro';
 import '@/styles/global.css';
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
 import { fetchSingleType } from '@/lib/strapi/client';
+import { switchLocalePath } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 
 interface Props {
@@ -11,16 +12,53 @@ interface Props {
   description?: string;
   locale?: Locale;
   ogImage?: string;
+  ogType?: 'website' | 'article' | 'profile';
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
   title = 'Akademisk Boldklub — AB 1889',
-  description = 'Akademisk Boldklub er en dansk fodboldklub grundlagt i 1889.',
+  description = 'Akademisk Boldklub (AB 1889) er en dansk fodboldklub fra Gladsaxe, grundlagt i 1889. Følg holdet, kampe og nyheder.',
   locale = 'da',
   ogImage,
+  ogType = 'website',
+  structuredData,
 } = Astro.props;
 
 const resolvedOgImage = ogImage ?? `${Astro.url.origin}/images/og-default.png`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const hreflangDaUrl = new URL(switchLocalePath(Astro.url.pathname, 'da'), Astro.site).href;
+const hreflangEnUrl = new URL(switchLocalePath(Astro.url.pathname, 'en'), Astro.site).href;
+const ogLocale = locale === 'en' ? 'en_US' : 'da_DK';
+const ogLocaleAlternate = locale === 'en' ? 'da_DK' : 'en_US';
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SportsTeam',
+  name: 'Akademisk Boldklub',
+  alternateName: 'AB 1889',
+  url: 'https://ab.dk',
+  logo: 'https://ab.dk/images/ab-logo.svg',
+  sport: 'Soccer',
+  foundingDate: '1889',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Gladsaxevej 202',
+    postalCode: '2860',
+    addressLocality: 'Søborg',
+    addressCountry: 'DK',
+  },
+  sameAs: [
+    'https://www.instagram.com/abfodbold/',
+    'https://www.facebook.com/akademiskboldklub',
+    'https://www.youtube.com/@akademisk-boldklub',
+  ],
+};
+
+const structuredDataList = [
+  organizationSchema,
+  ...(structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : []),
+];
 
 let globalData: any = null;
 try {
@@ -45,12 +83,26 @@ try {
         </>
       )
     }
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="AB 1889" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={ogLocaleAlternate} />
     <meta property="og:image" content={resolvedOgImage} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={resolvedOgImage} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate" hreflang="da" href={Astro.url.href.replace('/en', '')} />
-    <link rel="alternate" hreflang="en" href={Astro.url.href.includes('/en') ? Astro.url.href : `/en${Astro.url.pathname}`} />
+    <link rel="alternate" hreflang="da" href={hreflangDaUrl} />
+    <link rel="alternate" hreflang="en" href={hreflangEnUrl} />
+    <link rel="alternate" hreflang="x-default" href={hreflangDaUrl} />
+    {structuredDataList.map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
     <script is:inline src="https://vivenu.com/web/deliver/js/v1/embed.js"></script>
   </head>
   <body class="min-h-screen bg-white text-[#111]">

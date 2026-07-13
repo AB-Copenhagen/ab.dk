@@ -1,0 +1,161 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+---
+
+<Base locale="da" title="Privatlivspolitik | AB 1889" description="Læs hvordan Akademisk Boldklub (AB 1889) indsamler, bruger og beskytter dine persondata i overensstemmelse med GDPR.">
+
+  <!-- Slim header -->
+  <div class="bg-ab-black border-b border-white/10 py-10 px-8 lg:px-20">
+    <div class="max-w-4xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">AB 1889</span>
+      <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Privatlivspolitik</h1>
+      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 1 · Januar 2026</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-4xl mx-auto px-8 lg:px-20">
+      <div class="prose-content">
+
+        <h2>1. Generelt</h2>
+        <p>
+          AB A/S har udarbejdet denne politik for at beskrive, hvordan vi indsamler og behandler persondata. Politikken omfatter oplysninger, du giver os direkte, eller som vi indsamler via ab.dk. AB A/S er dataansvarlig. Kontaktoplysninger findes i afsnit 7.
+        </p>
+
+        <h2>2. Dataindsamling, formål og retsgrundlag</h2>
+
+        <h3>2.1 Data om brug af hjemmesiden</h3>
+        <p>
+          Når du besøger ab.dk, indsamler vi automatisk oplysninger som browsertype, søgeord, IP-adresse, netværkslokation og computeroplysninger. Disse data bruges til at optimere din brugeroplevelse og hjemmesidens funktionalitet samt til målrettet markedsføring. Retsgrundlag: Artikel 6, stk. 1, litra f, GDPR (legitime interesser).
+        </p>
+
+        <h3>2.2 Købs- og kommunikationsdata</h3>
+        <p>
+          Når du foretager et køb eller kontakter os, indsamler vi dit navn, adresse, e-mail, telefonnummer, betalingsmetode, produktoplysninger, leveringsønsker og IP-adresse. Dette bruges til at levere produkter, opfylde aftaler, håndtere returneringer og klager, overholde lovkrav samt forebygge svindel. Retsgrundlag: Artikel 6, stk. 1, litra b, c og f, GDPR.
+        </p>
+
+        <h3>2.3 Data ved nyhedsbrevstilmelding</h3>
+        <p>
+          Når du tilmelder dig vores nyhedsbrev, indsamler vi dit navn, din e-mailadresse og eventuelt dit mobilnummer. Disse data bruges udelukkende til at udsende nyhedsbreve. Retsgrundlag: Artikel 6, stk. 1, litra f, GDPR.
+        </p>
+
+        <h2>3. Modtagere af data</h2>
+        <p>
+          Vi kan dele dine oplysninger med fragtfirmaer som PostNord og GLS, i det omfang det er nødvendigt for at levere ordrer. Hjemmesidedata behandles af Google Analytics (USA), der opererer under EU-U.S. Privacy Shield-certificering. Alle databehandlere har skriftlige databehandleraftaler.
+        </p>
+
+        <h2>4. Dine rettigheder</h2>
+        <p>Du har ret til at:</p>
+        <ul>
+          <li>Anmode om indsigt i dine persondata</li>
+          <li>Få rettet ukorrekte oplysninger</li>
+          <li>Anmode om sletning (med visse lovmæssige begrænsninger)</li>
+          <li>Begrænse behandlingen</li>
+          <li>Modtage dine data i et transportabelt format</li>
+          <li>Gøre indsigelse mod direkte markedsføring</li>
+          <li>Trække dit samtykke tilbage til enhver tid</li>
+          <li>Klage til Datatilsynet</li>
+        </ul>
+
+        <h2>5. Slettefrister</h2>
+        <ul>
+          <li><strong>Data om brug af hjemmesiden:</strong> Slettes efter 2 års inaktivitet</li>
+          <li><strong>Nyhedsbrevsdata:</strong> Slettes ved tilbagekaldelse af samtykke</li>
+          <li><strong>Købsdata:</strong> Slettes generelt 3 år efter udløbet af købsåret; regnskabsbilag opbevares i 5 år</li>
+        </ul>
+
+        <h2>6. Sikkerhed</h2>
+        <p>
+          Vi anvender passende tekniske og organisatoriske sikkerhedsforanstaltninger for at beskytte dine persondata mod uautoriseret adgang eller skade. Kun medarbejdere, der har brug for adgang til persondata som led i deres arbejde, får adgang.
+        </p>
+
+        <h2>7. Kontaktoplysninger</h2>
+        <div class="contact-block">
+          <p class="font-black text-[#111]">AB A/S</p>
+          <p>Gladsaxevej 202, 2860 Søborg</p>
+          <a href="mailto:info@ab.dk">info@ab.dk</a>
+        </div>
+
+        <h2>8. Ændringer af politikken</h2>
+        <p>
+          Vi kan opdatere denne politik løbende. Eventuelle ændringer vil blive kommunikeret ved dit næste besøg på hjemmesiden.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .prose-content {
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .prose-content h2 {
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #111;
+    letter-spacing: -0.03em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-top: 2rem;
+    border-top: 1px solid #E5E7EB;
+  }
+  .prose-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .prose-content h3 {
+    font-weight: 900;
+    font-size: 1rem;
+    color: #333;
+    letter-spacing: -0.02em;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose-content p {
+    margin-bottom: 1rem;
+  }
+  .prose-content ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+  .prose-content ul li {
+    padding-left: 1.25rem;
+    position: relative;
+    margin-bottom: 0.4rem;
+  }
+  .prose-content ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #4CAF50;
+    font-weight: 900;
+  }
+  .prose-content a {
+    color: #2E7D32;
+    text-decoration: none;
+  }
+  .prose-content a:hover {
+    opacity: 0.7;
+  }
+  .prose-content strong {
+    font-weight: 900;
+    color: #111;
+  }
+  .contact-block {
+    background: #F5F5F3;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+</style>
