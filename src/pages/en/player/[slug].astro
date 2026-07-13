@@ -102,6 +102,9 @@ const playerDescription = cmsPlayer?.bio
   ? cmsPlayer.bio.slice(0, 160)
   : `${name}${posLabel ? `, ${posLabel}` : ''} for Akademisk Boldklub (AB 1889).`;
 const absolutePhotoUrl = photoUrl ? `https://ab.dk${photoUrl}` : undefined;
+const ogCardImageUrl = photoUrl
+  ? `/api/og/player.png?photo=${encodeURIComponent(photoUrl)}`
+  : undefined;
 
 const personSchema = {
   '@context': 'https://schema.org',
@@ -120,7 +123,7 @@ const personSchema = {
   locale="en"
   title={pageTitle}
   description={playerDescription}
-  ogImage={absolutePhotoUrl}
+  ogImage={ogCardImageUrl}
   ogType="profile"
   structuredData={personSchema}
 >

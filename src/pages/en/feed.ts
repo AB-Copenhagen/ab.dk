@@ -43,7 +43,7 @@ export async function GET(context: APIContext) {
       const categories = article.categories?.map((c) => c.name) ?? [];
       return {
         title: decodeHtml(article.title),
-        link: `${site}/en/blog/${article.slug}`,
+        link: `${site}/en/news/${article.slug}`,
         creator: 'Akademisk Boldklub',
         pubDate: new Date(article.publishedAt ?? article.createdAt),
         categories: categories.length ? categories : ['News'],

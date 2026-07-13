@@ -78,7 +78,7 @@ const da: NavConfig = {
   primary: [
     { label: 'Hold', href: '/hold' },
     { label: 'Kampe', href: '/kampe' },
-    { label: 'Nyheder', href: '/nyheder', activePrefixes: ['/blog'] },
+    { label: 'Nyheder', href: '/nyheder' },
     {
       label: 'Om',
       href: '/om/historik',
@@ -119,7 +119,7 @@ const en: NavConfig = {
   primary: [
     { label: 'Squad', href: '/squad' },
     { label: 'Matches', href: '/matches' },
-    { label: 'News', href: '/news', activePrefixes: ['/blog'] },
+    { label: 'News', href: '/news' },
     {
       label: 'About',
       href: '/about/history',

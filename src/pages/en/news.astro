@@ -43,7 +43,7 @@ const [featured, ...rest] = allArticles;
               {truncate(decodeHtml(featured.description), 160)}
             </p>
           )}
-          <a href={`/en/blog/${featured.slug}`} class="inline-flex items-center px-8 py-3 text-sm font-bold text-black rounded-full transition-opacity hover:opacity-90 bg-ab-beige tracking-[-0.02em]">
+          <a href={`/en/news/${featured.slug}`} class="inline-flex items-center px-8 py-3 text-sm font-bold text-black rounded-full transition-opacity hover:opacity-90 bg-ab-beige tracking-[-0.02em]">
             Read More
           </a>
         </div>
@@ -56,7 +56,7 @@ const [featured, ...rest] = allArticles;
       {rest.length > 0 ? (
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-12">
           {rest.map((article: any) => (
-            <a href={`/en/blog/${article.slug}`} class="group block">
+            <a href={`/en/news/${article.slug}`} class="group block">
               <div class="overflow-hidden mb-4 aspect-[4/3] bg-[#F3F4F6]">
                 {article.image?.url ? (
                   <img
