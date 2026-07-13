@@ -55,6 +55,12 @@ function formatDate(str: string) {
       </div>
       <!-- Højre: centreret indhold på beige -->
       <div class="flex flex-col items-center justify-center text-center px-10 md:px-16 py-14 bg-[#F4F4F4]">
+        <a
+          href="/nyheder"
+          class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-[#111]/50 hover:text-[#111]/90 transition-colors mb-6"
+        >
+          ← Alle nyheder
+        </a>
         <h1 class="font-black leading-tight mb-6 text-[#111] text-center"
             style="font-size:clamp(2rem,3.5vw,3.5rem); letter-spacing:-0.04em;">
           {decodeHtml(article.title)}
