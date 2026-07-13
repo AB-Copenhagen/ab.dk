@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 
 import { sendMail } from '@/lib/mailgun';
+import { escapeHtml } from '@/lib/utils';
 
 export const prerender = false;
 
@@ -54,7 +55,7 @@ export const POST: APIRoute = async ({ request }) => {
       to,
       subject: `Event-forespørgsel: ${name.trim()}`,
       text: `${lines.join('\n')}\n\n${message.trim()}`,
-      html: `<p>${lines.map((l) => `<strong>${l!.split(':')[0]}:</strong>${l!.split(':').slice(1).join(':')}`).join('</p><p>')}</p><hr><p>${message.trim().replace(/\n/g, '<br>')}</p>`,
+      html: `<p>${lines.map((l) => `<strong>${escapeHtml(l!.split(':')[0])}:</strong>${escapeHtml(l!.split(':').slice(1).join(':'))}`).join('</p><p>')}</p><hr><p>${escapeHtml(message.trim()).replace(/\n/g, '<br>')}</p>`,
       replyTo: email.trim(),
     });
     return new Response(JSON.stringify({ success: true }), {

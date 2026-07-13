@@ -21,15 +21,20 @@ function createClient() {
   });
 }
 
-function cacheKey(name: string, options?: QueryParams): string {
-  return `strapi-${name}-${JSON.stringify(options ?? {})}`;
+async function cacheKey(name: string, options?: QueryParams): Promise<string> {
+  const bytes = new TextEncoder().encode(JSON.stringify(options ?? {}));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const hash = Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return `strapi-${name}-${hash}`;
 }
 
 export async function fetchCollectionType<T = unknown[]>(
   collectionName: string,
   options?: QueryParams,
 ): Promise<T> {
-  const key = cacheKey(collectionName, options);
+  const key = await cacheKey(collectionName, options);
   const result = await cache.getWithFallback<T>(
     key,
     async () => {
@@ -47,7 +52,7 @@ export async function fetchSingleType<T = unknown>(
   singleTypeName: string,
   options?: QueryParams,
 ): Promise<T> {
-  const key = cacheKey(singleTypeName, options);
+  const key = await cacheKey(singleTypeName, options);
   const result = await cache.getWithFallback<T>(
     key,
     async () => {

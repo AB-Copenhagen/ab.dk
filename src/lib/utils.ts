@@ -20,3 +20,13 @@ export const truncate = (text: string | null | undefined, length: number) => {
 export function cn(...classes: (string | undefined | false | null)[]) {
   return classes.filter(Boolean).join(' ');
 }
+
+/** Escape HTML special characters before interpolating untrusted input into an HTML string. */
+export function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
