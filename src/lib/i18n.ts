@@ -9,6 +9,7 @@ const daToEn: Record<string, string> = {
   '/kampe': '/matches',
   '/hold': '/squad',
   '/nyheder': '/news',
+  '/nyheder/': '/news/',
   '/om/historik': '/about/history',
   '/om/stadion': '/about/stadium',
   '/partnere': '/partners',

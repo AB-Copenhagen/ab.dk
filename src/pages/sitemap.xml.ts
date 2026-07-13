@@ -51,7 +51,7 @@ const STATIC_ROUTES: [string, string][] = [
 // assumed to share the same slug, so each is listed independently rather than paired).
 const STRAPI_COLLECTIONS: { name: string; daPath: (slug: string) => string; enPath: (slug: string) => string }[] = [
   { name: 'pages', daPath: (s) => `/${s}`, enPath: (s) => `/en/${s}` },
-  { name: 'articles', daPath: (s) => `/blog/${s}`, enPath: (s) => `/en/blog/${s}` },
+  { name: 'articles', daPath: (s) => `/nyheder/${s}`, enPath: (s) => `/en/news/${s}` },
   { name: 'products', daPath: (s) => `/products/${s}`, enPath: (s) => `/en/products/${s}` },
 ];
 

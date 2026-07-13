@@ -21,7 +21,7 @@ export default function SearchModal({ locale }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const blogBase = locale === 'en' ? '/en/blog' : '/blog';
+  const blogBase = locale === 'en' ? '/en/news' : '/nyheder';
 
   const openModal = useCallback(() => {
     setOpen(true);

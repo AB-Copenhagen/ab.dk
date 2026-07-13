@@ -47,7 +47,7 @@ const [featured, ...rest] = allArticles;
             </p>
           )}
           <a
-            href={`/blog/${featured.slug}`}
+            href={`/nyheder/${featured.slug}`}
             class="inline-flex items-center px-8 py-3 text-sm font-bold text-black rounded-full transition-opacity hover:opacity-90 bg-ab-beige tracking-[-0.02em]"
           >
             Læs mere
@@ -63,7 +63,7 @@ const [featured, ...rest] = allArticles;
       {rest.length > 0 ? (
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-12">
           {rest.map((article: any) => (
-            <a href={`/blog/${article.slug}`} class="group block">
+            <a href={`/nyheder/${article.slug}`} class="group block">
               <div class="overflow-hidden mb-4 aspect-[4/3] bg-[#F3F4F6]">
                 {article.image?.url ? (
                   <img
