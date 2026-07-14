@@ -145,6 +145,11 @@ const partners = strapiPartners.length > 0
                   <a href={link.URL} class={footerLinkClass}>{link.text}</a>
                 </li>
               ))}
+              <li>
+                <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
+                  {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
+                </button>
+              </li>
             </ul>
           ) : (
             <ul class="flex flex-col">
@@ -157,6 +162,11 @@ const partners = strapiPartners.length > 0
                   <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
                 </li>
               ))}
+              <li>
+                <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
+                  {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
+                </button>
+              </li>
             </ul>
           )}
         </div>

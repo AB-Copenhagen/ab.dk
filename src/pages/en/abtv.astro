@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import ConsentGatedIframe from '@/components/ConsentGatedIframe.astro';
 export const prerender = false;
 ---
 
@@ -31,33 +32,19 @@ export const prerender = false;
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Boldcast</p>
-          <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
-            <iframe
-              class="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/videoseries?si=1byEawIDTnPjup4y&list=PLI_1pixkexw71QCbHe4gxmj_CItaFUQCO"
-              title="Boldcast playlist"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/videoseries?si=1byEawIDTnPjup4y&list=PLI_1pixkexw71QCbHe4gxmj_CItaFUQCO"
+            title="Boldcast playlist"
+            locale="en"
+          />
         </div>
         <div>
           <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">AB Squad Stories</p>
-          <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
-            <iframe
-              class="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/videoseries?si=3o6AO_Sadv4-9gjD&list=PLI_1pixkexw7XCJKP94KNezrHAPG5dai_"
-              title="AB Squad Stories playlist"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/videoseries?si=3o6AO_Sadv4-9gjD&list=PLI_1pixkexw7XCJKP94KNezrHAPG5dai_"
+            title="AB Squad Stories playlist"
+            locale="en"
+          />
         </div>
       </div>
     </div>
@@ -73,63 +60,35 @@ export const prerender = false;
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Inside AB's Historic Season</p>
-          <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
-            <iframe
-              class="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/RBpLV4HiS9E?si=QHAV1231whvmKTYP"
-              title="Inside AB's historic season"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/RBpLV4HiS9E?si=QHAV1231whvmKTYP"
+            title="Inside AB's historic season"
+            locale="en"
+          />
         </div>
         <div>
           <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">A Season to Remember</p>
-          <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
-            <iframe
-              class="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/YroeMSqcppo?si=gTONbkU1xEVdwX2e"
-              title="A season to remember"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/YroeMSqcppo?si=gTONbkU1xEVdwX2e"
+            title="A season to remember"
+            locale="en"
+          />
         </div>
         <div>
           <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Nummer Et</p>
-          <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
-            <iframe
-              class="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/vsXpLavqXGQ?si=IBXGgl-FNwmwXafl"
-              title="Nummer Et"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/vsXpLavqXGQ?si=IBXGgl-FNwmwXafl"
+            title="Nummer Et"
+            locale="en"
+          />
         </div>
         <div>
           <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">We Know What We're Playing For</p>
-          <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
-            <iframe
-              class="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/lCwpCNwcNis?si=rHy8q6ItynC36u4-"
-              title="We know what we're playing for"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/lCwpCNwcNis?si=rHy8q6ItynC36u4-"
+            title="We know what we're playing for"
+            locale="en"
+          />
         </div>
       </div>
     </div>
@@ -145,33 +104,19 @@ export const prerender = false;
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Interviews</p>
-          <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
-            <iframe
-              class="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/videoseries?si=4Sab20h5PiUk8oO7&list=PLI_1pixkexw7_joKCyMFcAWOTE-mEEclp"
-              title="Interviews playlist"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/videoseries?si=4Sab20h5PiUk8oO7&list=PLI_1pixkexw7_joKCyMFcAWOTE-mEEclp"
+            title="Interviews playlist"
+            locale="en"
+          />
         </div>
         <div>
           <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Quick Fire</p>
-          <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
-            <iframe
-              class="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/videoseries?si=d3bf2RGYgXvcU837&list=PLI_1pixkexw7QHBoCnYbf1QRv8LaaBDtB"
-              title="Quick fire playlist"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/videoseries?si=d3bf2RGYgXvcU837&list=PLI_1pixkexw7QHBoCnYbf1QRv8LaaBDtB"
+            title="Quick fire playlist"
+            locale="en"
+          />
         </div>
       </div>
     </div>

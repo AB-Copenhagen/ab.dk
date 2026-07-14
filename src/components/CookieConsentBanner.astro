@@ -1,0 +1,208 @@
+---
+import type { Locale } from '@/lib/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'da' } = Astro.props;
+
+const t = {
+  da: {
+    message:
+      'Vi bruger cookies til at få hjemmesiden til at fungere og til at forbedre din oplevelse — herunder indlejrede videoer, billetkøb og live-statistik fra tredjeparter. Du vælger selv hvilke du accepterer.',
+    privacyLink: 'Læs vores privatlivspolitik',
+    acceptAll: 'Accepter alle',
+    rejectAll: 'Afvis ikke-nødvendige',
+    customize: 'Tilpas valg',
+    save: 'Gem valg',
+    back: 'Tilbage',
+    necessaryTitle: 'Nødvendige',
+    necessaryDesc: 'Kræves for at hjemmesiden og login kan fungere. Kan ikke fravælges.',
+    functionalTitle: 'Funktionelle',
+    functionalDesc: 'Live kampstatistik og billetkøb (Vivenu, SI Sports).',
+    marketingTitle: 'Markedsføring & medier',
+    marketingDesc: 'Indlejrede YouTube-videoer fra ABTV.',
+  },
+  en: {
+    message:
+      'We use cookies to make the site work and to improve your experience — including embedded videos, ticket purchasing, and live stats from third parties. You choose which ones to allow.',
+    privacyLink: 'Read our privacy policy',
+    acceptAll: 'Accept all',
+    rejectAll: 'Reject non-essential',
+    customize: 'Customize',
+    save: 'Save preferences',
+    back: 'Back',
+    necessaryTitle: 'Necessary',
+    necessaryDesc: 'Required for the site and login to function. Cannot be turned off.',
+    functionalTitle: 'Functional',
+    functionalDesc: 'Live match stats and ticket purchasing (Vivenu, SI Sports).',
+    marketingTitle: 'Marketing & media',
+    marketingDesc: 'Embedded YouTube videos on ABTV.',
+  },
+}[locale];
+
+const privacyHref = locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspolitik';
+---
+
+<div
+  id="ab-cookie-consent"
+  class="fixed inset-x-0 bottom-0 z-[100] hidden bg-ab-black border-t border-white/10 px-5 py-6 md:px-10"
+  role="dialog"
+  aria-live="polite"
+  aria-label={locale === 'da' ? 'Cookie-samtykke' : 'Cookie consent'}
+>
+  <div class="max-w-5xl mx-auto">
+    <!-- Simple view -->
+    <div id="ab-cookie-simple">
+      <p class="text-white/80 text-sm leading-relaxed mb-4 max-w-[70ch]">
+        {t.message}
+        {' '}
+        <a href={privacyHref} class="text-ab-neon underline underline-offset-2 hover:opacity-80">{t.privacyLink}</a>
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <button
+          type="button"
+          id="ab-cookie-accept-all"
+          class="font-black text-sm px-5 py-2.5 bg-ab-green text-white tracking-[-0.01em] hover:opacity-90 transition-opacity"
+        >
+          {t.acceptAll}
+        </button>
+        <button
+          type="button"
+          id="ab-cookie-reject-all"
+          class="font-black text-sm px-5 py-2.5 border border-white/30 text-white tracking-[-0.01em] hover:bg-white/10 transition-colors"
+        >
+          {t.rejectAll}
+        </button>
+        <button
+          type="button"
+          id="ab-cookie-customize-open"
+          class="font-black text-sm px-5 py-2.5 text-white/70 underline underline-offset-2 hover:text-white transition-colors"
+        >
+          {t.customize}
+        </button>
+      </div>
+    </div>
+
+    <!-- Customize view -->
+    <div id="ab-cookie-customize" class="hidden">
+      <div class="flex flex-col gap-4 mb-5">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-white/10">
+          <div>
+            <p class="font-black text-white text-sm tracking-[-0.01em]">{t.necessaryTitle}</p>
+            <p class="text-white/60 text-xs leading-relaxed mt-1 max-w-[55ch]">{t.necessaryDesc}</p>
+          </div>
+          <input type="checkbox" checked disabled class="mt-1 w-5 h-5 shrink-0 accent-ab-green opacity-60" aria-label={t.necessaryTitle} />
+        </div>
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-white/10">
+          <div>
+            <p class="font-black text-white text-sm tracking-[-0.01em]">{t.functionalTitle}</p>
+            <p class="text-white/60 text-xs leading-relaxed mt-1 max-w-[55ch]">{t.functionalDesc}</p>
+          </div>
+          <input type="checkbox" id="ab-cookie-functional" class="mt-1 w-5 h-5 shrink-0 accent-ab-green" aria-label={t.functionalTitle} />
+        </div>
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="font-black text-white text-sm tracking-[-0.01em]">{t.marketingTitle}</p>
+            <p class="text-white/60 text-xs leading-relaxed mt-1 max-w-[55ch]">{t.marketingDesc}</p>
+          </div>
+          <input type="checkbox" id="ab-cookie-marketing" class="mt-1 w-5 h-5 shrink-0 accent-ab-green" aria-label={t.marketingTitle} />
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button
+          type="button"
+          id="ab-cookie-save"
+          class="font-black text-sm px-5 py-2.5 bg-ab-green text-white tracking-[-0.01em] hover:opacity-90 transition-opacity"
+        >
+          {t.save}
+        </button>
+        <button
+          type="button"
+          id="ab-cookie-customize-back"
+          class="font-black text-sm px-5 py-2.5 text-white/70 underline underline-offset-2 hover:text-white transition-colors"
+        >
+          {t.back}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { CONSENT_COOKIE_NAME, CONSENT_MAX_AGE_DAYS, parseConsent } from '@/lib/consent';
+  import type { ConsentState } from '@/lib/consent';
+
+  function readCookie(name: string): string | undefined {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+    return match ? match[1] : undefined;
+  }
+
+  function writeConsent(state: Omit<ConsentState, 'ts'>) {
+    const value: ConsentState = { ...state, necessary: true, ts: Date.now() };
+    const encoded = encodeURIComponent(JSON.stringify(value));
+    const maxAge = CONSENT_MAX_AGE_DAYS * 24 * 60 * 60;
+    document.cookie = `${CONSENT_COOKIE_NAME}=${encoded}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    window.dispatchEvent(new CustomEvent('ab:consent-updated', { detail: value }));
+  }
+
+  const banner = document.getElementById('ab-cookie-consent');
+  const simpleView = document.getElementById('ab-cookie-simple');
+  const customizeView = document.getElementById('ab-cookie-customize');
+  const functionalToggle = document.getElementById('ab-cookie-functional') as HTMLInputElement | null;
+  const marketingToggle = document.getElementById('ab-cookie-marketing') as HTMLInputElement | null;
+
+  function showBanner() {
+    banner?.classList.remove('hidden');
+  }
+  function hideBanner() {
+    banner?.classList.add('hidden');
+  }
+  function showCustomize() {
+    simpleView?.classList.add('hidden');
+    customizeView?.classList.remove('hidden');
+  }
+  function showSimple() {
+    customizeView?.classList.add('hidden');
+    simpleView?.classList.remove('hidden');
+  }
+
+  const existing = parseConsent(readCookie(CONSENT_COOKIE_NAME));
+  if (!existing) {
+    showBanner();
+  }
+
+  document.getElementById('ab-cookie-accept-all')?.addEventListener('click', () => {
+    writeConsent({ necessary: true, functional: true, marketing: true });
+    hideBanner();
+  });
+  document.getElementById('ab-cookie-reject-all')?.addEventListener('click', () => {
+    writeConsent({ necessary: true, functional: false, marketing: false });
+    hideBanner();
+  });
+  document.getElementById('ab-cookie-customize-open')?.addEventListener('click', () => {
+    const current = parseConsent(readCookie(CONSENT_COOKIE_NAME));
+    if (functionalToggle) functionalToggle.checked = current?.functional ?? false;
+    if (marketingToggle) marketingToggle.checked = current?.marketing ?? false;
+    showCustomize();
+  });
+  document.getElementById('ab-cookie-customize-back')?.addEventListener('click', showSimple);
+  document.getElementById('ab-cookie-save')?.addEventListener('click', () => {
+    writeConsent({
+      necessary: true,
+      functional: functionalToggle?.checked ?? false,
+      marketing: marketingToggle?.checked ?? false,
+    });
+    hideBanner();
+  });
+
+  // Exposed globally so the Footer "Cookie settings" link and embed placeholders can reopen this.
+  (window as unknown as { abOpenCookieSettings: () => void }).abOpenCookieSettings = () => {
+    const current = parseConsent(readCookie(CONSENT_COOKIE_NAME));
+    if (functionalToggle) functionalToggle.checked = current?.functional ?? false;
+    if (marketingToggle) marketingToggle.checked = current?.marketing ?? false;
+    showCustomize();
+    showBanner();
+  };
+</script>

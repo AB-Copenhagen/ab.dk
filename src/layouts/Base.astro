@@ -1,11 +1,13 @@
 ---
 import Navbar from '@/components/Navbar.astro';
 import Footer from '@/components/Footer.astro';
+import CookieConsentBanner from '@/components/CookieConsentBanner.astro';
 import '@/styles/global.css';
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
 import { fetchSingleType } from '@/lib/strapi/client';
 import { switchLocalePath } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
+import { CONSENT_COOKIE_NAME, parseConsent, hasConsent } from '@/lib/consent';
 
 interface Props {
   title?: string;
@@ -74,6 +76,14 @@ try {
 } catch {
   // CMS unavailable — render with fallbacks
 }
+
+// The Vivenu ticket-embed script sets its own cookies once loaded, so it's gated behind
+// functional consent. Server-render it only for returning visitors who already consented —
+// first-time visitors (and prerendered pages, which have no per-request cookies to read)
+// get it injected client-side instead, via the script below.
+const vivenuConsented = Astro.isPrerendered
+  ? false
+  : hasConsent(parseConsent(Astro.cookies.get(CONSENT_COOKIE_NAME)?.value), 'functional');
 ---
 
 <!doctype html>
@@ -111,7 +121,9 @@ try {
     {structuredDataList.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
-    <script is:inline src="https://vivenu.com/web/deliver/js/v1/embed.js"></script>
+    {vivenuConsented && (
+      <script is:inline id="vivenu-embed-script" src="https://vivenu.com/web/deliver/js/v1/embed.js"></script>
+    )}
   </head>
   <body class="min-h-screen bg-white text-[#111]">
     <Navbar locale={locale} />
@@ -119,5 +131,17 @@ try {
       <slot />
     </main>
     <Footer locale={locale} globalData={globalData} />
+    <CookieConsentBanner locale={locale} />
+    <script>
+      import { onConsentChange } from '@/lib/consent-gate-client';
+
+      onConsentChange('functional', () => {
+        if (document.getElementById('vivenu-embed-script')) return;
+        const script = document.createElement('script');
+        script.id = 'vivenu-embed-script';
+        script.src = 'https://vivenu.com/web/deliver/js/v1/embed.js';
+        document.head.appendChild(script);
+      });
+    </script>
   </body>
 </html>
