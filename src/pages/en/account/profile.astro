@@ -3,25 +3,22 @@ import Base from '@/layouts/Base.astro';
 
 export const prerender = false;
 
-const sessionToken = Astro.cookies.get('DS')?.value;
-if (!sessionToken) {
+// Middleware validates the session and populates Astro.locals.user for this route —
+// if we reach here without a user, something's off, so fall back to a login redirect.
+const user = Astro.locals.user;
+if (!user) {
   return Astro.redirect('/en/account?redirect=/en/account/profile');
 }
-
-let name = '';
-let email = '';
-let picture = '';
-try {
-  const [, payload] = sessionToken.split('.');
-  if (payload) {
-    const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    name = json.name ?? '';
-    email = json.email ?? '';
-    picture = json.picture ?? '';
-  }
-} catch { /* display with defaults */ }
+const { name, email, picture } = user;
 
 const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
+
+const quickLinks = [
+  { label: 'Watch ABTV', desc: 'Match highlights and exclusive video content', href: '/en/abtv' },
+  { label: 'MyAB membership', desc: 'Manage your MyAB perks and benefits', href: '/en/myab' },
+  { label: 'Buy tickets', desc: 'Match tickets via Vivenu', href: 'https://billet.ab.dk/', external: true },
+  { label: 'My orders', desc: 'View your AB Store order history on Shopify', href: 'https://shop.ab.dk/account', external: true },
+];
 ---
 
 <Base locale="en" title="My profile | AB 1889">
@@ -44,6 +41,41 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
         </div>
       </div>
 
+      <!-- Quick links -->
+      <div class="border overflow-hidden mb-8" style="border-color:#152214">
+        <div class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest" style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em">
+          Quick links
+        </div>
+        <div class="divide-y" style="background:#0D1A10;border-color:#152214">
+          {quickLinks.map((link) => (
+            <a
+              href={link.href}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noreferrer' : undefined}
+              class="flex items-center justify-between gap-4 px-5 py-4 no-underline hover:bg-white/5 transition-colors"
+              style="border-color:#152214"
+            >
+              <div>
+                <p class="font-black text-white text-sm">{link.label}</p>
+                <p class="text-xs mt-0.5" style="color:#8AA898">{link.desc}</p>
+              </div>
+              <span style="color:#8AA898">→</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Balance & Rewards (rise.ai) -->
+      <div class="border overflow-hidden mb-8" style="border-color:#152214">
+        <div class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest" style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em">
+          Balance &amp; Rewards
+        </div>
+        <div class="px-5 py-8 text-center text-sm" style="background:#0D1A10;color:#8AA898">
+          Coming soon.
+        </div>
+      </div>
+
+      <!-- Descope account management widget -->
       <div class="border overflow-hidden" style="border-color:#152214">
         <div class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest" style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em">
           Account management
