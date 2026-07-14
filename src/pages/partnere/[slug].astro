@@ -9,12 +9,14 @@ if (!partner) return Astro.redirect('/partnere', 302);
 
 const tierLabel = partner.tier === 'principal' ? 'Hovedpartner' : 'AB Partner';
 const backHref = '/partnere';
+const ogCardImageUrl = `/api/og/partner.png?logo=${encodeURIComponent(partner.logo)}`;
 ---
 
 <Base
   locale="da"
   title={`${partner.name} | Partnere | AB 1889`}
-  description={partner.description ?? `${partner.name} er partner hos Akademisk Boldklub AB 1889.`}>
+  description={partner.description ?? `${partner.name} er partner hos Akademisk Boldklub AB 1889.`}
+  ogImage={ogCardImageUrl}>
 
   <!-- Thin header -->
   <div class="bg-ab-black border-b border-white/10 py-10 px-8 lg:px-20">
