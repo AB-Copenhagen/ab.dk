@@ -71,41 +71,45 @@ export async function GET({ url }: APIContext) {
     ]);
     const divisionLogoDataUri = `data:image/svg+xml;base64,${toBase64(divisionLogoBytes)}`;
 
-    const crestSize = 160;
+    const crestSize = 200;
     const homeCrestX = 300 - crestSize / 2;
     const awayCrestX = 900 - crestSize / 2;
-    const crestY = 190;
-    const nameY = crestY + crestSize + 44;
+    const crestY = 175;
+    const nameY = crestY + crestSize + 50;
 
-    const divisionLogoH = 28;
+    // Bumped well beyond the team crests' scale factor — the division logo is the
+    // only non-team-logo graphic on the canvas and was previously the smallest
+    // element on it (28px tall against 160px crests).
+    const divisionLogoH = 48;
     const divisionLogoW = Math.round(divisionLogoH * (185 / 275));
+    const topY = 54;
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
         <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="#060806"/>
 
         <!-- Top left: division logo + label -->
-        <image href="${divisionLogoDataUri}" x="70" y="62" width="${divisionLogoW}" height="${divisionLogoH}"/>
-        <text x="${70 + divisionLogoW + 14}" y="${62 + divisionLogoH - 7}" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2.5" fill="#00FF1F">${escapeXml(tournament.toUpperCase())}</text>
+        <image href="${divisionLogoDataUri}" x="70" y="${topY}" width="${divisionLogoW}" height="${divisionLogoH}"/>
+        <text x="${70 + divisionLogoW + 18}" y="${topY + divisionLogoH - 10}" font-family="Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="3" fill="#00FF1F">${escapeXml(tournament.toUpperCase())}</text>
 
         <!-- Top right: day, date -->
-        <text x="1130" y="${62 + divisionLogoH - 7}" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#FFFFFF" fill-opacity="0.7" text-anchor="end">${escapeXml(date)}</text>
+        <text x="1130" y="${topY + divisionLogoH - 10}" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" fill-opacity="0.7" text-anchor="end">${escapeXml(date)}</text>
 
         <!-- Center: home crest + name -->
         <image href="${homeLogoDataUri}" x="${homeCrestX}" y="${crestY}" width="${crestSize}" height="${crestSize}"/>
-        <text x="300" y="${nameY}" font-family="Arial, sans-serif" font-size="30" font-weight="900" fill="#FFFFFF" text-anchor="middle">${escapeXml(home)}</text>
+        <text x="300" y="${nameY}" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">${escapeXml(home)}</text>
 
         <!-- VS -->
-        <text x="600" y="${crestY + crestSize / 2 + 14}" font-family="Arial, sans-serif" font-size="34" font-weight="900" fill="#D6A02A" text-anchor="middle">VS</text>
+        <text x="600" y="${crestY + crestSize / 2 + 16}" font-family="Arial, sans-serif" font-size="44" font-weight="900" fill="#D6A02A" text-anchor="middle">VS</text>
 
         <!-- Center: away crest + name -->
         <image href="${awayLogoDataUri}" x="${awayCrestX}" y="${crestY}" width="${crestSize}" height="${crestSize}"/>
-        <text x="900" y="${nameY}" font-family="Arial, sans-serif" font-size="30" font-weight="900" fill="#FFFFFF" text-anchor="middle">${escapeXml(away)}</text>
+        <text x="900" y="${nameY}" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">${escapeXml(away)}</text>
 
         <!-- Bottom center: local time + stadium -->
         ${
           [time, venue].filter(Boolean).length
-            ? `<text x="600" y="580" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF" fill-opacity="0.7" text-anchor="middle">${escapeXml([time, venue].filter(Boolean).join('  ·  '))}</text>`
+            ? `<text x="600" y="585" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" fill-opacity="0.7" text-anchor="middle">${escapeXml([time, venue].filter(Boolean).join('  ·  '))}</text>`
             : ''
         }
       </svg>
