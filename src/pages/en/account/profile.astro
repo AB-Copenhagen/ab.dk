@@ -104,16 +104,16 @@ const quickLinks = [
         el.setAttribute('widget-id', 'user-profile-widget');
         document.getElementById('descope-profile-container')?.appendChild(el);
       });
-      document.getElementById('logout-btn')?.addEventListener('click', () => {
-        document.cookie = 'DS=; Max-Age=0; path=/';
+      document.getElementById('logout-btn')?.addEventListener('click', async () => {
+        await fetch('/api/auth/session', { method: 'DELETE' });
         location.href = '/en/account';
       });
     </script>
   )}
   {!DESCOPE_PROJECT_ID && (
     <script>
-      document.getElementById('logout-btn')?.addEventListener('click', () => {
-        document.cookie = 'DS=; Max-Age=0; path=/';
+      document.getElementById('logout-btn')?.addEventListener('click', async () => {
+        await fetch('/api/auth/session', { method: 'DELETE' });
         location.href = '/en/account';
       });
     </script>

@@ -128,7 +128,7 @@ const quickLinks = [
       });
 
       document.getElementById('logout-btn')?.addEventListener('click', async () => {
-        document.cookie = 'DS=; Max-Age=0; path=/';
+        await fetch('/api/auth/session', { method: 'DELETE' });
         location.href = '/konto';
       });
     </script>
@@ -136,8 +136,8 @@ const quickLinks = [
 
   {!DESCOPE_PROJECT_ID && (
     <script>
-      document.getElementById('logout-btn')?.addEventListener('click', () => {
-        document.cookie = 'DS=; Max-Age=0; path=/';
+      document.getElementById('logout-btn')?.addEventListener('click', async () => {
+        await fetch('/api/auth/session', { method: 'DELETE' });
         location.href = '/konto';
       });
     </script>

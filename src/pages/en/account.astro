@@ -36,12 +36,20 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
       import('https://unpkg.com/@descope/web-component@3/dist/index.js').then(() => {
         const el = document.createElement('descope-wc');
         el.setAttribute('project-id', DESCOPE_PROJECT_ID);
-        el.setAttribute('flow-id', 'sign-in');
+        el.setAttribute('flow-id', 'si-app');
         el.setAttribute('theme', 'dark');
         el.setAttribute('locale', 'en-US');
-        el.addEventListener('success', () => {
-          const params = new URLSearchParams(location.search);
-          location.href = params.get('redirect') ?? '/en/account/profile';
+        el.addEventListener('success', async (e) => {
+          const sessionJwt = e.detail?.sessionJwt;
+          const target = new URLSearchParams(location.search).get('redirect') ?? '/en/account/profile';
+          if (!sessionJwt) return;
+
+          const res = await fetch('/api/auth/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionToken: sessionJwt }),
+          });
+          if (res.ok) location.href = target;
         });
         document.getElementById('descope-container')?.appendChild(el);
       });
