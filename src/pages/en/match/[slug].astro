@@ -270,13 +270,14 @@ const matchSchema = {
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Momentum</h3>
                     <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
-                      <SiWidget widget="MatchMomentum" params={{ eventId, teamId: WIDGET_TEAM_ID, lang: 'en' }} minHeight={220} label="Momentum" />
+                      <SiWidget locale="en" widget="MatchMomentum" params={{ eventId, teamId: WIDGET_TEAM_ID, lang: 'en' }} minHeight={220} label="Momentum" />
                     </div>
                   </div>
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Incidents</h3>
                     <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                       <SiWidget
+                        locale="en"
                         widget="IncidentListOpta"
                         params={{ eventId, header: 'true', card: 'true', initialCollapse: 'false', teamId: WIDGET_TEAM_ID, lang: 'en' }}
                         minHeight={320}
@@ -288,6 +289,7 @@ const matchSchema = {
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Match statistics</h3>
                     <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                       <SiWidget
+                        locale="en"
                         widget="LivePostMatchStatsOpta"
                         params={{ eventId, header: 'false', teamId: WIDGET_TEAM_ID, lang: 'en' }}
                         minHeight={360}
@@ -299,6 +301,7 @@ const matchSchema = {
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">xG — Expected goals</h3>
                     <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                       <SiWidget
+                        locale="en"
                         widget="TwoTeamsXGoalsPitch"
                         params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, dotSize: 32.5, header: 'true', teamId: WIDGET_TEAM_ID, lang: 'en' }}
                         minHeight={480}
@@ -316,6 +319,7 @@ const matchSchema = {
                 </h2>
                 <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB">
                   <SiWidget
+                    locale="en"
                     widget="SPDKMatchVideo"
                     params={{ eventId, teamId: WIDGET_TEAM_ID, seasonId: WIDGET_SEASON_ID, lang: 'en' }}
                     minHeight={400}

@@ -11,6 +11,7 @@ interface Props {
   currentPath?: string;
   switchedLocalePath?: string;
   loginHref?: string;
+  loginLabel?: string;
   toggleId?: string;
 }
 
@@ -21,6 +22,7 @@ export default function MobileMenu({
   currentPath = '',
   switchedLocalePath,
   loginHref,
+  loginLabel,
   toggleId = 'mobile-menu-open-btn',
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -86,7 +88,7 @@ export default function MobileMenu({
                     >
                       <path d="M8.57541 10.9615C11.1318 10.9615 13.2165 8.82761 13.2165 6.21156C13.2165 3.59551 11.1315 1.46166 8.57541 1.46166C6.01927 1.46166 3.93429 3.59551 3.93429 6.21156C3.93429 8.82761 6.01927 10.9615 8.57541 10.9615ZM14.2164 10.618C13.4381 10.618 12.7027 10.9322 12.1457 11.4949C11.1889 12.4741 9.92504 13.0076 8.57552 13.0076C7.22601 13.0076 5.95495 12.4669 4.99826 11.4949C4.44846 10.9249 3.71299 10.618 2.92755 10.618C2.14926 10.618 1.41379 10.9249 0.856844 11.4949C0.307047 12.0576 0 12.8103 0 13.6142C0 14.418 0.307047 15.1634 0.856844 15.7334C2.91327 17.8453 5.65517 19 8.56844 19C11.4817 19 14.2236 17.8381 16.28 15.7334C16.8298 15.1707 17.1369 14.418 17.1369 13.6142C17.1369 12.8103 16.8298 12.0649 16.28 11.4949C15.7302 10.9322 14.9948 10.618 14.2093 10.618H14.2164Z" />
                     </svg>
-                    {locale === 'da' ? 'Log ind' : 'Sign in'}
+                    {loginLabel ?? (locale === 'da' ? 'Log ind' : 'Sign in')}
                   </a>
                 )}
               </div>

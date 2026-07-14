@@ -14,6 +14,15 @@ const enPrefix = locale === 'en' ? '/en' : '';
 const currentPath = Astro.url.pathname;
 const daPath = switchLocalePath(currentPath, 'da');
 const enPath = switchLocalePath(currentPath, 'en');
+
+// Presence-only check for nav display purposes (not a security boundary — the actual
+// gated routes validate the session properly in middleware.ts). Skipped on prerendered
+// pages, which have no per-request cookies to read.
+const isLoggedIn = !Astro.isPrerendered && Boolean(Astro.cookies.get('DS')?.value);
+const accountHref = enPrefix + (locale === 'en' ? '/account/profile' : '/konto/profil');
+const loginHref = enPrefix + (locale === 'en' ? '/account' : '/konto');
+const authHref = isLoggedIn ? accountHref : loginHref;
+const authLabel = isLoggedIn ? nav.myAccount : nav.login;
 ---
 
 <header class="sticky top-0 z-50">
@@ -64,11 +73,11 @@ const enPath = switchLocalePath(currentPath, 'en');
         </a>
       </div>
       <div class="w-px h-4 bg-white/20 shrink-0"></div>
-      <!-- Login -->
+      <!-- Login / My account -->
       <a
-        href={enPrefix + (locale === 'en' ? '/account' : '/konto')}
+        href={authHref}
         class="flex items-center gap-2 text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity">
-        Login
+        {authLabel}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -249,7 +258,8 @@ const enPath = switchLocalePath(currentPath, 'en');
         enPrefix={enPrefix}
         currentPath={currentPath}
         switchedLocalePath={locale === 'da' ? enPath : daPath}
-        loginHref={enPrefix + (locale === 'en' ? '/account' : '/konto')}
+        loginHref={authHref}
+        loginLabel={authLabel}
         toggleId="mobile-menu-open-btn"
       />
       <SearchModal

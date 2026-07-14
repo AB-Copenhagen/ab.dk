@@ -3,33 +3,22 @@ import Base from '@/layouts/Base.astro';
 
 export const prerender = false;
 
-// Middleware guards this route — if we reach here, DS cookie is present (or TODO(descope): validated)
-const sessionToken = Astro.cookies.get('DS')?.value;
-if (!sessionToken) {
+// Middleware validates the session and populates Astro.locals.user for this route —
+// if we reach here without a user, something's off, so fall back to a login redirect.
+const user = Astro.locals.user;
+if (!user) {
   return Astro.redirect('/konto?redirect=/konto/profil');
 }
-
-// TODO(descope): decode JWT claims properly with @descope/node-sdk
-// const sdk = Descope(import.meta.env.DESCOPE_PROJECT_ID);
-// const { ok, data } = await sdk.validateSession(sessionToken);
-// if (!ok) return Astro.redirect('/konto');
-// const { name, email, picture } = data;
-
-// Minimal claim extraction from base64 payload (unsigned — not for security decisions)
-let name = '';
-let email = '';
-let picture = '';
-try {
-  const [, payload] = sessionToken.split('.');
-  if (payload) {
-    const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    name = json.name ?? '';
-    email = json.email ?? '';
-    picture = json.picture ?? '';
-  }
-} catch { /* display with defaults */ }
+const { name, email, picture } = user;
 
 const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
+
+const quickLinks = [
+  { label: 'Se ABTV', desc: 'Kamphøjdepunkter og eksklusivt videoindhold', href: '/abtv' },
+  { label: 'MyAB-medlemskab', desc: 'Administrer dine MyAB-fordele', href: '/myab' },
+  { label: 'Køb billetter', desc: 'Kampbilletter via Vivenu', href: 'https://billet.ab.dk/', external: true },
+  { label: 'Mine ordrer', desc: 'Se din ordrehistorik i AB Store på Shopify', href: 'https://shop.ab.dk/account', external: true },
+];
 ---
 
 <Base locale="da" title="Min profil | AB 1889">
@@ -62,6 +51,40 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
         </div>
       </div>
 
+      {/* Quick links */}
+      <div class="border overflow-hidden mb-8" style="border-color:#152214">
+        <div class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest" style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em">
+          Genveje
+        </div>
+        <div class="divide-y" style="background:#0D1A10;border-color:#152214">
+          {quickLinks.map((link) => (
+            <a
+              href={link.href}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noreferrer' : undefined}
+              class="flex items-center justify-between gap-4 px-5 py-4 no-underline hover:bg-white/5 transition-colors"
+              style="border-color:#152214"
+            >
+              <div>
+                <p class="font-black text-white text-sm">{link.label}</p>
+                <p class="text-xs mt-0.5" style="color:#8AA898">{link.desc}</p>
+              </div>
+              <span style="color:#8AA898">→</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Balance & Rewards (rise.ai) */}
+      <div class="border overflow-hidden mb-8" style="border-color:#152214">
+        <div class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest" style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em">
+          Saldo &amp; Fordele
+        </div>
+        <div class="px-5 py-8 text-center text-sm" style="background:#0D1A10;color:#8AA898">
+          Kommer snart.
+        </div>
+      </div>
+
       {/* Profile management widget */}
       <div class="border overflow-hidden" style="border-color:#152214">
         <div
@@ -75,7 +98,6 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
             <div id="descope-profile-container"></div>
           ) : (
             <div class="p-8 text-center text-sm" style="color:#8AA898">
-              {/* TODO(descope): configure DESCOPE_PROJECT_ID to enable profile management */}
               Profilstyring kræver konfiguration.
             </div>
           )}

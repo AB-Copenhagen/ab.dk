@@ -36,7 +36,7 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
       import('https://unpkg.com/@descope/web-component@3/dist/index.js').then(() => {
         const el = document.createElement('descope-wc');
         el.setAttribute('project-id', DESCOPE_PROJECT_ID);
-        el.setAttribute('flow-id', 'sign-up-or-in');
+        el.setAttribute('flow-id', 'sign-in');
         el.setAttribute('theme', 'dark');
         el.setAttribute('locale', 'en-US');
         el.addEventListener('success', () => {
