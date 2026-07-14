@@ -1,11 +1,12 @@
 export const CONSENT_COOKIE_NAME = 'ab_consent';
 export const CONSENT_MAX_AGE_DAYS = 180;
 
-export type ConsentCategory = 'functional' | 'marketing';
+export type ConsentCategory = 'functional' | 'statistics' | 'marketing';
 
 export interface ConsentState {
   necessary: true;
   functional: boolean;
+  statistics: boolean;
   marketing: boolean;
   ts: number;
 }
@@ -13,6 +14,7 @@ export interface ConsentState {
 export const DEFAULT_CONSENT: ConsentState = {
   necessary: true,
   functional: false,
+  statistics: false,
   marketing: false,
   ts: 0,
 };
@@ -26,6 +28,7 @@ export function parseConsent(raw: string | undefined | null): ConsentState | nul
     return {
       necessary: true,
       functional: Boolean(parsed.functional),
+      statistics: Boolean(parsed.statistics),
       marketing: Boolean(parsed.marketing),
       ts: typeof parsed.ts === 'number' ? parsed.ts : 0,
     };

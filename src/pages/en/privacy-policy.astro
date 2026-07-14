@@ -11,7 +11,7 @@ export const prerender = true;
     <div class="max-w-4xl mx-auto">
       <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">AB 1889</span>
       <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Privacy Policy</h1>
-      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 2 · July 2026</p>
+      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 3 · July 2026</p>
     </div>
   </div>
 
@@ -35,6 +35,9 @@ export const prerender = true;
         <h3>2.1 Website Usage Data</h3>
         <p>
           When you visit ab.dk, we may automatically collect technical information such as browser type, IP address, and device information, to the extent necessary to operate and secure the website. Legal basis: Article 6(1)(f) GDPR (legitimate interests in the secure and correct operation of the website).
+        </p>
+        <p>
+          If you consent to statistics cookies, we also use Google Analytics (via Google Tag Manager) to collect anonymized statistics about visits and site usage. Legal basis: Article 6(1)(a) GDPR (consent). See section 8 for details and how to manage your consent.
         </p>
 
         <h3>2.2 Contact Form and Event Enquiries</h3>
@@ -64,6 +67,7 @@ export const prerender = true;
           <li><strong>Descope</strong> — login and account authentication (MyAB)</li>
           <li><strong>Vivenu</strong> — ticket purchasing and booking (requires consent to functional cookies)</li>
           <li><strong>SI Sports</strong> (dash.si-ab.com) — displaying live match statistics (requires consent to functional cookies)</li>
+          <li><strong>Google Analytics / Google Tag Manager</strong> — anonymized website usage statistics (requires consent to statistics cookies)</li>
           <li><strong>YouTube / Google</strong> — embedded videos on ABTV (requires consent to marketing/media cookies)</li>
           <li><strong>Strapi/Wasabi</strong> — storage of editorial content and images on the website</li>
           <li><strong>Vercel</strong> — technical operation and hosting of the website</li>
@@ -151,6 +155,13 @@ export const prerender = true;
                 <td>Displaying live match statistics</td>
                 <td>Set by SI Sports</td>
                 <td>Functional</td>
+              </tr>
+              <tr>
+                <td>_ga, _ga_*, _gid</td>
+                <td>Google Analytics / Google Tag Manager</td>
+                <td>Anonymized statistics about visits and site usage</td>
+                <td>Up to 2 years, set by Google</td>
+                <td>Statistics</td>
               </tr>
               <tr>
                 <td>YSC, VISITOR_INFO1_LIVE, etc.</td>

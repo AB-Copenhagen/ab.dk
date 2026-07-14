@@ -21,6 +21,8 @@ const t = {
     necessaryDesc: 'Kræves for at hjemmesiden og login kan fungere. Kan ikke fravælges.',
     functionalTitle: 'Funktionelle',
     functionalDesc: 'Live kampstatistik og billetkøb (Vivenu, SI Sports).',
+    statisticsTitle: 'Statistik',
+    statisticsDesc: 'Google Analytics (via Google Tag Manager) — anonymiseret statistik om brug af hjemmesiden.',
     marketingTitle: 'Markedsføring & medier',
     marketingDesc: 'Indlejrede YouTube-videoer fra ABTV.',
   },
@@ -37,6 +39,8 @@ const t = {
     necessaryDesc: 'Required for the site and login to function. Cannot be turned off.',
     functionalTitle: 'Functional',
     functionalDesc: 'Live match stats and ticket purchasing (Vivenu, SI Sports).',
+    statisticsTitle: 'Statistics',
+    statisticsDesc: 'Google Analytics (via Google Tag Manager) — anonymized website usage statistics.',
     marketingTitle: 'Marketing & media',
     marketingDesc: 'Embedded YouTube videos on ABTV.',
   },
@@ -102,6 +106,13 @@ const privacyHref = locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspoli
           </div>
           <input type="checkbox" id="ab-cookie-functional" class="mt-1 w-5 h-5 shrink-0 accent-ab-green" aria-label={t.functionalTitle} />
         </div>
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-white/10">
+          <div>
+            <p class="font-black text-white text-sm tracking-[-0.01em]">{t.statisticsTitle}</p>
+            <p class="text-white/60 text-xs leading-relaxed mt-1 max-w-[55ch]">{t.statisticsDesc}</p>
+          </div>
+          <input type="checkbox" id="ab-cookie-statistics" class="mt-1 w-5 h-5 shrink-0 accent-ab-green" aria-label={t.statisticsTitle} />
+        </div>
         <div class="flex items-start justify-between gap-4">
           <div>
             <p class="font-black text-white text-sm tracking-[-0.01em]">{t.marketingTitle}</p>
@@ -151,6 +162,7 @@ const privacyHref = locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspoli
   const simpleView = document.getElementById('ab-cookie-simple');
   const customizeView = document.getElementById('ab-cookie-customize');
   const functionalToggle = document.getElementById('ab-cookie-functional') as HTMLInputElement | null;
+  const statisticsToggle = document.getElementById('ab-cookie-statistics') as HTMLInputElement | null;
   const marketingToggle = document.getElementById('ab-cookie-marketing') as HTMLInputElement | null;
 
   function showBanner() {
@@ -174,16 +186,17 @@ const privacyHref = locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspoli
   }
 
   document.getElementById('ab-cookie-accept-all')?.addEventListener('click', () => {
-    writeConsent({ necessary: true, functional: true, marketing: true });
+    writeConsent({ necessary: true, functional: true, statistics: true, marketing: true });
     hideBanner();
   });
   document.getElementById('ab-cookie-reject-all')?.addEventListener('click', () => {
-    writeConsent({ necessary: true, functional: false, marketing: false });
+    writeConsent({ necessary: true, functional: false, statistics: false, marketing: false });
     hideBanner();
   });
   document.getElementById('ab-cookie-customize-open')?.addEventListener('click', () => {
     const current = parseConsent(readCookie(CONSENT_COOKIE_NAME));
     if (functionalToggle) functionalToggle.checked = current?.functional ?? false;
+    if (statisticsToggle) statisticsToggle.checked = current?.statistics ?? false;
     if (marketingToggle) marketingToggle.checked = current?.marketing ?? false;
     showCustomize();
   });
@@ -192,6 +205,7 @@ const privacyHref = locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspoli
     writeConsent({
       necessary: true,
       functional: functionalToggle?.checked ?? false,
+      statistics: statisticsToggle?.checked ?? false,
       marketing: marketingToggle?.checked ?? false,
     });
     hideBanner();
@@ -201,6 +215,7 @@ const privacyHref = locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspoli
   (window as unknown as { abOpenCookieSettings: () => void }).abOpenCookieSettings = () => {
     const current = parseConsent(readCookie(CONSENT_COOKIE_NAME));
     if (functionalToggle) functionalToggle.checked = current?.functional ?? false;
+    if (statisticsToggle) statisticsToggle.checked = current?.statistics ?? false;
     if (marketingToggle) marketingToggle.checked = current?.marketing ?? false;
     showCustomize();
     showBanner();

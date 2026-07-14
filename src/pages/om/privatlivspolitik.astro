@@ -11,7 +11,7 @@ export const prerender = true;
     <div class="max-w-4xl mx-auto">
       <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">AB 1889</span>
       <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Privatlivspolitik</h1>
-      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 2 · Juli 2026</p>
+      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 3 · Juli 2026</p>
     </div>
   </div>
 
@@ -35,6 +35,9 @@ export const prerender = true;
         <h3>2.1 Data om brug af hjemmesiden</h3>
         <p>
           Når du besøger ab.dk, kan vi automatisk indsamle tekniske oplysninger som browsertype, IP-adresse og enhedsoplysninger, i det omfang det er nødvendigt for at drive og sikre hjemmesiden. Retsgrundlag: Artikel 6, stk. 1, litra f, GDPR (legitime interesser i sikker og korrekt drift af hjemmesiden).
+        </p>
+        <p>
+          Hvis du giver samtykke til statistik-cookies, bruger vi desuden Google Analytics (via Google Tag Manager) til at indsamle anonymiseret statistik om besøgstal og brug af hjemmesiden. Retsgrundlag: Artikel 6, stk. 1, litra a, GDPR (samtykke). Se afsnit 8 for detaljer og hvordan du styrer dit samtykke.
         </p>
 
         <h3>2.2 Kontaktformular og henvendelser om arrangementer</h3>
@@ -64,6 +67,7 @@ export const prerender = true;
           <li><strong>Descope</strong> — login og kontogodkendelse (MyAB)</li>
           <li><strong>Vivenu</strong> — billetkøb og -bestilling (kræver samtykke til funktionelle cookies)</li>
           <li><strong>SI Sports</strong> (dash.si-ab.com) — visning af live kampstatistik (kræver samtykke til funktionelle cookies)</li>
+          <li><strong>Google Analytics / Google Tag Manager</strong> — anonymiseret statistik om brug af hjemmesiden (kræver samtykke til statistik-cookies)</li>
           <li><strong>YouTube / Google</strong> — indlejrede videoer på ABTV (kræver samtykke til markedsførings- og mediecookies)</li>
           <li><strong>Strapi/Wasabi</strong> — opbevaring af redaktionelt indhold og billeder på hjemmesiden</li>
           <li><strong>Vercel</strong> — teknisk drift og hosting af hjemmesiden</li>
@@ -151,6 +155,13 @@ export const prerender = true;
                 <td>Visning af live kampstatistik</td>
                 <td>Fastsat af SI Sports</td>
                 <td>Funktionel</td>
+              </tr>
+              <tr>
+                <td>_ga, _ga_*, _gid</td>
+                <td>Google Analytics / Google Tag Manager</td>
+                <td>Anonymiseret statistik om besøgstal og brug af hjemmesiden</td>
+                <td>Op til 2 år, fastsat af Google</td>
+                <td>Statistik</td>
               </tr>
               <tr>
                 <td>YSC, VISITOR_INFO1_LIVE m.fl.</td>

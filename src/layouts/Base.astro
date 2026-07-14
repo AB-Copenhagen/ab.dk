@@ -84,6 +84,13 @@ try {
 const vivenuConsented = Astro.isPrerendered
   ? false
   : hasConsent(parseConsent(Astro.cookies.get(CONSENT_COOKIE_NAME)?.value), 'functional');
+
+// Google Tag Manager (fires the GA4 config tag internally) — gated behind statistics consent,
+// same SSR/client-injection split as Vivenu above.
+const GTM_ID = 'GTM-TGXD56HD';
+const statisticsConsented = Astro.isPrerendered
+  ? false
+  : hasConsent(parseConsent(Astro.cookies.get(CONSENT_COOKIE_NAME)?.value), 'statistics');
 ---
 
 <!doctype html>
@@ -124,6 +131,13 @@ const vivenuConsented = Astro.isPrerendered
     {vivenuConsented && (
       <script is:inline id="vivenu-embed-script" src="https://vivenu.com/web/deliver/js/v1/embed.js"></script>
     )}
+    {statisticsConsented && (
+      <script
+        is:inline
+        id="gtm-script"
+        set:html={`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`}
+      />
+    )}
   </head>
   <body class="min-h-screen bg-white text-[#111]">
     <Navbar locale={locale} />
@@ -140,6 +154,18 @@ const vivenuConsented = Astro.isPrerendered
         const script = document.createElement('script');
         script.id = 'vivenu-embed-script';
         script.src = 'https://vivenu.com/web/deliver/js/v1/embed.js';
+        document.head.appendChild(script);
+      });
+
+      onConsentChange('statistics', () => {
+        if (document.getElementById('gtm-script')) return;
+        const w = window as unknown as { dataLayer?: unknown[] };
+        w.dataLayer = w.dataLayer || [];
+        w.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+        const script = document.createElement('script');
+        script.id = 'gtm-script';
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-TGXD56HD';
         document.head.appendChild(script);
       });
     </script>
