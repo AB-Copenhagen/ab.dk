@@ -22,123 +22,193 @@ const quickLinks = [
 ---
 
 <Base locale="da" title="Min profil | AB 1889">
-  <main class="min-h-screen px-4 py-24 bg-[#060806]">
-    <div class="max-w-2xl mx-auto">
+  <main class="min-h-screen bg-neutral-100">
+    <div class="mx-auto max-w-7xl px-6 py-14 lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-10 lg:px-16 lg:py-20">
 
-      {/* Header */}
-      <div class="flex items-center gap-4 mb-10">
-        {picture ? (
-          <img
-            src={picture}
-            alt={name || 'Profil'}
-            class="w-14 h-14 rounded-full object-cover"
-          />
-        ) : (
-          <div
-            class="w-14 h-14 rounded-full flex items-center justify-center text-white font-black text-lg bg-ab-green"
-          >
-            {(name?.charAt(0) || email?.charAt(0) || '?').toUpperCase()}
-          </div>
-        )}
-        <div>
-          <p
-            class="text-xs font-bold uppercase tracking-widest mb-0.5"
-            style="color:#D6A02A;letter-spacing:0.14em"
-          >
-            Akademisk Boldklub
-          </p>
-          <h1 class="text-xl font-black text-white">{name || email || 'Min profil'}</h1>
-        </div>
-      </div>
-
-      {/* Quick links */}
-      <div class="border overflow-hidden mb-8" style="border-color:#152214">
-        <div class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest" style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em">
-          Genveje
-        </div>
-        <div class="divide-y" style="background:#0D1A10;border-color:#152214">
-          {quickLinks.map((link) => (
-            <a
-              href={link.href}
-              target={link.external ? '_blank' : undefined}
-              rel={link.external ? 'noreferrer' : undefined}
-              class="flex items-center justify-between gap-4 px-5 py-4 no-underline hover:bg-white/5 transition-colors"
-              style="border-color:#152214"
-            >
-              <div>
-                <p class="font-black text-white text-sm">{link.label}</p>
-                <p class="text-xs mt-0.5" style="color:#8AA898">{link.desc}</p>
+      {/* ── Sidebar: identity, quick links, balance, sign out ──────── */}
+      <aside class="mb-8 lg:mb-0">
+        <div class="rounded border border-neutral-200 bg-white p-6">
+          <div class="flex items-center gap-4">
+            {picture ? (
+              <img
+                src={picture}
+                alt={name || 'Profil'}
+                class="h-14 w-14 rounded-full object-cover"
+              />
+            ) : (
+              <div class="flex h-14 w-14 items-center justify-center rounded-full bg-ab-green text-lg font-black text-white">
+                {(name?.charAt(0) || email?.charAt(0) || '?').toUpperCase()}
               </div>
-              <span style="color:#8AA898">→</span>
-            </a>
-          ))}
+            )}
+            <div>
+              <p class="mb-0.5 text-xs font-black uppercase tracking-widest text-ab-gold">
+                Akademisk Boldklub
+              </p>
+              <h1 class="text-lg font-black text-neutral-900">{name || email || 'Min profil'}</h1>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Balance & Rewards (rise.ai) */}
-      <div class="border overflow-hidden mb-8" style="border-color:#152214">
-        <div class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest" style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em">
-          Saldo &amp; Fordele
+        {/* Quick links */}
+        <div class="mt-6 overflow-hidden rounded border border-neutral-200 bg-white">
+          <p class="border-b border-neutral-200 px-5 py-3 text-xs font-black uppercase tracking-widest text-neutral-400">
+            Genveje
+          </p>
+          <div class="divide-y divide-neutral-200">
+            {quickLinks.map((link) => (
+              <a
+                href={link.href}
+                target={link.external ? '_blank' : undefined}
+                rel={link.external ? 'noreferrer' : undefined}
+                aria-label={link.label}
+                class="flex items-center justify-between gap-4 px-5 py-4 no-underline transition-colors hover:bg-neutral-50"
+              >
+                <div>
+                  <p class="text-sm font-black text-neutral-900">{link.label}</p>
+                  <p class="mt-0.5 text-xs text-neutral-500">{link.desc}</p>
+                </div>
+                <span class="text-neutral-400">→</span>
+              </a>
+            ))}
+          </div>
         </div>
-        <div class="px-5 py-8 text-center text-sm" style="background:#0D1A10;color:#8AA898">
-          Kommer snart.
-        </div>
-      </div>
 
-      {/* Profile management widget */}
-      <div class="border overflow-hidden" style="border-color:#152214">
-        <div
-          class="px-5 py-3 border-b text-xs font-bold uppercase tracking-widest"
-          style="border-color:#152214;color:#D6A02A;letter-spacing:0.14em"
-        >
-          Kontoadministration
+        {/* Balance & Rewards (rise.ai) */}
+        <div class="mt-6 overflow-hidden rounded border border-neutral-200 bg-white">
+          <p class="border-b border-neutral-200 px-5 py-3 text-xs font-black uppercase tracking-widest text-neutral-400">
+            Saldo &amp; Fordele
+          </p>
+          <div class="px-5 py-8 text-center text-sm text-neutral-500">
+            Kommer snart.
+          </div>
         </div>
-        <div class="p-2" style="background:#0D1A10">
+      </aside>
+
+      {/* ── Account management ──────────────────────────────────── */}
+      <div>
+        <div class="mb-7 flex items-center gap-4">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Kontoadministration</h2>
+        </div>
+
+        <div class="rounded border border-neutral-200 bg-white p-2">
           {DESCOPE_PROJECT_ID ? (
             <div id="descope-profile-container"></div>
           ) : (
-            <div class="p-8 text-center text-sm" style="color:#8AA898">
+            <div class="p-8 text-center text-sm text-neutral-500">
               Profilstyring kræver konfiguration.
             </div>
           )}
         </div>
       </div>
 
-      {/* Log out */}
-      <div class="mt-8">
-        <button
-          id="logout-btn"
-          class="text-xs font-bold uppercase"
-          style="color:#8AA898;letter-spacing:0.12em"
-        >
-          Log ud
-        </button>
-      </div>
-
     </div>
   </main>
 
   {DESCOPE_PROJECT_ID && (
-    <script is:inline type="module" define:vars={{ DESCOPE_PROJECT_ID }}>
-      import('https://unpkg.com/@descope/web-component@3/dist/index.js').then(() => {
-        const el = document.createElement('descope-user-profile');
-        el.setAttribute('project-id', DESCOPE_PROJECT_ID);
-        el.setAttribute('widget-id', 'user-profile-widget');
-        document.getElementById('descope-profile-container')?.appendChild(el);
-      });
-
-      document.getElementById('logout-btn')?.addEventListener('click', async () => {
-        document.cookie = 'DS=; Max-Age=0; path=/';
-        location.href = '/konto';
-      });
-    </script>
+    <style>
+      /* Custom properties inherit across the widget's open shadow root, so this
+         reaches its internal typography/color without touching shadow content. */
+      #descope-profile-container descope-user-profile-widget {
+        --lumo-font-family: 'ABC Camera Plain', Helvetica, Arial, sans-serif;
+        --lumo-body-text-color: #171717;
+        --lumo-secondary-text-color: #737373;
+        --descope-image-fill: #006a52;
+      }
+    </style>
   )}
 
-  {!DESCOPE_PROJECT_ID && (
-    <script>
-      document.getElementById('logout-btn')?.addEventListener('click', () => {
-        document.cookie = 'DS=; Max-Age=0; path=/';
+  {DESCOPE_PROJECT_ID && (
+    <script is:inline src="https://unpkg.com/@descope/user-profile-widget@0.14.3/dist/index.js"></script>
+  )}
+
+  {DESCOPE_PROJECT_ID && (
+    <script is:inline define:vars={{ DESCOPE_PROJECT_ID }}>
+      const logout = async () => {
+        await fetch('/api/auth/session', { method: 'DELETE' });
         location.href = '/konto';
+      };
+
+      // These buttons render with size="sm", but the widget's internal CSS only
+      // reacts to theme="small" — size="sm" is inert, so they render at Lumo's
+      // default medium size. Their icons are either a hardcoded oversized SVG
+      // (delete/edit at 20x20, Add's plus at 24x24) or sized in 1em (Reset
+      // password), which inherits the same oversized ambient font-size — both
+      // shrink the same way once the icon's own box is constrained.
+      const shrinkAttributeIcons = (root) => {
+        root.querySelectorAll('descope-button[data-id="delete-btn"], descope-button[data-id="edit-btn"], .add-passkey-button, .descope-user-auth-method .descope-button').forEach((btn) => {
+          btn.style.setProperty('--lumo-button-size', '1.75rem');
+        });
+        root.querySelectorAll('descope-icon[slot="delete-icon"], descope-icon[slot="edit-icon"], descope-icon[slot="button-icon"]').forEach((icon) => {
+          icon.style.width = '14px';
+          icon.style.height = '14px';
+        });
+      };
+
+      const injectShadowStyle = (el, css) => {
+        if (!el.shadowRoot || el.shadowRoot.querySelector('style[data-ab-tighten]')) return;
+        const style = document.createElement('style');
+        style.setAttribute('data-ab-tighten', '');
+        style.textContent = css;
+        el.shadowRoot.appendChild(style);
+      };
+
+      // descope-list (the passkey list, once one is added) renders inside
+      // .descope-user-passkeys' OWN shadow root — not a slotted light-DOM child —
+      // so it's a no-op selector for the other row types, harmlessly.
+      const ROW_INNER_CSS = `
+        :host { padding: 0 !important; margin: 0 !important; }
+        .root, .header { padding: 0 !important; margin: 0 !important; }
+        descope-list { margin-top: 0.25rem !important; }
+      `;
+
+      // The actual flex/gap layout lives on the <slot> element INSIDE each
+      // descope-container's own shadow root (confirmed via its adopted
+      // stylesheet: `slot { gap: var(--descope-container-gap) }`) — not the
+      // container host itself, which is just display:block. Host-level
+      // overrides were hitting the wrong box entirely. The gap after the
+      // "Personal Information"/"Authentication Methods" title stays larger
+      // than the uniform row gap — kept intentionally as section spacing.
+      const CONTAINER_INNER_CSS = `
+        slot { gap: 0.25rem !important; padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+      `;
+
+      const tightenSpacing = (root) => {
+        root.querySelectorAll('#userAttrsContainer, #authMethodsContainer, #logoutContainer').forEach((container) => {
+          injectShadowStyle(container, CONTAINER_INNER_CSS);
+        });
+        root.querySelectorAll('.descope-user-attribute, .descope-user-passkeys, .descope-user-auth-method').forEach((row) => {
+          row.style.setProperty('margin', '0', 'important');
+          injectShadowStyle(row, ROW_INNER_CSS);
+        });
+        // Deliberately bigger than the 4px row gap — section-title breathing room,
+        // not a bug fix. :has() scopes this to the two section titles specifically,
+        // since descope-tooltip is also (separately) used to wrap the Add button.
+        root.querySelectorAll('descope-tooltip:has(#userAttrsTitle), descope-tooltip:has(#authMethodsTitle)').forEach((title) => {
+          title.style.setProperty('margin-bottom', '0.75rem', 'important');
+        });
+      };
+
+      const applyWidgetStyleFixes = (root) => {
+        shrinkAttributeIcons(root);
+        tightenSpacing(root);
+      };
+
+      customElements.whenDefined('descope-user-profile-widget').then(() => {
+        const el = document.createElement('descope-user-profile-widget');
+        el.setAttribute('project-id', DESCOPE_PROJECT_ID);
+        el.setAttribute('widget-id', 'user-profile-widget');
+        el.setAttribute('theme', 'light');
+        el.logout = logout;
+        document.getElementById('descope-profile-container')?.appendChild(el);
+
+        if (el.shadowRoot) {
+          const observer = new MutationObserver(() => applyWidgetStyleFixes(el.shadowRoot));
+          observer.observe(el.shadowRoot, { childList: true, subtree: true });
+          applyWidgetStyleFixes(el.shadowRoot);
+        }
       });
     </script>
   )}

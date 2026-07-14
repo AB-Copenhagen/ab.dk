@@ -1,10 +1,7 @@
 import { defineMiddleware } from 'astro:middleware';
-import descopeSdk from '@descope/node-sdk';
 
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
-
-const descopeProjectId = import.meta.env.DESCOPE_PROJECT_ID;
-const descope = descopeProjectId ? descopeSdk({ projectId: descopeProjectId }) : null;
+import { descope } from '@/lib/descope-server';
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Locale resolution — stored in locals for use in layouts

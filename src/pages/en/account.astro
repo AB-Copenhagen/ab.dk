@@ -14,17 +14,17 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
 ---
 
 <Base locale="en" title="My account | AB 1889">
-  <main class="min-h-screen flex items-center justify-center px-4 py-24 bg-[#060806]">
-    <div class="w-full max-w-md">
-      <div class="flex justify-center mb-10">
-        <div class="w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-xl bg-ab-green" aria-label="AB 1889">AB</div>
+  <main class="flex min-h-screen items-center justify-center bg-neutral-100 px-4 py-24">
+    <div class="w-full max-w-md rounded border border-neutral-200 bg-white p-8">
+      <div class="mb-8 flex justify-center">
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-ab-green text-xl font-black text-white" aria-label="AB 1889">AB</div>
       </div>
-      <h1 class="text-center text-2xl font-black uppercase mb-2" style="color:#D6A02A;letter-spacing:0.14em">My account</h1>
-      <p class="text-center text-sm mb-8" style="color:#8AA898">Akademisk Boldklub 1889</p>
+      <h1 class="mb-2 text-center text-2xl font-black uppercase tracking-widest text-ab-gold">My account</h1>
+      <p class="mb-8 text-center text-sm text-neutral-500">Akademisk Boldklub 1889</p>
       {DESCOPE_PROJECT_ID ? (
         <div id="descope-container"></div>
       ) : (
-        <div class="border p-6 text-center text-sm" style="border-color:#152214;color:#8AA898">
+        <div class="border border-neutral-200 p-6 text-center text-sm text-neutral-500">
           Login requires configuration. Contact AB 1889.
         </div>
       )}
@@ -36,12 +36,20 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
       import('https://unpkg.com/@descope/web-component@3/dist/index.js').then(() => {
         const el = document.createElement('descope-wc');
         el.setAttribute('project-id', DESCOPE_PROJECT_ID);
-        el.setAttribute('flow-id', 'sign-in');
-        el.setAttribute('theme', 'dark');
+        el.setAttribute('flow-id', 'si-app');
+        el.setAttribute('theme', 'light');
         el.setAttribute('locale', 'en-US');
-        el.addEventListener('success', () => {
-          const params = new URLSearchParams(location.search);
-          location.href = params.get('redirect') ?? '/en/account/profile';
+        el.addEventListener('success', async (e) => {
+          const sessionJwt = e.detail?.sessionJwt;
+          const target = new URLSearchParams(location.search).get('redirect') ?? '/en/account/profile';
+          if (!sessionJwt) return;
+
+          const res = await fetch('/api/auth/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionToken: sessionJwt }),
+          });
+          if (res.ok) location.href = target;
         });
         document.getElementById('descope-container')?.appendChild(el);
       });
