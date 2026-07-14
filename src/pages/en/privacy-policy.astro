@@ -11,40 +11,65 @@ export const prerender = true;
     <div class="max-w-4xl mx-auto">
       <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">AB 1889</span>
       <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Privacy Policy</h1>
-      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 1 · January 2026</p>
+      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 2 · July 2026</p>
     </div>
   </div>
 
   <!-- Content -->
   <section class="bg-white py-[clamp(48px,7vw,80px)]">
     <div class="max-w-4xl mx-auto px-8 lg:px-20">
+
+      <div class="legal-review-note">
+        <strong>Note:</strong> This policy has been drafted to reflect the data processing that actually takes place on ab.dk. It should be reviewed by the club's management or external legal counsel before being treated as final.
+      </div>
+
       <div class="prose-content">
 
         <h2>1. General</h2>
         <p>
-          AB A/S has published this policy to describe how we collect and process personal data. This policy covers information you provide directly to us, or that we gather through ab.dk. AB A/S acts as the data controller. Contact details can be found in section 7.
+          AB A/S ("AB", "we") has published this policy to describe how we collect and process personal data via ab.dk. This policy covers information you provide directly to us (e.g. via the contact form), or that is collected automatically when you visit the site. AB A/S acts as the data controller. Contact details can be found in section 7.
         </p>
 
         <h2>2. Data Collection, Purposes, and Legal Basis</h2>
 
         <h3>2.1 Website Usage Data</h3>
         <p>
-          When you visit ab.dk, we automatically collect information such as browser type, search terms, IP address, network location, and computer information. This data is used to optimise your user experience and website functionality, and to conduct targeted marketing. Legal basis: Article 6(1)(f) GDPR (legitimate interests).
+          When you visit ab.dk, we may automatically collect technical information such as browser type, IP address, and device information, to the extent necessary to operate and secure the website. Legal basis: Article 6(1)(f) GDPR (legitimate interests in the secure and correct operation of the website).
         </p>
 
-        <h3>2.2 Purchase and Communications Data</h3>
+        <h3>2.2 Contact Form and Event Enquiries</h3>
         <p>
-          When you make a purchase or contact us, we collect your name, address, email, phone number, payment method, product information, delivery requests, and IP address. This is used to deliver products, fulfil agreements, manage returns and complaints, comply with legal requirements, and prevent fraud. Legal basis: Articles 6(1)(b), (c), and (f) GDPR.
+          When you contact us via the contact form or our hospitality/event enquiry form, we collect the information you provide — typically your name, email, phone number, and message, plus any details about a requested event (date, guest count, type). This information is used solely to respond to your enquiry. Legal basis: Article 6(1)(f) GDPR (legitimate interests in responding to enquiries) and, where relevant, Article 6(1)(b) (steps prior to entering into a contract).
         </p>
 
-        <h3>2.3 Newsletter Signup Data</h3>
+        <h3>2.3 Newsletter Signup</h3>
         <p>
-          When you sign up for our newsletter, we collect your name, email address, and possibly your mobile number. This data is used solely to deliver newsletters. Legal basis: Article 6(1)(f) GDPR.
+          When you sign up for our newsletter, we collect your email address and optionally your name. This data is used solely to deliver newsletters via our email provider, Mailgun. Legal basis: Article 6(1)(a) GDPR (consent). You may unsubscribe at any time.
         </p>
 
-        <h2>3. Data Recipients</h2>
+        <h3>2.4 Account and Login</h3>
         <p>
-          We may share your information with delivery carriers such as PostNord and GLS as needed to fulfil orders. Website data is processed by Google Analytics (USA), which operates under EU-U.S. Privacy Shield certification. All processors have written data processing agreements in place.
+          If you create a MyAB account, our login provider Descope processes the information necessary to create and authenticate your account (e.g. your email address and a session cookie). Legal basis: Article 6(1)(b) GDPR (necessary to provide the account functionality you requested).
+        </p>
+
+        <h3>2.5 Ticket Purchases and Shop</h3>
+        <p>
+          Ticket and merchandise purchases do not take place directly on ab.dk, but via our partners Vivenu (tickets, billet.ab.dk) and Shopify (shop, shop.ab.dk). When you make a purchase there, that partner's own privacy policy governs the processing of your payment and order data — AB does not itself receive or store this data.
+        </p>
+
+        <h2>3. Data Recipients and Third Parties</h2>
+        <p>We use the following processors and third-party services. Some are only loaded if you have consented to the relevant cookie category (see section 8):</p>
+        <ul>
+          <li><strong>Mailgun</strong> (EU-operated) — sending email and newsletters</li>
+          <li><strong>Descope</strong> — login and account authentication (MyAB)</li>
+          <li><strong>Vivenu</strong> — ticket purchasing and booking (requires consent to functional cookies)</li>
+          <li><strong>SI Sports</strong> (dash.si-ab.com) — displaying live match statistics (requires consent to functional cookies)</li>
+          <li><strong>YouTube / Google</strong> — embedded videos on ABTV (requires consent to marketing/media cookies)</li>
+          <li><strong>Strapi/Wasabi</strong> — storage of editorial content and images on the website</li>
+          <li><strong>Vercel</strong> — technical operation and hosting of the website</li>
+        </ul>
+        <p>
+          Where a processor stores or processes data outside the EU/EEA, we ensure the transfer is supported by appropriate safeguards, such as the European Commission's Standard Contractual Clauses (SCCs).
         </p>
 
         <h2>4. Your Rights</h2>
@@ -55,33 +80,92 @@ export const prerender = true;
           <li>Request erasure (subject to legal limitations)</li>
           <li>Restrict processing</li>
           <li>Receive your data in a portable format</li>
-          <li>Object to direct marketing</li>
-          <li>Withdraw consent at any time</li>
-          <li>File a complaint with the Danish data protection authority</li>
+          <li>Object to processing based on legitimate interests</li>
+          <li>Withdraw consent at any time, including your cookie choices</li>
+          <li>File a complaint with the Danish Data Protection Agency (datatilsynet.dk)</li>
         </ul>
 
         <h2>5. Data Deletion Timelines</h2>
         <ul>
-          <li><strong>Website usage data:</strong> Deleted after 2 years of non-use</li>
-          <li><strong>Newsletter data:</strong> Deleted upon withdrawal of consent</li>
-          <li><strong>Purchase data:</strong> Generally deleted 3 years after the end of the purchase year; accounting records retained for 5 years</li>
+          <li><strong>Contact form and event enquiries:</strong> Deleted no later than 12 months after the dialogue concludes, unless otherwise agreed or legally required</li>
+          <li><strong>Newsletter data:</strong> Deleted upon unsubscribing or withdrawal of consent</li>
+          <li><strong>Account data (MyAB):</strong> Retained while the account is active, and deleted within a reasonable time following a deletion request</li>
+          <li><strong>Cookies:</strong> See the duration for each cookie in the table in section 8</li>
         </ul>
 
         <h2>6. Security</h2>
         <p>
-          We apply appropriate technical and organisational security measures to protect your personal data against unauthorised access or damage. Only personnel who require access to personal information in the course of their work are granted such access.
+          We apply appropriate technical and organisational security measures to protect your personal data against unauthorised access or damage. Only personnel and processors who require access in the course of their work are granted such access.
         </p>
 
         <h2>7. Contact Information</h2>
         <div class="contact-block">
           <p class="font-black text-[#111]">AB A/S</p>
-          <p>Gladsaxevej 202, 2860 Søborg</p>
+          <p>Gladsaxevej 202, 2860 Søborg, Denmark</p>
           <a href="mailto:info@ab.dk">info@ab.dk</a>
         </div>
-
-        <h2>8. Policy Changes</h2>
         <p>
-          We may update this policy from time to time. Any changes will be communicated on your next visit to the website.
+          If you have questions about this policy, or wish to exercise your rights under section 4, please contact us at the address above.
+        </p>
+
+        <h2>8. Cookies</h2>
+        <p>
+          We use cookies to make the site work, and to deliver embedded videos, ticket purchasing, and live stats from third parties. You choose which non-essential cookies to allow via the cookie banner's settings — you can change your choices at any time via "Cookie settings" in the site footer.
+        </p>
+        <div class="table-wrap">
+          <table class="cookie-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Provider</th>
+                <th>Purpose</th>
+                <th>Duration</th>
+                <th>Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ab_consent</td>
+                <td>ab.dk (us)</td>
+                <td>Remembers your cookie preferences</td>
+                <td>180 days</td>
+                <td>Necessary</td>
+              </tr>
+              <tr>
+                <td>DS</td>
+                <td>Descope</td>
+                <td>MyAB account login session</td>
+                <td>Set by Descope, typically session-length</td>
+                <td>Necessary</td>
+              </tr>
+              <tr>
+                <td>Various</td>
+                <td>Vivenu</td>
+                <td>Ticket purchasing and booking</td>
+                <td>Set by Vivenu</td>
+                <td>Functional</td>
+              </tr>
+              <tr>
+                <td>Various</td>
+                <td>SI Sports (dash.si-ab.com)</td>
+                <td>Displaying live match statistics</td>
+                <td>Set by SI Sports</td>
+                <td>Functional</td>
+              </tr>
+              <tr>
+                <td>YSC, VISITOR_INFO1_LIVE, etc.</td>
+                <td>YouTube / Google</td>
+                <td>Playback of embedded videos on ABTV</td>
+                <td>Up to 8 months, set by Google</td>
+                <td>Marketing &amp; media</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>9. Policy Changes</h2>
+        <p>
+          We may update this policy from time to time. Material changes will be communicated on your next visit to the website.
         </p>
 
       </div>
@@ -91,6 +175,16 @@ export const prerender = true;
 </Base>
 
 <style>
+  .legal-review-note {
+    background: #FFF7E6;
+    border: 1px solid #F0D28A;
+    color: #6B4E00;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+  }
   .prose-content {
     color: #333;
     font-size: 0.95rem;
@@ -157,5 +251,31 @@ export const prerender = true;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  .cookie-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+  .cookie-table th {
+    text-align: left;
+    background: #111;
+    color: #fff;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    padding: 0.6rem 0.9rem;
+  }
+  .cookie-table td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid #E5E7EB;
+    color: #444;
+    white-space: normal;
   }
 </style>
