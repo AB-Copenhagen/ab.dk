@@ -45,11 +45,11 @@ const uid = `siw-${Math.random().toString(36).slice(2, 9)}`;
   <div
     class="si-widget-shimmer absolute inset-0"
     aria-hidden="true"
-    style="background:linear-gradient(90deg,#0D1A10 25%,#122718 50%,#0D1A10 75%);background-size:200% 100%;animation:siShimmer 1.6s ease-in-out infinite;"
+    style="background:linear-gradient(90deg,var(--surface-base) 25%,#122718 50%,var(--surface-base) 75%);background-size:200% 100%;animation:siShimmer 1.6s ease-in-out infinite;"
   ></div>
 
   {/* Shown instead of the widget when functional consent hasn't been granted yet */}
-  <div class="si-widget-consent-needed hidden absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center" style="background:#0D1A10">
+  <div class="si-widget-consent-needed hidden absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center" style="background:var(--surface-base)">
     <p class="text-white/60 text-xs max-w-[32ch]">{t.message}</p>
     <button
       type="button"

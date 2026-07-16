@@ -41,25 +41,6 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
     },
   },
   {
-    id: -2,
-    name: 'William Warrer',
-    position: 'defender',
-    shirtNumber: 33,
-    birthDate: '2007-04-04',
-    height: 191,
-    countryName: { da: 'Danmark', en: 'Denmark' },
-    nickname: 'Warrer',
-    formerClubs: 'Kolding IF U19, Randers FC Youth',
-    bio: {
-      da: 'Når jeg ikke er på banen går jeg meget op i golf og cykling og er stor fan af at optimere min krop så meget som muligt og jagte de små procenter.',
-      en: "When I'm not on the pitch, I enjoy golf and cycling. I'm passionate about optimizing my body and constantly chasing those small percentage gains that can make a big difference.",
-    },
-    quote: {
-      da: 'Hårdt arbejde og besættelse vinder altid',
-      en: 'Hard work and obsession always wins',
-    },
-  },
-  {
     id: -3,
     name: 'Saliou Diop',
     position: 'forward',
@@ -76,6 +57,24 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
     quote: {
       da: 'Ingen smerte, ingen vinding',
       en: 'No pain, no gain',
+    },
+  },
+  {
+    id: -4,
+    name: 'Steven Bala',
+    position: 'forward',
+    shirtNumber: 17,
+    birthDate: '2003-11-19',
+    height: 171,
+    countryName: { da: 'Engelsk/Albansk', en: 'English/Albanian' },
+    formerClubs: 'FC Kitzbühel, QPR U21',
+    bio: {
+      en: 'Steven Bala is an English/Albanian offensive player who received his football education in England, where he played U18 at Barnet FC and later both U18 and U21 at QPR. He is a technically skilled player who can cover multiple positions on the front line and contributes with creativity and ball control in offensive play. Bala also brings international experience from Albania\'s U21 national team. He is known as a highly dedicated player who is often the first to arrive in the morning and isn\'t afraid to put in extra training - even on his days off.',
+      da: 'Steven Bala er en engelsk/albansk offensiv spiller, der fik sin fodboldopdragelse i England, hvor han spillede U18 for Barnet FC og senere både U18 og U21 for QPR. Han er en teknisk dygtig spiller, der kan dække flere positioner på kæden, og bidrager med kreativitet og boldkontrol i det offensive spil. Bala har desuden international erfaring fra Albaniens U21-landshold. Han er kendt som en meget dedikeret spiller, der ofte er den første på træningsbanen om morgenen og ikke er bange for at lægge ekstra træning oveni - selv på sine fridage.',
+    },
+    quote: {
+      da: 'AB er det perfekte sted for mig at gå hen',
+      en: 'AB is the perfect place for me to go',
     },
   },
 ];

@@ -22,7 +22,7 @@ const photoUrl = getPlayerPhotoUrl(player.name);
 ---
 
 <div
-  class="relative border border-[#1A2018] bg-[#0D1410] transition-colors duration-200 hover:border-[#006A52] group overflow-hidden"
+  class="relative border border-[#1A2018] bg-[#0D1410] transition-colors duration-200 hover:border-ab-green group overflow-hidden"
 >
   {number !== undefined && (
     <span class="absolute top-3 right-3 text-xs font-bold tabular-nums z-10 text-ab-gold opacity-50">
@@ -51,7 +51,7 @@ const photoUrl = getPlayerPhotoUrl(player.name);
   </div>
 
   <div class="px-3 pt-3 pb-4">
-    <p class="text-sm font-bold text-white leading-tight truncate transition-colors group-hover:text-[#D6A02A]" title={player.name}>
+    <p class="text-sm font-bold text-white leading-tight truncate transition-colors group-hover:text-ab-gold" title={player.name}>
       {player.name ?? '—'}
     </p>
 

@@ -102,7 +102,7 @@ export default function SiWidget({
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(90deg,#0D1A10 25%,#122718 50%,#0D1A10 75%)',
+            'linear-gradient(90deg,var(--surface-base) 25%,#122718 50%,var(--surface-base) 75%)',
           backgroundSize: '200% 100%',
           animation: 'siShimmer 1.6s ease-in-out infinite',
         }}
@@ -116,7 +116,7 @@ export default function SiWidget({
       {needsConsent && (
         <div
           className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center"
-          style={{ background: '#0D1A10' }}
+          style={{ background: 'var(--surface-base)' }}
         >
           <p className="text-white/60 text-xs max-w-[32ch]">{copy.message}</p>
           <button

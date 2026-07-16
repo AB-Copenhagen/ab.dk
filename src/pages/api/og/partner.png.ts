@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
+import { fetchBytes, toBase64, ogFontFaceStyle, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
 
 export const prerender = false;
 
@@ -10,21 +11,6 @@ const BG_COLOR = '#F2F2F0';
 // Partner logos always live under /images/sponsors/ in this codebase (see src/data/partners.ts)
 // — this endpoint fetches `logo` server-side, so it must not become an open SSRF proxy.
 const SAFE_LOGO_PATH = /^\/images\/sponsors\/.*\.(png|jpe?g|gif|svg|webp)$/i;
-
-async function fetchBytes(url: string): Promise<Uint8Array> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Fetch failed: ${url} (${res.status})`);
-  return new Uint8Array(await res.arrayBuffer());
-}
-
-function toBase64(bytes: Uint8Array): string {
-  let binary = '';
-  const chunkSize = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-  }
-  return btoa(binary);
-}
 
 function mimeFor(path: string): string {
   if (path.endsWith('.svg')) return 'image/svg+xml';
@@ -48,9 +34,10 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [abCrestBytes, partnerLogoBytes] = await Promise.all([
+    const [abCrestBytes, partnerLogoBytes, fontFaceStyle] = await Promise.all([
       fetchBytes(`${url.origin}/images/ab-crest.svg`),
       fetchBytes(`${url.origin}${logoPath}`),
+      ogFontFaceStyle(url.origin),
     ]);
 
     const cardSize = 360;
@@ -81,12 +68,13 @@ export async function GET({ url }: APIContext) {
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
+        ${fontFaceStyle}
         <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="${BG_COLOR}"/>
-        <rect x="${leftCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="#FFFFFF" stroke="#E0E0DC" stroke-width="1"/>
-        <rect x="${rightCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="#FFFFFF" stroke="#E0E0DC" stroke-width="1"/>
+        <rect x="${leftCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>
+        <rect x="${rightCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>
         <image href="${abDataUri}" x="${abX}" y="${abY}" width="${abFit.width}" height="${abFit.height}"/>
         <image href="${partnerDataUri}" x="${partnerX}" y="${partnerY}" width="${partnerFit.width}" height="${partnerFit.height}"/>
-        <text x="600" y="${CANVAS_H / 2 + 24}" font-family="Arial, sans-serif" font-size="56" font-weight="900" fill="#111111" text-anchor="middle">&#215;</text>
+        <text x="600" y="${CANVAS_H / 2 + 24}" font-family="${OG_FONT_FAMILY}" font-size="56" font-weight="900" fill="#111111" text-anchor="middle">&#215;</text>
       </svg>
     `;
 

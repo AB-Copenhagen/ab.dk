@@ -24,6 +24,7 @@ const OVERRIDES: Record<string, string> = {
 // Players to hide from squad display (e.g. out of contract).
 export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
   'daniel-a-pedersen',
+  'jeppe-gertsen',
 ]);
 
 export function getPlayerPhotoKey(

@@ -30,7 +30,7 @@ const pos = (player.position ?? '').toLowerCase();
 const posLabel = positionLabels[pos]?.[locale] ?? player.position ?? '';
 
 const isKeeper = pos === 'keeper';
-const cardBg = isKeeper ? '#D3BC8D' : '#006A52';
+const cardBg = isKeeper ? 'var(--ab-beige)' : 'var(--ab-green)';
 const textColor = isKeeper ? '#111' : '#fff';
 const textMuted = isKeeper ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)';
 

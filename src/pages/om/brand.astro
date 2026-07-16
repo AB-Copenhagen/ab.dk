@@ -38,7 +38,7 @@ export const prerender = true;
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16">
         <!-- AB Green -->
         <div class="flex flex-col">
-          <div class="h-32 rounded-md mb-3" style="background:#006A52"></div>
+          <div class="h-32 rounded-md mb-3" style="background:var(--ab-green)"></div>
           <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">AB Grøn</div>
           <div class="font-black text-ab-green text-[0.85rem] tracking-[0.05em] mt-0.5">#006A52</div>
           <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">RGB 0 / 106 / 82<br />Pantone 3298 C</div>
@@ -48,7 +48,7 @@ export const prerender = true;
         </div>
         <!-- AB Gold -->
         <div class="flex flex-col">
-          <div class="h-32 rounded-md mb-3" style="background:#d6a02a"></div>
+          <div class="h-32 rounded-md mb-3" style="background:var(--ab-gold)"></div>
           <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">AB Guld</div>
           <div class="font-black text-ab-gold text-[0.85rem] tracking-[0.05em] mt-0.5">#d6a02a</div>
           <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">RGB 212 / 158 / 43<br />Pantone 131 C</div>
@@ -58,7 +58,7 @@ export const prerender = true;
         </div>
         <!-- AB Beige -->
         <div class="flex flex-col">
-          <div class="h-32 rounded-md mb-3" style="background:#D3BC8D"></div>
+          <div class="h-32 rounded-md mb-3" style="background:var(--ab-beige)"></div>
           <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">AB Beige</div>
           <div class="font-black text-[#9a8660] text-[0.85rem] tracking-[0.05em] mt-0.5">#D3BC8D</div>
           <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">RGB 211 / 188 / 141<br />Pantone 467 C</div>
@@ -68,7 +68,7 @@ export const prerender = true;
         </div>
         <!-- Neon Green -->
         <div class="flex flex-col">
-          <div class="h-32 rounded-md mb-3" style="background:#00FF1F"></div>
+          <div class="h-32 rounded-md mb-3" style="background:var(--ab-neon)"></div>
           <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">AB Neon Grøn</div>
           <div class="font-black text-[0.85rem] tracking-[0.05em] mt-0.5" style="color:#00cc18">#00FF1F</div>
           <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">RGB 0 / 255 / 31<br />Pantone 802 C</div>
@@ -78,14 +78,14 @@ export const prerender = true;
         </div>
         <!-- Rich Black -->
         <div class="flex flex-col">
-          <div class="h-32 rounded-md mb-3 border border-gray-100" style="background:#0A0A0A"></div>
+          <div class="h-32 rounded-md mb-3 border border-gray-100" style="background:var(--ab-black)"></div>
           <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">Rich Black</div>
           <div class="font-black text-[#555] text-[0.85rem] tracking-[0.05em] mt-0.5">#0A0A0A</div>
           <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">Til tekst på lyse<br />baggrunde</div>
         </div>
         <!-- White -->
         <div class="flex flex-col">
-          <div class="h-32 rounded-md mb-3 border border-gray-200" style="background:#FFFFFF"></div>
+          <div class="h-32 rounded-md mb-3 border border-gray-200" style="background:var(--ab-white)"></div>
           <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">Hvid</div>
           <div class="font-black text-[#999] text-[0.85rem] tracking-[0.05em] mt-0.5">#FFFFFF</div>
           <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">Til mærker på mørke<br />baggrunde</div>
@@ -99,27 +99,27 @@ export const prerender = true;
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <div>
-            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:#0A0A0A;color:#006A52">AB 1889</div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-black);color:var(--ab-green)">AB 1889</div>
             <div class="text-[#666] text-[0.78rem]">Primær på sort</div>
           </div>
           <div>
-            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:#006A52;color:#d6a02a">AB 1889</div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-green);color:var(--ab-gold)">AB 1889</div>
             <div class="text-[#666] text-[0.78rem]">Guld på grøn</div>
           </div>
           <div>
-            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:#006A52;color:#FFFFFF">AB 1889</div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-green);color:var(--ab-white)">AB 1889</div>
             <div class="text-[#666] text-[0.78rem]">Hvid på grøn</div>
           </div>
           <div>
-            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:#D3BC8D;color:#006A52">AB 1889</div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-beige);color:var(--ab-green)">AB 1889</div>
             <div class="text-[#666] text-[0.78rem]">Grøn på beige</div>
           </div>
           <div>
-            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:#0A0A0A;color:#d6a02a">AB 1889</div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-black);color:var(--ab-gold)">AB 1889</div>
             <div class="text-[#666] text-[0.78rem]">Guld på sort</div>
           </div>
           <div>
-            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:#d6a02a;color:#0A0A0A">AB 1889</div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-gold);color:var(--ab-black)">AB 1889</div>
             <div class="text-[#666] text-[0.78rem]">Sort på guld</div>
           </div>
         </div>

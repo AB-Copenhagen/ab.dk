@@ -8,11 +8,11 @@ interface Props {
 const { size = 48, color = 'white', class: cls = '' } = Astro.props;
 
 const fills: Record<string, string> = {
-  white: '#FFFFFF',
-  green: '#006A52',
-  gold:  '#D6A02A',
+  white: 'var(--ab-white)',
+  green: 'var(--ab-green)',
+  gold:  'var(--ab-gold)',
 };
-const stroke = fills[color] ?? '#FFFFFF';
+const stroke = fills[color] ?? 'var(--ab-white)';
 ---
 
 <!--

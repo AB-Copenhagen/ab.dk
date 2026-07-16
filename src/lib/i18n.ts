@@ -186,6 +186,11 @@ export const t: Record<Locale, Record<string, string>> = {
     noAwayFixtures: 'Ingen kommende udekampe.',
     noResultsFound: 'Ingen resultater fundet.',
     defaultStadium: 'Gladsaxe Stadion',
+    notFoundHeading: 'Siden blev ikke fundet',
+    notFoundBody:
+      'Beklager, men siden du leder efter eksisterer ikke eller er blevet flyttet.',
+    notFoundCta: 'Se kampprogram',
+    notFoundHome: 'Til forsiden',
   },
   en: {
     home: 'Home',
@@ -308,6 +313,11 @@ export const t: Record<Locale, Record<string, string>> = {
     noAwayFixtures: 'No upcoming away fixtures.',
     noResultsFound: 'No results found.',
     defaultStadium: 'Gladsaxe Stadium',
+    notFoundHeading: 'Page not found',
+    notFoundBody:
+      "Sorry, the page you're looking for doesn't exist or has been moved.",
+    notFoundCta: 'See match schedule',
+    notFoundHome: 'Back to homepage',
   },
 };
 

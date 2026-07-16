@@ -217,7 +217,7 @@ const articleSchema = {
                          loading="lazy"
                          class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105" />
                   ) : (
-                    <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:rgba(0,106,82,0.15);">AB</div>
+                    <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:color-mix(in srgb, var(--ab-green) 15%, transparent);">AB</div>
                   )}
                 </div>
                 {a.categories?.[0] && (
@@ -244,10 +244,10 @@ const articleSchema = {
     color: #111; letter-spacing: -0.02em; margin-top: 1.75em; margin-bottom: 0.5em; font-weight: 900;
   }
   .article-prose p { margin-bottom: 1.25em; color: #111; }
-  .article-prose a { color: #006A52; text-decoration: underline; text-underline-offset: 3px; }
+  .article-prose a { color: var(--ab-green); text-decoration: underline; text-underline-offset: 3px; }
   .article-prose strong { color: #111; }
-  .article-prose blockquote { border-left: 3px solid #006A52; padding-left: 1em; color: #6B7280; font-style: italic; }
-  .article-prose ul > li::marker { color: #006A52; }
+  .article-prose blockquote { border-left: 3px solid var(--ab-green); padding-left: 1em; color: #6B7280; font-style: italic; }
+  .article-prose ul > li::marker { color: var(--ab-green); }
   .article-prose ol > li::marker { color: #9CA3AF; }
   .article-prose hr { border-color: #E5E7EB; margin: 2em 0; }
   .article-prose img { max-width: 100%; }

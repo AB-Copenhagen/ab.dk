@@ -24,15 +24,22 @@ const ways: Way[] = [
   },
   {
     title: 'Join the AB Business Network',
+    body: 'More than a sponsorship, the AB Business Network is a platform for connection. It combines the passion of football with the power of business—creating opportunities to build relationships, exchange ideas, and grow alongside one of Denmark’s most historic clubs.',
+    cta: { label: 'Get in touch →', href: 'mailto:info@ab.dk' },
   },
   {
     title: 'Learn more about the AB Academy',
+    body: 'AB’s Academy offers foundational, competitive youth football. Competing at the second highest division, their mission is to develop and supply young players for the level of AB’s Men’s First Team or higher.',
+    cta: { label: 'Email Simon Andresen →', href: 'mailto:simon@abfodbold.dk' },
   },
   {
     title: 'Volunteer at Gladsaxe',
+    body: 'At AB, football is powered by people. Our volunteers are the heart of the matchday experience, helping create memorable moments for supporters, players, partners, and the local community. No matter your background, experience, or availability, your contribution makes a difference.',
+    cta: { label: 'Email us →', href: 'mailto:info@ab.dk' },
   },
   {
     title: 'Students and Alumni Events',
+    body: 'AB was founded on the values of education, ambition, and community—and those values continue to define the club today. Whether you’re a current student or an alumnus, there are countless ways to get involved. Join a community where academic excellence and football come together, and help shape the next chapter of AB.',
   },
 ];
 ---
@@ -73,7 +80,7 @@ const ways: Way[] = [
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {ways.map((way, i) => (
           <div class="bg-white border border-[#E5E7EB] p-7 flex flex-col">
-            <span class="font-black leading-none select-none mb-4" style="font-size:2.75rem;letter-spacing:-0.04em;color:rgba(0,106,82,0.18)">
+            <span class="font-black leading-none select-none mb-4" style="font-size:2.75rem;letter-spacing:-0.04em;color:color-mix(in srgb, var(--ab-green) 18%, transparent)">
               {String(i + 1).padStart(2, '0')}
             </span>
             <h3 class="font-black text-[1.05rem] text-[#111] tracking-[-0.02em] leading-snug mb-2">{way.title}</h3>

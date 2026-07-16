@@ -178,7 +178,7 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
             <div class="relative group">
               <a
                 href={enPrefix + item.href}
-                class:list={['text-[17px] font-bold tracking-[-0.02em] no-underline transition-colors hover:text-[#D3BC8D]', isActive ? 'text-[#D3BC8D]' : 'text-white']}>
+                class:list={['text-[17px] font-bold tracking-[-0.02em] no-underline transition-colors hover:text-ab-beige', isActive ? 'text-ab-beige' : 'text-white']}>
                 {item.label}
               </a>
               {isActive && (
@@ -328,7 +328,7 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
 
   /* Main nav morphs via padding — content breathes, not just the box */
   .nav-main {
-    background: #006a52;
+    background: var(--ab-green);
     padding-top: 14px;
     padding-bottom: 14px;
     transition: padding 0.34s cubic-bezier(0.4, 0, 0.2, 1),

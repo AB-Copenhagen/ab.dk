@@ -67,7 +67,7 @@ import { principalPartners, networkPartners } from '@/data/partners';
         {principalPartners.map((p) => (
           <a
             href={`/en/partners/${p.slug}`}
-            class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_rgba(0,106,82,0.1)] transition-all">
+            class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
             <div class="flex items-center justify-center px-6 py-10 flex-1">
               <img
                 src={p.logo}
@@ -101,7 +101,7 @@ import { principalPartners, networkPartners } from '@/data/partners';
         {networkPartners.map((p) => (
           <a
             href={`/en/partners/${p.slug}`}
-            class="group relative flex flex-col bg-white border border-surface-border rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_rgba(0,106,82,0.12)] transition-all">
+            class="group relative flex flex-col bg-white border border-surface-border rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
             <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
               <img
                 src={p.logo}

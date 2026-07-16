@@ -1,7 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro';
+import NotFound from '@/components/NotFound.astro';
 import { fetchCollectionType } from '@/lib/strapi/client';
 import { strapiMediaUrl } from '@/lib/strapi/client';
+import { translate } from '@/lib/i18n';
 export const prerender = false;
 
 const { slug } = Astro.params;
@@ -15,13 +17,13 @@ const results = await fetchCollectionType<any[]>('pages', {
 const page = results[0];
 
 if (!page) {
-  return Astro.redirect('/');
+  Astro.response.status = 404;
 }
 
-const title = page.seo?.metaTitle ?? page.title ?? 'Akademisk Boldklub';
-const description = page.seo?.metaDescription ?? page.description ?? '';
+const title = page ? (page.seo?.metaTitle ?? page.title ?? 'Akademisk Boldklub') : `404 | ${translate(locale, 'notFoundHeading')}`;
+const description = page ? (page.seo?.metaDescription ?? page.description ?? '') : translate(locale, 'notFoundBody');
 
-const blocks: any[] = page.dynamic_zone ?? [];
+const blocks: any[] = page?.dynamic_zone ?? [];
 
 function renderHeroBlock(block: any) {
   return {
@@ -34,7 +36,9 @@ function renderHeroBlock(block: any) {
 ---
 
 <Base locale="da" title={`${title} | Akademisk Boldklub`} description={description}>
-  {blocks.length === 0 ? (
+  {!page ? (
+    <NotFound locale={locale} />
+  ) : blocks.length === 0 ? (
     <div class="bg-white">
       <div class="border-b border-gray-200">
         <div class="max-w-3xl mx-auto px-5 md:px-8 py-16">
@@ -58,11 +62,11 @@ function renderHeroBlock(block: any) {
         if (type === 'dynamic-zone.hero') {
           const h = renderHeroBlock(block);
           return (
-            <section class="relative min-h-[60vh] flex flex-col justify-end overflow-hidden px-5 md:px-12 pb-16" style="background:#060806">
+            <section class="relative min-h-[60vh] flex flex-col justify-end overflow-hidden px-5 md:px-12 pb-16" style="background:var(--surface-ground)">
               {h.image?.url && (
                 <div class="absolute inset-0">
                   <img src={strapiMediaUrl(h.image.url)} alt="" class="w-full h-full object-cover opacity-40" />
-                  <div class="absolute inset-0" style="background:linear-gradient(to top,#060806 0%,transparent 60%)"></div>
+                  <div class="absolute inset-0" style="background:linear-gradient(to top,var(--surface-ground) 0%,transparent 60%)"></div>
                 </div>
               )}
               <div class="relative z-10 max-w-4xl">

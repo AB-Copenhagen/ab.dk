@@ -15,7 +15,7 @@ interface Props {
 const { homeId, homeName, homeForm, awayId, awayName, awayForm, locale = 'da' } = Astro.props;
 
 const outcomeStyle = (o: 'W' | 'D' | 'L') => {
-  if (o === 'W') return 'background:#006A52;color:#00FF1F;';
+  if (o === 'W') return 'background:var(--ab-green);color:var(--ab-neon);';
   if (o === 'D') return 'background:#555;color:#fff;';
   return 'background:#8B1A1A;color:#fff;';
 };
@@ -27,7 +27,7 @@ const awayLabel = locale === 'en' ? 'A' : 'U';
 ---
 
 <section>
-  <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style="color:#006A52">{locale === 'en' ? 'Form' : 'Form'}</p>
+  <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style="color:var(--ab-green)">{locale === 'en' ? 'Form' : 'Form'}</p>
   <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
     {label}
   </h2>
