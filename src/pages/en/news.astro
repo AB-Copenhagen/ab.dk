@@ -6,10 +6,18 @@ export const prerender = false;
 
 const locale = 'en';
 
+function formatDate(str: string) {
+  try {
+    return new Date(str).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
 const allArticles = await fetchCollectionType<any[]>('articles', {
   locale,
   sort: ['publishedAt:desc'],
-  populate: ['image', 'categories'],
+  populate: ['image'],
   pagination: { pageSize: 13 },
 }).catch(() => [] as any[]);
 
@@ -32,9 +40,9 @@ const [featured, ...rest] = allArticles;
       <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.42) 55%,transparent 100%)"></div>
       <div class="relative h-full max-w-7xl mx-auto px-5 md:px-12 flex items-end pb-14 md:pb-20">
         <div style="max-width:560px">
-          <p class="text-xs font-bold uppercase mb-3 text-ab-neon tracking-[0.2em]">
-            {featured.categories?.[0]?.name ?? 'Feature'}
-          </p>
+          <time class="block text-xs font-bold uppercase mb-3 text-ab-neon tracking-[0.2em]">
+            {formatDate(featured.publishedAt)}
+          </time>
           <h1 class="font-black text-white mb-4 leading-none tracking-[-0.03em]" style="font-size:clamp(1.9rem,4.5vw,3.4rem)">
             {decodeHtml(featured.title)}
           </h1>
@@ -66,12 +74,12 @@ const [featured, ...rest] = allArticles;
                     class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:rgba(0,106,82,0.15)">AB</div>
+                  <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:color-mix(in srgb, var(--ab-green) 15%, transparent)">AB</div>
                 )}
               </div>
-              <p class="text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.16em]">
-                {article.categories?.[0]?.name ?? 'News'}
-              </p>
+              <time class="block text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.16em]">
+                {formatDate(article.publishedAt)}
+              </time>
               <h2 class="font-bold text-base leading-snug text-[#111] tracking-[-0.01em]">
                 {decodeHtml(article.title)}
               </h2>
