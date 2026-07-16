@@ -139,13 +139,20 @@ async function uploadImage(remoteUrl, filename) {
 
 // ── HTML → Strapi blocks ──────────────────────────────────────────────────────
 
+// Named entities beyond the numeric ones handled generically below. WP content
+// commonly carries curly quotes, dashes, and an ellipsis as numeric entities
+// (&#8211; etc.) — those are decoded by the numeric passes, not this table.
+const NAMED_ENTITIES = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'",
+  nbsp: ' ', hellip: '…', mdash: '—', ndash: '–',
+  lsquo: '‘', rsquo: '’', ldquo: '“', rdquo: '”',
+};
+
 function decodeEntities(str) {
   return str
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#8216;/g, '‘').replace(/&#8217;/g, '’')
-    .replace(/&#8220;/g, '“').replace(/&#8221;/g, '”')
-    .replace(/&#8230;/g, '…').replace(/&hellip;/g, '…')
-    .replace(/&nbsp;/g, ' ').replace(/ /g, ' ');
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&([a-zA-Z]+);/g, (m, name) => NAMED_ENTITIES[name] ?? m);
 }
 
 function htmlToBlocks(html) {
@@ -278,6 +285,9 @@ async function importLocale(locale, categoryMap) {
           content: htmlToBlocks(post.content?.rendered ?? ''),
           locale,
           publishedAt: post.date,
+          // Strapi silently overrides `publishedAt` with record-creation time on
+          // create — this is the field that actually preserves the true WP date.
+          originalPublishedAt: post.date,
           ...(categoryConnects.length > 0 ? { categories: { connect: categoryConnects } } : {}),
           ...(imageId ? { image: imageId } : {}),
         },
