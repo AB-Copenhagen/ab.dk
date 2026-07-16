@@ -1,0 +1,17 @@
+---
+import Base from '@/layouts/Base.astro';
+import NotFound from '@/components/NotFound.astro';
+import { getLocale, translate } from '@/lib/i18n';
+
+Astro.response.status = 404;
+
+const locale = getLocale(Astro.url);
+---
+
+<Base
+  locale={locale}
+  title={`404 | ${translate(locale, 'notFoundHeading')}`}
+  description={translate(locale, 'notFoundBody')}
+>
+  <NotFound locale={locale} />
+</Base>

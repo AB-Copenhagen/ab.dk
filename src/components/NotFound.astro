@@ -1,0 +1,212 @@
+---
+import { localePath, translate, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const homeHref = locale === 'en' ? '/en' : '/';
+const matchesHref = localePath(locale, '/kampe');
+---
+
+<section class="not-found">
+  <p class="not-found__digits" aria-label="404">
+    <span class="not-found__digit" style="animation-delay: 0s">4</span>
+    <span class="not-found__zero-wrap">
+      <span class="not-found__digit not-found__zero">0</span>
+      <span class="not-found__ball" aria-hidden="true">
+        <svg viewBox="0 0 32 32" role="presentation">
+          <circle cx="16" cy="16" r="15.5" fill="white" />
+          <path
+            fill="currentColor"
+            stroke-width="0.5"
+            d="M30.967 15.996c0.0105 -0.3565 0.1045 -5.452 -2.911 -8.769 -0.134 -0.2965 -0.7695 -1.4915 -2.8205 -2.952a20.9795 20.9795 0 0 0 -2.8875 -1.8815l-0.004 -0.002C22.216 2.323 19.715 1 16.6795 1c-0.2305 0 -0.4585 0.0135 -0.684 0.029V1.025c-2.3145 -0.0505 -4.6135 0.545 -5.999 1.1705 -1.229 0.555 -2.5935 1.4855 -2.692 1.5575C5.6025 4.705 2.375 8.5255 2.1195 10.55c-1.0315 1.3185 -1.8935 7.241 0.002 10.8485 1.329 5.0135 6.332 7.5225 6.73 7.715 0.242 0.1545 2.9685 1.84 6.318 1.84 0.1405 0 0.99 0.047 1.293 0.047 3.6205 0 8.9855 -2.552 10.1085 -4.551 3.0855 -2.257 4.685 -8.0735 4.396 -10.4535ZM8.879 23.5275c-1.4345 -2.3205 -2.252 -5.3525 -2.427 -6.049 0.454 -0.6805 2.6935 -3.9825 3.9695 -4.976 0.7225 0.133 3.7395 0.687 6.585 1.202 0.3575 0.9265 1.926 5.0145 2.375 6.5925 -0.495 0.587 -2.4395 2.851 -4.354 4.624 -2.0325 0.0095 -5.4895 -1.163 -6.1485 -1.3935ZM26.912 7.29c-0.006 0.225 -0.0595 1.025 -0.4425 1.9435 -0.7605 -0.3885 -2.672 -1.2205 -5.292 -1.361 -0.3965 -0.5855 -1.8885 -2.627 -4.245 -4.043 0.3225 -0.631 0.7715 -1.4005 1.034 -1.635 0.085 -0.024 0.217 -0.046 0.418 -0.046 1.2635 0 3.4465 0.8275 3.6365 0.901 0.2015 0.1065 4.1255 2.2195 4.891 4.2405ZM5.8865 17.006c-1.7115 -0.292 -2.729 -0.824 -3.033 -1.004 -0.6365 -2.3085 -0.124 -4.8035 -0.045 -5.161 0.628 -1.123 2.416 -3.9855 3.5955 -4.529 1.2225 -0.2495 2.747 0.0605 3.368 0.212 -0.0585 0.8075 -0.171 3.0635 0.163 5.431 -1.353 1.089 -3.4945 4.2235 -4.0485 5.051ZM15.8425 1.765c0.384 0.0285 0.9475 0.1125 1.3335 0.227 -0.385 0.512 -0.7795 1.271 -0.966 1.646 -0.785 0.1285 -3.7665 0.6985 -6.1055 2.215 -0.4715 -0.125 -1.8955 -0.4585 -3.244 -0.3435 0.334 -0.6465 0.833 -1.1245 0.8865 -1.1735 0.1855 -0.133 3.7565 -2.6315 8.0955 -2.5775v0.0065Zm9.548 19.0465c-0.585 -0.024 -2.839 -0.1525 -5.3105 -0.733 -0.4735 -1.651 -2.037 -5.722 -2.3945 -6.648a278.293 278.293 0 0 1 3.464 -4.827c2.844 0.156 4.841 1.1935 5.2275 1.41 1.6475 2.6495 2.009 5.3555 2.0585 5.8075 -0.875 2.723 -2.6055 4.5565 -3.045 4.9905ZM1.8275 14.2595c0.042 0.633 0.1435 1.2995 0.327 1.9585a5.869 5.869 0 0 0 -0.341 1.3255 16.5195 16.5195 0 0 1 0.014 -3.284Zm4.822 11.6795c0.754 -0.7265 1.6835 -1.4335 2.044 -1.7005 0.815 0.287 4.162 1.4185 6.2955 1.4185 0.3635 0.4875 1.552 2.014 3.009 3.181 -0.907 0.8875 -2.217 1.3065 -2.4485 1.376 -4.0635 0.109 -8.021 -2.175 -8.9 -4.275Zm10.7315 4.269c0.461 -0.2685 0.9415 -0.622 1.339 -1.0695 0.6485 -0.0895 3.4315 -0.5685 5.9465 -2.416 0.166 0.018 0.4395 0.04 0.745 0.0315 -1.509 1.4785 -5.191 3.13 -8.0305 3.454Zm7.712 -4.188c0.9035 -2.354 0.865 -4.129 0.8205 -4.696 0.496 -0.486 2.198 -2.2995 3.1425 -5.0565 0.509 0.085 0.84 0.2145 0.997 0.287 0.0545 0.2 0.1455 0.662 0.094 1.3625 -0.385 2.5215 -1.714 6.3 -4.042 7.9705 -0.234 0.1195 -0.646 0.1455 -1.012 0.1325Z"
+          ></path>
+        </svg>
+      </span>
+    </span>
+    <span class="not-found__digit" style="animation-delay: 0.3s">4</span>
+  </p>
+  <h1 class="not-found__heading">{translate(locale, 'notFoundHeading')}</h1>
+  <p class="not-found__body">{translate(locale, 'notFoundBody')}</p>
+  <div class="not-found__actions">
+    <a href={matchesHref} class="not-found__cta">{translate(locale, 'notFoundCta')}</a>
+    <a href={homeHref} class="not-found__home">{translate(locale, 'notFoundHome')}</a>
+  </div>
+</section>
+
+<style>
+  .not-found {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 1.5rem;
+  }
+
+  .not-found__digits {
+    display: flex;
+    gap: 0.05em;
+    margin: 0 0 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(6rem, 22vw, 13rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--ab-green);
+  }
+
+  .not-found__digit {
+    display: inline-block;
+    animation: not-found-bounce 1.8s ease-in-out infinite;
+  }
+
+  .not-found__zero-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .not-found__zero {
+    animation: not-found-zero-head 3.2s ease-in-out infinite;
+  }
+
+  .not-found__ball {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    width: 0.5em;
+    height: 0.5em;
+    margin: -0.25em 0 0 -0.25em;
+    color: var(--ab-black);
+    animation: not-found-ball-arc 3.2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .not-found__ball svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .not-found__heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    letter-spacing: -0.02em;
+    color: var(--ab-black);
+    margin: 0 0 0.75rem;
+  }
+
+  .not-found__body {
+    max-width: 32rem;
+    color: color-mix(in srgb, var(--ab-black) 60%, transparent);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0 0 2rem;
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .not-found__cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.75rem;
+    border-radius: 999px;
+    background: var(--ab-green);
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: opacity 0.2s;
+  }
+  .not-found__cta:hover {
+    opacity: 0.85;
+  }
+
+  .not-found__home {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.75rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--ab-black) 20%, transparent);
+    color: var(--ab-black);
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: opacity 0.2s;
+  }
+  .not-found__home:hover {
+    opacity: 0.6;
+  }
+
+  @keyframes not-found-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-0.18em);
+    }
+  }
+
+  /* Ball flies in from the top-left toward the "0", gets headed at the
+     moment of contact, and flies off to the top-right — then loops. */
+  @keyframes not-found-ball-arc {
+    0% {
+      transform: translate(-2.6em, -2.3em) rotate(0deg);
+      opacity: 0;
+    }
+    16% {
+      opacity: 1;
+    }
+    38% {
+      transform: translate(0, 0) rotate(340deg);
+      opacity: 1;
+    }
+    42% {
+      transform: translate(0.15em, -0.2em) rotate(400deg);
+    }
+    64% {
+      transform: translate(1.8em, -2.2em) rotate(760deg);
+      opacity: 1;
+    }
+    78%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* The "0" heads the ball as it arrives — a quick upward snap in sync
+     with contact in not-found-ball-arc above. */
+  @keyframes not-found-zero-head {
+    0%,
+    32% {
+      transform: translateY(0) rotate(0deg);
+    }
+    38% {
+      transform: translateY(-0.1em) rotate(-8deg);
+    }
+    44% {
+      transform: translateY(0.03em) rotate(4deg);
+    }
+    50%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .not-found__digit,
+    .not-found__zero,
+    .not-found__ball {
+      animation: none;
+    }
+  }
+</style>
