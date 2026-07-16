@@ -150,6 +150,20 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
     },
   },
 
+  1785818: {
+    // #33 William Warrer
+    nickname: 'Warrer',
+    formerClubs: 'Kolding IF U19, Randers FC Youth',
+    bio: {
+      en: "When I'm not on the pitch, I enjoy golf and cycling. I'm passionate about optimizing my body and constantly chasing those small percentage gains that can make a big difference.",
+      da: 'Når jeg ikke er på banen går jeg meget op i golf og cykling og er stor fan af at optimere min krop så meget som muligt og jagte de små procenter.',
+    },
+    quote: {
+      en: 'Hard work and obsession always wins',
+      da: 'Hårdt arbejde og besættelse vinder altid',
+    },
+  },
+
   // ── Midfielders ───────────────────────────────────────────────────────────
 
   1079276: {
