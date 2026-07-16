@@ -34,17 +34,17 @@ const board = [
   },
   {
     name: 'Harrison Oellrich',
-    role: 'Board Member',
-    photo: 'https://bebglobal.org/wp-content/uploads/2025/06/BEB_Headshots_0001_Oellrich.jpg',
+    role: 'Board Advisor',
+    photo: '/images/team/harrison-oellrich.jpg',
     photoPos: 'object-center',
-    bio: null,
+    bio: 'Harrison has been a board observer since 2023. He formally retired as managing director of a pre-eminent risk management and financial services firm in 2010 after a 30+ year career there to concentrate on various non-profit and humanitarian projects. He also founded his own consultancy to leverage the knowledge and expertise of the risk management community for the benefit of the public, private, and non-profit sectors, and has been instrumental in founding and building out several non-profits that now serve in over 25 countries worldwide. He also serves as a deacon at several local congregations.',
   },
   {
     name: 'Joseph Gordon',
     role: 'Board Member',
     photo: '/images/team/joseph-gordon.jpg',
     photoPos: 'object-center',
-    bio: null,
+    bio: 'Joe has been a board member since November 2022. Joe Gordon is the founder of UpFor Consulting, a sales and growth focused consultancy group. UpFor works with both emerging and established companies to create, hone, and master their business development strategies and communications skills, build teams and company culture, and lead through growth and change. Previously, Joe spent 19 years in the legal services space, the last 13 of which included managing and leading the organization through exponential growth and eventual acquisition as its Global VP of Sales. Joe holds a BA from American University in Law and Society and an MS in Industrial and Organizational Psychology from Baruch College.',
   },
   {
     name: 'Sofie Brandi Petersen',
@@ -61,12 +61,30 @@ const exec = [
     role: 'President',
     photo: '/images/team/henrik-bom.jpg',
     photoPos: 'object-center',
-    bio: null,
+    bio: "Henrik Bom leads the club's business operations and long-term development. With more than 25 years of international leadership experience across Denmark and the United States, Henrik brings a strong commercial and operational background to one of Denmark's oldest football clubs. Under his leadership, AB is focused on creating exceptional experiences for fans while strengthening the club's role in the local community and expanding its international network.",
   },
-  { name: 'Cynthia Lee', role: 'Marketing & Brand', photo: '/images/team/cynthia-lee.jpg', photoPos: 'object-center', bio: null },
-  { name: 'Jen Chang', role: 'Sporting Director', photo: '/images/team/jen-chang.jpg', photoPos: 'object-center', bio: null },
+  {
+    name: 'Cynthia Lee',
+    role: 'Marketing & Brand',
+    photo: '/images/team/cynthia-lee.jpg',
+    photoPos: 'object-center',
+    bio: 'Cynthia runs Marketing and Brand for the club. A specialist in integrated marketing, strategic partnerships, and brand storytelling, she has launched product campaigns and experiential activations across digital, social, television, live events, and branded entertainment. Passionate about innovation and collaboration, Cynthia creates marketing strategies that strengthen brands, drive engagement, and deliver measurable business impact. She has a BA from Miami University and an MA from The Ohio State University.',
+  },
+  {
+    name: 'Jen Chang',
+    role: 'Sporting Director',
+    photo: '/images/team/jen-chang.jpg',
+    photoPos: 'object-center',
+    bio: "Jen is currently the AB sporting director. Prior to AB, Jen worked for 12 years as a scout and in talent identification for various first- and second-tier European football teams. Previously, he also worked in the finance and media industries. He holds an M.Phil in International Relations from Queens' College, University of Cambridge, an MSc in Industrial Relations from the London School of Economics, and a BA (Hons) in History from Queen Mary University of London.",
+  },
   { name: 'Simon Taylor', role: 'Partnerships', photo: '/images/team/simon-taylor.jpg', photoPos: 'object-center', bio: null },
-  { name: 'Rasmus Granzow', role: 'Stadium Experience & Hospitality', photo: null, photoPos: 'object-center', bio: null },
+  {
+    name: 'Rasmus Granzow',
+    role: 'Hospitality & Event Manager',
+    photo: '/images/team/rasmus-granzow.jpg',
+    photoPos: 'object-center',
+    bio: "Working at AB since the beginning of 2025, Rasmus is AB's hospitality and events manager. He has a strong background in the hotel & service industry with over 12 years of experience. Passionate about creating memorable guest experiences, Rasmus specializes in delivering premium fan and VIP experiences, managing events, and developing hospitality concepts that enhance engagement and drive commercial growth. He has a Bachelor's degree in Innovation & Entrepreneurship, and enjoys developing new ideas, challenging the status quo, and creating innovative solutions that improve both the customer experience and business performance.",
+  },
 ];
 
 const sporting = [
@@ -389,7 +407,7 @@ function initials(name: string) {
   #bio-lb-photo-wrap {
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    background: #006a52;
+    background: var(--ab-green);
     flex-shrink: 0;
   }
   #bio-lb-img {
@@ -426,7 +444,7 @@ function initials(name: string) {
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #006a52;
+    color: var(--ab-green);
     display: block;
     margin-bottom: 2px;
   }
