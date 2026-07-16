@@ -74,7 +74,7 @@ for (const event of upcoming) {
           <a
             href={tab.href}
             class="font-black text-sm px-4 py-1.5 rounded-full"
-            style={`text-decoration:none; letter-spacing:-0.02em; ${filter === tab.value ? 'background:#D3BC8D; color:#006A52;' : 'color:#555;'}`}
+            style={`text-decoration:none; letter-spacing:-0.02em; ${filter === tab.value ? 'background:var(--ab-beige); color:var(--ab-green);' : 'color:#555;'}`}
           >{tab.label}</a>
         ))}
       </div>
@@ -92,7 +92,7 @@ for (const event of upcoming) {
         <div class="flex items-center gap-3">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <rect width="20" height="20" rx="4" fill="rgba(255,255,255,0.15)"/>
-            <path d="M4 6h12M4 10h12M4 14h8" stroke="#D3BC8D" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M4 6h12M4 10h12M4 14h8" stroke="var(--ab-beige)" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
           <span class="font-black text-white text-sm tracking-[-0.02em]">Betinia Liga</span>
         </div>

@@ -18,11 +18,11 @@ interface Props {
 }
 
 const T = {
-  border: '#152214',
-  green: '#006A52',
-  gold: '#D6A02A',
-  muted: '#8AA898',
-  surface: '#0D1A10',
+  border: 'var(--surface-border)',
+  green: 'var(--ab-green)',
+  gold: 'var(--ab-gold)',
+  muted: 'var(--surface-muted)',
+  surface: 'var(--surface-base)',
 };
 
 export default function ArticleSearch({ articles, locale, basePath }: Props) {
@@ -141,7 +141,7 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
                     <span
                       key={idx}
                       className="text-[0.6rem] font-bold uppercase px-2 py-0.5 text-ab-green tracking-[0.1em]"
-                      style={{ background: 'rgba(0,106,82,0.1)' }}
+                      style={{ background: 'color-mix(in srgb, var(--ab-green) 10%, transparent)' }}
                     >
                       {cat.name}
                     </span>

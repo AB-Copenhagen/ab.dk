@@ -57,7 +57,7 @@ const scenarios = [
               <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style="padding-bottom:4rem">
                 <p
                   class="font-black tabular-nums"
-                  style={`font-size:clamp(4rem,11vw,7rem);line-height:1;text-shadow:0 3px 24px rgba(0,0,0,0.65);color:${s.isLive ? '#00FF1F' : 'white'}`}
+                  style={`font-size:clamp(4rem,11vw,7rem);line-height:1;text-shadow:0 3px 24px rgba(0,0,0,0.65);color:${s.isLive ? 'var(--ab-neon)' : 'white'}`}
                 >{s.score}</p>
                 {s.isFinished && (
                   <span class="mt-2 font-bold text-white/60 uppercase tracking-[0.2em]" style="font-size:0.65rem;text-shadow:0 1px 8px rgba(0,0,0,0.6)">Slutresultat</span>

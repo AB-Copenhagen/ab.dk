@@ -64,13 +64,13 @@ const productSchema = {
   ogImage={imageUrl ?? undefined}
   structuredData={productSchema}
 >
-  <div style="background:#fff">
+  <div style="background:var(--ab-white)">
     <div class="border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-5 md:px-12 pt-10 pb-6">
         <a
           href="/products"
           class="inline-flex items-center gap-2 text-xs font-bold uppercase hover:underline"
-          style="color:#006A52;letter-spacing:0.15em"
+          style="color:var(--ab-green);letter-spacing:0.15em"
         >
           ← Alle produkter
         </a>
@@ -91,7 +91,7 @@ const productSchema = {
             ) : (
               <div
                 class="w-full h-full flex items-center justify-center font-black text-6xl"
-                style="color:rgba(0,106,82,0.15)"
+                style="color:color-mix(in srgb, var(--ab-green) 15%, transparent)"
               >
                 AB
               </div>
@@ -115,7 +115,7 @@ const productSchema = {
 
         <div class="flex flex-col justify-start pt-2">
           {category && (
-            <p class="text-[0.6rem] font-bold uppercase mb-3" style="color:#006A52;letter-spacing:0.2em">
+            <p class="text-[0.6rem] font-bold uppercase mb-3" style="color:var(--ab-green);letter-spacing:0.2em">
               {category}
             </p>
           )}
@@ -127,7 +127,7 @@ const productSchema = {
           </h1>
 
           {price && (
-            <p class="text-3xl font-black tabular-nums mb-8" style="color:#D6A02A">
+            <p class="text-3xl font-black tabular-nums mb-8" style="color:var(--ab-gold)">
               {price}
             </p>
           )}
@@ -147,13 +147,13 @@ const productSchema = {
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center justify-center px-8 py-4 font-black text-sm uppercase tracking-widest text-black transition-all hover:opacity-90"
-              style="background:#D6A02A;letter-spacing:0.15em"
+              style="background:var(--ab-gold);letter-spacing:0.15em"
             >
               Køb nu →
             </a>
           )}
 
-          <div class="mt-8 h-0.5 w-12" style="background:#006A52"></div>
+          <div class="mt-8 h-0.5 w-12" style="background:var(--ab-green)"></div>
         </div>
 
       </div>

@@ -158,7 +158,7 @@ export default function SearchModal({ locale }: Props) {
               className="w-[16px] h-[16px] rounded-full shrink-0"
               style={{
                 border: '2px solid #E5E7EB',
-                borderTopColor: '#006A52',
+                borderTopColor: 'var(--ab-green)',
                 animation: 'spin 0.6s linear infinite',
               }}
             />
@@ -194,7 +194,7 @@ export default function SearchModal({ locale }: Props) {
                     <div className="w-[52px] h-[40px] bg-[#F3F4F6] rounded-[4px] shrink-0 flex items-center justify-center">
                       <span
                         className="text-[1.1rem] font-black"
-                        style={{ color: 'rgba(0,106,82,0.2)' }}
+                        style={{ color: 'color-mix(in srgb, var(--ab-green) 20%, transparent)' }}
                       >
                         AB
                       </span>

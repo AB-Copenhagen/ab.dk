@@ -60,7 +60,7 @@ const matchTime = new Date(startDate).toLocaleTimeString('en-GB', {
 });
 
 const cmsMatch = await fetchMatchContent(eventId).catch(() => null);
-const accentColor = cmsMatch?.accentColor ?? '#006a52';
+const accentColor = cmsMatch?.accentColor ?? 'var(--ab-green)';
 const articles = cmsMatch?.articles ?? [];
 const socialEmbeds = cmsMatch?.socialEmbeds ?? [];
 
@@ -122,7 +122,7 @@ const matchSchema = {
 >
 
   <!-- Hero -->
-  <div style="background:#060806">
+  <div style="background:#2A2A2A">
     <div class="max-w-5xl mx-auto px-5 md:px-12 pt-8 pb-10">
 
       <!-- Back link -->
@@ -137,7 +137,7 @@ const matchSchema = {
       {tournamentName && (
         <div class="flex items-center gap-2 mb-6">
           <img src="/images/division-1-logo-white.svg" alt="" aria-hidden="true" class="h-4 w-auto" />
-          <p class="text-[0.6rem] font-bold uppercase tracking-[0.22em] text-ab-neon">{tournamentName}</p>
+          <p class="text-[0.6rem] font-bold uppercase tracking-[0.22em] text-white">{tournamentName}</p>
         </div>
       )}
 
@@ -213,7 +213,7 @@ const matchSchema = {
         <!-- Home / Away badge -->
         <span
           class="inline-flex items-center px-3 py-1 font-black uppercase tracking-[0.14em] rounded-full"
-          style={`font-size:0.6rem;${isHome ? 'background:#006A52;color:#00FF1F' : 'background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55)'}`}
+          style={`font-size:0.6rem;${isHome ? 'background:var(--ab-green);color:var(--ab-neon)' : 'background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55)'}`}
         >
           {isHome ? 'Home' : 'Away'}
         </span>
@@ -262,7 +262,7 @@ const matchSchema = {
                   {isLive ? (
                     <span class="inline-flex items-center gap-3">
                       Live
-                      <span class="w-3 h-3 rounded-full" style="background:#00FF1F;box-shadow:0 0 8px #00FF1F;animation:pulse 1.5s ease-in-out infinite"></span>
+                      <span class="w-3 h-3 rounded-full" style="background:var(--ab-neon);box-shadow:0 0 8px var(--ab-neon);animation:pulse 1.5s ease-in-out infinite"></span>
                     </span>
                   ) : 'Statistics'}
                 </h2>
@@ -357,7 +357,7 @@ const matchSchema = {
           )}
 
           {isHome && (
-            <section class="relative overflow-hidden rounded-[4px]" style="min-height:280px;background:#060806">
+            <section class="relative overflow-hidden rounded-[4px]" style="min-height:280px;background:var(--surface-ground)">
               <Img
                 src="/images/about-stadium-seat.png"
                 alt=""
@@ -365,9 +365,9 @@ const matchSchema = {
                 class="absolute inset-0 w-full h-full object-cover object-center"
                 style="opacity:0.75"
               />
-              <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(6,8,6,0.72) 30%,rgba(6,8,6,0.35))" />
+              <div class="absolute inset-0" style="background:linear-gradient(135deg,color-mix(in srgb, var(--surface-ground) 72%, transparent) 30%,color-mix(in srgb, var(--surface-ground) 35%, transparent))" />
               <div class="relative z-10 flex flex-col items-center text-center px-8 py-14">
-                <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-4" style="color:#00FF1F">Gladsaxe Stadium</p>
+                <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-4" style="color:var(--ab-neon)">Gladsaxe Stadium</p>
                 <h2 class="font-black text-white uppercase mb-4" style="font-size:clamp(1.75rem,4vw,2.75rem);letter-spacing:-0.02em">
                   Matchday Guide
                 </h2>
@@ -377,7 +377,7 @@ const matchSchema = {
                 <a
                   href="/en/matchday"
                   class="font-black uppercase no-underline px-8 py-3 rounded transition-opacity hover:opacity-90"
-                  style="background:#00FF1F;color:#006A52;font-size:0.8rem;letter-spacing:0.08em"
+                  style="background:var(--ab-neon);color:var(--ab-green);font-size:0.8rem;letter-spacing:0.08em"
                 >
                   Go to guide
                 </a>
@@ -418,7 +418,7 @@ const matchSchema = {
             <a
               class="vivenu-btn flex items-center justify-center gap-2.5 w-full py-4 text-sm font-black uppercase tracking-[0.1em] text-white rounded-[4px] transition-opacity hover:opacity-90"
               href={`${ticketUrl}?useEmbed=true`}
-              style="background:#006A52"
+              style="background:var(--ab-green)"
             >
               <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/>
@@ -447,7 +447,7 @@ const matchSchema = {
                     ) : (
                       <div class="w-16 h-16 rounded shrink-0 bg-[#F0F4F0] flex items-center justify-center">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                          <path d="M4 6h12M4 10h12M4 14h8" stroke="#006A52" stroke-width="1.5" stroke-linecap="round"/>
+                          <path d="M4 6h12M4 10h12M4 14h8" stroke="var(--ab-green)" stroke-width="1.5" stroke-linecap="round"/>
                         </svg>
                       </div>
                     )}

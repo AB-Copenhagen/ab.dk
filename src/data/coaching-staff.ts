@@ -69,6 +69,10 @@ export const COACHING_STAFF: StaffMember[] = [
     photo: '/api/media/players/andreas-sondergaard.png',
     role: { da: 'Fysioterapeut', en: 'Physiotherapist' },
     nationality: { da: 'Dansk', en: 'Danish' },
+    bio: {
+      en: 'Søndergaard joined AB in April 2023 as head physio for the senior team, as well as working with the U19 and U17 Academy teams. Before that, he spent 10 seasons as head physio for the Copenhagen Towers in the Danish American Football league. During his time there, he was part of the team that secured 6 national championships and 1 Northern European Champions league title. He has also worked with both the Senior and U17 American football national teams.',
+      da: 'Søndergaard kom til AB i april 2023 som cheffysioterapeut for førsteholdet samt for U19- og U17-akademiholdene. Forinden tilbragte han 10 sæsoner som cheffysioterapeut for Copenhagen Towers i den danske liga i american football. I den periode var han en del af holdet, der vandt 6 danske mesterskaber og 1 nordeuropæisk Champions League-titel. Han har desuden arbejdet med både senior- og U17-landsholdene i american football.',
+    },
   },
   {
     slug: 'albert-kaarnoe',

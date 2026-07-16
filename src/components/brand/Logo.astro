@@ -8,11 +8,11 @@ interface Props {
 const { variant = 'white', size = 40, class: cls = '' } = Astro.props;
 
 const fills: Record<string, string> = {
-  green: '#006A52',
-  white: '#FFFFFF',
-  gold:  '#D6A02A',
+  green: 'var(--ab-green)',
+  white: 'var(--ab-white)',
+  gold:  'var(--ab-gold)',
 };
-const fill = fills[variant] ?? '#FFFFFF';
+const fill = fills[variant] ?? 'var(--ab-white)';
 ---
 
 <!--
@@ -29,14 +29,14 @@ const fill = fills[variant] ?? '#FFFFFF';
   class={cls}
   style={`height:${size}px;width:auto`}
 >
-  {variant === 'green' && <rect width="80" height="80" fill="#006A52"/>}
+  {variant === 'green' && <rect width="80" height="80" fill="var(--ab-green)"/>}
   <text
     x="40"
     y="54"
     font-family="Helvetica,Arial,sans-serif"
     font-size="32"
     font-weight="900"
-    fill={variant === 'green' ? '#FFFFFF' : fill}
+    fill={variant === 'green' ? 'var(--ab-white)' : fill}
     text-anchor="middle"
     letter-spacing="-2"
   >AB</text>

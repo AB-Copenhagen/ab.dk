@@ -220,7 +220,7 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
                 <a
                   class="vivenu-btn text-xs font-bold px-3 py-1.5 rounded no-underline text-white transition-opacity hover:opacity-80"
                   href={`${ticketByEventId?.[event.eventId] ?? 'https://billet.ab.dk/'}?useEmbed=true`}
-                  style="background:#006A52">
+                  style="background:var(--ab-green)">
                   {translate(locale, 'tickets')}
                 </a>
               )}

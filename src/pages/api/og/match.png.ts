@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
+import { fetchBytes, toBase64, escapeXml, ogFontFaceStyle, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
 
 export const prerender = false;
 
@@ -13,30 +14,6 @@ const SAFE_CDN_LOGO = /^https:\/\/dxugi372p6nmc\.cloudfront\.net\/spdk\/current\
 
 function isSafeLogoUrl(value: string): boolean {
   return value === SAFE_AB_CREST || SAFE_CDN_LOGO.test(value);
-}
-
-async function fetchBytes(url: string): Promise<Uint8Array> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Fetch failed: ${url} (${res.status})`);
-  return new Uint8Array(await res.arrayBuffer());
-}
-
-function toBase64(bytes: Uint8Array): string {
-  let binary = '';
-  const chunkSize = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-  }
-  return btoa(binary);
-}
-
-function escapeXml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }
 
 async function logoDataUri(url: string, origin: string): Promise<string> {
@@ -64,10 +41,11 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [homeLogoDataUri, awayLogoDataUri, divisionLogoBytes] = await Promise.all([
+    const [homeLogoDataUri, awayLogoDataUri, divisionLogoBytes, fontFaceStyle] = await Promise.all([
       logoDataUri(homeLogo, url.origin),
       logoDataUri(awayLogo, url.origin),
       fetchBytes(`${url.origin}/images/division-1-logo-white.svg`),
+      ogFontFaceStyle(url.origin),
     ]);
     const divisionLogoDataUri = `data:image/svg+xml;base64,${toBase64(divisionLogoBytes)}`;
 
@@ -86,30 +64,31 @@ export async function GET({ url }: APIContext) {
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
-        <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="#060806"/>
+        ${fontFaceStyle}
+        <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="#2A2A2A"/>
 
         <!-- Top left: division logo + label -->
         <image href="${divisionLogoDataUri}" x="70" y="${topY}" width="${divisionLogoW}" height="${divisionLogoH}"/>
-        <text x="${70 + divisionLogoW + 18}" y="${topY + divisionLogoH - 10}" font-family="Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="3" fill="#00FF1F">${escapeXml(tournament.toUpperCase())}</text>
+        <text x="${70 + divisionLogoW + 18}" y="${topY + divisionLogoH - 10}" font-family="${OG_FONT_FAMILY}" font-size="22" font-weight="700" letter-spacing="3" fill="${OG_COLORS.white}">${escapeXml(tournament.toUpperCase())}</text>
 
         <!-- Top right: day, date -->
-        <text x="1130" y="${topY + divisionLogoH - 10}" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" fill-opacity="0.7" text-anchor="end">${escapeXml(date)}</text>
+        <text x="1130" y="${topY + divisionLogoH - 10}" font-family="${OG_FONT_FAMILY}" font-size="22" font-weight="700" fill="${OG_COLORS.white}" fill-opacity="0.7" text-anchor="end">${escapeXml(date)}</text>
 
         <!-- Center: home crest + name -->
         <image href="${homeLogoDataUri}" x="${homeCrestX}" y="${crestY}" width="${crestSize}" height="${crestSize}"/>
-        <text x="300" y="${nameY}" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">${escapeXml(home)}</text>
+        <text x="300" y="${nameY}" font-family="${OG_FONT_FAMILY}" font-size="38" font-weight="900" fill="${OG_COLORS.white}" text-anchor="middle">${escapeXml(home)}</text>
 
         <!-- VS -->
-        <text x="600" y="${crestY + crestSize / 2 + 16}" font-family="Arial, sans-serif" font-size="44" font-weight="900" fill="#D6A02A" text-anchor="middle">VS</text>
+        <text x="600" y="${crestY + crestSize / 2 + 16}" font-family="${OG_FONT_FAMILY}" font-size="44" font-weight="900" fill="${OG_COLORS.gold}" text-anchor="middle">VS</text>
 
         <!-- Center: away crest + name -->
         <image href="${awayLogoDataUri}" x="${awayCrestX}" y="${crestY}" width="${crestSize}" height="${crestSize}"/>
-        <text x="900" y="${nameY}" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">${escapeXml(away)}</text>
+        <text x="900" y="${nameY}" font-family="${OG_FONT_FAMILY}" font-size="38" font-weight="900" fill="${OG_COLORS.white}" text-anchor="middle">${escapeXml(away)}</text>
 
         <!-- Bottom center: local time + stadium -->
         ${
           [time, venue].filter(Boolean).length
-            ? `<text x="600" y="585" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" fill-opacity="0.7" text-anchor="middle">${escapeXml([time, venue].filter(Boolean).join('  ·  '))}</text>`
+            ? `<text x="600" y="585" font-family="${OG_FONT_FAMILY}" font-size="22" font-weight="700" fill="${OG_COLORS.white}" fill-opacity="0.7" text-anchor="middle">${escapeXml([time, venue].filter(Boolean).join('  ·  '))}</text>`
             : ''
         }
       </svg>

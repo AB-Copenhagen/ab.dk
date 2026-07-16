@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
+import { OG_COLORS } from '@/lib/og-image';
 
 export const prerender = false;
 
@@ -63,7 +64,7 @@ export async function GET({ url }: APIContext) {
         <defs>
           <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#002A1A"/>
-            <stop offset="42%" stop-color="#006A52"/>
+            <stop offset="42%" stop-color="${OG_COLORS.green}"/>
             <stop offset="100%" stop-color="#00C018"/>
           </linearGradient>
         </defs>

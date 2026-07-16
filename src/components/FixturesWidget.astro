@@ -65,8 +65,8 @@ function formatDate(dateStr: string) {
             {(isFinished || isLive) && event.score ? (
               <span class="font-bold tabular-nums px-2 py-0.5 shrink-0"
                     style={`font-size:0.9rem; ${isLive
-                      ? 'color:#00FF1F;background:rgba(0,255,31,0.08)'
-                      : 'color:#D6A02A;background:rgba(214,160,42,0.08)'}`}>
+                      ? 'color:var(--ab-neon);background:color-mix(in srgb, var(--ab-neon) 8%, transparent)'
+                      : 'color:var(--ab-gold);background:color-mix(in srgb, var(--ab-gold) 8%, transparent)'}`}>
                 {event.score}
               </span>
             ) : (
