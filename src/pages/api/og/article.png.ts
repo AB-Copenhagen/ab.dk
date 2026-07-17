@@ -2,32 +2,46 @@ import type { APIContext } from 'astro';
 import sharp from 'sharp';
 
 import crestDataUri from '../../../../public/images/ab-crest-white.svg?inline';
-import { fetchWasabiBytes } from '@/lib/og-image';
+import { fetchBytes, fetchWasabiBytes } from '@/lib/og-image';
 
 export const prerender = false;
 
 const CANVAS_W = 1200;
 const CANVAS_H = 630;
 
-// Only Strapi media-proxy-shaped paths are allowed — this endpoint takes
-// `image` from the client, so it must not become an open SSRF proxy. Matched
-// against the /api/media/ proxy's URL shape even though the image is fetched
-// directly from Wasabi below (not through that proxy), same as player.png.ts.
-const SAFE_IMAGE_PATH =
+// Article images live in one of two places depending on which provider handled
+// the upload (Wasabi via our own migration/catchup scripts, or Strapi Cloud's
+// own storage for anything uploaded through the admin panel directly) — this
+// endpoint takes `image` from the client, so both shapes must be validated,
+// not just accepted as an open SSRF proxy.
+// Wasabi-proxy-shaped path (fetched directly from Wasabi below, not through
+// the proxy — same as player.png.ts).
+const SAFE_MEDIA_PROXY_PATH =
   /^\/api\/media\/uploads\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|gif)$/i;
+// Strapi Cloud's own media CDN — an external host, so fetching it directly is
+// safe (no self-fetch/deployment-protection risk), same as the SI API CDN.
+const SAFE_STRAPI_CLOUD_MEDIA_URL =
+  /^https:\/\/[a-z0-9-]+\.media\.strapiapp\.com\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|gif)$/i;
 
 export async function GET({ url }: APIContext) {
   const imagePath = url.searchParams.get('image');
 
-  if (!imagePath || !SAFE_IMAGE_PATH.test(imagePath)) {
+  if (!imagePath) {
     return new Response('Invalid image path', { status: 400 });
   }
 
   try {
-    // imagePath is /api/media/{key} — strip the proxy prefix and fetch the
-    // same Wasabi object directly, rather than self-fetching over HTTP.
-    const wasabiKey = imagePath.replace(/^\/api\/media\//, '');
-    const imageBytes = await fetchWasabiBytes(wasabiKey);
+    let imageBytes: Uint8Array;
+    if (SAFE_MEDIA_PROXY_PATH.test(imagePath)) {
+      // imagePath is /api/media/{key} — strip the proxy prefix and fetch the
+      // same Wasabi object directly, rather than self-fetching over HTTP.
+      const wasabiKey = imagePath.replace(/^\/api\/media\//, '');
+      imageBytes = await fetchWasabiBytes(wasabiKey);
+    } else if (SAFE_STRAPI_CLOUD_MEDIA_URL.test(imagePath)) {
+      imageBytes = await fetchBytes(imagePath);
+    } else {
+      return new Response('Invalid image path', { status: 400 });
+    }
 
     const coverImage = await sharp(imageBytes)
       .resize(CANVAS_W, CANVAS_H, { fit: 'cover', position: 'centre' })
