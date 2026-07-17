@@ -1,0 +1,5 @@
+---
+// /blog → /nyheder (Danish canonical route for articles)
+export const prerender = false;
+return Astro.redirect('/nyheder', 301);
+---

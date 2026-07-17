@@ -1,0 +1,53 @@
+---
+import { localePath, translate, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+  name: string;
+  positionLabel: string;
+  shirtNumber?: number | null;
+}
+
+const { locale, name, positionLabel, shirtNumber } = Astro.props;
+
+const squadHref = localePath(locale, '/hold');
+---
+
+<div
+  class="relative flex flex-col justify-center"
+  style="z-index:10; width:clamp(260px,38vw,500px); min-height:clamp(460px,36vw,560px);
+         padding:3.5rem max(1.5rem,5vw) 3.5rem max(1.5rem,8vw);"
+>
+  <a
+    href={squadHref}
+    class="inline-flex items-center gap-1 text-xs font-bold uppercase mb-8 hover:opacity-100 transition-opacity tracking-[0.16em]"
+    style="color:rgba(255,255,255,0.6);"
+  >
+    ← {translate(locale, 'playerBackToSquad')}
+  </a>
+  <p
+    class="font-bold uppercase mb-3 text-[0.6rem] tracking-[0.24em]"
+    style="color:rgba(255,255,255,0.45);"
+  >
+    Akademisk Boldklub 1889
+  </p>
+  <h1
+    class="font-black text-white leading-none mb-3 tracking-[-0.04em]"
+    style="font-size:clamp(2rem,4.5vw,4.5rem); text-transform:none;"
+  >
+    {name}
+  </h1>
+  <p class="text-white mb-10" style="font-size:clamp(1rem,1.4vw,1.25rem); opacity:0.7;">
+    {positionLabel}
+  </p>
+  {
+    shirtNumber != null && (
+      <p
+        class="font-black text-white leading-none select-none"
+        style="font-size:clamp(5rem,10.5vw,11rem); letter-spacing:-0.05em; opacity:0.85;"
+      >
+        {shirtNumber}
+      </p>
+    )
+  }
+</div>

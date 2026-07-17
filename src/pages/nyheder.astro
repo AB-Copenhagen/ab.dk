@@ -1,0 +1,131 @@
+---
+import Base from '@/layouts/Base.astro';
+import Pager from '@/components/Pager.astro';
+import { fetchCollectionTypeWithMeta, strapiMediaUrl } from '@/lib/strapi/client';
+import { truncate, decodeHtml } from '@/lib/utils';
+export const prerender = false;
+
+const locale = 'da';
+// Page 1 carries the hero (1 item) + a full 12-item grid = 13 fetched.
+// Every later page is a plain 12-item grid — no hero to make room for.
+const FIRST_PAGE_SIZE = 13;
+const GRID_PAGE_SIZE = 12;
+
+function formatDate(str: string) {
+  try {
+    return new Date(str).toLocaleDateString('da-DK', { month: 'long', day: 'numeric', year: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
+const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
+const start = page === 1 ? 0 : FIRST_PAGE_SIZE + (page - 2) * GRID_PAGE_SIZE;
+const limit = page === 1 ? FIRST_PAGE_SIZE : GRID_PAGE_SIZE;
+
+const { data: pageArticles, pagination } = await fetchCollectionTypeWithMeta<any[]>('articles', {
+  locale,
+  sort: ['originalPublishedAt:desc'],
+  populate: ['image'],
+  pagination: { start, limit },
+}).catch(() => ({ data: [] as any[], pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } }));
+
+const totalPages =
+  pagination.total <= FIRST_PAGE_SIZE
+    ? 1
+    : 1 + Math.ceil((pagination.total - FIRST_PAGE_SIZE) / GRID_PAGE_SIZE);
+
+// The hero treatment is reserved for the single most recent article — only on page 1.
+const [featured, ...rest] = page === 1 ? pageArticles : [null, ...pageArticles];
+---
+
+<Base locale="da" title="Nyheder | Akademisk Boldklub">
+  <!-- Hero: full-width with image + overlay -->
+  {featured ? (
+    <section class="relative w-full overflow-hidden" style="height:clamp(400px,52vw,660px)">
+      {featured.image?.url ? (
+        <img
+          src={strapiMediaUrl(featured.image.url)}
+          alt={featured.title}
+          loading="eager"
+          class="absolute inset-0 w-full h-full object-cover object-center"
+        />
+      ) : (
+        <div class="absolute inset-0 bg-ab-green"></div>
+      )}
+      <!-- gradient: dark on left, fading right -->
+      <div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.42) 55%,transparent 100%)"></div>
+
+      <div class="relative h-full max-w-7xl mx-auto px-5 md:px-12 flex items-end pb-14 md:pb-20">
+        <div style="max-width:560px">
+          <time class="block text-xs font-bold uppercase mb-3 text-ab-neon tracking-[0.2em]">
+            {formatDate(featured.originalPublishedAt ?? featured.publishedAt)}
+          </time>
+          <h1 class="font-black text-white mb-4 leading-none tracking-[-0.03em]" style="font-size:clamp(1.9rem,4.5vw,3.4rem)">
+            {decodeHtml(featured.title)}
+          </h1>
+          {featured.description && (
+            <p class="text-sm leading-relaxed mb-8" style="color:rgba(255,255,255,0.72)">
+              {truncate(decodeHtml(featured.description), 160)}
+            </p>
+          )}
+          <a
+            href={`/nyheder/${featured.slug}`}
+            class="inline-flex items-center px-8 py-3 text-sm font-bold text-black rounded-full transition-opacity hover:opacity-90 bg-ab-beige tracking-[-0.02em]"
+          >
+            Læs mere
+          </a>
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  <!-- Card grid -->
+  <section class="bg-white">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 md:py-16">
+      {rest.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-12">
+          {rest.map((article: any) => (
+            <a href={`/nyheder/${article.slug}`} class="group block">
+              <div class="overflow-hidden mb-4 aspect-[4/3] bg-[#F3F4F6]">
+                {article.image?.url ? (
+                  <img
+                    src={strapiMediaUrl(article.image.url)}
+                    alt={article.title}
+                    loading="lazy"
+                    class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center font-black text-4xl" style="color:color-mix(in srgb, var(--ab-green) 15%, transparent)">AB</div>
+                )}
+              </div>
+              <time class="block text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.16em]">
+                {formatDate(article.originalPublishedAt ?? article.publishedAt)}
+              </time>
+              <h2 class="font-bold text-base leading-snug text-[#111] tracking-[-0.01em]">
+                {decodeHtml(article.title)}
+              </h2>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="text-center py-24 text-sm text-gray-400">
+          {featured ? 'Ingen øvrige nyheder.' : 'Ingen nyheder endnu.'}
+        </p>
+      )}
+      <Pager
+        currentPage={page}
+        totalPages={totalPages}
+        basePath="/nyheder"
+        prevLabel="← Forrige"
+        nextLabel="Næste →"
+        pageLabel="Side"
+        ofLabel="af"
+      />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .news-hero-cta:hover { background: white; color: black; border-color: white; }
+</style>

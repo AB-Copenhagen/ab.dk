@@ -1,0 +1,410 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@import './tokens.css';
+
+/* ── Font faces ─────────────────────────────────────────────────────────
+   ABC Camera Plain — licensed. Served via /api/media proxy (Wasabi auth).
+   Public direct access is blocked at the Wasabi account level; the server
+   proxy authenticates with WASABI_ACCESS_KEY_ID / WASABI_SECRET_ACCESS_KEY.
+   ─────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'ABC Camera Plain';
+  src:
+    url('/fonts/ABCCameraPlain-Regular.woff2') format('woff2'),
+    url('/api/media/fonts/ABCCameraPlain-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ABC Camera Plain';
+  src:
+    url('/fonts/ABCCameraPlain-Medium.woff2') format('woff2'),
+    url('/api/media/fonts/ABCCameraPlain-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ABC Camera Plain';
+  src:
+    url('/fonts/ABCCameraPlain-Heavy.woff2') format('woff2'),
+    url('/api/media/fonts/ABCCameraPlain-Heavy.woff2') format('woff2');
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* ── Brand palette (source: AB 1889 Brand Guidelines 2026) ── */
+  --color-ab-green: #006a52; /* Pantone 3298 C · RGB 0/106/82 · CMYK 100/32/78/22 */
+  --color-ab-gold: #d6a02a; /* Pantone 131 C  · RGB 212/158/43 · CMYK 17/38/100/0 */
+  --color-ab-beige: #d3bc8d; /* Pantone 467 C  · RGB 211/188/141 — use minimally */
+  --color-ab-neon: #00ff1f; /* Pantone 802 C  · RGB 0/255/31 — digital & spot only, never CMYK */
+  --color-ab-black: #0a0a0a; /* Rich Black — type on light bg & rule lines */
+  --color-ab-white: #ffffff; /* Marks on dark backgrounds */
+
+  /* ── Surface palette (dark-mode UI, derived from AB Green) ── */
+  --color-surface-ground: #060806; /* page background */
+  --color-surface-base: #0d1a10; /* cards, panels */
+  --color-surface-border: #152214; /* borders */
+  --color-surface-muted: #8aa898; /* secondary / placeholder text */
+
+  /* ── Legacy aliases — kept for backwards compat ── */
+  --color-rich-black: #0a0a0a;
+  --color-charcoal: #0a0a0a;
+  --color-lightblack: #141a16;
+
+  --font-display:
+    'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-sans:
+    'ABC Camera Plain', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Body copy size — edit here to change all body text at once */
+  --text-body: 1.0625rem;
+}
+
+@utility text-banner-subtitle {
+  @apply font-sans text-2xl md:text-3xl lg:text-4xl font-extrabold leading-7.5 tracking-[-1.4px] text-white not-italic;
+}
+
+@utility content-container {
+  @apply max-w-[1680px] mx-auto px-5 md:px-10;
+}
+
+@layer components {
+  .squad-filter {
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    background-color: #f3f4f6;
+    color: #374151;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .squad-filter:not(.squad-filter-active):hover {
+    background-color: #e5e7eb;
+    color: var(--ab-green);
+  }
+
+  .squad-filter-active {
+    background-color: var(--ab-green);
+    color: var(--ab-white);
+  }
+
+  .squad-filter-active:hover {
+    background-color: #005442;
+  }
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center font-black rounded-full transition-opacity;
+}
+
+@utility btn-sm {
+  @apply px-5 py-2.5 text-xs tracking-[-0.01em];
+}
+
+@utility btn-md {
+  @apply px-6 py-2.5 text-sm tracking-[-0.01em] hover:opacity-80;
+}
+
+@utility btn-lg {
+  @apply px-10 py-4 text-lg tracking-[-0.02em] hover:opacity-90;
+}
+
+@utility btn-green {
+  @apply bg-ab-green text-white;
+}
+
+@utility btn-dark {
+  @apply bg-black/70 text-white;
+}
+
+@utility btn-beige {
+  @apply bg-ab-beige text-[#111];
+}
+
+/* ── Widget shared styles ────────────────────────────────────────────── */
+@utility widget-header {
+  @apply bg-ab-green px-6 py-3 flex items-center justify-between;
+}
+
+@utility widget-heading {
+  @apply font-black text-white leading-none tracking-[-0.04em] whitespace-nowrap;
+  font-size: 1.125rem;
+}
+
+@utility widget-th {
+  @apply font-black text-ab-green text-base tracking-[-0.04em] whitespace-nowrap text-left;
+}
+
+@utility widget-td {
+  @apply text-ab-green text-base tracking-[-0.02em] align-middle;
+}
+
+@utility widget-row-even {
+  background: #fff;
+}
+@utility widget-row-odd {
+  background: #f4f4f4;
+}
+
+/* ── Match list ─────────────────────────────────────────────────────── */
+@layer components {
+  .match-list {
+    --match-date-col: 7rem;
+    --match-action-col: 100%;
+    --match-logo-col: 3rem;
+    --match-center-col: 3.75rem;
+    --match-name-size: 0.6875rem;
+    --match-vs-size: 1rem;
+
+    @apply py-8 pb-12;
+    background: #f5f5f5;
+  }
+
+  .match-card-body {
+    @apply grid grid-cols-1 gap-3.5 p-4;
+  }
+
+  .match-card-date {
+    @apply shrink-0 flex flex-wrap items-baseline gap-x-3 gap-y-0.5;
+  }
+
+  .match-card-weekday {
+    @apply m-0 w-full text-xs font-black capitalize tracking-[-0.01em] text-ab-green;
+  }
+
+  .match-card-day {
+    @apply m-0 text-xl font-black leading-[1.1] tracking-[-0.04em] text-[#111];
+  }
+
+  .match-card-time {
+    @apply m-0 text-sm font-bold text-[#555];
+  }
+
+  .match-card-action {
+    @apply flex w-full items-center justify-stretch;
+  }
+
+  .match-card-cta {
+    @apply inline-flex w-full items-center justify-center gap-2 rounded font-black whitespace-nowrap no-underline tracking-[-0.02em];
+  }
+
+  .match-card-cta--tickets {
+    @apply px-4 py-2.5 text-sm bg-ab-neon text-ab-green;
+  }
+
+  .match-card-cta--away {
+    @apply px-3 py-2 text-xs bg-[#f5f5f5] text-[#888] border border-[#e5e7eb] tracking-[0.04em];
+  }
+
+  .match-teams {
+    @apply min-w-0 w-full;
+  }
+
+  .match-teams-grid {
+    @apply grid items-center gap-x-1.5 gap-y-0.5 w-full;
+    grid-template-columns:
+      minmax(0, 1fr)
+      var(--match-logo-col)
+      var(--match-center-col)
+      var(--match-logo-col)
+      minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+
+  .match-teams-round {
+    @apply col-start-3 row-start-1 m-0 text-[0.6875rem] leading-[1.2] text-center text-[#999];
+  }
+
+  .match-team-name--home {
+    @apply col-start-1 row-start-2 text-right;
+  }
+
+  .match-team-logo--home {
+    @apply col-start-2 row-start-2;
+  }
+
+  .match-vs {
+    @apply col-start-3 row-start-2 font-black tracking-[-0.04em] text-[#111] text-center;
+    font-size: var(--match-vs-size);
+    line-height: var(--match-logo-col);
+  }
+
+  .match-team-logo--away {
+    @apply col-start-4 row-start-2;
+  }
+
+  .match-team-name--away {
+    @apply col-start-5 row-start-2 text-left;
+  }
+
+  .match-teams-venue {
+    @apply col-start-3 row-start-3 m-0 text-[0.6875rem] leading-[1.2] text-center text-[#777];
+  }
+
+  .match-team-name {
+    @apply font-extrabold text-[#111] min-w-0 truncate;
+    font-size: var(--match-name-size);
+    line-height: var(--match-logo-col);
+  }
+
+  .match-team-logo {
+    @apply relative inline-flex shrink-0 items-center justify-center;
+    width: var(--match-logo-col);
+    height: var(--match-logo-col);
+  }
+
+  .match-team-logo-img {
+    @apply object-contain;
+    width: var(--match-logo-col);
+    height: var(--match-logo-col);
+  }
+
+  .match-team-logo-fallback {
+    @apply hidden rounded-full items-center justify-center bg-[#f5f5f5] border border-[#e5e7eb];
+    width: var(--match-logo-col);
+    height: var(--match-logo-col);
+  }
+
+  .match-team-logo--fallback .match-team-logo-img {
+    @apply hidden;
+  }
+
+  .match-team-logo--fallback .match-team-logo-fallback {
+    @apply flex;
+  }
+
+  @media (min-width: 480px) {
+    .match-list {
+      --match-logo-col: 3.25rem;
+      --match-center-col: 4rem;
+      --match-name-size: 0.75rem;
+      --match-vs-size: 1.0625rem;
+    }
+
+    .match-teams-grid {
+      @apply gap-x-2;
+    }
+
+    .match-teams-round,
+    .match-teams-venue {
+      @apply text-xs;
+    }
+
+    .match-card-day {
+      @apply text-[1.375rem];
+    }
+  }
+
+  @media (min-width: 640px) {
+    .match-list {
+      --match-date-col: 8.75rem;
+      --match-action-col: 7.5rem;
+      --match-logo-col: 3.375rem;
+      --match-center-col: 4.5rem;
+      --match-vs-size: 1.125rem;
+    }
+
+    .match-card-body {
+      @apply items-center gap-4 px-5 py-4;
+      grid-template-columns: var(--match-date-col) minmax(0, 1fr) var(
+          --match-action-col
+        );
+    }
+
+    .match-card-date {
+      @apply block;
+    }
+
+    .match-card-weekday {
+      @apply w-auto;
+    }
+
+    .match-card-day {
+      @apply text-2xl;
+    }
+
+    .match-card-time {
+      @apply mt-0.5;
+    }
+
+    .match-card-action {
+      @apply justify-end;
+      width: var(--match-action-col);
+    }
+
+    .match-card-cta {
+      @apply w-auto;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .match-list {
+      --match-logo-col: 3.5rem;
+      --match-center-col: 5rem;
+    }
+
+    .match-teams-grid {
+      @apply gap-x-2.5;
+    }
+  }
+}
+
+/* ── Base document ──────────────────────────────────────────────────── */
+html {
+  background: #fff;
+  color: var(--ab-white);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  scrollbar-width: none; /* Firefox */
+}
+html::-webkit-scrollbar {
+  display: none; /* Chrome / Safari */
+}
+
+/* ── Typography defaults ────────────────────────────────────────────── */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: var(--tracking-head);
+    font-weight: 900;
+    text-align: left;
+  }
+
+  /* Body copy: always mixed-case, never justified. */
+  p,
+  li,
+  td,
+  th {
+    letter-spacing: var(--tracking-body);
+  }
+}
+
+/* ── Focus ring ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--ab-neon);
+  outline-offset: 2px;
+}
+
+/* ── External-link indicator ─────────────────────────────────────────── */
+a[target="_blank"]:not([aria-label])::after {
+  content: '\00a0↗';
+  font-size: 0.68em;
+  vertical-align: super;
+  line-height: 1;
+  opacity: 0.5;
+}
+.nav-utility a[target="_blank"]::after,
+.nav-main a[target="_blank"]::after {
+  content: none;
+}

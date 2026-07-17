@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "partners",
+  "info": {
+    "singularName": "partner",
+    "pluralName": "partners",
+    "displayName": "Partner"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "url": {
+      "type": "string"
+    },
+    "logoWidth": {
+      "type": "integer",
+      "default": 160
+    },
+    "logoHeight": {
+      "type": "integer",
+      "default": 52
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 0
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": ["main", "kit", "media", "other"],
+      "default": "main"
+    }
+  }
+}

@@ -1,0 +1,82 @@
+---
+description: Danish/English routing, locale conventions, and UI string translation
+globs: src/pages/**,src/components/**,src/lib/i18n.ts,src/lib/nav-config.ts,src/middleware.ts
+alwaysApply: false
+---
+
+# i18n & Routing
+
+## URL structure
+
+| Locale | Pattern | Example |
+|---|---|---|
+| Danish (default) | no prefix | `/kampe`, `/nyheder`, `/hold` |
+| English | `/en/` prefix | `/en/kampe`, `/en/nyheder` |
+
+Configured in `astro.config.mjs`: `defaultLocale: 'da'`, `prefixDefaultLocale: false`.
+
+## Adding a page
+
+Mirror both locales when content is user-facing:
+
+```
+src/pages/kampe.astro       → Danish
+src/pages/en/kampe.astro    → English
+```
+
+Static marketing pages can use `export const prerender = true` in both.
+
+## Locale helpers
+
+```ts
+import { getLocale, localePath, translate, type Locale } from '@/lib/i18n';
+
+const locale = getLocale(Astro.url);           // 'da' | 'en'
+const href = localePath('en', '/kampe');       // '/en/kampe'
+const label = translate(locale, 'fixtures');   // UI strings
+```
+
+Pass `locale` to `<Base locale={locale}>` and Strapi calls (`{ locale }`).
+
+## UI strings
+
+All shared UI copy lives in `src/lib/i18n.ts`. Use `translate()` — never inline `locale === 'da' ? ... : ...` for strings that exist in the dictionary.
+
+```astro
+---
+import { translate } from '@/lib/i18n';
+
+const { locale } = Astro.props;
+---
+
+<h1>{translate(locale, 'fixtures')}</h1>
+<p aria-label={translate(locale, 'search')}>…</p>
+```
+
+### Adding a key
+
+1. Add the same camelCase key to both `t.da` and `t.en` in `src/lib/i18n.ts`
+2. Use `translate(locale, 'yourKey')` in the component or page
+3. `TranslationKey` is inferred from `t.da` — new keys are type-checked automatically
+
+```ts
+// src/lib/i18n.ts
+da: { secondDivision: '2. Division', … },
+en: { secondDivision: '2nd Division', … },
+```
+
+Reserve inline locale ternaries for non-dictionary values only (e.g. `toLocaleDateString` locale codes, page-specific marketing copy not reused elsewhere).
+
+## Middleware
+
+`src/middleware.ts` sets `context.locals.locale` and guards `/konto/profil` routes via Descope cookie `DS`.
+
+## Date formatting
+
+Use locale-aware formatters in page frontmatter:
+
+```ts
+date.toLocaleDateString(locale === 'en' ? 'en-GB' : 'da-DK', { ... })
+```
+
+Do not hardcode Danish strings in English pages — add a key to `i18n.ts` and use `translate()`.

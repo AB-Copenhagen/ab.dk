@@ -1,0 +1,136 @@
+---
+import type { Locale } from '@/lib/i18n';
+
+interface Props {
+  widget: string;
+  params: Record<string, string | number | undefined>;
+  minHeight?: number;
+  label?: string;
+  locale?: Locale;
+}
+
+const { widget, params, minHeight = 400, label, locale = 'da' } = Astro.props;
+
+const t = {
+  da: {
+    message: 'Denne widget kræver samtykke til funktionelle cookies.',
+    enable: 'Aktiver',
+  },
+  en: {
+    message: 'This widget requires consent for functional cookies.',
+    enable: 'Enable',
+  },
+}[locale];
+
+// Build query string — skip undefined values and never inject width (handled by CSS)
+const qs = new URLSearchParams();
+qs.set('nopadding', 'true');
+qs.set('transparent', 'true');
+for (const [key, val] of Object.entries(params)) {
+  if (val !== undefined && val !== null && String(val) !== '') {
+    qs.set(key, String(val));
+  }
+}
+
+const widgetUrl = `https://dash.si-ab.com/widgets/${widget}?${qs.toString()}`;
+const uid = `siw-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  class="si-widget-wrapper relative w-full overflow-hidden"
+  style={`min-height:${minHeight}px`}
+  data-uid={uid}
+>
+  {/* Green shimmer placeholder shown until IntersectionObserver fires */}
+  <div
+    class="si-widget-shimmer absolute inset-0"
+    aria-hidden="true"
+    style="background:linear-gradient(90deg,var(--surface-base) 25%,#122718 50%,var(--surface-base) 75%);background-size:200% 100%;animation:siShimmer 1.6s ease-in-out infinite;"
+  ></div>
+
+  {/* Shown instead of the widget when functional consent hasn't been granted yet */}
+  <div class="si-widget-consent-needed hidden absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center" style="background:var(--surface-base)">
+    <p class="text-white/60 text-xs max-w-[32ch]">{t.message}</p>
+    <button
+      type="button"
+      class="si-widget-enable font-black text-xs px-4 py-2 bg-ab-green text-white tracking-[-0.01em] hover:opacity-90 transition-opacity"
+    >
+      {t.enable}
+    </button>
+  </div>
+
+  <iframe
+    id={uid}
+    data-src={widgetUrl}
+    width="100%"
+    height="100%"
+    allowfullscreen
+    aria-label={label ?? widget}
+    class="relative z-[1] block border-0"
+    style={`min-height:${minHeight}px`}
+    title={label ?? widget}
+  ></iframe>
+</div>
+
+<style>
+  @keyframes siShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
+
+<script>
+  import { onConsentChange } from '@/lib/consent-gate-client';
+
+  document.querySelectorAll<HTMLElement>('.si-widget-wrapper').forEach((wrapper) => {
+    const uid = wrapper.dataset.uid;
+    if (!uid) return;
+    const iframeEl = document.getElementById(uid) as HTMLIFrameElement | null;
+    if (!iframeEl) return;
+    const iframe = iframeEl;
+
+    const shimmer = wrapper.querySelector<HTMLElement>('.si-widget-shimmer');
+    const consentNeeded = wrapper.querySelector<HTMLElement>('.si-widget-consent-needed');
+    const enableBtn = wrapper.querySelector<HTMLButtonElement>('.si-widget-enable');
+
+    function load() {
+      if (iframe.src) return; // already loaded
+      consentNeeded?.classList.add('hidden');
+      iframe.src = iframe.dataset.src ?? '';
+      iframe.addEventListener('load', () => {
+        if (shimmer) shimmer.style.display = 'none';
+      }, { once: true });
+    }
+
+    function showConsentNeeded() {
+      if (iframe.src) return; // already loaded, ignore
+      shimmer && (shimmer.style.display = 'none');
+      consentNeeded?.classList.remove('hidden');
+    }
+
+    function whenVisible(callback: () => void) {
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            if (entries[0].isIntersecting) {
+              callback();
+              observer.disconnect();
+            }
+          },
+          { rootMargin: '200px' }
+        );
+        observer.observe(iframe);
+      } else {
+        callback();
+      }
+    }
+
+    whenVisible(() => {
+      onConsentChange('functional', load, showConsentNeeded);
+    });
+
+    enableBtn?.addEventListener('click', () => {
+      (window as unknown as { abOpenCookieSettings?: () => void }).abOpenCookieSettings?.();
+    });
+  });
+</script>

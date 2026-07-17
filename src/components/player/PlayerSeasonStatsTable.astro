@@ -1,0 +1,56 @@
+---
+import type { SISeasonStats } from '@/lib/si/client';
+import { translate, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+  rows: SISeasonStats[];
+}
+
+const { locale, rows } = Astro.props;
+
+if (rows.length === 0) {
+  return null;
+}
+
+const widgetTitle = translate(locale, 'latestResults').replace(/\n/g, ' ');
+
+const columns = [
+  { key: 'season', label: translate(locale, 'season'), align: 'left' as const },
+  { key: 'team', label: translate(locale, 'team'), align: 'left' as const },
+  { key: 'goals', label: translate(locale, 'goals'), align: 'left' as const },
+  { key: 'assists', label: translate(locale, 'assists'), align: 'left' as const },
+  { key: 'yellowCards', label: translate(locale, 'yellowCards'), align: 'left' as const },
+  { key: 'redCards', label: translate(locale, 'redCards'), align: 'left' as const },
+];
+---
+
+<div>
+  <div class="widget-header">
+    <h2 class="widget-heading">{widgetTitle}</h2>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse min-w-[640px]">
+      <thead>
+        <tr class="bg-ab-neon">
+          {columns.map((col) => (
+            <th class="widget-th py-3 px-4">{col.label}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr class={i % 2 === 0 ? 'widget-row-even' : 'widget-row-odd'}>
+            <td class="widget-td py-4 px-4 font-black whitespace-nowrap">{row.seasonName}</td>
+            <td class="widget-td py-4 px-4 text-right whitespace-nowrap">{row.teamName}</td>
+            <td class="widget-td py-4 px-4 text-center tabular-nums whitespace-nowrap">{row.goals}</td>
+            <td class="widget-td py-4 px-4 tabular-nums whitespace-nowrap">{row.assists}</td>
+            <td class="widget-td py-4 px-4 tabular-nums whitespace-nowrap">{row.yellowCards}</td>
+            <td class="widget-td py-4 px-4 tabular-nums whitespace-nowrap">{row.redCards}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+---
+import Base from '@/layouts/Base.astro';
+import MatchList, { type MatchListFilter } from '@/components/MatchList.astro';
+import StandingsWidget from '@/components/StandingsWidget.astro';
+import { fetchABEvents } from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
+import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+import Img from '@/components/Img.astro';
+export const prerender = false;
+
+const locale = 'da';
+
+const now = new Date();
+// Fetch the full current season: from ~11 months ago to ~3 months ahead
+const seasonFrom = new Date(now);
+seasonFrom.setMonth(seasonFrom.getMonth() - 11);
+const seasonTo = new Date(now);
+seasonTo.setMonth(seasonTo.getMonth() + 3);
+
+let events: Awaited<ReturnType<typeof fetchABEvents>> = [];
+try {
+  events = await fetchABEvents({
+    locale,
+    limit: 200,
+    fromDate: seasonFrom.toISOString().slice(0, 10),
+    toDate: seasonTo.toISOString().slice(0, 10),
+  });
+} catch { /* SI API unavailable */ }
+const filter = (Astro.url.searchParams.get('filter') ?? 'upcoming') as MatchListFilter;
+const upcoming = events.filter((e) => new Date(e.startDate) >= now);
+const finished = events.filter((e) => new Date(e.startDate) < now).reverse();
+
+const displayEvents =
+  filter === 'home'    ? upcoming.filter((e) => e.homeId === abConfig.teamId) :
+  filter === 'away'    ? upcoming.filter((e) => e.homeId !== abConfig.teamId) :
+  filter === 'results' ? finished :
+  upcoming;
+
+const billetMap = await fetchBilletTicketMap().catch(() => new Map<string, string>());
+const ticketByEventId: Record<number, string> = {};
+for (const event of upcoming) {
+  if (event.homeId === abConfig.teamId) {
+    const url = findTicketUrl(billetMap, event.awayName ?? '');
+    if (url) ticketByEventId[event.eventId] = url;
+  }
+}
+---
+
+<Base locale={locale} title="Kampe | Akademisk Boldklub">
+  <!-- Hero -->
+  <div class="relative w-full">
+    <Img
+      src="/images/matches-header-bg.png"
+      alt="AB 1889 Kampe"
+      class="w-full h-auto block"
+      loading="eager"
+    />
+    <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 55%, transparent 100%);"></div>
+    <div class="absolute inset-0 flex items-end px-8 lg:px-16 pb-10">
+      <h1 class="font-black text-white leading-none tracking-[-0.04em] normal-case" style="font-size:clamp(3.5rem,10vw,8rem);">Kampe</h1>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="bg-white border-b border-[#E5E7EB]">
+    <div class="max-w-7xl mx-auto px-8 flex items-center justify-between h-[56px]">
+      <div class="flex items-center gap-1">
+        {[
+          { label: 'Alle',      value: 'upcoming', href: '/kampe' },
+          { label: 'Hjemme',   value: 'home',     href: '/kampe?filter=home' },
+          { label: 'Ude',      value: 'away',     href: '/kampe?filter=away' },
+          { label: 'Tidligere', value: 'results', href: '/kampe?filter=results' },
+        ].map(tab => (
+          <a
+            href={tab.href}
+            class="font-black text-sm px-4 py-1.5 rounded-full"
+            style={`text-decoration:none; letter-spacing:-0.02em; ${filter === tab.value ? 'background:var(--ab-beige); color:var(--ab-green);' : 'color:#555;'}`}
+          >{tab.label}</a>
+        ))}
+      </div>
+      <div class="hidden md:flex items-center gap-3">
+        <a class="vivenu-btn btn btn-sm btn-green" href="https://billet.ab.dk/?useEmbed=true">Køb billetter</a>
+        <a class="vivenu-btn btn btn-sm bg-ab-beige text-ab-green" href="https://billet.ab.dk/event/seasonal-ticket-pass-26-27-copy-u8hk6v?useEmbed=true">Køb sæsonkort</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CampoBet Division Banner -->
+  <div class="bg-ab-green p-0">
+    <div class="max-w-7xl mx-auto px-8">
+      <div class="flex items-center justify-between h-[56px]">
+        <div class="flex items-center gap-3">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <rect width="20" height="20" rx="4" fill="rgba(255,255,255,0.15)"/>
+            <path d="M4 6h12M4 10h12M4 14h8" stroke="var(--ab-beige)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="font-black text-white text-sm tracking-[-0.02em]">Betinia Liga</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <MatchList locale={locale} events={displayEvents} filter={filter} ticketByEventId={ticketByEventId} />
+
+  <!-- Standings section -->
+  <div id="stilling" class="bg-[#EBEBEB] pt-[40px] pb-[48px]">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <h2 class="font-black mb-6 tracking-[-0.04em] text-[#111]" style="font-size:clamp(1.75rem,4vw,2.5rem);">Stilling</h2>
+      <div>
+        <StandingsWidget locale="da" showHeader={false} />
+      </div>
+    </div>
+  </div>
+
+</Base>

@@ -1,46 +1,43 @@
 {
-  "name": "strapi-next-launchpad-example",
-  "version": "1.0.0",
-  "description": "Next.js Launchpad Example powered by Strapi",
+  "name": "ab-astro",
   "type": "module",
+  "version": "0.1.0",
   "scripts": {
-    "prepare": "husky",
-    "next": "yarn dev --prefix ../next/",
-    "strapi": "yarn dev --prefix ../strapi/",
-    "setup:next": "cd next && yarn && node --loader ts-node/esm ../scripts/copy-env.mts ../next",
-    "setup:strapi": "cd strapi && yarn && node --loader ts-node/esm ../scripts/copy-env.mts  ../strapi",
-    "setup": "yarn && yarn setup:next && yarn setup:strapi",
-    "dev": "yarn concurrently \"cd strapi && yarn develop\" \"npx wait-on http://localhost:1337 && cd next && yarn dev\"",
-    "seed": "cd strapi && yarn strapi import -f ./data/export_20250116105447.tar.gz --force",
-    "export": "cd strapi && yarn strapi export --no-encrypt -f ./data/export_20250116105447",
-    "repo:upstream": "git fetch upstream && git merge upstream/main",
-    "check:format": "prettier . --check --cache",
-    "fix:format": "prettier . --write --cache",
-    "fix": "yarn fix:format",
-    "lint-staged": "lint-staged"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "postinstall": "husky"
   },
   "dependencies": {
-    "@types/node": "^22.5.2",
-    "concurrently": "^8.2.2",
-    "typescript": "^5.0.0",
-    "wait-on": "^8.0.1"
+    "@astrojs/react": "^6.0.0",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/vercel": "^11.0.1",
+    "@aws-sdk/client-s3": "^3.1077.0",
+    "@datum-cloud/strapi-revalidate": "^0.3.0",
+    "@descope/node-sdk": "^2.12.1",
+    "@strapi/blocks-react-renderer": "^1.0.2",
+    "@strapi/client": "^1.6.0",
+    "@tailwindcss/vite": "^4.3.2",
+    "astro": "^7.0.4",
+    "date-fns": "^4.1.0",
+    "fuzzy-search": "^3.2.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@tailwindcss/typography": "^0.5.20",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "dotenv": "^17.2.3",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
     "husky": "^9.1.7",
-    "lint-staged": "^15.2.10",
     "prettier": "^3.5.3",
-    "ts-node": "^10.9.2",
-    "uuid": "^13.0.0"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,md,yml,yaml}": [
-      "yarn fix:format"
-    ],
-    "next/**/*.{js,jsx,ts,tsx}": [
-      "cd next && yarn lint --fix"
-    ]
-  },
-  "packageManager": "yarn@4.5.0"
+    "typescript": "^5.8.3",
+    "vite-tsconfig-paths": "^6.1.1"
+  }
 }

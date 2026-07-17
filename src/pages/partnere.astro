@@ -1,0 +1,126 @@
+---
+import Base from '@/layouts/Base.astro';
+import heroImage from '@/assets/images/IMG_7926.jpeg';
+import { principalPartners, networkPartners } from '@/data/partners';
+---
+
+<Base
+  locale="da"
+  title="Partnere | AB 1889"
+  description="Mød de virksomheder og partnere, der støtter Akademisk Boldklub — fra hovedpartnere til AB Partner-netværket.">
+
+  <!-- Hero -->
+  <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
+    <img
+      src={heroImage.src}
+      alt="Partnerskilte på Gladsaxe Stadion"
+      width={heroImage.width}
+      height={heroImage.height}
+      class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.5] saturate-[0.6]"
+    />
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_70%)]"></div>
+    <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
+      <h1 class="font-black text-white text-[clamp(3rem,9vw,7rem)] tracking-[-0.04em] leading-[0.9]">
+        Partnere
+      </h1>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <div class="w-full bg-ab-black px-8 lg:px-20 py-12 lg:py-16">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="font-black text-white text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] mb-5 max-w-[24ch]">
+        Bliv en del af noget større end fodbold
+      </h2>
+      <div class="space-y-4 text-surface-muted text-[1.0625rem] leading-[1.7] w-full">
+        <p>
+          Hos AB er et partnerskab mere end skilte på stadion. Det er en
+          mulighed for at komme tæt på et passioneret fællesskab, støtte
+          udviklingen af moderne, offensiv fodbold og være med til at forme
+          fremtiden for en af Danmarks mest historiske klubber.
+        </p>
+        <p>
+          Uanset om du er en lokal virksomhed, et globalt brand eller en
+          innovativ startup, arbejder vi sammen med partnere om at skabe
+          meningsfulde oplevelser, autentisk storytelling og langsigtet
+          værdi på og uden for banen.
+        </p>
+      </div>
+      <p class="font-black text-ab-neon text-[1rem] tracking-[-0.01em] mt-6">
+        Bliv en del af holdet. Lad os bygge fremtiden sammen.
+      </p>
+    </div>
+  </div>
+
+  <!-- Principal partners -->
+  <section class="bg-white py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Hovedpartnere</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Vores hovedpartnere</h2>
+      <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-14">
+        Disse virksomheder er tættest knyttet til AB 1889 og bidrager
+        direkte til klubbens sportslige og kommercielle udvikling.
+      </p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        {principalPartners.map((p) => (
+          <a
+            href={`/partnere/${p.slug}`}
+            class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
+            <div class="flex items-center justify-center px-6 py-10 flex-1">
+              <img
+                src={p.logo}
+                alt={p.name}
+                class:list={['object-contain object-center', p.logoSize ?? 'max-h-16 max-w-full']}
+                loading="lazy"
+              />
+            </div>
+            <div class="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-[#FAFAFA]">
+              <span class="font-black text-[0.72rem] text-[#555] tracking-[-0.01em] truncate pr-2">{p.name}</span>
+              <svg class="w-3.5 h-3.5 text-[#CCC] group-hover:text-ab-green transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- AB Partner network -->
+  <section class="bg-surface-base py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 border border-ab-green/40 rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-surface-muted tracking-[0.1em] uppercase">AB Partner</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-white mb-4">AB Partner-netværket</h2>
+      <p class="text-surface-muted text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-14">
+        Et stærkt netværk af lokale og landsdækkende virksomheder, der
+        støtter AB 1889 år efter år — inden for alt fra sport og sundhed til
+        rådgivning og gastronomi.
+      </p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {networkPartners.map((p) => (
+          <a
+            href={`/partnere/${p.slug}`}
+            class="group relative flex flex-col bg-white border border-surface-border rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
+            <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
+              <img
+                src={p.logo}
+                alt={p.name}
+                class="max-h-14 max-w-full object-contain"
+                loading="lazy"
+              />
+            </div>
+            <div class="flex items-center justify-between px-3.5 py-2.5 border-t border-[#f0f0f0]">
+              <span class="font-black text-[0.68rem] text-[#555] tracking-[-0.01em] truncate pr-1.5 leading-tight">{p.name}</span>
+              <svg class="w-3 h-3 text-[#CCC] group-hover:text-ab-green transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Base>

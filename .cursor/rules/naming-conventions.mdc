@@ -1,0 +1,56 @@
+---
+description: JavaScript/TypeScript naming conventions for ab.dk
+globs: src/**/*.{ts,tsx,astro}
+alwaysApply: false
+---
+
+# Naming Conventions
+
+Follow existing patterns in `src/lib/` and `src/components/`.
+
+## Functions & variables
+
+| Kind | Pattern | Examples |
+|---|---|---|
+| General | `camelCase` | `localePath`, `truncate`, `sendMail` |
+| Async fetchers | `fetch` + domain | `fetchCollectionType`, `fetchABEvents` |
+| Config getters | `get` + noun | `getNavConfig`, `getLocale` |
+| URL builders | domain + `Url` | `strapiMediaUrl`, `mediaUrl` |
+| Type guards | `is` + predicate | `isDropdown`, `isWasabiUrl` |
+| Page-local formatters | short `fmt` prefix | `fmtDay`, `fmtTime` (`.astro` frontmatter only) |
+| Booleans | `is` / `has` / `can` | `isGated`, `hasToken` |
+
+Prefer `export function name()` over `export const name = () =>` for named helpers (except small one-liners like `truncate`).
+
+## Types & interfaces
+
+- `PascalCase`, no `I` prefix: `NavConfig`, `SIEvent`, `Locale`
+- Discriminated union members: descriptive string literals (`'text-left'`, `'img-left'`)
+- Config singletons: `camelCase` + `Config` suffix — `siConfig`, `abConfig`
+
+## Components & files
+
+| Asset | File name | Export |
+|---|---|---|
+| Astro component | `PascalCase.astro` | default (implicit) |
+| React island | `PascalCase.tsx` | `export default function Name` |
+| Page route | URL slug, kebab-case | `index.astro`, `[slug].astro`, `kampe.astro` |
+| Lib module | `kebab-case.ts` or domain | `client.ts`, `nav-config.ts` |
+
+Folder names: lowercase (`brand/`, `islands/`, `homepage/`).
+
+## Constants
+
+- Module-level immutable lists: `SCREAMING_SNAKE_CASE` — `GATED_PATHS`
+- Env-backed config objects: `camelCase` — `siConfig`
+- UI string dictionaries: short name `t` in `@/lib/i18n` only
+
+## API routes
+
+Export HTTP verbs as named const: `GET`, `POST` with type `APIRoute`.
+
+## Avoid
+
+- Abbreviations outside established prefixes (`fetch`, `get`, `fmt`, `Url`)
+- Generic names (`data`, `handleClick`) in shared lib code
+- Duplicate `Locale` type — import from `@/lib/i18n`

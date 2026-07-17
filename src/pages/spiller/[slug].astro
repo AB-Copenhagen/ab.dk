@@ -1,0 +1,243 @@
+---
+import Base from '@/layouts/Base.astro';
+import PlayerHeroContent from '@/components/player/PlayerHeroContent.astro';
+import PlayerMetadataBar from '@/components/player/PlayerMetadataBar.astro';
+import PlayerSeasonStatsTable from '@/components/player/PlayerSeasonStatsTable.astro';
+import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
+import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
+import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
+import type { StrapiPlayer } from '@/lib/strapi/client';
+import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
+import { resolveShirtNumber } from '@/data/player-cms-data';
+import { findManualPlayer } from '@/data/manual-players';
+
+export const prerender = false;
+
+// Slug format: {playerId}-{name}  e.g. "987654-mikkel-hansen"
+const { slug } = Astro.params;
+// parseInt (not split('-')[0]) so negative synthetic IDs for manual players parse correctly
+const playerId = slug ? parseInt(slug, 10) : NaN;
+
+if (isNaN(playerId)) {
+  return Astro.redirect('/hold');
+}
+
+const manualPlayer = findManualPlayer(playerId);
+
+let player: SIPlayerProfile | null = null;
+let shirtNumber: number | null = null;
+let seasonStats: SISeasonStats[] = [];
+let cmsPlayer: StrapiPlayer | null = null;
+
+if (manualPlayer) {
+  player = {
+    id: manualPlayer.id,
+    name: manualPlayer.name,
+    position: manualPlayer.position,
+    countryName: manualPlayer.countryName.da,
+    birthDate: manualPlayer.birthDate,
+    height: manualPlayer.height,
+  };
+  shirtNumber = manualPlayer.shirtNumber;
+  cmsPlayer = {
+    siPlayerId: manualPlayer.id,
+    nickname: manualPlayer.nickname,
+    formerClubs: manualPlayer.formerClubs,
+    bio: manualPlayer.bio.da,
+    quote: manualPlayer.quote?.da,
+  };
+} else {
+  try {
+    player = await fetchPlayerProfile(playerId, 'da');
+  } catch {
+    // fall through to redirect
+  }
+
+  if (!player) {
+    return Astro.redirect('/hold');
+  }
+
+  const [squadPlayers, matchStats, fetchedCms] = await Promise.all([
+    fetchABPlayers('da').catch(() => []),
+    fetchPlayerStats(playerId).catch(() => []),
+    fetchPlayerCmsData(playerId, 'da').catch(() => null),
+  ]);
+
+  shirtNumber = resolveShirtNumber(playerId, squadPlayers.find(p => p.id === playerId)?.shirtNumber ?? null);
+  seasonStats = aggregateSeasonStats(matchStats);
+  cmsPlayer = fetchedCms;
+}
+
+if (!player) {
+  return Astro.redirect('/hold');
+}
+
+const { name, position, countryName, birthDate, height } = player;
+const photoUrl = getPlayerPhotoUrl(name);
+
+const posLabels: Record<string, string> = {
+  keeper:     'Målmand',
+  defender:   'Forsvarer',
+  midfielder: 'Midtbane',
+  forward:    'Angriber',
+};
+const posLabel = posLabels[position?.toLowerCase() ?? ''] ?? position;
+
+const pageTitle = `${name} | Akademisk Boldklub`;
+
+const dob = birthDate
+  ? new Date(birthDate).toLocaleDateString('da-DK', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  : null;
+
+// Gallery images with absolute URLs
+const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
+  ...img,
+  src: strapiMediaUrl(img.url),
+}));
+
+const playerDescription = cmsPlayer?.bio
+  ? cmsPlayer.bio.slice(0, 160)
+  : `${name}${posLabel ? `, ${posLabel}` : ''} for Akademisk Boldklub (AB 1889).`;
+const absolutePhotoUrl = photoUrl ? `https://ab.dk${photoUrl}` : undefined;
+const ogCardImageUrl = photoUrl
+  ? `/api/og/player.png?photo=${encodeURIComponent(photoUrl)}`
+  : undefined;
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name,
+  jobTitle: posLabel,
+  nationality: countryName,
+  birthDate: birthDate ?? undefined,
+  image: absolutePhotoUrl,
+  memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
+  url: `https://ab.dk/spiller/${slug}`,
+};
+---
+
+<Base
+  locale="da"
+  title={pageTitle}
+  description={playerDescription}
+  ogImage={ogCardImageUrl}
+  ogType="profile"
+  structuredData={personSchema}
+>
+  <!-- ── Hero ───────────────────────────────────────────────────────── -->
+  <div class="relative w-full overflow-hidden"
+       style="background:linear-gradient(to right, #002A1A 0%, var(--ab-green) 42%, #00C018 100%); min-height:clamp(460px,36vw,560px);">
+
+    <!-- AB 1889 logo watermark behind photo -->
+    <img src="/images/logo-behind-player.svg" alt="" aria-hidden="true"
+         class="absolute hidden md:block pointer-events-none select-none"
+         style="left:40%; top:50%; transform:translate(-50%,-50%); z-index:1;
+                width:clamp(320px,33vw,580px); height:auto; opacity:1;" />
+
+    <!-- Circular crest — right side, visible against bright green -->
+    <img src="/images/ab-crest-white.svg" alt="" aria-hidden="true"
+         class="absolute hidden lg:block pointer-events-none select-none"
+         style="right:1%; top:50%; transform:translateY(-50%); z-index:1;
+                width:clamp(280px,29vw,500px); height:auto; opacity:0.45;" />
+
+    <!-- Player photo (no side gradients) -->
+    {photoUrl && (
+      <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
+        <img
+          src={photoUrl}
+          alt={name}
+          loading="eager"
+          class="h-full w-auto max-w-none"
+          onerror="this.style.display='none'"
+        />
+      </div>
+    )}
+
+    <PlayerHeroContent
+      locale="da"
+      name={name}
+      positionLabel={posLabel}
+      shirtNumber={shirtNumber}
+    />
+
+  </div>
+
+  <PlayerMetadataBar
+    locale="da"
+    positionLabel={posLabel}
+    nickname={cmsPlayer?.nickname}
+    formerClubs={cmsPlayer?.formerClubs}
+    countryName={countryName}
+    height={height}
+    dateOfBirth={dob}
+  />
+
+  <!-- ── Bio + Latest Results ───────────────────────────────────────── -->
+  <section class="bg-white">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
+
+        <!-- Left: Player Bio + Quote -->
+        <div>
+          <h2 class="font-black text-xl mb-4 text-[#111]">Spillerprofil</h2>
+          {cmsPlayer?.bio ? (
+            <div class="space-y-4">
+              {cmsPlayer.bio.split('\n\n').filter(Boolean).map(para => (
+                <p class="text-[#444] leading-[1.75] text-[0.9375rem]">{para}</p>
+              ))}
+            </div>
+          ) : (
+            <p class="text-[#aaa] text-[0.875rem] leading-[1.7]">
+              Spillerprofil tilføjes snart.
+            </p>
+          )}
+          {cmsPlayer?.quote && (
+            <div class="relative mt-8 pl-3">
+              <span aria-hidden="true" class="absolute top-0 left-0 font-black leading-none select-none pointer-events-none text-[5rem] text-ab-beige opacity-25">&ldquo;</span>
+              <blockquote class="relative font-medium italic leading-snug pt-5 text-ab-green tracking-[-0.01em]"
+                          style="font-size:clamp(1.1rem,2vw,1.5rem);">
+                {cmsPlayer.quote}
+              </blockquote>
+            </div>
+          )}
+        </div>
+
+        <!-- Right: Latest Results -->
+        <PlayerSeasonStatsTable locale="da" rows={seasonStats} />
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Photo gallery ─────────────────────────────────────────────── -->
+  {galleryImages.length > 0 && (
+    <section>
+      <!-- Full-width first image -->
+      <div class="w-full overflow-hidden aspect-[16/7]">
+        <img
+          src={galleryImages[0].src}
+          alt={galleryImages[0].alternativeText ?? name}
+          class="w-full h-full object-cover"
+        />
+      </div>
+      <!-- 3-column grid for remaining images -->
+      {galleryImages.length > 1 && (
+        <div class="grid grid-cols-3">
+          {galleryImages.slice(1, 4).map(img => (
+            <div class="overflow-hidden aspect-square">
+              <img
+                src={img.src}
+                alt={img.alternativeText ?? name}
+                class="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  )}
+</Base>

@@ -1,0 +1,286 @@
+---
+import betiniaLiga from '@/assets/images/betinia-liga.webp';
+import { translate, type Locale } from '@/lib/i18n';
+import { fetchStandings, getTeamLogoSrc, type SIStandingRow } from '@/lib/si/client';
+
+interface Props {
+  locale: Locale;
+  showHeader?: boolean;
+}
+
+const { locale, showHeader = true } = Astro.props;
+
+let rows: SIStandingRow[] = [];
+let error = '';
+
+try {
+  rows = await fetchStandings(locale);
+} catch {
+  error =
+    locale === 'da' ? 'Stilling ikke tilgængelig' : 'Standings unavailable';
+}
+
+const headers =
+  locale === 'da'
+    ? ['#', 'Hold', 'K', 'V', 'U', 'T', 'F', 'M', 'Mål', 'Pt']
+    : ['Pos', 'Team', 'P', 'W', 'D', 'L', 'F', 'A', 'GD', 'Pts'];
+
+---
+
+<div class="standings-widget">
+  {
+    showHeader && (
+      <div class="widget-header">
+        <h3 class="widget-heading">
+          {translate(locale, 'firstDivision')} {translate(locale, 'standingsTitle')}
+        </h3>
+        <img
+          src={betiniaLiga.src}
+          alt="Betinia Liga"
+          class="standings-sponsor"
+          width="151"
+          height="48"
+          loading="lazy"
+        />
+      </div>
+    )
+  }
+
+  {
+    error ? (
+      <div class="standings-empty">{error}</div>
+    ) : !rows.length ? (
+      <div class="standings-empty">
+        {locale === 'da'
+          ? 'Sæsonen er endnu ikke startet'
+          : 'Season has not started yet'}
+      </div>
+    ) : (
+      <div class="standings-table-wrap">
+        <table class="standings-table">
+          <colgroup>
+            <col class="standings-col standings-col--pos" />
+            <col class="standings-col standings-col--team" />
+            <col span="8" class="standings-col standings-col--stat" />
+          </colgroup>
+          <thead>
+            <tr class="standings-col-head">
+              {headers.map((h, i) => (
+                <th
+                  class:list={[
+                    'widget-th standings-th',
+                    i === 0 && 'standings-th--pos',
+                    i === 1 && 'standings-th--team',
+                    i >= 2 && 'standings-th--stat',
+                  ]}
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => {
+              const gd = (row.goalsScored ?? 0) - (row.goalsConceded ?? 0);
+              const gdStr = gd > 0 ? `+${gd}` : String(gd);
+              return (
+                <tr
+                  class:list={[
+                    'standings-row',
+                    index % 2 === 0 ? 'widget-row-even' : 'widget-row-odd',
+                  ]}
+                >
+                  <td class="widget-td standings-td standings-td--pos">{row.rank}</td>
+                  <td class="widget-td standings-td standings-td--team">
+                    <span class="standings-team">
+                      <span class="standings-team-logo">
+                        <img
+                          src={getTeamLogoSrc(row.teamId)}
+                          alt=""
+                          loading="lazy"
+                          onerror="this.closest('.standings-team-logo')?.classList.add('standings-team-logo--fallback')"
+                        />
+                        <span class="standings-team-initial" aria-hidden="true">
+                          {(row.teamShortName ?? row.teamName ?? '?').slice(0, 3)}
+                        </span>
+                      </span>
+                      <span class="standings-team-name">
+                        {row.teamName ?? '—'}
+                      </span>
+                    </span>
+                  </td>
+                  <td class="widget-td standings-td standings-td--stat">
+                    {row.matchesPlayed}
+                  </td>
+                  <td class="widget-td standings-td standings-td--stat">
+                    {row.matchesWon}
+                  </td>
+                  <td class="widget-td standings-td standings-td--stat">
+                    {row.matchesDraw}
+                  </td>
+                  <td class="widget-td standings-td standings-td--stat">
+                    {row.matchesLost}
+                  </td>
+                  <td class="widget-td standings-td standings-td--stat">
+                    {row.goalsScored}
+                  </td>
+                  <td class="widget-td standings-td standings-td--stat">
+                    {row.goalsConceded}
+                  </td>
+                  <td class="widget-td standings-td standings-td--stat">{gdStr}</td>
+                  <td class="widget-td standings-td standings-td--stat standings-td--pts">
+                    {row.points}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .standings-widget {
+    background: var(--ab-white);
+    overflow: hidden;
+  }
+
+  .standings-sponsor {
+    width: auto;
+    max-width: 9.5rem;
+    height: 3rem;
+    object-fit: contain;
+    object-position: right center;
+    flex-shrink: 0;
+  }
+
+  .standings-empty {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #888;
+  }
+
+  .standings-table-wrap {
+    overflow-x: auto;
+  }
+
+  .standings-table {
+    width: 100%;
+    min-width: 56rem;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-family: var(--font-display);
+  }
+
+  .standings-col--pos {
+    width: 4.75rem;
+  }
+
+  .standings-col--team {
+    width: auto;
+  }
+
+  .standings-col--stat {
+    width: 4.4375rem;
+  }
+
+  .standings-col-head {
+    background: var(--ab-neon);
+  }
+
+  .standings-th {
+    padding: 0.65rem 0.5rem;
+  }
+
+  .standings-th--pos {
+    padding-left: 1.25rem;
+    text-align: left;
+  }
+
+  .standings-th--team {
+    text-align: left;
+  }
+
+  .standings-th--stat {
+    text-align: center;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .standings-td {
+    padding: 0.55rem 0.5rem;
+  }
+
+  .standings-td--pos {
+    padding-left: 1.25rem;
+    font-weight: 400;
+  }
+
+  .standings-td--team {
+    min-width: 11rem;
+  }
+
+  .standings-td--stat {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .standings-td--pts {
+    padding-right: 1.25rem;
+  }
+
+  .standings-team {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .standings-team-logo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .standings-team-logo img {
+    max-height: 2.5rem;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .standings-team-initial {
+    display: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--ab-green) 8%, transparent);
+    font-size: 0.625rem;
+    font-weight: 800;
+    line-height: 2.5rem;
+    text-align: center;
+    letter-spacing: 0;
+  }
+
+  .standings-team-logo--fallback img {
+    display: none;
+  }
+
+  .standings-team-logo--fallback .standings-team-initial {
+    display: block;
+  }
+
+  .standings-team-name {
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>

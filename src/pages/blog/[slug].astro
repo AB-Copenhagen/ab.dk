@@ -1,0 +1,5 @@
+---
+// /blog/{slug} → /nyheder/{slug} (legacy article URL, kept for old inbound links/bookmarks)
+export const prerender = false;
+return Astro.redirect(`/nyheder/${Astro.params.slug}`, 301);
+---

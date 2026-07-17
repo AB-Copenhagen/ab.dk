@@ -1,0 +1,448 @@
+---
+import Base from '@/layouts/Base.astro';
+export const prerender = true;
+---
+
+<Base
+  locale="en"
+  title="Brand Guidelines | Akademisk Boldklub (AB)"
+  description="Official brand guidelines for Akademisk Boldklub (AB) — logos, colors and usage rules for media and partners."
+  ogTitle="AB Brand Guidelines"
+  ogDescription="Logos, colors and usage rules for anyone representing the Akademisk Boldklub brand."
+>
+  <!-- Hero -->
+  <div class="w-full bg-surface-base px-8 lg:px-20 py-16">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-12">
+      <div class="flex-1 min-w-0">
+        <div class="inline-flex items-center mb-5 border border-ab-green/40 rounded-full py-[6px] px-[16px]">
+          <span class="font-black text-[0.7rem] text-surface-muted tracking-[0.12em] uppercase">AB 1889 · Brand System</span>
+        </div>
+        <h1 class="font-black text-white leading-none text-[clamp(2.25rem,5vw,3.75rem)] tracking-[-0.04em] mb-5">
+          Brand Guidelines
+        </h1>
+        <p class="text-surface-muted text-[1.0625rem] leading-[1.7] max-w-[52ch]">
+          The AB 1889 brand identity system. The colors, typography, logos, and rules that protect AB's visual identity across all platforms and communication channels.
+        </p>
+      </div>
+      <div class="shrink-0 hidden md:block">
+        <img src="/images/ab-crest.svg" alt="AB 1889 Logo" class="w-36 lg:w-44 h-auto opacity-90" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Color Palette -->
+  <section class="bg-white py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Brand System</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Color Palette</h2>
+      <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-12">
+        Six colors make up the AB 1889 palette. AB Green and AB Gold are the primary marks. Neon Green is approved for digital and Pantone spot only — never convert to CMYK.
+      </p>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16">
+        <!-- AB Green -->
+        <div class="flex flex-col">
+          <div class="h-32 rounded-md mb-3" style="background:var(--ab-green)"></div>
+          <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">AB Green</div>
+          <div class="font-black text-ab-green text-[0.85rem] tracking-[0.05em] mt-0.5">#006A52</div>
+          <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">RGB 0 / 106 / 82<br />Pantone 3298 C</div>
+          <div class="mt-2 inline-flex">
+            <span class="text-[0.7rem] font-black uppercase tracking-[0.08em] bg-ab-green text-white rounded-full px-2.5 py-1">Primary</span>
+          </div>
+        </div>
+        <!-- AB Gold -->
+        <div class="flex flex-col">
+          <div class="h-32 rounded-md mb-3" style="background:var(--ab-gold)"></div>
+          <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">AB Gold</div>
+          <div class="font-black text-ab-gold text-[0.85rem] tracking-[0.05em] mt-0.5">#d6a02a</div>
+          <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">RGB 212 / 158 / 43<br />Pantone 131 C</div>
+          <div class="mt-2 inline-flex">
+            <span class="text-[0.7rem] font-black uppercase tracking-[0.08em] bg-ab-gold text-ab-black rounded-full px-2.5 py-1">Primary</span>
+          </div>
+        </div>
+        <!-- AB Beige -->
+        <div class="flex flex-col">
+          <div class="h-32 rounded-md mb-3" style="background:var(--ab-beige)"></div>
+          <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">AB Beige</div>
+          <div class="font-black text-[#9a8660] text-[0.85rem] tracking-[0.05em] mt-0.5">#D3BC8D</div>
+          <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">RGB 211 / 188 / 141<br />Pantone 467 C</div>
+          <div class="mt-2 inline-flex">
+            <span class="text-[0.7rem] font-black uppercase tracking-[0.08em] bg-ab-beige text-ab-black rounded-full px-2.5 py-1">Use minimally</span>
+          </div>
+        </div>
+        <!-- Neon Green -->
+        <div class="flex flex-col">
+          <div class="h-32 rounded-md mb-3" style="background:var(--ab-neon)"></div>
+          <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">AB Neon Green</div>
+          <div class="font-black text-[0.85rem] tracking-[0.05em] mt-0.5" style="color:#00cc18">#00FF1F</div>
+          <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">RGB 0 / 255 / 31<br />Pantone 802 C</div>
+          <div class="mt-2 inline-flex">
+            <span class="text-[0.7rem] font-black uppercase tracking-[0.08em] bg-ab-black text-ab-neon rounded-full px-2.5 py-1">Digital only</span>
+          </div>
+        </div>
+        <!-- Rich Black -->
+        <div class="flex flex-col">
+          <div class="h-32 rounded-md mb-3 border border-gray-100" style="background:var(--ab-black)"></div>
+          <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">Rich Black</div>
+          <div class="font-black text-[#555] text-[0.85rem] tracking-[0.05em] mt-0.5">#0A0A0A</div>
+          <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">For type on light<br />backgrounds</div>
+        </div>
+        <!-- White -->
+        <div class="flex flex-col">
+          <div class="h-32 rounded-md mb-3 border border-gray-200" style="background:var(--ab-white)"></div>
+          <div class="font-black text-ab-black text-[0.95rem] tracking-[-0.02em]">White</div>
+          <div class="font-black text-[#999] text-[0.85rem] tracking-[0.05em] mt-0.5">#FFFFFF</div>
+          <div class="text-[#666] text-[0.78rem] leading-[1.6] mt-1">For marks on dark<br />backgrounds</div>
+        </div>
+      </div>
+
+      <!-- Approved Pairings -->
+      <div class="border-t border-gray-100 pt-12">
+        <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+          <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Approved Color Pairings</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-black);color:var(--ab-green)">AB 1889</div>
+            <div class="text-[#666] text-[0.78rem]">Primary on black</div>
+          </div>
+          <div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-green);color:var(--ab-gold)">AB 1889</div>
+            <div class="text-[#666] text-[0.78rem]">Gold on green</div>
+          </div>
+          <div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-green);color:var(--ab-white)">AB 1889</div>
+            <div class="text-[#666] text-[0.78rem]">White on green</div>
+          </div>
+          <div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-beige);color:var(--ab-green)">AB 1889</div>
+            <div class="text-[#666] text-[0.78rem]">Green on beige</div>
+          </div>
+          <div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-black);color:var(--ab-gold)">AB 1889</div>
+            <div class="text-[#666] text-[0.78rem]">Gold on black</div>
+          </div>
+          <div>
+            <div class="h-20 rounded-md flex items-center justify-center font-black text-[1.1rem] tracking-[-0.03em] mb-2" style="background:var(--ab-gold);color:var(--ab-black)">AB 1889</div>
+            <div class="text-[#666] text-[0.78rem]">Black on gold</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual Identity: Logos, Monogram, Logo with monogram, Download -->
+  <section class="bg-[#F2F2F0] py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+
+      <!-- Logos -->
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Visual Identity</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">Logos</h2>
+      <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-12">
+        The AB logo is the club's primary mark. Always use approved master files — never recreate it from scratch.
+      </p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {([
+          { src: '/images/ab-crest.svg', alt: 'AB Logo — on white', bg: 'bg-white border border-gray-200', label: 'On white', text: 'text-[#666]' },
+          { src: '/images/ab-crest.svg', alt: 'AB Logo — on grey', bg: 'bg-[#D9D9D6]', label: 'On grey', text: 'text-[#555]' },
+          { src: '/images/ab-crest-white.svg', alt: 'AB Logo — on green', bg: 'bg-ab-green', label: 'On green', text: 'text-white/70' },
+          { src: '/images/ab-crest-white.svg', alt: 'AB Logo — on black', bg: 'bg-ab-black', label: 'On black', text: 'text-surface-muted' },
+        ]).map((tile) => (
+          <div class={`${tile.bg} rounded-lg p-8 flex flex-col items-center gap-4`}>
+            <img src={tile.src} alt={tile.alt} class="h-24 w-auto" />
+            <span class={`text-[0.78rem] ${tile.text} tracking-[0.05em] font-black uppercase`}>{tile.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <!-- Monogram -->
+      <div class="mt-14 pt-14 border-t border-gray-300">
+        <h3 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-ab-black mb-4">Monogram</h3>
+        <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-10">
+          The AB monogram is a fully custom letterform — never recreate it from any typeface. Always use approved master files.
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {([
+            { src: '/images/ab-monogram-color.svg', alt: 'AB Monogram — on white', bg: 'bg-white border border-gray-200', label: 'On white', text: 'text-[#666]' },
+            { src: '/images/ab-monogram-color.svg', alt: 'AB Monogram — on grey', bg: 'bg-[#D9D9D6]', label: 'On grey', text: 'text-[#555]' },
+            { src: '/images/ab-monogram-white.svg', alt: 'AB Monogram — on green', bg: 'bg-ab-green', label: 'On green', text: 'text-white/70' },
+            { src: '/images/ab-monogram-white.svg', alt: 'AB Monogram — on black', bg: 'bg-ab-black', label: 'On black', text: 'text-surface-muted' },
+          ]).map((tile) => (
+            <div class={`${tile.bg} rounded-lg p-8 flex flex-col items-center gap-4`}>
+              <img src={tile.src} alt={tile.alt} class="h-24 w-auto" />
+              <span class={`text-[0.78rem] ${tile.text} tracking-[0.05em] font-black uppercase`}>{tile.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Logo with monogram -->
+      <div class="mt-14 pt-14 border-t border-gray-300">
+        <h3 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-ab-black mb-4">Logo with monogram</h3>
+        <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-10">
+          The combined lockup pairs the logo and monogram side by side. Use only the approved master files below — do not recreate or rearrange the lockup.
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {([
+            { src: '/images/ab-logo-monogram-color.svg', alt: 'AB Logo with monogram — on white', bg: 'bg-white border border-gray-200', label: 'On white', text: 'text-[#666]' },
+            { src: '/images/ab-logo-monogram-color.svg', alt: 'AB Logo with monogram — on grey', bg: 'bg-[#D9D9D6]', label: 'On grey', text: 'text-[#555]' },
+            { src: '/images/ab-logo-monogram-white.svg', alt: 'AB Logo with monogram — on green', bg: 'bg-ab-green', label: 'On green', text: 'text-white/70' },
+            { src: '/images/ab-logo-monogram-white.svg', alt: 'AB Logo with monogram — on black', bg: 'bg-ab-black', label: 'On black', text: 'text-surface-muted' },
+          ]).map((tile) => (
+            <div class={`${tile.bg} rounded-lg p-8 flex flex-col items-center justify-center gap-4`}>
+              <img src={tile.src} alt={tile.alt} class="h-16 w-auto max-w-full" />
+              <span class={`text-[0.78rem] ${tile.text} tracking-[0.05em] font-black uppercase`}>{tile.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-10 p-6 rounded-lg border border-ab-gold/30 bg-ab-gold/5">
+          <p class="text-ab-gold text-[0.9rem] leading-[1.6]">
+            <strong>Important rule:</strong> Do not use the AB monogram and logo simultaneously in a sponsor lockup. They serve different institutional roles and create confusion when combined with a partner mark.
+          </p>
+        </div>
+      </div>
+
+      <!-- Download -->
+      <div class="mt-14 pt-14 border-t border-gray-300">
+        <h3 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-ab-black mb-4">Download</h3>
+        <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-10">
+          Official master files for use of the AB 1889 identity. Always use the latest version and follow the brand rules above.
+        </p>
+
+        {([
+          {
+            title: 'Logo',
+            assets: [
+              { variant: 'Colour', format: 'SVG', file: '/downloads/brand/ab-crest.svg', size: '39 KB' },
+              { variant: 'White', format: 'SVG', file: '/downloads/brand/ab-crest-white.svg', size: '21 KB' },
+              { variant: 'Colour', format: 'PNG', file: '/downloads/brand/ab-crest-color.png', size: '228 KB' },
+              { variant: 'White', format: 'PNG', file: '/downloads/brand/ab-crest-white.png', size: '160 KB' },
+              { variant: 'Print-ready', format: 'PDF', file: '/downloads/brand/ab-crest.pdf', size: '160 KB' },
+              { variant: 'Vector for print', format: 'EPS', file: '/downloads/brand/ab-crest.eps', size: '441 KB' },
+            ],
+          },
+          {
+            title: 'Monogram',
+            assets: [
+              { variant: 'Colour', format: 'SVG', file: '/downloads/brand/ab-monogram-color.svg', size: '4 KB' },
+              { variant: 'White', format: 'SVG', file: '/downloads/brand/ab-monogram-white.svg', size: '5 KB' },
+              { variant: 'Colour', format: 'PNG', file: '/downloads/brand/ab-monogram-color.png', size: '196 KB' },
+              { variant: 'White', format: 'PNG', file: '/downloads/brand/ab-monogram-white.png', size: '164 KB' },
+              { variant: 'CMYK master', format: 'AI', file: '/downloads/brand/ab-monogram.ai', size: '1.1 MB' },
+            ],
+          },
+          {
+            title: 'Logo and Monogram',
+            assets: [
+              { variant: 'Colour', format: 'SVG', file: '/downloads/brand/ab-logo-monogram-color.svg', size: '30 KB' },
+              { variant: 'White', format: 'SVG', file: '/downloads/brand/ab-logo-monogram-white.svg', size: '25 KB' },
+              { variant: 'Colour', format: 'PNG', file: '/downloads/brand/ab-logo-monogram-color.png', size: '814 KB' },
+              { variant: 'White', format: 'PNG', file: '/downloads/brand/ab-logo-monogram-white.png', size: '575 KB' },
+            ],
+          },
+          {
+            title: 'Miscellaneous',
+            assets: [
+              { variant: 'Colorway', format: 'PDF', file: '/downloads/brand/ab-colorway.pdf', size: '94 KB' },
+              { variant: 'Pattern', format: 'SVG', file: '/downloads/brand/ab-pattern.svg', size: '21 KB' },
+              { variant: 'Pattern', format: 'AI', file: '/downloads/brand/ab-pattern.ai', size: '1.2 MB' },
+            ],
+          },
+        ] as { title: string; assets: { variant: string; format: string; file: string; size: string }[] }[]).map((group, i) => (
+          <div class={i > 0 ? 'mt-10 pt-10 border-t border-gray-200' : ''}>
+            <h4 class="font-black text-[1.1rem] tracking-[-0.02em] text-ab-black mb-5 uppercase">{group.title}</h4>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {group.assets.map((asset) => (
+                <a
+                  href={asset.file}
+                  download
+                  class="group flex items-center gap-4 p-5 rounded-lg border border-gray-200 bg-white hover:border-ab-green hover:bg-ab-green/5 transition-colors no-underline"
+                >
+                  <div class="shrink-0 w-11 h-11 rounded-md bg-ab-black flex items-center justify-center">
+                    <span class="font-black text-[0.6rem] text-ab-neon tracking-[0.08em] uppercase">{asset.format}</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-black text-ab-black text-[0.95rem] leading-tight">{asset.variant}</div>
+                    <div class="font-black text-[#999] text-[0.72rem] tracking-[0.08em] uppercase mt-0.5">{asset.format}</div>
+                  </div>
+                  <div class="flex flex-col items-end gap-1 shrink-0">
+                    <span class="text-[#bbb] text-[0.72rem]">{asset.size}</span>
+                    <svg class="w-4 h-4 text-ab-green opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M8 2v9M4 8l4 4 4-4M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Typography -->
+  <section class="bg-white py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Typography</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-ab-black mb-4">ABC Camera Plain</h2>
+      <p class="text-[#444] text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-12">
+        Exclusive typeface of the AB brand system — used across all AB 1889 and Akademisk Boldklub communications. Two weights in active use: Heavy and Medium. Fallback: Helvetica only.
+      </p>
+
+      <div class="grid lg:grid-cols-2 gap-8 mb-12">
+        <div class="border border-gray-100 rounded-lg overflow-hidden">
+          <div class="bg-ab-black px-8 py-4 flex items-center justify-between">
+            <span class="font-black text-white text-[0.85rem] tracking-[0.05em] uppercase">ABC Camera Plain — Heavy</span>
+            <span class="text-surface-muted text-[0.78rem]">Headlines &amp; labels</span>
+          </div>
+          <div class="px-8 py-8">
+            <div class="font-black text-[clamp(2.5rem,6vw,4rem)] leading-[0.95] tracking-[-0.04em] text-ab-black mb-6">
+              Akademisk<br />Boldklub
+            </div>
+            <div class="font-black text-[0.8rem] text-[#888] tracking-[0.05em] leading-[2]">
+              ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />
+              abcdefghijklmnopqrstuvwxyz 0123456789
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 text-[#888] text-[0.78rem]">
+              Tracking: −20 to 0 · Uppercase for headlines and labels · Left-aligned preferred
+            </div>
+          </div>
+        </div>
+        <div class="border border-gray-100 rounded-lg overflow-hidden">
+          <div class="bg-ab-green px-8 py-4 flex items-center justify-between">
+            <span class="font-black text-white text-[0.85rem] tracking-[0.05em] uppercase">ABC Camera Plain — Medium</span>
+            <span class="text-white/70 text-[0.78rem]">Body &amp; subheadings</span>
+          </div>
+          <div class="px-8 py-8">
+            <div class="text-[clamp(1.5rem,3.5vw,2.25rem)] leading-[1.15] tracking-[-0.02em] text-ab-black mb-6">
+              Play with Purpose.<br />Rooted, Not Frozen.
+            </div>
+            <div class="text-[0.8rem] text-[#888] tracking-[0.05em] leading-[2]">
+              ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />
+              abcdefghijklmnopqrstuvwxyz 0123456789
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 text-[#888] text-[0.78rem]">
+              Tracking: −20 to +10 · Mixed case for body text
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-ab-black text-white">
+              <th class="font-black text-left px-5 py-3 text-[0.78rem] tracking-[0.08em] uppercase rounded-tl-lg">Role</th>
+              <th class="font-black text-left px-5 py-3 text-[0.78rem] tracking-[0.08em] uppercase">Size</th>
+              <th class="font-black text-left px-5 py-3 text-[0.78rem] tracking-[0.08em] uppercase">Weight</th>
+              <th class="font-black text-left px-5 py-3 text-[0.78rem] tracking-[0.08em] uppercase">Case</th>
+              <th class="font-black text-left px-5 py-3 text-[0.78rem] tracking-[0.08em] uppercase rounded-tr-lg">Tracking</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="px-5 py-3.5 font-black text-[0.9rem] text-ab-black">Hero headline</td>
+              <td class="px-5 py-3.5 text-[#444]">48–72px</td>
+              <td class="px-5 py-3.5 text-[#444]">Heavy</td>
+              <td class="px-5 py-3.5 text-[#444]">Uppercase</td>
+              <td class="px-5 py-3.5 text-[#444]">−20 to 0</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-gray-50/50">
+              <td class="px-5 py-3.5 font-black text-[0.9rem] text-ab-black">Section header</td>
+              <td class="px-5 py-3.5 text-[#444]">28–36px</td>
+              <td class="px-5 py-3.5 text-[#444]">Heavy</td>
+              <td class="px-5 py-3.5 text-[#444]">Uppercase</td>
+              <td class="px-5 py-3.5 text-[#444]">−20 to 0</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="px-5 py-3.5 font-black text-[0.9rem] text-ab-black">Subheading</td>
+              <td class="px-5 py-3.5 text-[#444]">18–22px</td>
+              <td class="px-5 py-3.5 text-[#444]">Medium</td>
+              <td class="px-5 py-3.5 text-[#444]">Mixed</td>
+              <td class="px-5 py-3.5 text-[#444]">0</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-gray-50/50">
+              <td class="px-5 py-3.5 font-black text-[0.9rem] text-ab-black">Body copy</td>
+              <td class="px-5 py-3.5 text-[#444]">14–16px</td>
+              <td class="px-5 py-3.5 text-[#444]">Regular</td>
+              <td class="px-5 py-3.5 text-[#444]">Mixed</td>
+              <td class="px-5 py-3.5 text-[#444]">0 to +10</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-3.5 font-black text-[0.9rem] text-ab-black">Labels / tags</td>
+              <td class="px-5 py-3.5 text-[#444]">10–12px</td>
+              <td class="px-5 py-3.5 text-[#444]">Bold</td>
+              <td class="px-5 py-3.5 text-[#444]">Uppercase</td>
+              <td class="px-5 py-3.5 text-[#444]">+80 to +150</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Brand Rules -->
+  <section class="bg-ab-black py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 border border-ab-gold/40 rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-ab-gold tracking-[0.1em] uppercase">Usage Protection</span>
+      </div>
+      <h2 class="font-black text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] text-white mb-4">7 Things Never to Do</h2>
+      <p class="text-surface-muted text-[1.0625rem] leading-[1.75] max-w-[60ch] mb-12">
+        These rules protect the integrity of the AB 1889 identity system. Each represents a known misuse risk.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
+          <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">01</span>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Do not recreate the AB monogram using any typeface.</strong> The lettermark is custom-drawn. Any version made from a font — including condensed sans-serifs — is not acceptable.</p>
+        </div>
+        <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
+          <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">02</span>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Do not convert Neon Green to CMYK for process print.</strong> #00FF1F is fluorescent and falls outside the CMYK gamut. Use for digital or Pantone spot printing only.</p>
+        </div>
+        <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
+          <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">03</span>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Do not use the AB monogram and logo simultaneously in a sponsor lockup.</strong> They serve different institutional roles. Together with a partner mark the result is overcrowded and confusing.</p>
+        </div>
+        <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
+          <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">04</span>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Do not place any mark on a low-contrast background.</strong> The AB Green monogram requires sufficient contrast. Avoid mid-tone greens or olives. Use white or gold versions instead.</p>
+        </div>
+        <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
+          <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">05</span>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Do not stretch, distort, or unevenly scale any mark.</strong> All logos, monograms, and lockups must be scaled proportionally at all times, without exception.</p>
+        </div>
+        <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border">
+          <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">06</span>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Do not use off-brand typefaces as substitutes for ABC Camera Plain.</strong> When unavailable, Helvetica is the only approved temporary fallback. No display fonts, scripts, or other sans-serifs.</p>
+        </div>
+        <div class="flex gap-5 p-6 rounded-lg bg-surface-base border border-surface-border md:col-span-2">
+          <span class="font-black text-ab-green text-[1.5rem] leading-none shrink-0 w-8">07</span>
+          <p class="text-[#ccc] text-[0.95rem] leading-[1.65]"><strong class="text-white">Do not editorialize the club's heritage claims.</strong> Championship years and honours are official record. Do not abbreviate, omit, or approximate history.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <section class="bg-[#F2F2F0] py-12 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div>
+        <div class="font-black text-ab-black text-[1.1rem] tracking-[-0.02em]">AB 1889 Brand Guidelines 2026</div>
+        <div class="text-[#999] text-[0.83rem] mt-1">Akademisk Boldklub · Designed by Mark Pernice / Out Of Office · ooo-la.la</div>
+      </div>
+    </div>
+  </section>
+</Base>

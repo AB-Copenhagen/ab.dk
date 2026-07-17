@@ -1,0 +1,215 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = false;
+
+// Middleware validates the session and populates Astro.locals.user for this route —
+// if we reach here without a user, something's off, so fall back to a login redirect.
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/konto?redirect=/konto/profil');
+}
+const { name, email, picture } = user;
+
+const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
+
+const quickLinks = [
+  { label: 'Se ABTV', desc: 'Kamphøjdepunkter og eksklusivt videoindhold', href: '/abtv' },
+  { label: 'MyAB-medlemskab', desc: 'Administrer dine MyAB-fordele', href: '/myab' },
+  { label: 'Køb billetter', desc: 'Kampbilletter via Vivenu', href: 'https://billet.ab.dk/', external: true },
+  { label: 'Mine ordrer', desc: 'Se din ordrehistorik i AB Store på Shopify', href: 'https://shop.ab.dk/account', external: true },
+];
+---
+
+<Base locale="da" title="Min profil | AB 1889">
+  <main class="min-h-screen bg-neutral-100">
+    <div class="mx-auto max-w-7xl px-6 py-14 lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-10 lg:px-16 lg:py-20">
+
+      {/* ── Sidebar: identity, quick links, balance, sign out ──────── */}
+      <aside class="mb-8 lg:mb-0">
+        <div class="rounded border border-neutral-200 bg-white p-6">
+          <div class="flex items-center gap-4">
+            {picture ? (
+              <img
+                src={picture}
+                alt={name || 'Profil'}
+                class="h-14 w-14 rounded-full object-cover"
+              />
+            ) : (
+              <div class="flex h-14 w-14 items-center justify-center rounded-full bg-ab-green text-lg font-black text-white">
+                {(name?.charAt(0) || email?.charAt(0) || '?').toUpperCase()}
+              </div>
+            )}
+            <div>
+              <p class="mb-0.5 text-xs font-black uppercase tracking-widest text-ab-gold">
+                Akademisk Boldklub
+              </p>
+              <h1 class="text-lg font-black text-neutral-900">{name || email || 'Min profil'}</h1>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick links */}
+        <div class="mt-6 overflow-hidden rounded border border-neutral-200 bg-white">
+          <p class="border-b border-neutral-200 px-5 py-3 text-xs font-black uppercase tracking-widest text-neutral-400">
+            Genveje
+          </p>
+          <div class="divide-y divide-neutral-200">
+            {quickLinks.map((link) => (
+              <a
+                href={link.href}
+                target={link.external ? '_blank' : undefined}
+                rel={link.external ? 'noreferrer' : undefined}
+                aria-label={link.label}
+                class="flex items-center justify-between gap-4 px-5 py-4 no-underline transition-colors hover:bg-neutral-50"
+              >
+                <div>
+                  <p class="text-sm font-black text-neutral-900">{link.label}</p>
+                  <p class="mt-0.5 text-xs text-neutral-500">{link.desc}</p>
+                </div>
+                <span class="text-neutral-400">→</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Balance & Rewards (rise.ai) */}
+        <div class="mt-6 overflow-hidden rounded border border-neutral-200 bg-white">
+          <p class="border-b border-neutral-200 px-5 py-3 text-xs font-black uppercase tracking-widest text-neutral-400">
+            Saldo &amp; Fordele
+          </p>
+          <div class="px-5 py-8 text-center text-sm text-neutral-500">
+            Kommer snart.
+          </div>
+        </div>
+      </aside>
+
+      {/* ── Account management ──────────────────────────────────── */}
+      <div>
+        <div class="mb-7 flex items-center gap-4">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-ab-green">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Kontoadministration</h2>
+        </div>
+
+        <div class="rounded border border-neutral-200 bg-white p-2">
+          {DESCOPE_PROJECT_ID ? (
+            <div id="descope-profile-container"></div>
+          ) : (
+            <div class="p-8 text-center text-sm text-neutral-500">
+              Profilstyring kræver konfiguration.
+            </div>
+          )}
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  {DESCOPE_PROJECT_ID && (
+    <style>
+      /* Custom properties inherit across the widget's open shadow root, so this
+         reaches its internal typography/color without touching shadow content. */
+      #descope-profile-container descope-user-profile-widget {
+        --lumo-font-family: 'ABC Camera Plain', Helvetica, Arial, sans-serif;
+        --lumo-body-text-color: #171717;
+        --lumo-secondary-text-color: #737373;
+        --descope-image-fill: var(--ab-green);
+      }
+    </style>
+  )}
+
+  {DESCOPE_PROJECT_ID && (
+    <script is:inline src="https://unpkg.com/@descope/user-profile-widget@0.14.3/dist/index.js"></script>
+  )}
+
+  {DESCOPE_PROJECT_ID && (
+    <script is:inline define:vars={{ DESCOPE_PROJECT_ID }}>
+      const logout = async () => {
+        await fetch('/api/auth/session', { method: 'DELETE' });
+        location.href = '/konto';
+      };
+
+      // These buttons render with size="sm", but the widget's internal CSS only
+      // reacts to theme="small" — size="sm" is inert, so they render at Lumo's
+      // default medium size. Their icons are either a hardcoded oversized SVG
+      // (delete/edit at 20x20, Add's plus at 24x24) or sized in 1em (Reset
+      // password), which inherits the same oversized ambient font-size — both
+      // shrink the same way once the icon's own box is constrained.
+      const shrinkAttributeIcons = (root) => {
+        root.querySelectorAll('descope-button[data-id="delete-btn"], descope-button[data-id="edit-btn"], .add-passkey-button, .descope-user-auth-method .descope-button').forEach((btn) => {
+          btn.style.setProperty('--lumo-button-size', '1.75rem');
+        });
+        root.querySelectorAll('descope-icon[slot="delete-icon"], descope-icon[slot="edit-icon"], descope-icon[slot="button-icon"]').forEach((icon) => {
+          icon.style.width = '14px';
+          icon.style.height = '14px';
+        });
+      };
+
+      const injectShadowStyle = (el, css) => {
+        if (!el.shadowRoot || el.shadowRoot.querySelector('style[data-ab-tighten]')) return;
+        const style = document.createElement('style');
+        style.setAttribute('data-ab-tighten', '');
+        style.textContent = css;
+        el.shadowRoot.appendChild(style);
+      };
+
+      // descope-list (the passkey list, once one is added) renders inside
+      // .descope-user-passkeys' OWN shadow root — not a slotted light-DOM child —
+      // so it's a no-op selector for the other row types, harmlessly.
+      const ROW_INNER_CSS = `
+        :host { padding: 0 !important; margin: 0 !important; }
+        .root, .header { padding: 0 !important; margin: 0 !important; }
+        descope-list { margin-top: 0.25rem !important; }
+      `;
+
+      // The actual flex/gap layout lives on the <slot> element INSIDE each
+      // descope-container's own shadow root (confirmed via its adopted
+      // stylesheet: `slot { gap: var(--descope-container-gap) }`) — not the
+      // container host itself, which is just display:block. Host-level
+      // overrides were hitting the wrong box entirely. The gap after the
+      // "Personal Information"/"Authentication Methods" title stays larger
+      // than the uniform row gap — kept intentionally as section spacing.
+      const CONTAINER_INNER_CSS = `
+        slot { gap: 0.25rem !important; padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+      `;
+
+      const tightenSpacing = (root) => {
+        root.querySelectorAll('#userAttrsContainer, #authMethodsContainer, #logoutContainer').forEach((container) => {
+          injectShadowStyle(container, CONTAINER_INNER_CSS);
+        });
+        root.querySelectorAll('.descope-user-attribute, .descope-user-passkeys, .descope-user-auth-method').forEach((row) => {
+          row.style.setProperty('margin', '0', 'important');
+          injectShadowStyle(row, ROW_INNER_CSS);
+        });
+        // Deliberately bigger than the 4px row gap — section-title breathing room,
+        // not a bug fix. :has() scopes this to the two section titles specifically,
+        // since descope-tooltip is also (separately) used to wrap the Add button.
+        root.querySelectorAll('descope-tooltip:has(#userAttrsTitle), descope-tooltip:has(#authMethodsTitle)').forEach((title) => {
+          title.style.setProperty('margin-bottom', '0.75rem', 'important');
+        });
+      };
+
+      const applyWidgetStyleFixes = (root) => {
+        shrinkAttributeIcons(root);
+        tightenSpacing(root);
+      };
+
+      customElements.whenDefined('descope-user-profile-widget').then(() => {
+        const el = document.createElement('descope-user-profile-widget');
+        el.setAttribute('project-id', DESCOPE_PROJECT_ID);
+        el.setAttribute('widget-id', 'user-profile-widget');
+        el.setAttribute('theme', 'light');
+        el.logout = logout;
+        document.getElementById('descope-profile-container')?.appendChild(el);
+
+        if (el.shadowRoot) {
+          const observer = new MutationObserver(() => applyWidgetStyleFixes(el.shadowRoot));
+          observer.observe(el.shadowRoot, { childList: true, subtree: true });
+          applyWidgetStyleFixes(el.shadowRoot);
+        }
+      });
+    </script>
+  )}
+</Base>

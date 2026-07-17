@@ -1,238 +1,173 @@
-# AB.dk — Akademisk Boldklub
+# AB 1889
 
-Official website for [Akademisk Boldklub](https://ab.dk) (AB), a Danish football club founded in 1889.
+Website for [Akademisk Boldklub](https://ab.dk) — Denmark's oldest football club, founded 1889.
+
+Built with Astro 7 + Strapi. The frontend deploys to Vercel and the CMS to Strapi Cloud, both automatically on push to `main`.
+
+---
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| CMS | Strapi 5 |
-| Frontend | Next.js 15 (App Router) |
-| Database | Supabase (PostgreSQL serverless) |
-| Auth | Descope |
-| Media storage | Wasabi (S3-compatible) |
-| Email | Mailgun |
-| Live match data | SportsInnovation API |
-| Storefront | Shopify Embedded (shop.ab.dk) |
-| Translation | DeepL (via strapi-plugin-translate) |
+| Concern     | Choice                                                                   |
+| ----------- | ------------------------------------------------------------------------ |
+| Framework   | Astro 7, TypeScript, `output: 'server'` (hybrid)                         |
+| Adapter     | `@astrojs/vercel` — SSR functions on Vercel                              |
+| Styling     | Tailwind v4 (`@tailwindcss/vite`) + CSS tokens (`src/styles/tokens.css`) |
+| CMS         | Strapi v5 (`strapi/`) — articles, pages, products, global config         |
+| Auth        | Descope — web component login flow, session cookie `DS`                  |
+| League data | Sports Innovation (`dash.si-ab.com`) widget embeds                       |
+| Email       | Mailgun EU REST API — newsletter subscribe + contact                     |
+| Media       | Wasabi S3-compatible object storage                                      |
+| Shop        | Shopify (`shop.ab.dk`) — outbound links, optional Storefront API         |
+| i18n        | Astro built-in — `da` default (no prefix), `en` secondary (`/en/`)       |
+
+---
 
 ## Project structure
 
 ```
-ab.dk/
-├── next/            # Next.js 15 frontend
-│   ├── app/         # App Router pages ([locale]/...)
-│   ├── components/  # UI components (navbar, footer, SI widgets, ...)
-│   └── lib/         # Strapi fetch helpers, Shopify client, utilities
-└── strapi/          # Strapi 5 CMS
-    ├── config/      # Plugins, database, server config
-    └── scripts/     # Migration and maintenance scripts
+/
+├── src/
+│   ├── assets/brand/        # Master SVGs — monogram, crest, pattern, numerals
+│   ├── components/
+│   │   ├── brand/           # Logo.astro, Crest.astro, SponsorLockup.astro
+│   │   ├── layout/          # LangSwitch.astro
+│   │   ├── islands/         # React islands (MobileMenu, ArticleSearch, ArticleContent)
+│   │   └── widgets/         # SiWidget.astro + SiWidget.tsx
+│   ├── layouts/Base.astro
+│   ├── lib/
+│   │   ├── strapi/client.ts # Strapi REST client (fetchCollectionType, fetchSingleType)
+│   │   ├── si/client.ts     # Sports Innovation API client
+│   │   ├── i18n.ts          # Locale helpers + UI string dictionaries
+│   │   ├── mailgun.ts       # Mailgun EU send helpers
+│   │   └── media.ts         # Wasabi URL builder
+│   ├── middleware.ts         # Locale resolution + Descope session guard
+│   ├── pages/               # File-based routing (da at root, en/ prefix)
+│   └── styles/
+│       ├── tokens.css        # Brand design tokens — source of truth
+│       └── global.css        # Tailwind v4 entry (@import, @theme, @plugin)
+├── public/
+│   └── fonts/               # ABC Camera Plain web files (licensed — not committed)
+├── strapi/                  # Strapi CMS (separate Node process, deploys to Strapi Cloud)
+├── Dockerfile               # Legacy — not used by the current Vercel deploy path
+├── .env.example             # All required environment variables documented
+├── astro.config.mjs
+└── tsconfig.json
 ```
 
-## Prerequisites
+---
 
-- **Node.js v20 LTS** — required for Strapi 5 (`nvm use 20`)
-- **Yarn** — enabled via Corepack (`corepack enable`)
+## Local development
 
-> ⚠️ Node 24 is not compatible with Strapi 5. Pin to Node 20 with `nvm use 20` before running Strapi or any scripts.
+**Prerequisites:** Node 22, npm
 
-## Local setup
+### 1. Environment
 
-### 1. Clone and install
-
-```sh
-git clone https://github.com/AB-Copenhagen/ab.dk.git
-cd ab.dk
-nvm use 20
-yarn install
+```bash
+cp .env.example .env.local
+# Point STRAPI_URL at the shared Strapi Cloud instance and fill in STRAPI_API_TOKEN
+# (ask a team member for the URL/token — don't spin up a local Strapi instance, see below)
 ```
 
-### 2. Configure environment variables
+### 2. Astro frontend
 
-```sh
-cp next/.env.example next/.env.local
-cp strapi/.env.example strapi/.env
+```bash
+npm install
+npm run dev
+# → http://localhost:1889
 ```
 
-Fill in the required values — see the **Environment variables** section below.
+That's it for day-to-day work — content comes from the shared Strapi Cloud instance, so there's nothing else to run.
 
-### 3. Start both servers
+### Running Strapi locally (rare — advanced/schema work only)
 
-```sh
-yarn dev
+Nobody on the team runs Strapi locally day-to-day; everyone points `STRAPI_URL` at the shared Strapi Cloud instance. Only spin up a local instance if you're specifically testing a content-type/schema change in isolation before it goes out. Requires PostgreSQL.
+
+```bash
+cd strapi
+yarn install   # Strapi uses Yarn 4 via Corepack
+yarn develop
+# → http://localhost:1337/admin
 ```
 
-| Service | URL |
-|---|---|
-| Next.js frontend | http://localhost:3000 |
-| Strapi admin | http://localhost:1337/admin |
+If PostgreSQL isn't running: `brew services start postgresql@14` (adjust version).
 
-### 4. Seed Strapi with content
+To run Strapi with SQLite instead (no Postgres required), add `DATABASE_CLIENT=sqlite` to `strapi/.env`.
 
-Once Strapi is running, import the seed data and (optionally) migrate WordPress content:
-
-```sh
-# In a second terminal
-cd strapi && yarn seed
-
-# Optional: import all posts + categories from ab.dk WordPress (da + en)
-STRAPI_TOKEN=<token> node strapi/scripts/migrate-wp.mjs
-```
-
-Get the API token from **Strapi admin → Settings → API Tokens → Create (Full Access)**.
+---
 
 ## Environment variables
 
-### `next/.env.local`
-
-```env
-# Strapi
-NEXT_PUBLIC_API_URL=http://localhost:1337
-
-# Descope auth
-NEXT_PUBLIC_DESCOPE_PROJECT_ID=          # from Descope console
-DESCOPE_PROJECT_ID=
-DESCOPE_BASE_URL=https://auth.ab.dk
-DESCOPE_MANAGEMENT_KEY=
-
-# Shopify Storefront
-SHOPIFY_STORE_DOMAIN=shop.ab.dk
-SHOPIFY_APP_CLIENT_ID=
-SHOPIFY_STOREFRONT_TOKEN=
-SHOPIFY_WEBHOOK_SECRET=
-
-# SportsInnovation
-SI_ACCESS_TOKEN=
-AB_TEAM_ID=9805
-```
-
-### `strapi/.env`
-
-```env
-# App
-HOST=0.0.0.0
-PORT=1337
-APP_KEYS=
-API_TOKEN_SALT=
-ADMIN_JWT_SECRET=
-TRANSFER_TOKEN_SALT=
-JWT_SECRET=
-
-CLIENT_URL=http://localhost:3000
-PREVIEW_SECRET=
-
-# Database (Supabase PostgreSQL)
-# Connection string from: Supabase → Project Settings → Database → Connection string (URI)
-# Use the session mode pooler (port 5432) — transaction mode (6543) is NOT compatible with Strapi
-DATABASE_CLIENT=postgres
-DATABASE_URL=postgresql://postgres.[project-ref]:[password]@db.[project-ref].supabase.co:5432/postgres
-DATABASE_SSL=true
-DATABASE_SSL_REJECT_UNAUTHORIZED=false
-
-# SportsInnovation
-SI_ACCESS_TOKEN=
-
-# Mailgun email
-MAILGUN_API_KEY=
-MAILGUN_DOMAIN=mail.ab.dk
-MAILGUN_HOST=https://api.eu.mailgun.net   # omit for US accounts
-MAILGUN_FROM=noreply@ab.dk
-MAILGUN_REPLY_TO=info@ab.dk
-
-# DeepL auto-translation
-DEEPL_API_KEY=        # from deepl.com/pro-api (free tier available)
-DEEPL_API_FREE=true   # set false for paid DeepL plan
-
-# Wasabi object storage
-WASABI_ACCESS_KEY_ID=
-WASABI_SECRET_ACCESS_KEY=
-WASABI_BUCKET=ab-media
-WASABI_REGION=eu-central-1
-WASABI_ENDPOINT=https://s3.eu-central-1.wasabisys.com
-```
-
-## Fonts
-
-The site uses **ABC Camera Plain** (Regular 400, Medium 500, Heavy 800) by ABC Dinamo. Font files are excluded from this repository due to the commercial license. Place them in `next/public/fonts/` before running locally:
+See `.env.example` for the full list with descriptions. Required at minimum:
 
 ```
-next/public/fonts/
-  ABCCameraPlain-Regular.woff2
-  ABCCameraPlain-Medium.woff2
-  ABCCameraPlain-Heavy.woff2
+STRAPI_URL=http://localhost:1337
+STRAPI_API_TOKEN=          # Generate in Strapi admin → Settings → API Tokens
+
+SI_API_BASE_URL=           # Sports Innovation API base URL
+SI_ACCESS_TOKEN=           # Sports Innovation API access token
+
+DESCOPE_PROJECT_ID=        # Descope project ID — enables login/profile pages
 ```
+
+Secrets are injected as environment variables on the compute instance — never committed.
+
+---
+
+## Search engine indexing (preview / staging)
+
+The site **blocks search engine crawlers by default** while in development. The public preview deployment at [strapi-website-mikzcoqln-ab1889.vercel.app](https://strapi-website-mikzcoqln-ab1889.vercel.app/) is covered by this block.
+
+Configuration lives in `astro.config.mjs` (`env.schema.ALLOW_SEARCH_INDEXING`, default `false`).
+
+Protection is applied in three layers:
+
+- `/robots.txt` — `Disallow: /` for all user agents
+- `<meta name="robots" content="noindex, …">` on every page
+- `X-Robots-Tag: noindex, nofollow` HTTP response header
+
+### Before production launch
+
+1. Set `ALLOW_SEARCH_INDEXING=true` in the **production** environment on Vercel
+2. Redeploy and verify:
+   - `GET /robots.txt` returns `Allow: /`
+   - HTML pages no longer include `noindex` meta tags
+   - Response headers no longer include `X-Robots-Tag: noindex`
+3. Submit the production sitemap in Google Search Console when ready
+
+Do **not** set `ALLOW_SEARCH_INDEXING=true` on preview or staging URLs.
+
+---
+
+## Branch workflow & deploys
+
+1. Feature work happens on a short-lived branch, PR'd into the shared staging/preview branch (check `git branch -a` for its current name — it gets renamed periodically during the pre-launch migration, so don't hardcode it in scripts or docs).
+2. The staging branch is periodically merged into `main`.
+3. A push to `main` triggers automatic deploys — no manual step, no CLI login required for routine changes:
+   - **Frontend → Vercel.** Builds via the `@astrojs/vercel` adapter and deploys on push.
+   - **CMS → Strapi Cloud.** The `strapi/` directory (config, content-type schemas, scripts) is watched and redeployed by Strapi Cloud on push to `main`. A schema change (e.g. adding a field to a content type) typically goes live within a couple of minutes.
+
+Health check endpoint: `GET /api/health` → `{"ok":true}`
+
+The `Dockerfile` at the repo root is legacy from an earlier deploy target and is not part of the current pipeline.
+
+---
 
 ## Brand
 
-| Token | Value | Usage |
-|---|---|---|
-| AB Green | `#006A52` | Primary — CTAs, active states, navbar |
-| AB Gold | `#D6A02A` | Headings, accents, pre-header highlights |
-| AB Beige | `#D3BC8D` | Secondary text, utility links |
-| AB Neon | `#00FF1F` | Live match indicators only |
-| Rich Black | `#0A0A09` | Page background |
+Design tokens live in `src/styles/tokens.css` and are the single source of truth for all colour and typography decisions.
 
-## Content migration
+| Token            | Value                        | Note                                          |
+| ---------------- | ---------------------------- | --------------------------------------------- |
+| `--ab-green`     | `#006A52`                    | Primary — shirts, headlines, CTAs             |
+| `--ab-gold`      | `#D6A02A`                    | Pantone 131 C — accents, numerals             |
+| `--ab-beige`     | `#D3BC8D`                    | Pantone 467 C — use minimally                 |
+| `--ab-neon`      | `#00FF1F`                    | Pantone 802 C — **digital only**, never print |
+| `--font-display` | ABC Camera Plain → Helvetica | Web license required to self-host             |
 
-The migration script imports all published posts and categories from the existing WordPress site into Strapi for both `da` and `en` locales, including featured images.
+**Hard rules:**
 
-```sh
-# Full import (both locales)
-STRAPI_TOKEN=<token> node strapi/scripts/migrate-wp.mjs
-
-# Wipe existing content then re-import
-CLEAN=1 STRAPI_TOKEN=<token> node strapi/scripts/migrate-wp.mjs
-
-# Dry run — no writes
-DRY_RUN=1 STRAPI_TOKEN=<token> node strapi/scripts/migrate-wp.mjs
-
-# Test with first 5 posts, Danish only
-LIMIT=5 LOCALE=da STRAPI_TOKEN=<token> node strapi/scripts/migrate-wp.mjs
-```
-
-## Media storage (Wasabi)
-
-All media uploads go to the `ab-media` Wasabi bucket. To migrate existing local Strapi uploads to Wasabi (run with Strapi stopped):
-
-```sh
-node --env-file=strapi/.env strapi/scripts/sync-to-wasabi.mjs
-```
-
-The script uploads all local files and their thumbnail variants, updates the Strapi database to use Wasabi URLs, and is resume-safe — already-uploaded files are skipped.
-
-## Localization
-
-The site supports **Danish (`da`, default)** and **English (`en`)**. Content is authored in Danish in Strapi. The DeepL plugin adds a **Translate** button in the content editor to auto-generate English versions for review before publishing.
-
-Set Danish as the default locale: **Strapi admin → Settings → Internationalization → Danish → Set as default**.
-
-## Database migration (SQLite → Supabase)
-
-When setting up a fresh environment or migrating an existing SQLite install, use Strapi's built-in export/import. Run all commands from inside `strapi/`:
-
-```sh
-cd strapi
-
-# 1. Export content from SQLite (skips asset binaries — files stay on Wasabi)
-DATABASE_CLIENT=sqlite npx strapi export --no-encrypt --file ../strapi-export --exclude files
-
-# 2. Start Strapi with PostgreSQL to bootstrap the schema, then Ctrl+C once running
-yarn develop
-
-# 3. Import content into PostgreSQL
-npx strapi import --file ../strapi-export.tar.gz --force-yes
-```
-
-> The `--exclude files` flag skips re-downloading media binaries from Wasabi. All file metadata (URLs, hashes) is included in the entity export and imports correctly.
-
-## Key services
-
-| Service | Purpose | Docs |
-|---|---|---|
-| [Supabase](https://supabase.com) | PostgreSQL serverless database | [Dashboard](https://supabase.com/dashboard) |
-| [Descope](https://descope.com) | Member auth, session management | [SDK docs](https://docs.descope.com/sdk-reference/nextjs) |
-| [Wasabi](https://wasabi.com) | Media object storage (S3-compatible) | [Console](https://console.wasabisys.com) |
-| [Mailgun](https://mailgun.com) | Transactional email from Strapi | [API docs](https://documentation.mailgun.com) |
-| [SportsInnovation](https://api.superliga.dk) | Live fixtures, standings, scores | Internal |
-| [Shopify](https://shop.ab.dk) | Club shop via Storefront API | [Storefront API](https://shopify.dev/docs/api/storefront) |
-| [DeepL](https://deepl.com) | DA→EN auto-translation in Strapi | [API docs](https://developers.deepl.com/docs) |
+- Never recreate the AB monogram or `1889` numeral from a typeface — always use `src/assets/brand/`
+- Neon green is for on-screen accents only (focus rings, live indicators)
+- Sponsor lockup: AB 1889 always primary, vertical rule separator, side-by-side only
+- The owl crest and the AB monogram never appear together in a sponsor lockup

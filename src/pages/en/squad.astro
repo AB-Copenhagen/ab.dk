@@ -1,0 +1,150 @@
+---
+import Base from '@/layouts/Base.astro';
+import SquadCard from '@/components/SquadCard.astro';
+import { fetchABPlayers, type SIPlayer } from '@/lib/si/client';
+import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
+import Img from '@/components/Img.astro';
+import { EXCLUDED_PLAYER_SLUGS } from '@/lib/si/player-photos';
+import { resolveShirtNumber } from '@/data/player-cms-data';
+import { manualPlayersAsSIPlayers } from '@/data/manual-players';
+export const prerender = false;
+
+const locale = 'en' as const;
+
+const POSITION_GROUPS = {
+  keeper: 'Goalkeepers',
+  defender: 'Defenders',
+  midfielder: 'Midfielders',
+  forward: 'Forwards',
+} as const;
+type PositionKey = keyof typeof POSITION_GROUPS;
+const GROUP_ORDER: PositionKey[] = [
+  'keeper',
+  'defender',
+  'midfielder',
+  'forward',
+];
+
+
+let players: SIPlayer[] = [];
+try {
+  const raw = await fetchABPlayers(locale);
+  players = raw
+    .filter(p => {
+      if (!p.name) return true;
+      const slug = p.name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      return !EXCLUDED_PLAYER_SLUGS.has(slug);
+    })
+    .map(p => ({ ...p, shirtNumber: resolveShirtNumber(p.id, p.shirtNumber) }));
+} catch {
+  /* SI unavailable */
+}
+
+players = [...players, ...manualPlayersAsSIPlayers()];
+
+players.sort((a, b) => {
+  const ai = GROUP_ORDER.indexOf(a.position as PositionKey);
+  const bi = GROUP_ORDER.indexOf(b.position as PositionKey);
+  if (ai !== bi) return ai - bi;
+  return (a.shirtNumber ?? 99) - (b.shirtNumber ?? 99);
+});
+
+const groups = new Map<PositionKey, SIPlayer[]>();
+for (const p of players) {
+  const key = p.position as PositionKey;
+  if (!groups.has(key)) groups.set(key, []);
+  groups.get(key)!.push(p);
+}
+---
+
+<Base
+  locale="en"
+  title="Meet The Squad | Akademisk Boldklub"
+  description="Explore our comprehensive team roster, featuring player details and stats to keep you updated on all the action and performances."
+  ogTitle="Explore Our Team Roster: Meet the Members and Their Roles"
+  ogDescription="Meet the Akademisk Boldklub first-team squad — players, positions and squad numbers for the 2025/26 season."
+>
+  <div class="bg-white">
+    <!-- Squad banner (image with embedded title) -->
+    <div class="w-full">
+      <Img
+        src="/images/squad-banner.png"
+        alt="AB 1889 The Squad"
+        class="w-full h-auto block"
+        loading="eager"
+      />
+    </div>
+
+    <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 lg:py-14">
+      {
+        players.length === 0 ? (
+          <p class="text-center py-24 text-sm text-gray-400">
+            Squad information is currently unavailable.
+          </p>
+        ) : (
+          GROUP_ORDER.map((key) => {
+            const group = groups.get(key);
+            if (!group?.length) return null;
+            return (
+              <section class="mb-14">
+                <h2
+                  class="font-black mb-6 text-[#111]"
+                  style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; text-transform:none;">
+                  {POSITION_GROUPS[key]}
+                </h2>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-3 md:gap-x-7">
+                  {group.map((player) => (
+                    <SquadCard
+                      player={player}
+                      locale="en"
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })
+        )
+      }
+      <!-- Coaching Staff -->
+      <section class="mb-14">
+        <h2
+          class="font-black mb-6 text-[#111]"
+          style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; text-transform:none;">
+          Coaching Staff
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-3 md:gap-x-7">
+          {COACHING_STAFF.map((staff) => {
+            const parts = staff.name.trim().split(' ');
+            const firstName = parts[0];
+            const lastName = parts.slice(1).join(' ');
+            const initials = staffInitials(staff.name);
+            return (
+              <a href={`/en/staff/${staff.slug}`} class="relative block group aspect-[593/503]">
+                <div class="absolute inset-x-0 bottom-0 transition-all duration-300 group-hover:brightness-95" style="height:84.1%; background:#EBEBEB;"></div>
+                <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl" style="width:51%;">
+                  <img src={staff.photo} alt={staff.name} loading="lazy"
+                       class="absolute inset-0 w-full h-full object-cover object-top"
+                       onerror="this.style.opacity='0'" />
+                </div>
+                <div class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10"
+                     style="height:84.1%; width:53%;">
+                  <div>
+                    <p class="font-black leading-tight text-ab-green"
+                       style="font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance;">
+                      {firstName}<br />{lastName}
+                    </p>
+                    <p class="text-xs mt-1 font-medium" style="color:color-mix(in srgb, var(--ab-green) 60%, transparent);">{staff.role.en}</p>
+                  </div>
+                  <p class="font-black leading-none select-none tracking-[-0.04em]"
+                     style="font-size:clamp(2.5rem,6.5vw,6.5rem); color:color-mix(in srgb, var(--ab-green) 18%, transparent);">
+                    {initials}
+                  </p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  </div>
+</Base>

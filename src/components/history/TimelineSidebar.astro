@@ -1,0 +1,85 @@
+---
+interface Props {
+  locale?: 'da' | 'en';
+}
+const { locale = 'da' } = Astro.props as Props;
+
+const eras = [
+  {
+    label: locale === 'da' ? 'Begyndelse' : 'Beginning',
+    range: '1883–1924',
+    id: 'era-beginning',
+    years: ['1883', '1887', '1889', '1894', '1919', '1924'],
+  },
+  {
+    label: locale === 'da' ? 'Efterkrigstid' : 'Post War',
+    range: '1940–1974',
+    id: 'era-postwar',
+    years: ['1940', '1946', '1960', '1963', '1974'],
+  },
+  {
+    label: locale === 'da' ? 'Nu' : 'Present',
+    range: locale === 'da' ? '1990–nu' : '1990–now',
+    id: 'era-present',
+    years: ['1990', '2004', '2022', '2023', '2025'],
+  },
+];
+---
+
+<div id="timeline-sidebar" class="flex flex-col gap-10 py-8 pr-5">
+  {eras.map((era) => (
+    <div>
+      <a
+        href={`#${era.id}`}
+        data-era={era.id}
+        class="era-side-link block mb-3">
+        {era.label}
+      </a>
+      <!-- border-l is the vertical line at x=0; no padding so dots can sit on it -->
+      <div class="sidebar-line flex flex-col border-l">
+        {era.years.map((year) => (
+          <a
+            href={`#${year}`}
+            data-year={year}
+            data-era={era.id}
+            class="sidebar-year-link flex items-center gap-2.5 py-[5px] leading-none -ml-[5px]">
+            <!-- dot: 8px wide, centered at x = 0 on the border line -->
+            <!-- link starts at: border(1px) - margin(5px) = -4px → dot left=-4, center=0 ✓ -->
+            <span class="sidebar-dot w-[8px] h-[8px] rounded-full shrink-0 border-2 border-white" />
+            {year}
+          </a>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .era-side-link {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #BEBEBE;
+    transition: color 0.15s;
+    line-height: 1.1;
+  }
+  .era-side-link:hover { color: var(--ab-green); }
+  :global(.era-side-link.active) { color: var(--ab-green); }
+
+  .sidebar-year-link {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #C8C8C8;
+    transition: color 0.15s;
+  }
+  .sidebar-year-link:hover { color: var(--ab-green); }
+  :global(.sidebar-year-link.active) { color: var(--ab-green); }
+
+  .sidebar-dot { background-color: #DCDCDC; transition: background-color 0.15s; }
+  :global(.sidebar-dot.active) { background-color: var(--ab-green); }
+
+  .sidebar-line { border-color: #E8E8E8; }
+</style>

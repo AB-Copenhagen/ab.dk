@@ -1,0 +1,198 @@
+---
+import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
+
+interface Props {
+  locale?: string;
+  globalData?: any;
+}
+
+const { locale = 'da', globalData } = Astro.props;
+const d = globalData;
+const year = new Date().getFullYear();
+
+const resourceLinks = d?.policy_links as
+  { text: string; URL: string }[] | undefined;
+
+const footerHeadingClass =
+  'font-black text-base text-white tracking-[-0.02em] mb-5';
+const footerItemClass = 'text-sm leading-6 tracking-[-0.01em] text-white/80';
+const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 transition-opacity no-underline`;
+
+const FALLBACK_PARTNERS = [
+  { name: 'Carlsberg',  src: '/images/sponsors/carlsberg.png', url: 'https://carlsbergdanmark.dk/', logoWidth: 210, logoHeight: 70 },
+  { name: 'Datum',      src: '/images/sponsors/datum.png',     url: 'https://datum.net/',           logoWidth: 240, logoHeight: 80 },
+  { name: 'Myriad360', src: '/images/sponsors/myriad360.png', url: 'https://myriad360.com/',        logoWidth: 185, logoHeight: 62 },
+  { name: 'Unisport',   src: '/images/sponsors/unisport.png',  url: 'https://dk.select-sport.com/', logoWidth: 160, logoHeight: 52 },
+  { name: 'Plane',      src: '/images/sponsors/plane.png',     url: 'https://plane.so/',            logoWidth: 160, logoHeight: 52 },
+];
+
+const strapiPartners = await fetchPartners();
+const partners = strapiPartners.length > 0
+  ? strapiPartners.map((p) => ({
+      name: p.name,
+      src: strapiMediaUrl(p.logo?.url),
+      url: p.url ?? '',
+      logoWidth: p.logoWidth,
+      logoHeight: p.logoHeight,
+    }))
+  : FALLBACK_PARTNERS;
+---
+
+<!-- Sponsor row (white bg) -->
+<div class="overflow-hidden bg-white border-t border-gray-200 py-12">
+  <div class="max-w-7xl mx-auto px-8">
+    <div class="flex flex-wrap items-center justify-center gap-8 md:flex-nowrap md:justify-between">
+      {
+        partners.map(({ src, name, url, logoWidth, logoHeight }) => (
+          <a href={url} target="_blank" rel="noreferrer" aria-label={name} class="shrink-0">
+            <img
+              src={src}
+              alt={name}
+              width={logoWidth}
+              height={logoHeight}
+              class="sponsor-logo object-contain object-center"
+              style={`width:${logoWidth}px;height:${logoHeight}px`}
+            />
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-rich-black">
+  <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-16 lg:py-28">
+    <div
+      class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-20 items-start">
+      <!-- Left: AB 1889 wordmark -->
+      <div class="shrink-0">
+        <img
+          src="/images/ab-logo-wordmark.svg"
+          alt="AB 1889"
+          class="w-[clamp(180px,18vw,300px)] h-auto"
+        />
+      </div>
+
+      <!-- Center: link columns -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-10 lg:gap-16">
+        <!-- Contact -->
+        <div>
+          <p class={footerHeadingClass}>
+            {locale === 'da' ? 'Kontakt' : 'Contact'}
+          </p>
+          <ul class="flex flex-col gap-3 mb-5">
+            <li class="flex items-start gap-2.5">
+              <svg class="w-[14px] h-[14px] shrink-0 mt-[3px] opacity-50 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <a href="mailto:info@ab.dk" class={footerLinkClass}>info@ab.dk</a>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <svg class="w-[14px] h-[14px] shrink-0 opacity-50 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.5 2 2 0 0 1 3.6 1.5h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <a href="tel:+4560399901" class={footerLinkClass}>+45 60399901</a>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <svg class="w-[14px] h-[14px] shrink-0 mt-[3px] opacity-50 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class={footerItemClass}>Gladsaxevej 202, 2860 Søborg, {locale === 'da' ? 'Danmark' : 'Denmark'}</span>
+            </li>
+          </ul>
+          <a
+            href={locale === 'en' ? '/en/contact' : '/kontakt'}
+            class="inline-flex items-center gap-1 text-[0.68rem] font-black text-ab-neon border border-ab-neon/30 px-3 py-1.5 tracking-[0.08em] uppercase hover:bg-ab-neon/10 transition-colors no-underline"
+          >
+            {locale === 'da' ? 'Kontakt os' : 'Contact'} →
+          </a>
+          <div class="flex gap-2.5 mt-5">
+            <a href="https://www.instagram.com/abfodbold/" target="_blank" rel="noreferrer" aria-label="Instagram" class="w-8 h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
+              <svg class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg>
+            </a>
+            <a href="https://www.facebook.com/akademiskboldklub" target="_blank" rel="noreferrer" aria-label="Facebook" class="w-8 h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
+              <svg class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="https://www.youtube.com/@akademisk-boldklub" target="_blank" rel="noreferrer" aria-label="YouTube" class="group w-8 h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
+              <!-- Default: filled play button -->
+              <svg class="w-[14px] h-[14px] block group-hover:hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.96-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
+              <!-- Hover: play button punched out as a hole -->
+              <svg class="w-[14px] h-[14px] hidden group-hover:block" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.96-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58zM9.75 15.02L15.5 12L9.75 8.98Z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Explore -->
+        <div>
+          <p class={footerHeadingClass}>{locale === 'da' ? 'Udforsk' : 'Explore'}</p>
+          <ul class="flex flex-col">
+            <li>
+              <a href={locale === 'en' ? '/en/matchday' : '/kampdag'} class={footerLinkClass}>Matchday</a>
+            </li>
+            <li>
+              <a href="https://billet.ab.dk/" target="_blank" rel="noreferrer" class={footerLinkClass}>
+                {locale === 'da' ? 'Køb billetter' : 'Buy tickets'}
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/@akademisk-boldklub" target="_blank" rel="noreferrer" class={footerLinkClass}>ABTV</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Resources -->
+        <div>
+          <p class={footerHeadingClass}>{locale === 'da' ? 'Ressourcer' : 'Resources'}</p>
+          {resourceLinks?.length ? (
+            <ul class="flex flex-col">
+              {resourceLinks.map((link) => (
+                <li>
+                  <a href={link.URL} class={footerLinkClass}>{link.text}</a>
+                </li>
+              ))}
+              <li>
+                <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
+                  {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
+                </button>
+              </li>
+            </ul>
+          ) : (
+            <ul class="flex flex-col">
+              {([
+                { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/brand', external: false },
+                { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/privatlivspolitik', external: false },
+                { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/returpolitik', external: false },
+              ] as {label:string; href:string; external:boolean}[]).map((item) => (
+                <li>
+                  <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
+                </li>
+              ))}
+              <li>
+                <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
+                  {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
+                </button>
+              </li>
+            </ul>
+          )}
+        </div>
+      </div>
+
+      <!-- Right: AB circular crest — white on transparent -->
+      <div class="hidden lg:block shrink-0 self-start">
+        <img
+          src="/images/ab-crest-white.svg"
+          alt="AB 1889"
+          class="w-[clamp(120px,12vw,180px)] h-auto"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Neon green copyright strip -->
+  <div class="bg-ab-neon flex items-center justify-center px-8 py-4">
+    <p class="text-xs text-rich-black text-center tracking-[-0.01em]">
+      {d?.copyright ?? `© ${year} AB Gladsaxe. All rights reserved.`}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .sponsor-logo:hover {
+    opacity: 0.75;
+  }
+</style>

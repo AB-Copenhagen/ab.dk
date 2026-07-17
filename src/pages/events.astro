@@ -1,0 +1,202 @@
+---
+import Base from '@/layouts/Base.astro';
+import { fetchABEvents } from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
+import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+
+export const prerender = false;
+
+const now = new Date();
+const toDate = new Date(now);
+toDate.setMonth(toDate.getMonth() + 4);
+
+let upcomingHome: Awaited<ReturnType<typeof fetchABEvents>> = [];
+try {
+  const events = await fetchABEvents({
+    locale: 'da',
+    limit: 50,
+    fromDate: now.toISOString().slice(0, 10),
+    toDate: toDate.toISOString().slice(0, 10),
+  });
+  upcomingHome = events.filter((e) => e.homeId === abConfig.teamId);
+} catch { /* SI API utilgængelig */ }
+
+const billetMap = await fetchBilletTicketMap().catch(() => new Map<string, string>());
+function ticketUrl(opponentName: string): string {
+  return findTicketUrl(billetMap, opponentName) ?? 'https://billet.ab.dk/';
+}
+
+function fmtDate(d: string) {
+  return new Date(d).toLocaleDateString('da-DK', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  });
+}
+function fmtTime(d: string) {
+  return new Date(d).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
+}
+---
+
+<Base locale="da" title="Arrangementer | AB 1889">
+
+  <!-- Slim header -->
+  <div class="bg-ab-black border-b border-white/10 py-10 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Arrangementer</h1>
+    </div>
+  </div>
+
+  <!-- Begivenhedskalender + Watch Parties -->
+  <section class="bg-[#F2F2F0] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-[#111] mb-4">
+            Begivenhedskalender
+          </h2>
+          <p class="text-[1.0625rem] leading-[1.75] text-[#444] max-w-[48ch] mb-4">
+            Vil du følge med i alt, hvad der sker hos AB — inklusive en
+            watch party i nærheden af dig? AB afholder jævnligt arrangementer
+            hen over året og holder watch parties verden over, fra London
+            til New York City, Washington D.C., Los Alamos og mange flere.
+          </p>
+          <p class="text-[1rem] leading-[1.75] text-[#555] max-w-[48ch] mb-6">
+            Tjek vores kalender for at se, hvad der er på programmet, og
+            find en watch party i nærheden af dig.
+          </p>
+          <a
+            href="https://luma.com/abdk"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Se vores kalender på Luma (åbner i nyt vindue)"
+            class="inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-green text-white px-7 py-3.5 no-underline transition-opacity hover:opacity-80"
+          >
+            Se kalender →
+          </a>
+        </div>
+
+        <div class="relative overflow-hidden aspect-[4/3]" id="events-slider">
+          <div class="events-slider-track flex h-full transition-transform duration-500 ease-in-out">
+            <img src="/images/watch-party-2.jpg" alt="AB-fans samlet til watch party" class="w-full h-full object-cover shrink-0" loading="lazy" />
+            <img src="/images/watch-party-1.jpg" alt="AB-fans til en lokal watch party" class="w-full h-full object-cover shrink-0" loading="lazy" />
+          </div>
+          <button type="button" class="events-slider-prev absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors" aria-label="Forrige billede">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button type="button" class="events-slider-next absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors" aria-label="Næste billede">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <div class="absolute bottom-3 inset-x-0 flex justify-center gap-2">
+            <button type="button" class="events-slider-dot w-2 h-2 rounded-full bg-white transition-opacity" data-index="0" aria-label="Billede 1"></button>
+            <button type="button" class="events-slider-dot w-2 h-2 rounded-full bg-white/50 transition-opacity" data-index="1" aria-label="Billede 2"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const slider = document.getElementById('events-slider');
+    const track = slider?.querySelector<HTMLElement>('.events-slider-track');
+    const dots = slider?.querySelectorAll<HTMLButtonElement>('.events-slider-dot');
+    const slideCount = track?.children.length ?? 0;
+    let current = 0;
+
+    function goTo(index: number) {
+      current = (index + slideCount) % slideCount;
+      if (track) track.style.transform = `translateX(-${current * 100}%)`;
+      dots?.forEach((dot, i) => {
+        dot.classList.toggle('bg-white', i === current);
+        dot.classList.toggle('bg-white/50', i !== current);
+      });
+    }
+
+    slider?.querySelector('.events-slider-prev')?.addEventListener('click', () => goTo(current - 1));
+    slider?.querySelector('.events-slider-next')?.addEventListener('click', () => goTo(current + 1));
+    dots?.forEach((dot) => {
+      dot.addEventListener('click', () => goTo(Number(dot.dataset.index)));
+    });
+  </script>
+
+  <!-- Events list -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <h2 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-[#111] mb-8">
+        Kampdage
+      </h2>
+
+      {upcomingHome.length > 0 ? (
+        <div class="flex flex-col gap-0 divide-y divide-[#F0F0F0]">
+          {upcomingHome.map((event) => {
+            const opponent = event.awayId === abConfig.teamId ? event.homeName : event.awayName;
+            const venue = event.properties?.venueName ?? 'Gladsaxe Stadion';
+            return (
+              <div class="group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 py-6 hover:bg-[#FAFAFA] transition-colors -mx-4 px-4">
+                <a href={`/kamp/${event.eventId}`} class="absolute inset-0 z-0" aria-label={`Se kamp: AB 1889 mod ${opponent}`} />
+                <div class="shrink-0 sm:w-40 relative z-10 pointer-events-none">
+                  <p class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-neon mb-0.5">Kampdag</p>
+                  <p class="font-black text-[1rem] text-[#111] tracking-[-0.03em] leading-tight">{fmtDate(event.startDate)}</p>
+                  <p class="text-[0.85rem] text-[#888] mt-0.5">{fmtTime(event.startDate)}</p>
+                </div>
+                <div class="flex-1 min-w-0 relative z-10 pointer-events-none">
+                  <p class="font-black text-[1.15rem] text-[#111] tracking-[-0.03em]">AB 1889 mod {opponent}</p>
+                  <p class="text-[0.88rem] text-[#666] mt-0.5">{venue}</p>
+                </div>
+                <div class="shrink-0 flex items-center gap-3 relative z-10">
+                  <a
+                    class="vivenu-btn text-[0.75rem] font-black uppercase tracking-[0.08em] bg-ab-neon text-ab-green px-4 py-2.5 no-underline hover:opacity-80 transition-opacity"
+                    href={`${ticketUrl(event.awayName ?? '')}?useEmbed=true`}>
+                    Billetter
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="py-20 text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#F5F5F5] mb-6">
+            <svg class="w-7 h-7 text-[#CCC]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <p class="font-black text-[1.1rem] text-[#111] tracking-[-0.03em] mb-2">Ingen kommende events</p>
+          <p class="text-[0.9rem] text-[#888]">Kig forbi igen snart — flere events annonceres her.</p>
+        </div>
+      )}
+
+    </div>
+  </section>
+
+  <!-- Skab forbindelser gennem fodbold -->
+  <section class="bg-[#F2F2F0] border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <h2 class="font-black text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.03em] text-[#111] mb-4">
+        Skab forbindelser gennem fodbold
+      </h2>
+      <p class="text-[1rem] leading-[1.75] text-[#555] max-w-[64ch] mb-4">
+        Byg meningsfulde relationer, opdag nye muligheder, og skab
+        forbindelser med andre erhvervsfolk, der deler passionen for
+        fodbold og fællesskab. Du kan læse mere om at blive partner i AB
+        Erhvervsnetværk ved at kontakte
+        <a href="mailto:info@ab.dk" class="text-ab-green font-black no-underline hover:opacity-70">info@ab.dk</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Hospitality CTA -->
+  <section class="bg-ab-green py-[clamp(40px,6vw,64px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div>
+        <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-2">Private arrangementer</p>
+        <h2 class="font-black text-white text-[clamp(1.4rem,3vw,2.2rem)] tracking-[-0.04em] leading-tight">Hold dit event på Gladsaxe Stadion</h2>
+        <p class="text-white/70 text-[0.95rem] mt-2 max-w-[44ch]">Vores Knud Lundberg Lounge og The Mad Owl Pub kan lejes til konferencer, middage og private events.</p>
+      </div>
+      <a
+        href="/hospitality"
+        class="shrink-0 inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-neon text-ab-green px-7 py-3.5 no-underline hover:opacity-90 transition-opacity whitespace-nowrap">
+        Se gæsteoplevelser →
+      </a>
+    </div>
+  </section>
+
+</Base>

@@ -1,0 +1,26 @@
+---
+import { localePath, translate, type Locale } from '@/lib/i18n';
+import type { SIEvent } from '@/lib/si/client';
+import MiniCalendarIsland from '@/components/islands/MiniCalendar';
+
+interface Props {
+  locale: Locale;
+  events: SIEvent[];
+}
+
+const { locale, events } = Astro.props;
+
+const dayLabels = translate(locale, 'calendarDayLabels').split(',');
+---
+
+<MiniCalendarIsland
+  client:load
+  events={events}
+  locale={locale}
+  kampeHref={localePath(locale, '/kampe')}
+  dayLabels={dayLabels}
+  monthScheduleLabel={translate(locale, 'monthSchedule')}
+  seeAllLabel={translate(locale, 'seeAllEvents')}
+  prevMonthLabel={translate(locale, 'prevMonth')}
+  nextMonthLabel={translate(locale, 'nextMonth')}
+/>

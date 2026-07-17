@@ -1,16 +1,32 @@
 node_modules
 docs
 .DS_Store
+.vscode
 
 # Proprietary fonts — licensed, not for public distribution
 **/public/fonts/ABCCameraPlain-*
-.vscode
+
+# Environment files — .env.example is committed, everything else is not
 .env
-.claude/settings.local.json
+.env.local
+.env.*.local
+.claude
+.agents
+skills-lock.json
+
+# Astro build output
+dist
+.astro
+.output
+
+# Strapi
 strapi-export*.tar.gz
 strapi/package-lock.json
 .strapi-updater*.json
 strapi/.strapi-updater*.json
+.strapi-cloud.json
+
+# Yarn (strapi uses yarn 4 internally)
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -18,3 +34,11 @@ strapi/.strapi-updater*.json
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Strapi response cache
+.cache/
+
+# Cursor project rules — override global ignore to keep rules in repo
+!.cursor/
+!.cursor/**
+.vercel

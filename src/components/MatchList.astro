@@ -1,0 +1,239 @@
+---
+import { abConfig } from '@/lib/config/ab';
+import { translate, type Locale } from '@/lib/i18n';
+import { getTeamLogoSrc, formatEventScore, type SIEvent } from '@/lib/si/client';
+
+export type MatchListFilter = 'upcoming' | 'home' | 'away' | 'results';
+
+interface Props {
+  locale: Locale;
+  events: SIEvent[];
+  filter?: MatchListFilter;
+  ticketByEventId?: Record<number, string>;
+}
+
+const { locale, events, filter = 'upcoming', ticketByEventId } = Astro.props;
+const isPast = filter === 'results';
+
+const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB';
+
+function fmtDay(d: string) {
+  return new Date(d).toLocaleDateString(dateLocale, { weekday: 'long' });
+}
+
+function fmtMonthDay(d: string) {
+  return new Date(d).toLocaleDateString(dateLocale, {
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function fmtTime(d: string) {
+  return new Date(d).toLocaleTimeString(dateLocale, {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function fmtGridDate(d: string) {
+  return new Date(d).toLocaleDateString(dateLocale, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
+function emptyMessage(f: MatchListFilter): string {
+  switch (f) {
+    case 'home':    return translate(locale, 'noHomeFixtures');
+    case 'away':    return translate(locale, 'noAwayFixtures');
+    case 'results': return translate(locale, 'noResultsFound');
+    case 'upcoming':return translate(locale, 'noUpcomingFixtures');
+    default: {
+      const _exhaustive: never = f;
+      return _exhaustive;
+    }
+  }
+}
+
+function eventRound(event: SIEvent): string {
+  const round = (event as SIEvent & { round?: number }).round;
+  if (!round) return '';
+  return `${translate(locale, 'matchRound')} ${round}`;
+}
+
+function eventVenue(event: SIEvent, isABHome: boolean): string {
+  return (
+    event.properties?.venueName ??
+    (isABHome ? translate(locale, 'defaultStadium') : event.homeName)
+  );
+}
+
+const seenDates = new Set<string>();
+const matchHref = (id: number) => `${locale === 'en' ? '/en/match' : '/kamp'}/${id}`;
+const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
+---
+
+<div class="match-list">
+  {isPast ? (
+    <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col gap-y-8 md:gap-y-10">
+      {events.length === 0 && (
+        <div class="text-center py-12 text-sm text-[#777]">{emptyMessage(filter)}</div>
+      )}
+      {events.map((event) => {
+        const isABHome = event.homeId === abConfig.teamId;
+        const homeName = isABHome ? 'AB' : event.homeName;
+        const awayName = isABHome ? event.awayName : 'AB';
+        const venue = eventVenue(event, isABHome);
+        const round = eventRound(event);
+        const dateKey = event.startDate.slice(0, 10);
+        const isFirst = !seenDates.has(dateKey);
+        if (isFirst) seenDates.add(dateKey);
+
+        return (
+          <div
+            id={isFirst ? dateKey : undefined}
+            class={`group relative scroll-mt-24 md:scroll-mt-40 bg-white border rounded-[4px] overflow-hidden transition-all duration-150 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] ${isABHome ? 'border-ab-green/30 border-l-[3px] border-l-ab-neon hover:border-ab-green/50' : 'border-gray-200 hover:border-gray-300'}`}>
+            <a
+              href={matchHref(event.eventId)}
+              class="absolute inset-0 z-0"
+              aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${homeName} vs ${awayName}`}
+            />
+            <div class={`relative z-10 px-5 py-1.5 flex items-center justify-between border-b ${isABHome ? 'bg-ab-green border-ab-green' : 'bg-[#F0F4F0] border-gray-200'}`}>
+              <span class={`text-xs font-bold tracking-[0.04em] ${isABHome ? 'text-ab-neon' : 'text-[#888]'}`}>
+                {isABHome ? translate(locale, 'homeMatch') : translate(locale, 'awayMatch')}
+              </span>
+              <span class={`text-xs ${isABHome ? 'text-white/60' : 'text-[#999]'}`}>{translate(locale, 'secondDivision')}</span>
+            </div>
+            <div class="match-card-body">
+              <div class="match-card-date">
+                <p class="match-card-weekday">{fmtDay(event.startDate)}</p>
+                <p class="match-card-day">{fmtMonthDay(event.startDate)}</p>
+                <p class="match-card-time">{fmtTime(event.startDate)}</p>
+              </div>
+              <div class="match-teams">
+                <div class="match-teams-grid">
+                  {round && <p class="match-teams-round">{round}</p>}
+                  <span class="match-team-name match-team-name--home">{homeName}</span>
+                  <span class="match-team-logo match-team-logo--home">
+                    <img
+                      src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)}
+                      alt=""
+                      width="56"
+                      height="56"
+                      class="match-team-logo-img"
+                      loading="lazy"
+                      onerror="this.closest('.match-team-logo')?.classList.add('match-team-logo--fallback')"
+                    />
+                    <span class="match-team-logo-fallback">
+                      <span class="text-xs font-bold text-[#555]">{event.homeName?.slice(0, 3).toUpperCase()}</span>
+                    </span>
+                  </span>
+                  {formatEventScore(event.score) ? (
+                    <span class="match-vs font-black tabular-nums" style="font-size:1.15rem;color:#111;letter-spacing:-0.02em">{formatEventScore(event.score)}</span>
+                  ) : (
+                    <span class="match-vs">VS</span>
+                  )}
+                  <span class="match-team-logo match-team-logo--away">
+                    <img
+                      src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)}
+                      alt=""
+                      width="56"
+                      height="56"
+                      class="match-team-logo-img"
+                      loading="lazy"
+                      onerror="this.closest('.match-team-logo')?.classList.add('match-team-logo--fallback')"
+                    />
+                    <span class="match-team-logo-fallback">
+                      <span class="text-xs font-bold text-[#555]">{event.awayName?.slice(0, 3).toUpperCase()}</span>
+                    </span>
+                  </span>
+                  <span class="match-team-name match-team-name--away">{awayName}</span>
+                  <p class="match-teams-venue">{venue}</p>
+                </div>
+              </div>
+              <div class="match-card-action relative z-10" />
+            </div>
+            <div class="relative z-10 px-5 py-2.5 flex items-center border-t border-[#F0F0F0]">
+              <span class="ml-auto text-xs font-bold text-[#444] transition-colors group-hover:text-ab-green">{viewLabel}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  ) : (
+    <div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+      {events.length === 0 && (
+        <div class="col-span-full text-center py-12 text-sm text-[#777]">{emptyMessage(filter)}</div>
+      )}
+      {events.map((event) => {
+        const isABHome = event.homeId === abConfig.teamId;
+        const homeName = isABHome ? 'AB' : event.homeName;
+        const awayName = isABHome ? event.awayName : 'AB';
+        const venue = eventVenue(event, isABHome);
+        const dateKey = event.startDate.slice(0, 10);
+        const isFirst = !seenDates.has(dateKey);
+        if (isFirst) seenDates.add(dateKey);
+
+        return (
+          <div
+            id={isFirst ? dateKey : undefined}
+            class={`scroll-mt-24 bg-white rounded-[4px] overflow-hidden transition-all duration-150 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] flex flex-col border ${isABHome ? 'border-ab-green/30 border-t-[3px] border-t-ab-neon' : 'border-gray-200 hover:border-gray-300'}`}>
+
+            <div class={`px-4 py-1.5 flex items-center justify-between border-b shrink-0 gap-2 ${isABHome ? 'bg-ab-green border-ab-green' : 'bg-[#F0F4F0] border-gray-200'}`}>
+              <span class={`text-xs font-medium shrink-0 ${isABHome ? 'text-white/80' : 'text-[#555]'}`}>
+                {fmtGridDate(event.startDate)} · {fmtTime(event.startDate)}
+              </span>
+              <span class={`text-xs truncate text-right ${isABHome ? 'text-ab-neon font-bold' : 'text-[#999]'}`}>{isABHome ? (locale === 'en' ? 'HOME' : 'HJEMME') : venue}</span>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 px-4 pt-5 pb-5">
+              <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
+                <img
+                  src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)}
+                  alt=""
+                  width="56"
+                  height="56"
+                  class="w-14 h-14 object-contain"
+                  loading="lazy"
+                  onerror="this.style.opacity='0'"
+                />
+                <span class="text-[0.7rem] font-bold text-[#111] text-center leading-tight line-clamp-2">{homeName}</span>
+              </div>
+              <span class="text-[0.65rem] font-black text-[#BBB] shrink-0 px-1">VS</span>
+              <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
+                <img
+                  src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)}
+                  alt=""
+                  width="56"
+                  height="56"
+                  class="w-14 h-14 object-contain"
+                  loading="lazy"
+                  onerror="this.style.opacity='0'"
+                />
+                <span class="text-[0.7rem] font-bold text-[#111] text-center leading-tight line-clamp-2">{awayName}</span>
+              </div>
+            </div>
+
+            <div class="mt-auto px-4 py-3 flex items-center gap-2 justify-end border-t border-[#F0F0F0]">
+              {isABHome && (
+                <a
+                  class="vivenu-btn text-xs font-bold px-3 py-1.5 rounded no-underline text-white transition-opacity hover:opacity-80"
+                  href={`${ticketByEventId?.[event.eventId] ?? 'https://billet.ab.dk/'}?useEmbed=true`}
+                  style="background:var(--ab-green)">
+                  {translate(locale, 'tickets')}
+                </a>
+              )}
+              <a
+                href={matchHref(event.eventId)}
+                class="text-xs font-bold px-3 py-1.5 rounded no-underline border border-ab-green text-ab-green hover:bg-ab-green hover:text-white transition-colors">
+                {locale === 'en' ? 'Details' : 'Detaljer'}
+              </a>
+            </div>
+
+          </div>
+        );
+      })}
+    </div>
+  )}
+</div>

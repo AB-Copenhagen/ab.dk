@@ -1,0 +1,58 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = false;
+
+const sessionToken = Astro.cookies.get('DS')?.value;
+if (sessionToken) {
+  return Astro.redirect(
+    Astro.url.searchParams.get('redirect') ?? '/en/account/profile'
+  );
+}
+
+const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
+---
+
+<Base locale="en" title="My account | AB 1889">
+  <main class="flex min-h-screen items-center justify-center bg-neutral-100 px-4 py-24">
+    <div class="w-full max-w-md rounded border border-neutral-200 bg-white p-8">
+      <div class="mb-8 flex justify-center">
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-ab-green text-xl font-black text-white" aria-label="AB 1889">AB</div>
+      </div>
+      <h1 class="mb-2 text-center text-2xl font-black uppercase tracking-widest text-ab-gold">My account</h1>
+      <p class="mb-8 text-center text-sm text-neutral-500">Akademisk Boldklub 1889</p>
+      {DESCOPE_PROJECT_ID ? (
+        <div id="descope-container"></div>
+      ) : (
+        <div class="border border-neutral-200 p-6 text-center text-sm text-neutral-500">
+          Login requires configuration. Contact AB 1889.
+        </div>
+      )}
+    </div>
+  </main>
+
+  {DESCOPE_PROJECT_ID && (
+    <script is:inline type="module" define:vars={{ DESCOPE_PROJECT_ID }}>
+      import('https://unpkg.com/@descope/web-component@3/dist/index.js').then(() => {
+        const el = document.createElement('descope-wc');
+        el.setAttribute('project-id', DESCOPE_PROJECT_ID);
+        el.setAttribute('flow-id', 'si-app');
+        el.setAttribute('theme', 'light');
+        el.setAttribute('locale', 'en-US');
+        el.addEventListener('success', async (e) => {
+          const sessionJwt = e.detail?.sessionJwt;
+          const target = new URLSearchParams(location.search).get('redirect') ?? '/en/account/profile';
+          if (!sessionJwt) return;
+
+          const res = await fetch('/api/auth/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionToken: sessionJwt }),
+          });
+          if (res.ok) location.href = target;
+        });
+        document.getElementById('descope-container')?.appendChild(el);
+      });
+    </script>
+  )}
+</Base>

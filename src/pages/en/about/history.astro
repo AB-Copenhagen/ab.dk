@@ -1,0 +1,599 @@
+---
+import Base from '@/layouts/Base.astro';
+import TimelineNav from '@/components/history/TimelineNav.astro';
+import TimelineSidebar from '@/components/history/TimelineSidebar.astro';
+import PlaceholderImage from '@/components/history/PlaceholderImage.astro';
+import Img from '@/components/Img.astro';
+
+export const prerender = true;
+
+const london1948Squad = [
+  'Knud Lundberg',
+  'Georg Dahlfelt',
+  'Karl Aage Hansen',
+  'Ivan Jensen',
+  'Poul Petersen',
+  'Knud Bastrup-Birk',
+];
+
+const theThreeWhoStayed = [
+  { name: 'René Henriksen', note: 'National team debut at 28' },
+  { name: 'Peter Frandsen', note: '392 appearances for AB' },
+  { name: 'Peter Rasmussen', note: 'Club record: 394 appearances' },
+];
+
+const fiveCastlesLeadership = [
+  { name: 'Erik Stover', role: 'CEO', note: 'Former CEO, New York Red Bulls' },
+  { name: 'Jen Hsiang Chang', role: 'Chairman & Sporting Director', note: 'Former CEO, New York Cosmos' },
+  { name: 'Ben Lyttleton', role: 'Football writer', note: '' },
+  { name: 'Simon Young', role: 'Co-founder, ClipperData', note: '' },
+  { name: 'Andy Glockner', role: 'Sports analytics consultant', note: '' },
+  { name: 'Alex Lee', role: 'Talent manager, Dell', note: '' },
+];
+
+const coachRecords = [
+  { name: 'Patrick Braune', note: '13 W – 9 D – 10 L' },
+  { name: 'David Roufpanah (23/24)', note: '9 W – 13 D – 10 L' },
+  { name: 'Joey Guðjónsson (24/25)', note: '14 W – 9 D – 9 L · 4th place' },
+];
+---
+
+<style>
+  section[id],
+  div[id] {
+    scroll-margin-top: calc(var(--nav-height, 92px) + 56px);
+  }
+</style>
+
+<Base
+  locale="en"
+  title="Our History | Akademisk Boldklub – Est. 1889"
+  description="From an 1883 cricket club to nine Danish championships – discover 140+ years of history behind Akademisk Boldklub, one of Denmark's oldest clubs."
+  ogTitle="The History of Akademisk Boldklub (AB)"
+  ogDescription="Explore 140+ years of AB history – from our 1889 founding to nine Danish championship titles."
+>
+  <!-- Hero -->
+  <div class="relative w-full">
+    <Img
+      src="/images/about-history-hero.png"
+      alt="AB 1889 History"
+      class="w-full h-auto block"
+      loading="eager"
+    />
+    <div class="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.1)_30%,rgba(0,0,0,0.55)_100%)]"></div>
+    <div class="absolute inset-0 flex items-end px-8 lg:px-20 pb-14">
+      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,10vw,8rem)] tracking-[-0.04em]">History</h1>
+    </div>
+  </div>
+
+  <TimelineNav locale="en" />
+
+  <div class="lg:flex lg:items-start">
+    <!-- Left: sticky sidebar column -->
+    <div
+      class="hidden lg:block w-[240px] shrink-0 pl-20"
+      style="position: sticky; top: calc(var(--nav-height, 92px) + 48px); align-self: start; max-height: calc(100vh - var(--nav-height, 92px) - 48px - 1rem); overflow-y: auto; scrollbar-width: none;">
+      <TimelineSidebar locale="en" />
+    </div>
+    <!-- Right: content column -->
+    <div class="flex-1 min-w-0">
+
+  <!-- Era: Beginning -->
+  <div id="era-beginning" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">The Beginning</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1883–1924</span>
+    </div>
+  </div>
+
+  <!-- 1883: White bg — text left, image right -->
+  <section id="1883" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div>
+          <div class="inline-flex items-center mb-7 bg-ab-beige rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1883</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">How it all Began</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] max-w-[44ch]">
+            When the disciples of the Frederician Latin School became students in 1883 and moved to Copenhagen, they brought more than academic knowledge with them. Since football had not yet fully taken hold in Denmark, these students instead started a Cricket Club as a gathering point for their sporting activities.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] max-w-[44ch] mt-5">
+            This club was named "Fredericia-studenternes Kricketklub" (FSK), as a final tribute to their old school. The players' uniforms were already in the familiar AB colours: Green and white.
+          </p>
+        </div>
+        <div class="overflow-hidden rounded-md aspect-[4/3]">
+          <Img src="/images/about-frederician-latin-school-building.png" alt="Frederician Latin School" class="w-full h-full object-cover" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1887: Beige bg — image left, text right -->
+  <section id="1887" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div class="overflow-hidden order-2 lg:order-1 rounded-md">
+          <Img src="/images/about-board-of-directors.png" alt="AB team 1887" class="w-full h-auto block" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1887</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">Becoming Akademisk Boldklub</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] max-w-[44ch]">
+            As early as 1887, the game of football was admitted to the FSK. This happened after a Danish translation of the laws of the English Football Association had been made in the autumn of 1886/87.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] max-w-[44ch] mt-5">
+            Gradually, the influx of Copenhageners increased, and it was therefore agreed that the name of the club no longer represented its members. On 26 February 1889, the "Fredericia-studenternes Kricketklub" merged with the slightly younger "Polyteknisk Klub". The name then became: Akademisk Boldklub.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1889: Light gray bg — text left, image right -->
+  <section id="1889" class="bg-[#E7E7E7] py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">Entry Requirements for the Academics</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] max-w-[44ch]">
+            After the merger, the entry requirements for membership of the newly established Akademisk Boldklub were changed so that anyone who had taken an entrance exam to university or the polytechnic school could become a member. This also applied to students from other Scandinavian universities.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] max-w-[44ch] mt-5">
+            In addition, non-academic footballers with potential could be admitted to AB by being unanimously proposed by the board or by 15 members of the club.
+          </p>
+        </div>
+        <div class="overflow-hidden rounded-md aspect-[4/3]">
+          <Img src="/images/about-stadium-seat.png" alt="AB stadium" class="w-full h-full object-cover" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1889 black: Board of directors -->
+  <section id="1889-board" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-center">
+        <div class="overflow-hidden rounded-md">
+          <Img src="/images/about-board-of-directors.png" alt="AB board of directors 1889" class="w-full h-auto block" />
+        </div>
+        <div>
+          <div class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-white tracking-[-0.04em]">1889</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-ab-beige">AB's Initial Board of Directors</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-ab-beige mb-4">AB's new board of directors after the merger consisted of:</p>
+          <ul class="flex flex-col gap-2 text-ab-beige text-[1.1rem] leading-[1.75]">
+            <li>E. Pagh — Chairman (former Chairman of the Fredericia Students' Cricket Club)</li>
+            <li>E. Faber</li>
+            <li>H. Forchhammer</li>
+            <li>H.C. Lund</li>
+            <li>H. Birk</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1889 white: Two columns -->
+  <section id="1889-dues" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-28 items-start">
+        <div>
+          <div class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-white tracking-[-0.04em]">1889</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">Financing the Pitch</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444]">In 1889, the membership fee for active members of AB was just 50 øre per month.</p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            On 1 April 1889, the club moved to new premises at Helgesensgade 5, where they were well received by the club's first clothing sponsor. Since they could not afford to buy new towels, a mother of an AB player bought fabric on credit and sewed 6 towels herself, which she happily handed to the enthusiastic players.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            DBU acquired a nice trophy for the tidy sum of 150 kroons, and the result of DBU's first tournament (1889–1890) was that AB won the final over KB 2-0.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            Around the turn of the century, both KB and B93 had their own pitches, and AB thought that they should have one too. The necessary capital — 60,000 DKK — was obtained from the club's supporters, and it was then possible to rent an area on Lammefælleden on Tagensvej from the Municipality of Copenhagen, completed in 1903.
+          </p>
+        </div>
+        <div class="pt-[calc(1.4rem+18px+1.75rem)]">
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">Defining Personalities in AB</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+            One of the greatest personalities of this time in AB was Department Head Charles Buchwald, who played all three ball games available at AB: football, tennis and cricket. Buchwald played on the national team in football and cricket and was club champion in tennis.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            Buchwald made his debut on AB's first team in football at the age of 16, the same age as Harald Bohr, who made it to 4 international matches. His brother Niels, who probably became better known outside the pitch, was a goalkeeper.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            'AB was quite superior in a match against a selected German team — Mittweida — and Niels Bohr made the time pass by standing and leaning on one of the goalposts. Suddenly a long ball was kicked towards AB's goal. Everyone expected Niels to go out and take the ball, but he did nothing. After the match he had to admit that his thoughts were about a mathematical problem.'
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1894: Green bg — crest left, text right -->
+  <section id="1894" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[minmax(0,400px)_1.35fr] gap-16 lg:gap-20 items-center">
+        <div class="flex items-center justify-center aspect-square max-h-[420px]">
+          <Img src="/images/about-crest-original.png" alt="AB 1889 crest" class="w-[min(360px,90%)]" />
+        </div>
+        <div>
+          <div class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1894</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-white">Establishment of junior department in 1894</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85">
+            Since the new game had not yet reached the schools, the club tried in 1894 to establish a Junior Department, which was not a great success. In 1899 AB tried again. This time under the leadership of the creator of AB's famous junior department and its leader for 20 years — Edmond Andersen.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5">
+            During the department's first year of existence, the number of members increased to almost 70. Edmond Andersen kept a careful diary of the individual training sessions — both big and small.
+          </p>
+        </div>
+      </div>
+
+      <!-- 1919: Training diary and the end of the Tagensvej lease -->
+      <div id="1919" class="mt-16 lg:mt-20 border-l-[3px] border-ab-neon pl-6 lg:pl-8">
+        <p class="text-[0.8rem] font-black text-ab-neon tracking-widest uppercase mb-4">1919 · From the diary</p>
+        <p class="italic text-[1.05rem] leading-[1.8] text-white/90 mb-1">
+          "Training Session Diary and the Age of the Rogue (1919)"
+        </p>
+        <ul class="italic text-[1.05rem] leading-[1.8] text-white/80 mt-4 flex flex-col gap-1 list-none">
+          <li>22-12: 10 men. Five-a-side. It was established for the 50th time that X is in the rogue age.</li>
+          <li>27-12: 20 players. Nice weather. Good game!</li>
+          <li>3-1-01: No players met. Frost. Skating conditions. The season ended.</li>
+          <li>14th-6th: 23 men in training. Harald Bohr took a plunge.</li>
+        </ul>
+        <p class="italic text-[1.05rem] leading-[1.8] text-white/90 mt-5">
+          "In 1919, the clouds began to gather over the courts on Tagensvej. The City of Copenhagen terminated the lease, but the club had it postponed several times due to lengthy negotiations. But in May 1922, it was finally over. AB was referred to Fælleden and was graciously allowed to use a piece of the grounds of Rigshospitalet. During this time, the changing rooms were in a shed without water."
+        </p>
+        <p class="text-[0.95rem] text-white/60 mt-3">— From the journal of Edmond Andersen</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1924: Beige bg — floating placeholder image within the text flow -->
+  <section id="1924" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <div class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
+          <span class="font-black text-[1.4rem] text-white tracking-[-0.04em]">1924</span>
+        </div>
+        <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">The move to Nørre Allé</h2>
+        <PlaceholderImage locale="en" class="w-full sm:w-[300px] lg:w-[380px] sm:float-right sm:ml-8 lg:ml-10 mb-6" />
+        <p class="text-[1.1rem] leading-[1.75] text-[#111]">
+          The move to Nørre Allé was only made possible through great financial goodwill from well-known names within the academic circle, and not least from the football club FREM, which granted AB a large loan for the construction of new pitches and a clubhouse, completed on 13 September 1924. That it had cost the club dearly can be seen from the invitation to the opening party that evening, which read: "Sandwiches must be brought, only the spiritual food will be provided by the Committee."
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+          The year before, P.W. Degner had joined the club, and from the start he took over management of the youth department. Membership in the youth section grew steadily — from 130 in 1925 to over 200 in the mid-30s.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+          AB won the junior tournament 7 times under the leadership of the renowned Carl Skomager Hansen, who was also the first Dane to turn professional abroad when he signed with Glasgow Rangers in 1921 for a transfer fee of £20!
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+          Club life flourished in the interwar years, and the highlight of the year was the "Rusgildet" party, where newly promoted seniors were introduced to the club's rules and customs through speeches, songs, a revue and — last but not least — plenty of drinks!
+        </p>
+        <div class="clear-both" aria-hidden="true" />
+    </div>
+  </section>
+
+  <!-- Era: Post War -->
+  <div id="era-postwar" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">Post War</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1940–1974</span>
+    </div>
+  </div>
+
+  <!-- 1940: Black bg — placeholder image left, text right -->
+  <section id="1940" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
+        <div class="order-2 lg:order-1">
+          <PlaceholderImage locale="en" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center mb-7 bg-ab-gold rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1940</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-ab-beige">AB's 50th Birthday</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85">
+            AB's 50th birthday was celebrated at the era's hottest restaurant, Nimb, where Chairman O. Thieslen welcomed the guests. Among other things, the chairman played the gramophone record that Professor and Nobel Prize winner Niels Bohr had sent home from his trip to the USA — a tribute to the birthday boy.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5">
+            Playing football during wartime was different from before 1940. People trained harder, enjoyed the camaraderie of the club and felt part of the community in a completely different way than before. In the 1942-43 season, AB won "The Double", with a squad that included Knud Lundberg, the doctor who played on three national teams at once — football, handball and basketball — Karl Aage Hansen, later a professional at Juventus, Ivan Jensen and Georg Dahlfelt, who played alongside Lundberg on the national handball team.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1946: White bg — floating placeholder image within the text flow -->
+  <section id="1946" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <div class="inline-flex items-center mb-7 bg-ab-beige rounded-full py-[9px] px-[22px]">
+          <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1946</span>
+        </div>
+        <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">A New Sport is Added</h2>
+        <PlaceholderImage locale="en" class="w-full sm:w-[300px] lg:w-[380px] sm:float-right sm:ml-8 lg:ml-10 mb-6" />
+        <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+          In 1946, table tennis was added to AB. With various cricket and football players on the team, the department won the Copenhagen Championship in 1946 and '47, and the crowning glory was "The Double" (DM and cup) in both 1948 and 1949. Despite the great results, the department was disbanded in the early 50s.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+          AB's golden age came in the years after the Second World War. Membership was well over 1,000, and the flow of Danish championships increased, with victories in 1945, 1947, 1951 and 1952. Football was hugely popular too, with 30,000 spectators at Idrætsparken for most matches.
+        </p>
+
+        <p class="text-[0.78rem] font-black text-[#999] tracking-widest uppercase mt-8 mb-3 clear-both">The 1948 London Olympics squad</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {
+            london1948Squad.map((name) => (
+              <div class="border border-[#E5E7EB] py-3 px-4">
+                <p class="font-black text-[0.95rem] text-[#111] tracking-[-0.02em]">{name}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-8">
+          When many of these players retired — Lundberg stayed until 1960 — results became a little more modest, despite the addition of new players: Chr. Brøgger, Dan Ohland Andersen, Frank Rechendorf, Ejler and Poul Koch, and Jens Carl Christensen.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+          Eventually the surroundings became too small, as housing was built on many of the former pitches, so the club explored moving to new and larger surroundings. When AB's agreement with the Ministry of Education was terminated, the search for other areas began. Letters were sent to many municipalities, but only Gladsaxe Municipality met the club's request with goodwill, and plans were soon on the table.
+        </p>
+    </div>
+  </section>
+
+  <!-- 1960: Beige bg — placeholder image left, text right -->
+  <section id="1960" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
+        <div class="order-2 lg:order-1">
+          <PlaceholderImage locale="en" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-ab-neon tracking-[-0.04em]">1960</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">Merger with Bagsværd</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111]">
+            Bagsværd Idrætsforening offered to merge with AB, and when Gladsaxe Municipality's dynamic mayor, Erhard Jacobsen, and the rest of the municipal council supported the idea, it led to the first discussions between AB's chairman C.V. Jensen, the municipality and BIF.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+            The initial plan was to expand Bagsværd Stadium, but it fell through when Gladsaxe Municipality offered to buy a 12-hectare area at Skovbrynet in Bagsværd, on condition that AB's and BIF's football departments merged.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+            Long and tough negotiations between the two football clubs led, in late 1961, to both clubs' general meetings agreeing to the merger — at the old Nørre Allé, however, it took three general meetings!
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1963: Green bg — floating placeholder image within the text flow -->
+  <section id="1963" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <div class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
+          <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1963</span>
+        </div>
+        <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-white">The Creation of AB's Modern Home</h2>
+        <PlaceholderImage locale="en" class="w-full sm:w-[300px] lg:w-[380px] sm:float-right sm:ml-8 lg:ml-10 mb-6" />
+        <p class="text-[1.1rem] leading-[1.75] text-white/85">
+          On the beautifully situated area at Skovbrynet, 8 football pitches were laid out, and a sports hall with 3 tennis courts, restaurant, changing rooms and meeting rooms was built — the largest in Northern Europe at the time! AB Hallen was completed in 1966, but the facility was inaugurated as early as the autumn of 1963, when the two gravel pitches were put into use.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5">
+          The start of our era in Gladsaxe Municipality coincided with the club becoming Danish champions in 1967. The team consisted of young players who had come through the club's youth ranks, and in 1970 they won silver medals — just one goal away from another Danish championship.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5">
+          During this period, the club was constantly involved in European football, resulting in a great overall win over FC Zurich, as well as close matches against AEK Athens, Anderlecht and Dundee United. In 1970, AB had drawn Maltese side Sliema Wanderers in the Fairs Cup and won the first leg at home 7-0. In the away leg, on a hopeless gravel pitch, AB's coach had ordered cautious, hesitant play for the first 15 minutes, but chairman Hans Frost intervened and suggested pressing from the start, scoring quickly, and then entertaining the Maltese for the rest of the match with quick triangle passing. Søren Jensen, also known as "Søren Sutsko", followed the orders and scored already after 3 minutes — into his own goal!
+        </p>
+
+        <div class="mt-8 border-l-[3px] border-ab-neon pl-6 clear-both">
+          <p class="italic text-[1.05rem] leading-[1.7] text-white/90">"Søren should be praised. He followed the chairman's advice!"</p>
+          <p class="text-[0.9rem] text-white/60 mt-2">— Captain Niels Yde, in his speech at the dinner afterwards</p>
+        </div>
+
+        <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-8">
+          AB nonetheless won the match 3-2. Many of the club's talented players were sold abroad (including Kresten Bjerre, Flemming Kjærsgaard, Finn Wiberg, Johnny Petersen, Aage Hansen and Benny Nielsen), and it proved difficult to find qualified replacements.
+        </p>
+    </div>
+  </section>
+
+  <!-- 1974-1985: Muted bg — subdued, text-only, no image -->
+  <section id="1974" class="bg-[#E7E7E7] py-[clamp(56px,8vw,96px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="max-w-[64ch] mx-auto text-center">
+        <div class="inline-flex items-center mb-7 border border-[#B5B5B5] rounded-full py-[8px] px-[20px]">
+          <span class="font-black text-[1.1rem] text-[#555] tracking-[-0.04em]">1974–1985</span>
+        </div>
+        <h2 class="font-black mb-7 text-[clamp(1.6rem,3.5vw,2.4rem)] tracking-[-0.04em] leading-[1.1] text-[#333] text-center">A Tough Period</h2>
+        <p class="text-[1.05rem] leading-[1.8] text-[#666]">
+          After the glory years of the 1960s, things went downhill, with the club spending time in both Denmark's second and third tier. From 1974 to 1985, AB's first team was consistently placed in the country's second tier, despite countless chances of promotion. In the 1986 season, the club was relegated to the 3rd division, and for one year came close to dropping into the Danish amateur league altogether.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Era: Present -->
+  <div id="era-present" class="bg-[#111] py-5 px-8 lg:px-20 scroll-mt-[calc(var(--nav-height,92px)+56px)]">
+    <div class="max-w-7xl mx-auto flex items-baseline gap-4">
+      <h2 class="font-black text-white text-[clamp(1.1rem,2.5vw,1.5rem)] tracking-[-0.04em] leading-none">Present</h2>
+      <span class="text-[0.75rem] text-white/40 font-medium tracking-[-0.01em]">1990–now</span>
+    </div>
+  </div>
+
+  <!-- 1990: White bg — text + stat cards left, placeholder image right -->
+  <section id="1990" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <div class="inline-flex items-center mb-7 bg-ab-gold rounded-full py-[9px] px-[22px]">
+          <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">1990</span>
+        </div>
+        <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">The Era of Henriksen, Frandsen and Rasmussen</h2>
+        <PlaceholderImage locale="en" class="w-full sm:w-[300px] lg:w-[380px] sm:float-right sm:ml-8 lg:ml-10 mb-6" />
+        <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+          In the early 90s, things at AB started to climb again — mainly because a group of talented players who had played for the club for many years chose to stay and rebuild AB, even though they were offered lucrative deals to join other top-flight clubs. These players valued the camaraderie and special spirit of AB more than the money on offer elsewhere. Three players in particular deserve a mention: René Henriksen, who made his Danish national team debut at the age of 28, Peter Frandsen, and Peter Rasmussen — who holds the club record at AB with 394 appearances, just 2 more than Peter Frandsen.
+        </p>
+
+        <div class="grid sm:grid-cols-3 gap-4 mt-8 clear-both">
+          {
+            theThreeWhoStayed.map(({ name, note }) => (
+              <div class="border border-[#E5E7EB] py-4 px-5">
+                <p class="font-black text-[1rem] text-[#111] tracking-[-0.03em] mb-1">{name}</p>
+                <p class="text-[0.85rem] text-[#666] leading-[1.4]">{note}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-8">
+          These three greats helped AB return to the country's top league in 1996, where they won bronze medals in 1999 and 2000, as well as a cup triumph in 1999 with a 2-1 win over AaB.
+        </p>
+        <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+          In 2001, AB reached its third cup final in seven years, but were beaten 1-4 by Silkeborg at Parken.
+        </p>
+    </div>
+  </section>
+
+  <!-- 2004: Beige bg — text left, placeholder image right -->
+  <section id="2004" class="bg-ab-beige py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[1.65fr_minmax(0,360px)] gap-16 lg:gap-20 items-start">
+        <div>
+          <div class="inline-flex items-center mb-7 bg-ab-green rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-ab-neon tracking-[-0.04em]">2004</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">The Fall from Superliga and Vision 2010</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111]">
+            After 8 seasons in the country's top league, AB left the Superliga in 2004 and were relegated to the 1st Division. AB began to rebuild, targeting promotion in 2010 — rallying supporters and players around the call to action:
+          </p>
+          <div class="border-l-[3px] border-ab-green pl-6 my-6">
+            <p class="font-black italic text-[1.6rem] tracking-[-0.03em] text-ab-green">"Vision 2010"</p>
+          </div>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111]">
+            The effort came close to succeeding, but in the end the club had to admit that the big bet hadn't paid off. A few years followed in which AB's squad consisted of part-time professionals. Three seasons followed in which the club secured its survival in the very last round of matches. There was euphoria every time, with some great late-season finishes, and it seemed AB was destined to survive.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#111] mt-5">
+            In the 2014/15 season, however, things went wrong. After another great final push, AB lost the last game and were relegated to the 2nd Division. It was a quick return to the 1st Division for the Academics, who, after a mixed autumn, played fantastic football in the spring, winning 12 of 16 matches and scoring 38 goals. Unfortunately, it wasn't enough, and the following season the club was relegated back to the 2nd Division.
+          </p>
+        </div>
+        <div class="pt-[calc(1.4rem+18px+1.75rem)]">
+          <PlaceholderImage locale="en" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2022: Black bg — placeholder image left, text + list right -->
+  <section id="2022" class="bg-ab-green py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[minmax(0,360px)_1.65fr] gap-16 lg:gap-20 items-start">
+        <div class="order-2 lg:order-1">
+          <PlaceholderImage locale="en" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center mb-7 bg-ab-gold rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">2022</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-ab-beige">Five Castles Ownership and New Approach</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85">
+            In November 2022, AB was sold to the American investor group Five Castles Football Group LLC, who acquired 95% of the club's shares. Five Castles' vision for the club included a plan to revamp the commercial operations, modernise the player recruitment and scouting operations, and establish a clear playing identity.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-white/85 mt-5 mb-6">
+            Leadership of the investment group included:
+          </p>
+          <ul class="flex flex-col gap-3">
+            {
+              fiveCastlesLeadership.map(({ name, role, note }) => (
+                <li class="border-l-2 border-ab-neon/50 pl-4">
+                  <p class="font-black text-[1rem] text-ab-beige tracking-[-0.02em]">
+                    {name} <span class="text-white/60 font-medium">— {role}</span>
+                  </p>
+                  {note && <p class="text-[0.85rem] text-white/50 mt-0.5">{note}</p>}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2023-2025: White bg — text left, placeholder image right -->
+  <section id="2023" class="bg-[#F5F5F5] py-[clamp(64px,9vw,112px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[1.35fr_minmax(0,400px)] gap-16 lg:gap-20 items-start">
+        <div>
+          <div class="inline-flex items-center mb-7 bg-ab-beige rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-[#111] tracking-[-0.04em]">2023–2025</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-[#111]">New Transitions</h2>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444]">
+            From a sporting perspective, Patrick Braune was head coach of AB at the time of the Five Castles acquisition, with a record of 13 wins, 9 draws and 10 losses.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            AB hired Swedish head coach David Roufpanah for the 2023-2024 season. AB finished that season 5th in the league with 9 wins, 13 draws and 10 losses. AB also reached the quarterfinals of the Danish Cup for the first time in 22 years.
+          </p>
+
+          <div class="grid sm:grid-cols-3 gap-4 mt-8">
+            {
+              coachRecords.map(({ name, note }) => (
+                <div class="border border-[#E5E7EB] py-4 px-5">
+                  <p class="font-black text-[0.95rem] text-[#111] tracking-[-0.02em] mb-1">{name}</p>
+                  <p class="text-[0.85rem] text-[#666]">{note}</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-8">
+            In November 2023, Sofie Brandi Petersen replaced Erik Stover, who stepped down as CEO. To give his full attention to the sporting side, Chang stepped down as Chairman, and AB A/S board member Brian Grieco was elected Chairman — positions both still hold today.
+          </p>
+          <p class="text-[1.1rem] leading-[1.75] text-[#444] mt-5">
+            AB parted ways with head coach David Roufpanah after just one season. In May 2024, Joey Guðjónsson became the club's new head coach. Guðjónsson has been an assistant coach of the Icelandic national team since 2022 and was named Icelandic Coach of the Year in 2018. He also had an impressive playing career as a central midfielder at the highest level in England, Holland and Spain, including 10 seasons in English football — among them Aston Villa in the Premier League, as well as Wolves and Burnley. He also earned 34 caps for Iceland's senior national team. AB finished the 24/25 season with positive momentum: a 4th-place finish and a record of 14 wins, 9 draws and 9 losses.
+          </p>
+        </div>
+        <div class="pt-[calc(1.4rem+18px+1.75rem)]">
+          <PlaceholderImage locale="en" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2025-present: Green bg — finale -->
+  <section id="2025" class="bg-ab-green py-[clamp(64px,9vw,120px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-[1.35fr_minmax(0,400px)] gap-16 lg:gap-20 items-center">
+        <div>
+          <div class="inline-flex items-center mb-7 bg-ab-neon rounded-full py-[9px] px-[22px]">
+            <span class="font-black text-[1.4rem] text-ab-green tracking-[-0.04em]">2025–present</span>
+          </div>
+          <h2 class="font-black mb-7 text-[clamp(1.75rem,4vw,2.75rem)] tracking-[-0.04em] leading-[1.05] text-white">Next Stop, Promotion</h2>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85">
+            In April 2025, Green Owls Football Holdings ("Green Owls") became a minority shareholder. The investment supported the club's mission by strengthening the squad, enhancing the fan experience, expanding sponsor partnerships and deepening community outreach, while leveraging technological and infrastructural upgrades to optimise the club.
+          </p>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85 mt-5">
+            After a bumpy start that saw AB lose to Helsingør in the home opener, AB finished the first half of the season firmly in first place, winning 8 of the last 9 games.
+          </p>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85 mt-5">
+            In December 2025, Guðjónsson left the club for family reasons, and AB hired Fannar Berg Gunnólfsson as head coach. He had previously served as an assistant coach under Guðjónsson.
+          </p>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85 mt-5">
+            In other staffing news, Henrik Bom, former head of the Danish American Chamber of Commerce in New York City, became AB A/S's new President, Head of Commercial, in February 2026, spearheading AB A/S's commercial strategy and revenue growth alongside CEO Sofie Brandi Petersen, forging strategic alliances and partnerships in Denmark and abroad.
+          </p>
+          <p class="text-[1.15rem] leading-[1.75] text-white/85 mt-5">
+            AB finished the regular season with 4 wins, 2 draws and 0 losses in its final 6 games, and a promotion record of 7 wins and 3 losses. Despite a 2-1 loss to FC Roskilde in round 28, HIK beat third-placed Næstved, securing AB's promotion to the 1st Division with four rounds still to play. And in round 30, against HIK, AB needed just a point to seal the 2nd Division title — AB delivered a commanding 5-0 win to become champions.
+          </p>
+        </div>
+        <div class="flex flex-col items-center text-center gap-6">
+          <Img src="/images/about-crest-original.png" alt="AB 1889 crest" class="w-[min(280px,70%)]" />
+          <p class="font-black text-[clamp(1.4rem,2.6vw,1.9rem)] tracking-[-0.03em] leading-[1.2] text-white">
+            For the first time in 10 years, AB has returned to the 2nd tier (Betinia Liga, 1. Division) — a feat achieved in only 3 full seasons under Five Castles' ownership.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    </div><!-- /content column -->
+  </div><!-- /xl:flex -->
+</Base>

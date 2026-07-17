@@ -1,0 +1,112 @@
+---
+// Dev preview — hero states for live and finished matches
+// Remove or gate behind env check before production if desired
+import Base from '@/layouts/Base.astro';
+import { getTeamLogoSrc } from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
+
+// Vejle BK (8231) vs AB (9805) — AB is away
+// AB (9805) vs Fredericia (8454) — AB is home
+const scenarios = [
+  {
+    label: 'Live',
+    score: '1-0',
+    isLive: true,
+    isFinished: false,
+    homeName: 'Vejle Boldklub',
+    awayName: 'AB',
+    homeId: 8231,
+    awayId: abConfig.teamId,
+    isHome: false,
+  },
+  {
+    label: 'Finished',
+    score: '2-1',
+    isLive: false,
+    isFinished: true,
+    homeName: 'AB',
+    awayName: 'Fredericia',
+    homeId: abConfig.teamId,
+    awayId: 8454,
+    isHome: true,
+  },
+] as const;
+---
+
+<Base locale="da" title="Hero preview — dev">
+  <div class="bg-[#111] min-h-screen py-10 space-y-10">
+    <p class="text-center text-white/40 text-xs uppercase tracking-[0.2em] font-bold">Dev preview — hero states</p>
+
+    {scenarios.map((s) => (
+      <div class="max-w-2xl mx-auto">
+        <p class="text-center text-white/30 text-[0.6rem] uppercase tracking-[0.2em] mb-2">{s.label}</p>
+
+        <div style="background:#003D2A">
+          <!-- Photo with bottom gradient -->
+          <div class="relative overflow-hidden" style="height:clamp(220px,36vw,340px)">
+            <img
+              src="/images/match-hero-default.jpg"
+              alt=""
+              aria-hidden="true"
+              class="w-full h-full object-cover object-[center_25%]"
+            />
+            <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to bottom, transparent 40%, #003D2A 100%)"></div>
+
+            <!-- Score on photo -->
+            {(s.isLive || s.isFinished) && (
+              <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style="padding-bottom:4rem">
+                <p
+                  class="font-black tabular-nums"
+                  style={`font-size:clamp(4rem,11vw,7rem);line-height:1;text-shadow:0 3px 24px rgba(0,0,0,0.65);color:${s.isLive ? 'var(--ab-neon)' : 'white'}`}
+                >{s.score}</p>
+                {s.isFinished && (
+                  <span class="mt-2 font-bold text-white/60 uppercase tracking-[0.2em]" style="font-size:0.65rem;text-shadow:0 1px 8px rgba(0,0,0,0.6)">Slutresultat</span>
+                )}
+              </div>
+            )}
+          </div>
+
+          <!-- Crests + VS -->
+          <div class="flex items-center justify-center gap-5 md:gap-8 px-4 pb-8" style="margin-top:clamp(-56px,-7vw,-72px)">
+
+            <div class="relative z-10 flex flex-col items-center gap-3">
+              <img
+                src={getTeamLogoSrc(s.homeId)}
+                alt={s.homeName}
+                width="112" height="112"
+                class="w-24 h-24 md:w-28 md:h-28 object-contain"
+                style={s.isHome ? 'filter:brightness(0) invert(1)' : ''}
+              />
+              <span class="font-black text-white text-center leading-tight" style="font-size:clamp(0.7rem,1.8vw,0.9rem);max-width:120px">{s.homeName}</span>
+            </div>
+
+            <div class="relative z-0 flex flex-col items-center gap-1">
+              {!s.isLive && !s.isFinished ? (
+                <span class="font-black text-white tracking-[0.15em]" style="font-size:clamp(0.9rem,2.2vw,1.2rem)">VS</span>
+              ) : s.isLive ? (
+                <span class="inline-flex items-center gap-1.5 font-black uppercase tracking-[0.12em] text-ab-neon" style="font-size:0.75rem">
+                  <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+                  LIVE
+                </span>
+              ) : (
+                <span class="font-bold text-white/50 uppercase tracking-[0.15em]" style="font-size:0.7rem">FT</span>
+              )}
+            </div>
+
+            <div class="relative z-10 flex flex-col items-center gap-3">
+              <img
+                src={getTeamLogoSrc(s.awayId)}
+                alt={s.awayName}
+                width="112" height="112"
+                class="w-24 h-24 md:w-28 md:h-28 object-contain"
+                style={!s.isHome ? 'filter:brightness(0) invert(1)' : ''}
+              />
+              <span class="font-black text-white text-center leading-tight" style="font-size:clamp(0.7rem,1.8vw,0.9rem);max-width:120px">{s.awayName}</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</Base>

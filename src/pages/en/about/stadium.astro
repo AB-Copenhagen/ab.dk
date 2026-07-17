@@ -1,0 +1,188 @@
+---
+import Base from '@/layouts/Base.astro';
+import heroImage from '@/assets/images/gladsaxe.webp';
+import stadiumImage from '@/assets/images/pro-OPKh7A3o.webp';
+
+export const prerender = true;
+
+const facilities = [
+  { label: 'Total capacity', value: '13,507' },
+  { label: 'Seats', value: '7,707' },
+  { label: 'Standing', value: '5,800' },
+  { label: 'Home since', value: '1930' },
+  { label: 'Pitch size', value: '68 × 105 m' },
+  { label: 'Lighting', value: '715 lux' },
+];
+---
+
+<Base
+  locale="en"
+  title="Gladsaxe Stadium | AB 1889 Home Ground Guide"
+  description="Everything you need to know about Gladsaxe Stadium, home of Akademisk Boldklub — directions, parking and matchday facilities."
+  ogTitle="Gladsaxe Stadium – Home of AB 1889"
+  ogDescription="Plan your visit to Gladsaxe Stadium, home ground of Akademisk Boldklub, with directions and matchday info."
+>
+  <!-- Hero -->
+  <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
+    <img
+      src={heroImage.src}
+      alt="Gladsaxe Stadium"
+      width={heroImage.width}
+      height={heroImage.height}
+      class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.5] saturate-[0.6]"
+    />
+    <div
+      class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_70%)]">
+    </div>
+    <div
+      class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-12 max-w-7xl mx-auto w-full">
+      <h1
+        class="font-black text-white text-[clamp(3rem,9vw,7rem)] tracking-[-0.04em] leading-[0.9]">
+        Gladsaxe Stadion
+      </h1>
+    </div>
+  </div>
+
+  <!-- Tab breadcrumb — hidden for now
+  <div class="bg-white border-b border-[#E5E7EB]">
+    <div class="max-w-7xl mx-auto px-8 flex items-center gap-6 h-12">
+      <a
+        href="/en/matches"
+        class="text-sm font-bold text-[#555] no-underline tracking-[-0.02em]"
+        >← Matches</a
+      >
+      <span class="text-[#DDD]">/</span>
+      <span class="text-sm font-bold text-ab-green tracking-[-0.02em]"
+        >Stadium Info</span
+      >
+    </div>
+  </div>
+  -->
+
+  <!-- Info grid -->
+  <section class="bg-white py-[clamp(40px,6vw,72px)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16 flex flex-col gap-10">
+
+      <!-- Row 1: Intro + photo -->
+      <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <div>
+          <span class="inline-block font-black text-xs px-3 py-1 mb-6 bg-ab-beige text-ab-green tracking-[0.12em]">HOME GROUND</span>
+          <h2 class="font-black mb-4 text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.05em] leading-[0.95] text-[#111]">
+            Where AB Comes Alive.
+          </h2>
+          <p class="text-sm leading-relaxed text-[#555] max-w-[44ch]">
+            AB's home ground since 1930. Gladsaxe Stadion has a total capacity of 13,507, with 7,707 seats across two grandstands and large standing areas behind each goal. The stadium sits in a green and peaceful environment in Gladsaxe, easily accessible by public transport.
+          </p>
+        </div>
+        <div class="rounded overflow-hidden aspect-[4/3] border border-[#E5E7EB]">
+          <img
+            src={stadiumImage.src}
+            alt="Gladsaxe Stadion"
+            width={stadiumImage.width}
+            height={stadiumImage.height}
+            class="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+
+      <!-- Row 2: Stats cards — full width -->
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {facilities.map(({ label, value }) => (
+          <div class="border border-[#E5E7EB] py-4 px-5">
+            <p class="text-xs uppercase mb-1 text-[#999] tracking-[0.12em]">{label}</p>
+            <p class="font-black text-lg text-[#111] tracking-[-0.04em]">{value}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- Row 3: Grandstands — full width, 3 cols -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-[#F5F5F5] p-4">
+          <p class="font-black text-[0.7rem] uppercase tracking-[0.1em] text-[#999] mb-1">Grandstand 1</p>
+          <p class="font-black text-[1.05rem] text-[#111] tracking-[-0.03em]">3,977 seats</p>
+          <p class="text-xs text-[#666] mt-0.5">"Old grandstand" — Built 1940</p>
+        </div>
+        <div class="bg-[#F5F5F5] p-4">
+          <p class="font-black text-[0.7rem] uppercase tracking-[0.1em] text-[#999] mb-1">Grandstand 3</p>
+          <p class="font-black text-[1.05rem] text-[#111] tracking-[-0.03em]">3,730 seats</p>
+          <p class="text-xs text-[#666] mt-0.5">"New grandstand" — Built 1999</p>
+        </div>
+        <div class="bg-[#F5F5F5] p-4">
+          <p class="font-black text-[0.7rem] uppercase tracking-[0.1em] text-[#999] mb-1">Standing areas (behind goals)</p>
+          <p class="font-black text-[1.05rem] text-[#111] tracking-[-0.03em]">2,900 per end</p>
+          <p class="text-xs text-[#666] mt-0.5">5,800 total</p>
+        </div>
+      </div>
+
+      <!-- Row 4: Address + map btn | Record + tickets btn -->
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="border border-[#E5E7EB] p-6 flex flex-col justify-between gap-6">
+          <div class="border-l-[3px] border-ab-green pl-4">
+            <p class="text-xs uppercase mb-2 text-[#999] tracking-[0.12em]">Address</p>
+            <p class="text-sm font-bold text-[#111]">Gladsaxevej 202</p>
+            <p class="text-sm text-[#555]">2860 Søborg, Denmark</p>
+          </div>
+          <a
+            href="https://maps.google.com/?q=Gladsaxevej+202,+2860+Søborg"
+            target="_blank"
+            rel="noreferrer"
+            class="font-black text-sm px-5 py-3 bg-ab-green text-white no-underline tracking-[-0.02em] self-start">
+            Open in Google Maps
+          </a>
+        </div>
+        <div class="border border-[#E5E7EB] p-6 flex flex-col justify-between gap-6">
+          <div>
+            <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-[#999] mb-2">Record Attendance</p>
+            <p class="font-black text-[#111] text-[1.05rem] tracking-[-0.03em] leading-[1.3]">10,039 spectators</p>
+            <p class="text-[#666] text-xs mt-1">AB vs. FC Copenhagen · Superliga · April 2004 · Final score 0–2</p>
+          </div>
+          <a
+            class="vivenu-btn font-black text-sm px-5 py-3 bg-ab-green text-white no-underline tracking-[-0.02em] self-start"
+            href="https://billet.ab.dk/?useEmbed=true">
+            Buy tickets
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Getting there -->
+  <section class="bg-[#EBEBEB] py-[clamp(40px,6vw,64px)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16">
+      <h2
+        class="font-black mb-10 text-[clamp(1.5rem,4vw,2.5rem)] tracking-[-0.04em] text-[#111]">
+        Getting to the stadium
+      </h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        {
+          [
+            {
+              icon: '🚇',
+              title: 'Metro / S-Train',
+              desc: 'Take the S-train to Buddinge St. (5 min walk), or bus 200S from Lyngby/Glostrup.',
+            },
+            {
+              icon: '🚗',
+              title: 'By car',
+              desc: 'Free parking available at the stadium. Follow signs from Ring 2 / Gladsaxevej.',
+            },
+            {
+              icon: '🚲',
+              title: 'By bike',
+              desc: 'Cycle paths along Gladsaxevej. Secure bike parking at all entrances.',
+            },
+          ].map(({ icon, title, desc }) => (
+            <div class="bg-white p-6 border border-[#E5E7EB]">
+              <span class="text-[2rem]">{icon}</span>
+              <h3 class="font-black mt-3 mb-2 text-[1.1rem] tracking-[-0.03em] text-[#111]">
+                {title}
+              </h3>
+              <p class="text-sm leading-relaxed text-[#555]">{desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>

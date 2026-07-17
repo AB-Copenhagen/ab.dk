@@ -1,0 +1,156 @@
+---
+import Base from '@/layouts/Base.astro';
+import { fetchCollectionType, fetchSingleType, strapiMediaUrl } from '@/lib/strapi/client';
+
+export const prerender = false;
+
+let pageData: any = null;
+let products: any[] = [];
+
+try {
+  [pageData, products] = await Promise.all([
+    fetchSingleType('product-page', { locale: 'da' }).catch(() => null),
+    fetchCollectionType<any[]>('products', { locale: 'da' }).catch(() => []),
+  ]);
+} catch { /* render with empty state */ }
+
+const featured = (products ?? []).filter((p: any) => p.featured);
+const all = products ?? [];
+---
+
+<Base locale="da" title={(pageData?.seo?.title ?? 'Shop') + ' | AB 1889'}>
+  <div class="bg-white">
+    <div class="border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-5 md:px-12 pt-16 pb-10">
+        <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
+          AB 1889
+        </p>
+        <h1
+          class="font-black text-[#111]"
+          style="font-size:clamp(2.5rem,7vw,5rem);letter-spacing:-0.03em;line-height:0.92"
+        >
+          {pageData?.heading ?? 'Shop'}
+        </h1>
+        {pageData?.sub_heading && (
+          <p class="mt-4 text-sm max-w-lg text-[#6B7280]">
+            {pageData.sub_heading}
+          </p>
+        )}
+        <div class="mt-6 h-0.5 w-12 bg-ab-green"></div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 space-y-16">
+
+      {featured.length > 0 && (
+        <section>
+          <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
+            Udvalgt
+          </p>
+          <h2
+            class="font-black mb-8 text-[#111]"
+            style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+          >
+            {pageData?.featured_heading ?? 'Udvalgte produkter'}
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {featured.map((product: any) => (
+              <a
+                href={`/products/${product.slug}`}
+                class="group border border-gray-200 overflow-hidden flex flex-col transition-colors hover:border-gray-400 bg-white"
+              >
+                {product.image?.url && (
+                  <div class="aspect-[4/3] overflow-hidden bg-[#F3F4F6]">
+                    <img
+                      src={strapiMediaUrl(product.image.url)}
+                      alt={product.name ?? ''}
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div class="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <p class="text-[0.6rem] font-bold uppercase mb-1 text-ab-green tracking-[0.18em]">
+                      {product.category ?? 'Produkt'}
+                    </p>
+                    <h3 class="text-xl font-black uppercase tracking-tight text-[#111]">
+                      {product.name}
+                    </h3>
+                    {product.description && (
+                      <p class="mt-2 text-sm line-clamp-2 text-[#6B7280]">
+                        {product.description}
+                      </p>
+                    )}
+                  </div>
+                  {product.price && (
+                    <p class="mt-4 text-lg font-black tabular-nums text-ab-gold">
+                      {product.price}
+                    </p>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {all.length > 0 && (
+        <section>
+          <p class="text-[0.6rem] font-bold uppercase mb-2 text-ab-green tracking-[0.2em]">
+            Sortiment
+          </p>
+          <h2
+            class="font-black mb-8 text-[#111]"
+            style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em"
+          >
+            {pageData?.popular_heading ?? 'Alle produkter'}
+          </h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {all.map((product: any) => (
+              <a
+                href={`/products/${product.slug}`}
+                class="group border border-gray-200 overflow-hidden flex flex-col transition-colors hover:border-gray-400 bg-white"
+              >
+                <div class="aspect-square overflow-hidden bg-[#F3F4F6]">
+                  {product.image?.url ? (
+                    <img
+                      src={strapiMediaUrl(product.image.url)}
+                      alt={product.name ?? ''}
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div
+                      class="w-full h-full flex items-center justify-center font-black text-3xl"
+                      style="color:color-mix(in srgb, var(--ab-green) 15%, transparent)"
+                    >
+                      AB
+                    </div>
+                  )}
+                </div>
+                <div class="p-4">
+                  <h3 class="text-sm font-black uppercase tracking-tight truncate text-[#111]">
+                    {product.name}
+                  </h3>
+                  {product.price && (
+                    <p class="mt-1 text-sm font-bold tabular-nums text-ab-gold">
+                      {product.price}
+                    </p>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {all.length === 0 && (
+        <div class="py-20 text-center text-gray-400">
+          <p class="text-sm font-bold uppercase tracking-widest">Ingen produkter</p>
+        </div>
+      )}
+
+    </div>
+  </div>
+</Base>

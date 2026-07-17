@@ -1,0 +1,130 @@
+---
+interface Props {
+  locale?: 'da' | 'en';
+}
+
+const { locale = 'da' } = Astro.props as Props;
+
+const eras = [
+  {
+    label: locale === 'da' ? 'Begyndelse' : 'Beginning',
+    range: '1883–1924',
+    id: 'era-beginning',
+    years: ['1883', '1887', '1889', '1894', '1919', '1924'],
+  },
+  {
+    label: locale === 'da' ? 'Efterkrigstid' : 'Post War',
+    range: '1940–1974',
+    id: 'era-postwar',
+    years: ['1940', '1946', '1960', '1963', '1974'],
+  },
+  {
+    label: locale === 'da' ? 'Nu' : 'Present',
+    range: locale === 'da' ? '1990–nu' : '1990–now',
+    id: 'era-present',
+    years: ['1990', '2004', '2022', '2023', '2025'],
+  },
+];
+
+const navLabel = locale === 'da' ? 'Historisk tidslinje' : 'Historical timeline';
+---
+
+<!-- ── Top bar: 3 era pills ──────────────────────────────────────────── -->
+<nav
+  id="timeline-topbar"
+  aria-label={navLabel}
+  class="sticky z-40 bg-white border-b border-[#E5E7EB]"
+  style="top: var(--nav-height, 92px)">
+  <div class="max-w-7xl mx-auto px-8 lg:px-20 h-12 flex items-center gap-1">
+    {
+      eras.map((era, i) => (
+        <>
+          <a
+            href={`#${era.id}`}
+            data-era={era.id}
+            class="era-top-link flex items-baseline gap-2 px-3 py-1.5 font-black text-[0.72rem] tracking-[-0.01em] text-[#999] transition-colors hover:text-ab-green whitespace-nowrap">
+            {era.label}
+            <span class="era-top-range text-[0.65rem] font-medium tracking-[0] text-[#CCC] transition-colors">{era.range}</span>
+          </a>
+          {i < eras.length - 1 && (
+            <span class="text-[#DDD] text-xs select-none mx-1" aria-hidden="true">|</span>
+          )}
+        </>
+      ))
+    }
+  </div>
+</nav>
+
+<script>
+  const topNav    = document.getElementById('timeline-topbar');
+  const sidebar   = document.getElementById('timeline-sidebar');
+  const topLinks  = Array.from(document.querySelectorAll<HTMLAnchorElement>('.era-top-link'));
+  const eraLinks  = Array.from(document.querySelectorAll<HTMLAnchorElement>('.era-side-link'));
+  const yearLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.sidebar-year-link'));
+
+  // ── Smooth scroll helper ─────────────────────────────────────────────
+  const scrollToSection = (id: string) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+    const navH = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--nav-height')
+    ) || 92;
+    const barH = topNav?.offsetHeight ?? 48;
+    const top  = target.getBoundingClientRect().top + window.scrollY - navH - barH - 16;
+    window.scrollTo({ top, behavior: 'smooth' });
+    history.pushState(null, '', `#${id}`);
+  };
+
+  topLinks.forEach(l => l.addEventListener('click', e => { e.preventDefault(); scrollToSection(l.dataset.era!); }));
+  eraLinks.forEach(l => l.addEventListener('click', e => { e.preventDefault(); scrollToSection(l.dataset.era!); }));
+  yearLinks.forEach(l => l.addEventListener('click', e => { e.preventDefault(); scrollToSection(l.dataset.year!); }));
+
+  // ── Active state ──────────────────────────────────────────────────────
+  const sections = yearLinks
+    .map(l => document.getElementById(l.dataset.year ?? ''))
+    .filter((el): el is HTMLElement => Boolean(el));
+
+  let activeId = '';
+
+  const setActive = (id: string) => {
+    activeId = id;
+    const activeEra = yearLinks.find(l => l.dataset.year === id)?.dataset.era ?? '';
+
+    // Sidebar year dots + links
+    yearLinks.forEach(l => {
+      const on = l.dataset.year === id;
+      l.classList.toggle('active', on);
+      l.querySelector('.sidebar-dot')?.classList.toggle('active', on);
+      if (on) l.scrollIntoView({ block: 'nearest' });
+    });
+
+    // Sidebar era labels
+    eraLinks.forEach(l => {
+      l.classList.toggle('active', l.dataset.era === activeEra);
+    });
+
+    // Top bar era labels
+    topLinks.forEach(l => {
+      const on = l.dataset.era === activeEra;
+      l.classList.toggle('text-ab-green', on);
+      l.classList.toggle('text-[#999]', !on);
+      const range = l.querySelector<HTMLElement>('.era-top-range');
+      if (range) {
+        range.classList.toggle('text-ab-green/60', on);
+        range.classList.toggle('text-[#CCC]', !on);
+      }
+    });
+  };
+
+  const updateActive = () => {
+    const threshold = window.innerHeight * 0.35;
+    let current = sections[0];
+    for (const s of sections) {
+      if (s.getBoundingClientRect().top <= threshold) current = s;
+    }
+    if (current && current.id !== activeId) setActive(current.id);
+  };
+
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+</script>

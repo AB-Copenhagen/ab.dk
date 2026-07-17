@@ -1,0 +1,148 @@
+---
+import Base from '@/layouts/Base.astro';
+import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+let product: any = null;
+
+try {
+  const results = await fetchCollectionType<any[]>('products', {
+    filters: { slug: { $eq: slug } },
+    locale: 'en',
+    populate: ['image', 'gallery'],
+  });
+  product = results?.[0] ?? null;
+} catch { /* fall through */ }
+
+if (!product) {
+  return Astro.redirect('/en/products');
+}
+
+const { name, description, price, buyLink, category } = product;
+const imageUrl = product.image?.url ? strapiMediaUrl(product.image.url) : null;
+const gallery: any[] = product.gallery ?? [];
+
+const productDescription = description
+  ? String(description).slice(0, 160)
+  : `${name} — official AB 1889 merchandise.`;
+const absoluteImageUrl = imageUrl
+  ? imageUrl.startsWith('http')
+    ? imageUrl
+    : `https://ab.dk${imageUrl}`
+  : undefined;
+const numericPrice =
+  typeof price === 'string' ? price.replace(/[^0-9.,]/g, '').replace(',', '.') : price;
+
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name,
+  description: productDescription,
+  image: absoluteImageUrl,
+  category,
+  brand: { '@type': 'Brand', name: 'AB 1889' },
+  offers:
+    buyLink && numericPrice
+      ? {
+          '@type': 'Offer',
+          price: numericPrice,
+          priceCurrency: 'DKK',
+          url: buyLink,
+          availability: 'https://schema.org/InStock',
+        }
+      : undefined,
+};
+---
+
+<Base
+  locale="en"
+  title={`${name} | AB 1889`}
+  description={productDescription}
+  ogImage={imageUrl ?? undefined}
+  structuredData={productSchema}
+>
+  <div style="background:var(--ab-white)">
+    <div class="border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-5 md:px-12 pt-10 pb-6">
+        <a
+          href="/en/products"
+          class="inline-flex items-center gap-2 text-xs font-bold uppercase hover:underline"
+          style="color:var(--ab-green);letter-spacing:0.15em"
+        >
+          ← All products
+        </a>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-12">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+
+        <div class="space-y-3">
+          <div class="aspect-square overflow-hidden border border-gray-200" style="background:#F3F4F6">
+            {imageUrl ? (
+              <img src={imageUrl} alt={name} class="w-full h-full object-cover" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center font-black text-6xl" style="color:color-mix(in srgb, var(--ab-green) 15%, transparent)">AB</div>
+            )}
+          </div>
+          {gallery.length > 0 && (
+            <div class="grid grid-cols-4 gap-2">
+              {gallery.slice(0, 4).map((img: any) => (
+                <div class="aspect-square overflow-hidden border border-gray-200">
+                  <img src={strapiMediaUrl(img.url)} alt="" class="w-full h-full object-cover" loading="lazy" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div class="flex flex-col justify-start pt-2">
+          {category && (
+            <p class="text-[0.6rem] font-bold uppercase mb-3" style="color:var(--ab-green);letter-spacing:0.2em">
+              {category}
+            </p>
+          )}
+          <h1
+            class="font-black mb-4"
+            style="font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-0.03em;line-height:0.95;color:#111"
+          >
+            {name}
+          </h1>
+
+          {price && (
+            <p class="text-3xl font-black tabular-nums mb-8" style="color:var(--ab-gold)">
+              {price}
+            </p>
+          )}
+
+          {description && (
+            <div class="mb-8">
+              <div class="h-px mb-6 bg-gray-200"></div>
+              <p class="text-sm leading-relaxed" style="color:#374151">
+                {description}
+              </p>
+            </div>
+          )}
+
+          {buyLink && (
+            <a
+              href={buyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center px-8 py-4 font-black text-sm uppercase tracking-widest text-black transition-all hover:opacity-90"
+              style="background:var(--ab-gold);letter-spacing:0.15em"
+            >
+              Buy now →
+            </a>
+          )}
+
+          <div class="mt-8 h-0.5 w-12" style="background:var(--ab-green)"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,502 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+
+const board = [
+  {
+    name: 'Brian Grieco',
+    role: 'Bestyrelsesformand',
+    photo: '/images/team/brian-grieco.jpg',
+    photoPos: 'object-center',
+    bio: 'Brian Grieco har fungeret som bestyrelsesformand siden august 2024. Han er desuden General Counsel og Director of Treasury and Risk i AB A/S. I disse roller varetager Brian klubbens governance, overvåger den daglige ledelse og håndterer juridiske, compliance-mæssige og kontraktuelle forhold samt bankrelationer.',
+  },
+  {
+    name: 'Jen Chang',
+    role: 'Sportslig direktør',
+    photo: '/images/team/jen-chang.jpg',
+    photoPos: 'object-center',
+    bio: 'Jen Chang er sportslig direktør i AB og har arbejdet med talentidentifikation, scouting og spillerrekruttering i mere end 12 år i europæisk fodbold. Han har en M.Phil i International Relations fra Queens\' College, University of Cambridge, en MSc i Industrial Relations fra London School of Economics og en BA (Hons) i History fra Queen Mary University of London.',
+  },
+  {
+    name: 'Zachary Smith',
+    role: 'Bestyrelsesmedlem',
+    photo: '/images/team/zac-smith.jpg',
+    photoPos: 'object-center',
+    bio: 'Zachary er iværksætter inden for digital infrastruktur og cloud computing. Han grundlagde i 2014 Packet, der blev markedsleder inden for bare metal-automatisering og opkøbt af Equinix i 2020. I slutningen af 2024 medstiftede han Datum, støttet af Amplify, Encoded og CRV.',
+  },
+  {
+    name: 'Ben Lyttleton',
+    role: 'Bestyrelsesmedlem',
+    photo: 'https://www.a-speakers.com/media/yphmj2zp/ben-lyttleton-hero.jpg',
+    photoPos: 'object-center',
+    bio: 'Ben Lyttleton er bestyrelsesmedlem i AB, bestsellerforfatter og keynote speaker om psykologien bag høj præstation. Hans bog Twelve Yards (2014) bidrog til Englands første World Cup-straffesparksgevinst. Hans Football School-bøger er solgt i over én million eksemplarer i Storbritannien.',
+  },
+  {
+    name: 'Harrison Oellrich',
+    role: 'Bestyrelsesrådgiver',
+    photo: '/images/team/harrison-oellrich.jpg',
+    photoPos: 'object-center',
+    bio: 'Harrison har været bestyrelsesobservatør siden 2023. Han gik officielt på pension som administrerende direktør for et førende risikostyrings- og finansielt servicefirma i 2010 efter en karriere på over 30 år, for at fokusere på forskellige nonprofit- og humanitære projekter. Han har desuden grundlagt sit eget konsulentfirma for at bringe risikostyringsbranchens viden og ekspertise til gavn for den offentlige, private og nonprofit sektor, og har været instrumental i at grundlægge og opbygge flere nonprofitorganisationer, der i dag er aktive i over 25 lande verden over. Han er desuden diakon i flere lokale kirker.',
+  },
+  {
+    name: 'Joseph Gordon',
+    role: 'Bestyrelsesmedlem',
+    photo: '/images/team/joseph-gordon.jpg',
+    photoPos: 'object-center',
+    bio: 'Joe har været bestyrelsesmedlem siden november 2022. Joe Gordon er grundlægger af UpFor Consulting, et konsulenthus med fokus på salg og vækst. UpFor arbejder med både nye og etablerede virksomheder om at skabe og finpudse deres forretningsudviklingsstrategier og kommunikationsevner, opbygge teams og virksomhedskultur samt lede gennem vækst og forandring. Joe tilbragte tidligere 19 år i branchen for juridiske ydelser, hvoraf de sidste 13 år bestod af at lede organisationen gennem eksponentiel vækst og et efterfølgende opkøb som Global VP of Sales. Joe har en bachelorgrad fra American University i Law and Society og en mastergrad i Industrial and Organizational Psychology fra Baruch College.',
+  },
+  {
+    name: 'Sofie Brandi Petersen',
+    role: 'Rådgiver',
+    photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/10/Sofie-Brandi-Petersen.jpg?fit=300%2C450&ssl=1',
+    photoPos: 'object-top',
+    bio: null,
+  },
+];
+
+const exec = [
+  {
+    name: 'Henrik Bom',
+    role: 'President',
+    photo: '/images/team/henrik-bom.jpg',
+    photoPos: 'object-center',
+    bio: 'Henrik Bom leder klubbens forretningsdrift og langsigtede udvikling. Med mere end 25 års international ledelseserfaring fra Danmark og USA bringer Henrik en stærk kommerciel og operationel baggrund til en af Danmarks ældste fodboldklubber. Under hans ledelse fokuserer AB på at skabe exceptionelle oplevelser for fans, samtidig med at klubbens rolle i lokalsamfundet styrkes og det internationale netværk udvides.',
+  },
+  {
+    name: 'Cynthia Lee',
+    role: 'Marketing & Brand',
+    photo: '/images/team/cynthia-lee.jpg',
+    photoPos: 'object-center',
+    bio: 'Cynthia driver Marketing og Brand for klubben. Som specialist i integreret marketing, strategiske partnerskaber og brand storytelling har hun lanceret produktkampagner og oplevelsesbaserede aktiveringer inden for digitalt, sociale medier, tv, live events og branded entertainment. Med en passion for innovation og samarbejde skaber Cynthia marketingstrategier, der styrker brands, driver engagement og leverer målbar forretningsmæssig effekt. Hun har en bachelorgrad fra Miami University og en mastergrad fra The Ohio State University.',
+  },
+  {
+    name: 'Jen Chang',
+    role: 'Sportslig direktør',
+    photo: '/images/team/jen-chang.jpg',
+    photoPos: 'object-center',
+    bio: "Jen er sportslig direktør i AB. Forud for AB arbejdede Jen i 12 år som scout og med talentidentifikation for forskellige første- og andetdivisionsklubber i europæisk fodbold. Han har tidligere også arbejdet i finans- og mediebranchen. Han har en M.Phil i International Relations fra Queens' College, University of Cambridge, en MSc i Industrial Relations fra London School of Economics og en BA (Hons) i History fra Queen Mary University of London.",
+  },
+  { name: 'Simon Taylor', role: 'Partnerskaber', photo: '/images/team/simon-taylor.jpg', photoPos: 'object-center', bio: null },
+  {
+    name: 'Rasmus Granzow',
+    role: 'Hospitality & Event Manager',
+    photo: '/images/team/rasmus-granzow.jpg',
+    photoPos: 'object-center',
+    bio: 'Rasmus har arbejdet i AB siden starten af 2025 som klubbens hospitality- og eventmanager. Han har en stærk baggrund fra hotel- og serviceindustrien med over 12 års erfaring. Med en passion for at skabe mindeværdige gæsteoplevelser er Rasmus specialiseret i at levere premium fan- og VIP-oplevelser, styre events og udvikle hospitality-koncepter, der øger engagementet og driver kommerciel vækst. Han har en bachelorgrad i Innovation & Entrepreneurship og nyder at udvikle nye idéer, udfordre status quo og skabe innovative løsninger, der forbedrer både kundeoplevelsen og forretningsresultaterne.',
+  },
+];
+
+const sporting = [
+  {
+    name: 'Fannar Berg Gunnólfsson',
+    role: 'Cheftræner',
+    photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2024/07/Fannar-Berg-Gunnolfsson-scaled.png?fit=618%2C1024&ssl=1',
+    photoPos: 'object-top',
+    bio: 'Gunnólfsson har erfaring fra senior- og ungdomsfodbold på Island og i Norge. Senest var han cheftræner i Volde Turn og Idrottslag og assistenttræner i Knattspyrnufélag ÍA.',
+  },
+  {
+    name: 'Joakim Sternas',
+    role: 'Målmandstræner',
+    photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2023/03/Joakim-Starnas-scaled.png?fit=578%2C1024&ssl=1',
+    photoPos: 'object-top',
+    bio: 'Sternas var målmandstræner i Täby FK i den svenske Ettan Norra i to år inden AB. Han startede sin trænerbane i Spånga IS FK.',
+  },
+  {
+    name: 'Konstantinos Ntolaptsis',
+    role: 'Styrke & Kondition',
+    photo: 'https://i0.wp.com/ab.dk/wp-content/uploads/2025/07/Konstatinos-Ntolaptsis-scaled.png?fit=624%2C1024&ssl=1',
+    photoPos: 'object-top',
+    bio: 'Ntolaptsis tiltrådte i AB i juli 2025 fra FV Wurzburger U19. Han har en kandidatgrad i Exercise Science & Training fra Julius-Maximilians Universität Würzburg.',
+  },
+];
+
+const investors = [
+  {
+    name: 'Five Castles Football Group',
+    since: 'November 2022',
+    stake: 'Majoritetsaktionær',
+    description: 'Den amerikanske investorgruppe, der erhvervede 95% af AB i november 2022, med en vision om at opgradere kommercielle aktiviteter, modernisere spillerrekruttering og scouting samt etablere en klar spilleidentitet.',
+  },
+  {
+    name: 'Green Owls Football Holdings',
+    since: 'April 2025',
+    stake: '25% minoritetsaktionær',
+    description: 'Green Owls blev minoritetsaktionær i april 2025. Investeringen understøtter klubbens mission ved at styrke truppen, forbedre fanoplevelsen, udvide sponsorpartnerskaber og uddybe lokalt engagement.',
+  },
+];
+
+function initials(name: string) {
+  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+}
+---
+
+<Base locale="da" title="Ledelse | AB 1889">
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
+      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7rem)] tracking-[-0.04em]">Ledelse</h1>
+    </div>
+  </div>
+
+  <!-- Ledelsesgruppe -->
+  <section class="bg-[#F2F2F0] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-10 border border-[#CCCCCC] rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#444] tracking-[0.1em] uppercase">Ledelsesgruppe</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {exec.filter(e => e.name).map(({ name, role, photo, photoPos, bio }) => (
+          bio ? (
+            <button
+              class="person-card group text-left cursor-pointer border border-[#E5E7EB] flex items-center overflow-hidden hover:border-ab-green/40 transition-colors"
+              data-name={name}
+              data-role={role ?? ''}
+              data-photo={photo ?? ''}
+              data-bio={bio}
+              data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
+            >
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
+                  <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                </div>
+              </div>
+              <div class="flex-1 px-4 min-w-0">
+                {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
+                <p class="font-black text-[0.88rem] text-[#111] tracking-[-0.03em] leading-tight">{name}</p>
+              </div>
+              <svg class="shrink-0 mr-4 w-4 h-4 text-ab-green/40" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
+            </button>
+          ) : (
+            <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo ? (
+                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center bg-ab-green">
+                    <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                  </div>
+                )}
+              </div>
+              <div class="flex-1 px-4 min-w-0">
+                {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
+                <p class="font-black text-[0.88rem] text-[#111] tracking-[-0.03em] leading-tight">{name}</p>
+              </div>
+            </div>
+          )
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Sportslig ledelse -->
+  <section class="bg-white border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-10 border border-ab-green/30 rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-ab-green tracking-[0.1em] uppercase">Sportslig ledelse</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {sporting.map(({ name, role, photo, photoPos, bio }) => (
+          bio ? (
+            <button
+              class="person-card group text-left cursor-pointer border border-[#E5E7EB] flex items-center overflow-hidden hover:border-ab-green/40 transition-colors"
+              data-name={name}
+              data-role={role ?? ''}
+              data-photo={photo ?? ''}
+              data-bio={bio}
+              data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
+            >
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
+                  <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                </div>
+              </div>
+              <div class="flex-1 px-4 min-w-0">
+                {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
+                <p class="font-black text-[0.88rem] text-[#111] tracking-[-0.03em] leading-tight">{name}</p>
+              </div>
+              <svg class="shrink-0 mr-4 w-4 h-4 text-ab-green/40" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
+            </button>
+          ) : (
+            <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo ? (
+                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center bg-ab-green">
+                    <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                  </div>
+                )}
+              </div>
+              <div class="flex-1 px-4 min-w-0">
+                {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
+                <p class="font-black text-[0.88rem] text-[#111] tracking-[-0.03em] leading-tight">{name}</p>
+              </div>
+            </div>
+          )
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bestyrelse -->
+  <section class="bg-white border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-10 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Bestyrelse</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {board.map(({ name, role, photo, photoPos, bio }) => (
+          bio ? (
+            <button
+              class="person-card group text-left cursor-pointer border border-[#E5E7EB] flex items-center overflow-hidden hover:border-ab-green/40 transition-colors"
+              data-name={name}
+              data-role={role ?? ''}
+              data-photo={photo ?? ''}
+              data-bio={bio}
+              data-initials={initials(name)}
+              data-photo-pos={photoPos ?? 'object-center'}
+            >
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
+                  <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                </div>
+              </div>
+              <div class="flex-1 px-4 min-w-0">
+                {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
+                <p class="font-black text-[0.88rem] text-[#111] tracking-[-0.03em] leading-tight">{name}</p>
+              </div>
+              <svg class="shrink-0 mr-4 w-4 h-4 text-ab-green/40" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
+            </button>
+          ) : (
+            <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
+              <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
+                {photo ? (
+                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center bg-ab-green">
+                    <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
+                  </div>
+                )}
+              </div>
+              <div class="flex-1 px-4 min-w-0">
+                {role && <span class="font-black text-[0.58rem] uppercase tracking-[0.1em] text-ab-green block mb-0.5 truncate">{role}</span>}
+                <p class="font-black text-[0.88rem] text-[#111] tracking-[-0.03em] leading-tight">{name}</p>
+              </div>
+            </div>
+          )
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Investorer -->
+  <section class="bg-ab-black py-[clamp(56px,8vw,96px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-10 bg-white/10 rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-white/70 tracking-[0.1em] uppercase">Investorer</span>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        {investors.map(({ name, since, stake, description }) => (
+          <div class="border border-white/15 p-7 flex flex-col gap-5">
+            <div>
+              <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">{stake}</p>
+              <h3 class="font-black text-[1.5rem] tracking-[-0.04em] text-white leading-tight">{name}</h3>
+              <p class="text-[0.8rem] text-white/40 mt-1 font-medium tracking-[-0.01em]">Siden {since}</p>
+            </div>
+            <p class="text-[0.9rem] leading-[1.75] text-white/65">{description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bio lightbox -->
+  <dialog id="bio-lb" aria-label="Person bio">
+    <div id="bio-lb-backdrop">
+      <div id="bio-lb-card">
+        <button id="bio-lb-close" aria-label="Luk">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
+        </button>
+        <div id="bio-lb-body">
+          <div id="bio-lb-photo-wrap">
+            <img id="bio-lb-img" alt="" />
+            <div id="bio-lb-initials" aria-hidden="true"></div>
+          </div>
+          <div id="bio-lb-text">
+            <span id="bio-lb-role"></span>
+            <h3 id="bio-lb-name"></h3>
+            <p id="bio-lb-bio"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+</Base>
+
+<style>
+  #bio-lb {
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+  }
+  #bio-lb::backdrop {
+    background: rgba(0, 0, 0, 0.88);
+  }
+  #bio-lb-backdrop {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    cursor: default;
+  }
+  #bio-lb-card {
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+    max-width: 620px;
+    width: 100%;
+    cursor: default;
+  }
+  #bio-lb-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.07);
+    border: none;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.15s;
+  }
+  #bio-lb-close:hover {
+    background: rgba(0, 0, 0, 0.14);
+  }
+  #bio-lb-body {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 480px) {
+    #bio-lb-body {
+      grid-template-columns: 220px 1fr;
+    }
+  }
+  #bio-lb-photo-wrap {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--ab-green);
+    flex-shrink: 0;
+  }
+  #bio-lb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  #bio-lb-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: -0.04em;
+  }
+  #bio-lb-text {
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: center;
+  }
+  #bio-lb-role {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ab-green);
+    display: block;
+    margin-bottom: 2px;
+  }
+  #bio-lb-name {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: #111;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.04em;
+  }
+  #bio-lb-bio {
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: #555;
+    margin: 0;
+  }
+</style>
+
+<script>
+  const lb = document.getElementById('bio-lb') as HTMLDialogElement;
+  const lbBackdrop = document.getElementById('bio-lb-backdrop') as HTMLElement;
+  const lbImg = document.getElementById('bio-lb-img') as HTMLImageElement;
+  const lbInitials = document.getElementById('bio-lb-initials') as HTMLElement;
+  const lbRole = document.getElementById('bio-lb-role') as HTMLElement;
+  const lbName = document.getElementById('bio-lb-name') as HTMLElement;
+  const lbBio = document.getElementById('bio-lb-bio') as HTMLElement;
+  const lbClose = document.getElementById('bio-lb-close') as HTMLButtonElement;
+
+  document.querySelectorAll<HTMLButtonElement>('.person-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const { name = '', role = '', photo = '', bio = '', initials = '', photoPos = 'object-center' } = card.dataset;
+
+      lbName.textContent = name;
+      lbRole.textContent = role;
+      lbRole.style.display = role ? 'block' : 'none';
+      lbBio.textContent = bio;
+
+      if (photo) {
+        lbImg.src = photo;
+        lbImg.style.objectPosition = photoPos.replace('object-', '');
+        lbImg.style.display = 'block';
+        lbInitials.style.display = 'none';
+      } else {
+        lbImg.style.display = 'none';
+        lbInitials.textContent = initials;
+        lbInitials.style.display = 'flex';
+      }
+
+      lb.showModal();
+    });
+  });
+
+  lbClose.addEventListener('click', () => lb.close());
+  lbBackdrop.addEventListener('click', e => {
+    if (e.target === lbBackdrop) lb.close();
+  });
+</script>

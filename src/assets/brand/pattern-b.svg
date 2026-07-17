@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- TODO(brand): Replace with master AB pattern-B SVG. Colors shift per context; angles are FIXED. -->
+  <pattern id="b-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+    <text x="4" y="28" font-family="Helvetica,Arial,sans-serif" font-size="28" font-weight="900" fill="rgba(0,106,82,0.15)" letter-spacing="-1">B</text>
+  </pattern>
+  <rect width="200" height="200" fill="url(#b-pattern)"/>
+</svg>

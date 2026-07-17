@@ -1,0 +1,123 @@
+---
+import Base from '@/layouts/Base.astro';
+import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
+export const prerender = false;
+
+const { slug } = Astro.params;
+const staff = COACHING_STAFF.find(s => s.slug === slug);
+if (!staff) return Astro.redirect('/hold');
+
+// Try Strapi first, fall back to static data
+let bio: string | null = staff.bio?.da ?? null;
+try {
+  const { fetchCollectionType } = await import('@/lib/strapi/client');
+  const results = await fetchCollectionType<{ slug: string; bio?: string }[]>('staff', {
+    filters: { slug: { $eq: staff.slug } },
+    locale: 'da',
+  }).catch(() => []);
+  if (results[0]?.bio) bio = results[0].bio;
+} catch { /* Strapi unavailable */ }
+
+const initials = staffInitials(staff.name);
+const parts = staff.name.trim().split(' ');
+const firstName = parts[0];
+const lastName = parts.slice(1).join(' ');
+
+const staffDescription = bio
+  ? bio.slice(0, 160)
+  : `${staff.name}, ${staff.role.da} hos Akademisk Boldklub (AB 1889).`;
+const absolutePhotoUrl = staff.photo.startsWith('http') ? staff.photo : `https://ab.dk${staff.photo}`;
+const ogCardImageUrl = `/api/og/player.png?photo=${encodeURIComponent(staff.photo)}`;
+
+const staffSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: staff.name,
+  jobTitle: staff.role.da,
+  nationality: staff.nationality.da,
+  image: absolutePhotoUrl,
+  memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
+  url: `https://ab.dk/stab/${slug}`,
+};
+---
+
+<Base
+  locale="da"
+  title={`${staff.name} | Akademisk Boldklub`}
+  description={staffDescription}
+  ogImage={ogCardImageUrl}
+  ogType="profile"
+  structuredData={staffSchema}
+>
+  <!-- ── Hero ───────────────────────────────────────────────────────── -->
+  <div class="relative w-full overflow-hidden"
+       style="background:linear-gradient(to right, #002A1A 0%, var(--ab-green) 42%, #00C018 100%); min-height:clamp(460px,36vw,560px);">
+
+    <img src="/images/logo-behind-player.svg" alt="" aria-hidden="true"
+         class="absolute hidden md:block pointer-events-none select-none"
+         style="left:40%; top:50%; transform:translate(-50%,-50%); z-index:1;
+                width:clamp(320px,33vw,580px); height:auto; opacity:1;" />
+
+    <img src="/images/ab-crest-white.svg" alt="" aria-hidden="true"
+         class="absolute hidden lg:block pointer-events-none select-none"
+         style="right:1%; top:50%; transform:translateY(-50%); z-index:1;
+                width:clamp(280px,29vw,500px); height:auto; opacity:0.45;" />
+
+    <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
+      <img src={staff.photo} alt={staff.name} loading="eager" class="h-full w-auto max-w-none" />
+    </div>
+
+    <!-- Name overlay -->
+    <div class="absolute inset-0 flex flex-col justify-end px-8 lg:px-16 pb-10 z-10 pointer-events-none">
+      <p class="text-white/60 font-black text-sm tracking-widest mb-1" style="letter-spacing:0.12em;">
+        {staff.role.da.toUpperCase()}
+      </p>
+      <h1 class="font-black text-white leading-none tracking-[-0.04em]" style="font-size:clamp(2.5rem,7vw,6rem); text-transform:none;">
+        {firstName}<br />{lastName}
+      </h1>
+    </div>
+  </div>
+
+  <!-- ── Metadata bar ─────────────────────────────────────────────── -->
+  <div class="bg-ab-green text-white">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 flex flex-wrap items-center gap-x-8 gap-y-2 py-4">
+      <div>
+        <p class="text-xs font-bold tracking-[0.08em]" style="color:rgba(255,255,255,0.5);">ROLLE</p>
+        <p class="font-black text-sm">{staff.role.da}</p>
+      </div>
+      <div class="w-px h-8 bg-white/20 hidden sm:block"></div>
+      <div>
+        <p class="text-xs font-bold tracking-[0.08em]" style="color:rgba(255,255,255,0.5);">NATIONALITET</p>
+        <p class="font-black text-sm">{staff.nationality.da}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bio ──────────────────────────────────────────────────────── -->
+  <section class="bg-white">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 lg:py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
+        <div>
+          <h2 class="font-black text-xl mb-4 text-[#111]">Om træneren</h2>
+          {bio ? (
+            <div class="space-y-4">
+              {bio.split('\n\n').filter(Boolean).map(para => (
+                <p class="text-[#444] leading-[1.75] text-[0.9375rem]">{para}</p>
+              ))}
+            </div>
+          ) : (
+            <p class="text-[#aaa] text-[0.875rem] leading-[1.7]">Trænerprofil tilføjes snart.</p>
+          )}
+        </div>
+
+        <!-- Right: decorative initials block -->
+        <div class="hidden lg:flex items-center justify-center min-h-[200px]">
+          <span class="font-black select-none text-[#EBEBEB] leading-[1] tracking-[-0.05em]"
+                style="font-size:clamp(8rem,16vw,14rem);">
+            {initials}
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

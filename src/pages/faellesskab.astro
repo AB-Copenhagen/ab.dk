@@ -1,0 +1,114 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+
+interface Way {
+  title: string;
+  body?: string;
+  cta?: { label: string; href: string; external?: boolean };
+  extra?: { label: string; href: string };
+}
+
+const ways: Way[] = [
+  {
+    title: 'Bliv medlem af AB Forever Fanklub',
+    body: 'AB Forever, stiftet den 17. august 1995, er ABs officielle fanklub.',
+    cta: { label: 'Besøg abforever.dk →', href: 'https://abforever.dk', external: true },
+    extra: { label: 'Skriv til formand Kasper V. Petersen →', href: 'mailto:formand@abforever.dk' },
+  },
+  {
+    title: 'Bliv partner med AB',
+    body: 'Se vores partnerskaber, og hvordan din virksomhed kan blive en del af AB.',
+    cta: { label: 'Se partnerskaber →', href: '/partnere' },
+  },
+  {
+    title: 'Bliv en del af AB Erhvervsnetværk',
+    body: 'AB Erhvervsnetværk er mere end et sponsorat — det er en platform for forbindelse. Det forener fodboldens passion med forretningens styrke og skaber muligheder for at opbygge relationer, udveksle idéer og vokse sammen med en af Danmarks mest historiske klubber.',
+    cta: { label: 'Kontakt os →', href: 'mailto:info@ab.dk' },
+  },
+  {
+    title: 'Læs mere om AB Akademiet',
+    body: 'ABs Akademi tilbyder grundlæggende, konkurrencepræget ungdomsfodbold. De konkurrerer i den næsthøjeste division, og deres mission er at udvikle og levere unge spillere til niveauet for ABs førstehold — eller højere.',
+    cta: { label: 'Skriv til Simon Andresen →', href: 'mailto:simon@abfodbold.dk' },
+  },
+  {
+    title: 'Bliv frivillig i Gladsaxe',
+    body: 'Hos AB er det mennesker, der driver fodbolden. Vores frivillige er hjertet i kampdagsoplevelsen og er med til at skabe mindeværdige øjeblikke for tilskuere, spillere, partnere og lokalsamfundet. Uanset din baggrund, erfaring eller tid gør dit bidrag en forskel.',
+    cta: { label: 'Skriv til os →', href: 'mailto:info@ab.dk' },
+  },
+  {
+    title: 'Studenter- og alumnearrangementer',
+    body: 'AB blev grundlagt på værdierne uddannelse, ambition og fællesskab — værdier, der stadig definerer klubben i dag. Uanset om du er nuværende studerende eller alumne, er der utallige måder at blive involveret. Bliv en del af et fællesskab, hvor faglig dygtighed og fodbold mødes, og hjælp med at forme det næste kapitel af AB.',
+  },
+];
+---
+
+<Base
+  locale="da"
+  title="Fællesskab | AB 1889"
+  description="For mere end 137 år har AB været et sted, hvor fodbold bringer mennesker sammen. Find din plads i AB-fællesskabet.">
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
+      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7rem)] tracking-[-0.04em]">Fællesskab</h1>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Mere end en fodboldklub</span>
+      </div>
+      <div class="max-w-3xl space-y-5 text-[#333]" style="font-size:clamp(1rem,1.6vw,1.1875rem);line-height:1.7">
+        <p>I mere end 137 år har AB været et sted, hvor fodbold bringer mennesker sammen.</p>
+        <p>Uanset om du overværer din første kamp, hepper fra tribunen hver weekend, har dit barn i Akademiet, er frivillig, er partner med klubben, eller blot ønsker at møde nye mennesker — der er en plads til dig i AB-fællesskabet.</p>
+        <p class="font-black text-[#111]">Sammen bygger vi det næste kapitel af AB.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ways to get involved -->
+  <section class="bg-[#F2F2F0] border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <h2 class="font-black mb-10 text-[#111]" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+        Sådan bliver du en del af AB
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {ways.map((way, i) => (
+          <div class="bg-white border border-[#E5E7EB] p-7 flex flex-col">
+            <span class="font-black leading-none select-none mb-4" style="font-size:2.75rem;letter-spacing:-0.04em;color:color-mix(in srgb, var(--ab-green) 18%, transparent)">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="font-black text-[1.05rem] text-[#111] tracking-[-0.02em] leading-snug mb-2">{way.title}</h3>
+            {way.body ? (
+              <p class="text-[0.875rem] text-[#666] leading-relaxed mb-4 flex-1">{way.body}</p>
+            ) : (
+              <p class="text-[0.875rem] text-[#BBB] italic mb-4 flex-1">Indhold tilføjes snart.</p>
+            )}
+            {way.cta && (
+              <a
+                href={way.cta.href}
+                target={way.cta.external ? '_blank' : undefined}
+                rel={way.cta.external ? 'noreferrer noopener' : undefined}
+                aria-label={way.cta.external ? `${way.cta.label.replace(' →', '')} (åbner i nyt vindue)` : undefined}
+                class="text-[0.8rem] font-black text-ab-green no-underline hover:opacity-70 tracking-[-0.01em]"
+              >
+                {way.cta.label}
+              </a>
+            )}
+            {way.extra && (
+              <a href={way.extra.href} class="text-[0.8rem] font-black text-ab-green no-underline hover:opacity-70 tracking-[-0.01em] mt-2">
+                {way.extra.label}
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Base>

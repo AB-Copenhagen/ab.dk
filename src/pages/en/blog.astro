@@ -1,0 +1,5 @@
+---
+// /en/blog → /en/news (English canonical route for articles)
+export const prerender = false;
+return Astro.redirect('/en/news', 301);
+---

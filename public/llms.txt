@@ -1,0 +1,38 @@
+# Akademisk Boldklub (AB 1889)
+
+> Akademisk Boldklub (AB 1889) is a Danish football club based in Gladsaxe, founded in 1889. This site covers the men's first team: fixtures and results, squad profiles, club news, membership (MyAB), hospitality, and official brand assets.
+
+AB 1889 plays its home matches at Gladsaxe Stadion. The site is bilingual: Danish at the root path (e.g. `/kampe`), English under `/en/` (e.g. `/en/matches`).
+
+## Club
+
+- [About AB](https://ab.dk/en/about/history): Club history
+- [Stadium](https://ab.dk/en/about/stadium): Gladsaxe Stadion
+- [Leadership](https://ab.dk/en/about/leadership): Club leadership and staff
+- [Contact](https://ab.dk/en/contact): Contact details and address
+- [Brand Guidelines](https://ab.dk/en/brand): Official logos, colors, and identity assets
+
+## Team
+
+- [Squad](https://ab.dk/en/squad): Current first-team players and coaching staff
+- [Matches](https://ab.dk/en/matches): Fixtures, results, and league standings
+
+## News
+
+- [News](https://ab.dk/en/news): Latest club news and articles
+- [News RSS feed](https://ab.dk/en/feed): WordPress-compatible RSS feed
+
+## Get Involved
+
+- [MyAB](https://ab.dk/en/myab): Club membership
+- [Community](https://ab.dk/en/community): Community programs
+- [Partners](https://ab.dk/en/partners): Club sponsors and partners
+- [Events](https://ab.dk/en/events): Watch parties and club events
+- [Hospitality](https://ab.dk/en/hospitality): Matchday hospitality packages
+
+## Danish (primary language)
+
+- [Forside](https://ab.dk/): Homepage
+- [Kampe](https://ab.dk/kampe): Fixtures and results
+- [Holdet](https://ab.dk/hold): Squad
+- [Nyheder](https://ab.dk/nyheder): News

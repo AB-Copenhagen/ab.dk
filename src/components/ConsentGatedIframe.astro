@@ -1,0 +1,87 @@
+---
+import type { ConsentCategory } from '@/lib/consent';
+import type { Locale } from '@/lib/i18n';
+
+interface Props {
+  src: string;
+  title: string;
+  category?: ConsentCategory;
+  locale?: Locale;
+  allow?: string;
+}
+
+const {
+  src,
+  title,
+  category = 'marketing',
+  locale = 'da',
+  allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+} = Astro.props;
+
+const t = {
+  da: {
+    message: 'Denne video er indlejret fra YouTube og kræver samtykke til markedsførings- og mediecookies.',
+    enable: 'Aktiver og se video',
+  },
+  en: {
+    message: 'This video is embedded from YouTube and requires consent for marketing/media cookies.',
+    enable: 'Enable and watch',
+  },
+}[locale];
+
+const uid = `cgi-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  class="consent-gated-iframe relative w-full rounded-lg overflow-hidden bg-black"
+  style="aspect-ratio:16/9;"
+  data-uid={uid}
+  data-category={category}
+>
+  <div class="cgi-placeholder absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center bg-[#111]">
+    <p class="text-white/70 text-sm max-w-[40ch]">{t.message}</p>
+    <button
+      type="button"
+      class="cgi-enable font-black text-sm px-5 py-2.5 bg-ab-green text-white tracking-[-0.01em] hover:opacity-90 transition-opacity"
+    >
+      {t.enable}
+    </button>
+  </div>
+  <iframe
+    id={uid}
+    class="absolute inset-0 w-full h-full hidden"
+    data-src={src}
+    title={title}
+    allow={allow}
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+</div>
+
+<script>
+  import { onConsentChange } from '@/lib/consent-gate-client';
+
+  document.querySelectorAll<HTMLElement>('.consent-gated-iframe').forEach((wrapper) => {
+    const uid = wrapper.dataset.uid;
+    const category = wrapper.dataset.category as 'functional' | 'marketing';
+    if (!uid || !category) return;
+
+    const iframe = document.getElementById(uid) as HTMLIFrameElement | null;
+    const placeholder = wrapper.querySelector<HTMLElement>('.cgi-placeholder');
+    const enableBtn = wrapper.querySelector<HTMLButtonElement>('.cgi-enable');
+    if (!iframe || !placeholder) return;
+
+    function reveal() {
+      if (!iframe) return;
+      if (!iframe.src) iframe.src = iframe.dataset.src ?? '';
+      iframe.classList.remove('hidden');
+      placeholder?.classList.add('hidden');
+    }
+
+    onConsentChange(category, reveal);
+    enableBtn?.addEventListener('click', () => {
+      (window as unknown as { abOpenCookieSettings?: () => void }).abOpenCookieSettings?.();
+    });
+  });
+</script>

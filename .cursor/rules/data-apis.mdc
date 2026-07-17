@@ -1,0 +1,53 @@
+---
+description: Strapi, Sports Innovation, Mailgun, and API route patterns
+globs: src/lib/**,src/pages/api/**
+alwaysApply: false
+---
+
+# Data & API Layer
+
+## Strapi (CMS)
+
+Use helpers from `@/lib/strapi/client` — never raw fetch to Strapi:
+
+```ts
+import { fetchCollectionType, fetchSingleType, fetchDocument, strapiMediaUrl } from '@/lib/strapi/client';
+
+const articles = await fetchCollectionType('articles', {
+  locale: 'da',
+  populate: ['image', 'categories'],
+  filters: { slug: { $eq: slug } },
+});
+```
+
+- Always pass `locale` for localized content
+- Use `strapiMediaUrl()` for relative media paths
+- Fetch in Astro frontmatter or API routes only (server-side)
+
+## Sports Innovation (SI)
+
+Import from `@/lib/si/client` — **server-only**. Never import in React islands.
+
+```ts
+import { fetchABEvents } from '@/lib/si/client';
+const events = await fetchABEvents({ locale, limit: 30 });
+```
+
+Team/tournament IDs live in `@/lib/config/ab` (`AB_TEAM_ID`, etc.).
+
+## API routes
+
+```ts
+import type { APIRoute } from 'astro';
+export const prerender = false;
+
+export const POST: APIRoute = async ({ request }) => {
+  // validate input → call lib helper → JSON Response
+};
+```
+
+Existing endpoints: `/api/health`, `/api/contact`, `/api/subscribe`.
+
+## Environment
+
+Access via `import.meta.env.VAR_NAME`. Document new vars in `.env.example`. Required secrets: `STRAPI_API_TOKEN`, `SI_ACCESS_TOKEN`, `MAILGUN_*`, `DESCOPE_*`.

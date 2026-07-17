@@ -1,0 +1,292 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+---
+
+<Base locale="da" title="Privatlivspolitik | AB 1889" description="Læs hvordan Akademisk Boldklub (AB 1889) indsamler, bruger og beskytter dine persondata i overensstemmelse med GDPR.">
+
+  <!-- Slim header -->
+  <div class="bg-ab-black border-b border-white/10 py-10 px-8 lg:px-20">
+    <div class="max-w-4xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">AB 1889</span>
+      <h1 class="font-black text-white text-[clamp(2rem,5vw,3.5rem)] tracking-[-0.04em] leading-tight">Privatlivspolitik</h1>
+      <p class="text-white/40 text-[0.8rem] mt-2 tracking-[-0.01em]">Version 3 · Juli 2026</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-4xl mx-auto px-8 lg:px-20">
+
+      <div class="legal-review-note">
+        <strong>Bemærk:</strong> Denne politik er udarbejdet til at afspejle de databehandlinger, der faktisk finder sted på ab.dk. Den bør gennemgås af klubbens ledelse eller ekstern juridisk rådgivning, inden den betragtes som endelig.
+      </div>
+
+      <div class="prose-content">
+
+        <h2>1. Generelt</h2>
+        <p>
+          AB A/S ("AB", "vi") har udarbejdet denne politik for at beskrive, hvordan vi indsamler og behandler persondata via ab.dk. Politikken omfatter oplysninger, du giver os direkte (f.eks. via kontaktformularen), eller som indsamles automatisk, når du besøger hjemmesiden. AB A/S er dataansvarlig. Kontaktoplysninger findes i afsnit 7.
+        </p>
+
+        <h2>2. Dataindsamling, formål og retsgrundlag</h2>
+
+        <h3>2.1 Data om brug af hjemmesiden</h3>
+        <p>
+          Når du besøger ab.dk, kan vi automatisk indsamle tekniske oplysninger som browsertype, IP-adresse og enhedsoplysninger, i det omfang det er nødvendigt for at drive og sikre hjemmesiden. Retsgrundlag: Artikel 6, stk. 1, litra f, GDPR (legitime interesser i sikker og korrekt drift af hjemmesiden).
+        </p>
+        <p>
+          Hvis du giver samtykke til statistik-cookies, bruger vi desuden Google Analytics (via Google Tag Manager) til at indsamle anonymiseret statistik om besøgstal og brug af hjemmesiden. Retsgrundlag: Artikel 6, stk. 1, litra a, GDPR (samtykke). Se afsnit 8 for detaljer og hvordan du styrer dit samtykke.
+        </p>
+
+        <h3>2.2 Kontaktformular og henvendelser om arrangementer</h3>
+        <p>
+          Når du kontakter os via kontaktformularen eller vores formular om erhvervsarrangementer/hospitality, indsamler vi de oplysninger, du selv angiver — typisk navn, e-mail, telefonnummer og din besked, samt eventuelle detaljer om et ønsket arrangement (dato, antal gæster, type). Oplysningerne bruges udelukkende til at besvare din henvendelse. Retsgrundlag: Artikel 6, stk. 1, litra f, GDPR (legitime interesser i at kunne besvare henvendelser) og, hvor relevant, litra b (forud for indgåelse af en aftale).
+        </p>
+
+        <h3>2.3 Nyhedsbrevstilmelding</h3>
+        <p>
+          Når du tilmelder dig vores nyhedsbrev, indsamler vi din e-mailadresse og eventuelt dit navn. Disse data bruges udelukkende til at udsende nyhedsbreve via vores e-mail-udbyder Mailgun. Retsgrundlag: Artikel 6, stk. 1, litra a, GDPR (samtykke). Du kan til enhver tid afmelde nyhedsbrevet.
+        </p>
+
+        <h3>2.4 Konto og login</h3>
+        <p>
+          Opretter du en MyAB-konto, behandler vores login-udbyder Descope de oplysninger, der er nødvendige for at oprette og godkende din konto (f.eks. e-mailadresse og en session-cookie). Retsgrundlag: Artikel 6, stk. 1, litra b, GDPR (nødvendigt for at kunne levere kontofunktionen, du har anmodet om).
+        </p>
+
+        <h3>2.5 Billetkøb og butik</h3>
+        <p>
+          Køb af billetter og merchandise foregår ikke direkte på ab.dk, men via vores samarbejdspartnere Vivenu (billetter, billet.ab.dk) og Shopify (butik, shop.ab.dk). Når du foretager et køb dér, er det den pågældende partners egen privatlivspolitik, der gælder for behandlingen af dine betalings- og ordreoplysninger — AB modtager og opbevarer ikke selv disse data.
+        </p>
+
+        <h2>3. Modtagere af data og tredjeparter</h2>
+        <p>Vi bruger følgende databehandlere og tredjepartstjenester. Nogle af dem indlæses kun, hvis du har givet samtykke til de relevante cookiekategorier (se afsnit 8):</p>
+        <ul>
+          <li><strong>Mailgun</strong> (EU-drift) — afsendelse af e-mail og nyhedsbrev</li>
+          <li><strong>Descope</strong> — login og kontogodkendelse (MyAB)</li>
+          <li><strong>Vivenu</strong> — billetkøb og -bestilling (kræver samtykke til funktionelle cookies)</li>
+          <li><strong>SI Sports</strong> (dash.si-ab.com) — visning af live kampstatistik (kræver samtykke til funktionelle cookies)</li>
+          <li><strong>Google Analytics / Google Tag Manager</strong> — anonymiseret statistik om brug af hjemmesiden (kræver samtykke til statistik-cookies)</li>
+          <li><strong>YouTube / Google</strong> — indlejrede videoer på ABTV (kræver samtykke til markedsførings- og mediecookies)</li>
+          <li><strong>Strapi/Wasabi</strong> — opbevaring af redaktionelt indhold og billeder på hjemmesiden</li>
+          <li><strong>Vercel</strong> — teknisk drift og hosting af hjemmesiden</li>
+        </ul>
+        <p>
+          Hvor en databehandler opbevarer eller behandler data uden for EU/EØS, sikrer vi, at overførslen er understøttet af passende garantier, f.eks. EU-Kommissionens standardkontraktbestemmelser (SCC).
+        </p>
+
+        <h2>4. Dine rettigheder</h2>
+        <p>Du har ret til at:</p>
+        <ul>
+          <li>Anmode om indsigt i dine persondata</li>
+          <li>Få rettet ukorrekte oplysninger</li>
+          <li>Anmode om sletning (med visse lovmæssige begrænsninger)</li>
+          <li>Begrænse behandlingen</li>
+          <li>Modtage dine data i et transportabelt format</li>
+          <li>Gøre indsigelse mod behandling baseret på legitime interesser</li>
+          <li>Trække dit samtykke tilbage til enhver tid, herunder dine cookie-valg</li>
+          <li>Klage til Datatilsynet (datatilsynet.dk)</li>
+        </ul>
+
+        <h2>5. Slettefrister</h2>
+        <ul>
+          <li><strong>Kontaktformular- og arrangementshenvendelser:</strong> Slettes senest 12 måneder efter afsluttet dialog, medmindre andet er aftalt eller påkrævet</li>
+          <li><strong>Nyhedsbrevsdata:</strong> Slettes ved afmelding eller tilbagekaldelse af samtykke</li>
+          <li><strong>Kontodata (MyAB):</strong> Opbevares, så længe kontoen er aktiv, og slettes inden for rimelig tid efter en anmodning om sletning</li>
+          <li><strong>Cookies:</strong> Se varighed for den enkelte cookie i tabellen i afsnit 8</li>
+        </ul>
+
+        <h2>6. Sikkerhed</h2>
+        <p>
+          Vi anvender passende tekniske og organisatoriske sikkerhedsforanstaltninger for at beskytte dine persondata mod uautoriseret adgang eller skade. Kun medarbejdere og databehandlere, der har brug for adgang som led i deres arbejde, får adgang.
+        </p>
+
+        <h2>7. Kontaktoplysninger</h2>
+        <div class="contact-block">
+          <p class="font-black text-[#111]">AB A/S</p>
+          <p>Gladsaxevej 202, 2860 Søborg</p>
+          <a href="mailto:info@ab.dk">info@ab.dk</a>
+        </div>
+        <p>
+          Har du spørgsmål til denne politik, eller ønsker du at gøre brug af dine rettigheder efter afsnit 4, er du velkommen til at kontakte os på ovenstående adresse.
+        </p>
+
+        <h2>8. Cookies</h2>
+        <p>
+          Vi bruger cookies til at få hjemmesiden til at fungere og til at levere indlejrede videoer, billetkøb og live-statistik fra tredjeparter. Du vælger selv, hvilke ikke-nødvendige cookies du accepterer, via cookie-bannerets indstillinger — du kan til enhver tid ændre dine valg via "Cookie-indstillinger" i bunden af hjemmesiden.
+        </p>
+        <div class="table-wrap">
+          <table class="cookie-table">
+            <thead>
+              <tr>
+                <th>Navn</th>
+                <th>Udbyder</th>
+                <th>Formål</th>
+                <th>Varighed</th>
+                <th>Kategori</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ab_consent</td>
+                <td>ab.dk (os selv)</td>
+                <td>Husker dine cookie-præferencer</td>
+                <td>180 dage</td>
+                <td>Nødvendig</td>
+              </tr>
+              <tr>
+                <td>DS</td>
+                <td>Descope</td>
+                <td>Login-session til MyAB-konto</td>
+                <td>Sat af Descope, typisk sessionsvarighed</td>
+                <td>Nødvendig</td>
+              </tr>
+              <tr>
+                <td>Diverse</td>
+                <td>Vivenu</td>
+                <td>Billetkøb og -bestilling</td>
+                <td>Fastsat af Vivenu</td>
+                <td>Funktionel</td>
+              </tr>
+              <tr>
+                <td>Diverse</td>
+                <td>SI Sports (dash.si-ab.com)</td>
+                <td>Visning af live kampstatistik</td>
+                <td>Fastsat af SI Sports</td>
+                <td>Funktionel</td>
+              </tr>
+              <tr>
+                <td>_ga, _ga_*, _gid</td>
+                <td>Google Analytics / Google Tag Manager</td>
+                <td>Anonymiseret statistik om besøgstal og brug af hjemmesiden</td>
+                <td>Op til 2 år, fastsat af Google</td>
+                <td>Statistik</td>
+              </tr>
+              <tr>
+                <td>YSC, VISITOR_INFO1_LIVE m.fl.</td>
+                <td>YouTube / Google</td>
+                <td>Afspilning af indlejrede videoer på ABTV</td>
+                <td>Op til 8 måneder, fastsat af Google</td>
+                <td>Markedsføring &amp; medier</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>9. Ændringer af politikken</h2>
+        <p>
+          Vi kan opdatere denne politik løbende. Væsentlige ændringer vil blive kommunikeret ved dit næste besøg på hjemmesiden.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .legal-review-note {
+    background: #FFF7E6;
+    border: 1px solid #F0D28A;
+    color: #6B4E00;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+  }
+  .prose-content {
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .prose-content h2 {
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #111;
+    letter-spacing: -0.03em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-top: 2rem;
+    border-top: 1px solid #E5E7EB;
+  }
+  .prose-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .prose-content h3 {
+    font-weight: 900;
+    font-size: 1rem;
+    color: #333;
+    letter-spacing: -0.02em;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose-content p {
+    margin-bottom: 1rem;
+  }
+  .prose-content ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+  .prose-content ul li {
+    padding-left: 1.25rem;
+    position: relative;
+    margin-bottom: 0.4rem;
+  }
+  .prose-content ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #4CAF50;
+    font-weight: 900;
+  }
+  .prose-content a {
+    color: #2E7D32;
+    text-decoration: none;
+  }
+  .prose-content a:hover {
+    opacity: 0.7;
+  }
+  .prose-content strong {
+    font-weight: 900;
+    color: #111;
+  }
+  .contact-block {
+    background: #F5F5F3;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  .cookie-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+  .cookie-table th {
+    text-align: left;
+    background: #111;
+    color: #fff;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    padding: 0.6rem 0.9rem;
+  }
+  .cookie-table td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid #E5E7EB;
+    color: #444;
+    white-space: normal;
+  }
+</style>

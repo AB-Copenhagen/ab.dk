@@ -1,0 +1,151 @@
+---
+import Base from '@/layouts/Base.astro';
+import ConsentGatedIframe from '@/components/ConsentGatedIframe.astro';
+export const prerender = false;
+---
+
+<Base
+  locale="da"
+  title="ABTV | Match Highlights & Interviews"
+  description="Stream match highlights, recaps and exclusive player interviews on ABTV — Akademisk Boldklub's official video channel."
+  ogTitle="ABTV – AB's Official Video Hub"
+  ogDescription="Catch every goal, recap and behind-the-scenes moment from Akademisk Boldklub on ABTV."
+>
+
+  <!-- ── Hero ──────────────────────────────────────────────────────── -->
+  <section class="bg-ab-green text-white pt-16 pb-20 px-8 lg:px-16">
+    <div class="max-w-5xl mx-auto">
+      <span class="inline-block text-ab-neon font-black text-xs tracking-[0.18em] uppercase mb-5">
+        ABTV
+      </span>
+      <h1 class="font-black leading-[0.95] tracking-[-0.04em] normal-case mb-6"
+          style="font-size: clamp(3rem, 8vw, 7rem);">
+        Hver kamp.<br>Hvert højdepunkt.<br>Samlet ét sted.
+      </h1>
+      <p class="text-white/70 font-medium text-lg max-w-xl">
+        Hold dig opdateret om vores seneste kampe og de bedste øjeblikke.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Nyt & Trending ────────────────────────────────────────────── -->
+  <section class="bg-[#111] text-white py-14 px-8 lg:px-16">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="font-black tracking-[-0.04em] normal-case mb-10"
+          style="font-size: clamp(2rem, 5vw, 3.5rem);">
+        Nyt &amp; Trending
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Boldcast</p>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/videoseries?si=1byEawIDTnPjup4y&list=PLI_1pixkexw71QCbHe4gxmj_CItaFUQCO"
+            title="Boldcast playlist"
+            locale="da"
+          />
+        </div>
+        <div>
+          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">AB Squad Stories</p>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/videoseries?si=3o6AO_Sadv4-9gjD&list=PLI_1pixkexw7XCJKP94KNezrHAPG5dai_"
+            title="AB Squad Stories playlist"
+            locale="da"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Genoplev sæsonen ───────────────────────────────────────────── -->
+  <section class="bg-[#0d0d0d] text-white py-14 px-8 lg:px-16">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="font-black tracking-[-0.04em] normal-case mb-10"
+          style="font-size: clamp(2rem, 5vw, 3.5rem);">
+        Genoplev sæsonen
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Inside AB's Historic Season</p>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/RBpLV4HiS9E?si=QHAV1231whvmKTYP"
+            title="Inside AB's historic season"
+            locale="da"
+          />
+        </div>
+        <div>
+          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">A Season to Remember</p>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/YroeMSqcppo?si=gTONbkU1xEVdwX2e"
+            title="A season to remember"
+            locale="da"
+          />
+        </div>
+        <div>
+          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Nummer Et</p>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/vsXpLavqXGQ?si=IBXGgl-FNwmwXafl"
+            title="Nummer Et"
+            locale="da"
+          />
+        </div>
+        <div>
+          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">We Know What We're Playing For</p>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/lCwpCNwcNis?si=rHy8q6ItynC36u4-"
+            title="We know what we're playing for"
+            locale="da"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Bag om kulisserne ─────────────────────────────────────────── -->
+  <section class="bg-[#111] text-white py-14 px-8 lg:px-16">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="font-black tracking-[-0.04em] normal-case mb-10"
+          style="font-size: clamp(2rem, 5vw, 3.5rem);">
+        Bag om kulisserne
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Interviews</p>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/videoseries?si=4Sab20h5PiUk8oO7&list=PLI_1pixkexw7_joKCyMFcAWOTE-mEEclp"
+            title="Interviews playlist"
+            locale="da"
+          />
+        </div>
+        <div>
+          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Quick Fire</p>
+          <ConsentGatedIframe
+            src="https://www.youtube.com/embed/videoseries?si=d3bf2RGYgXvcU837&list=PLI_1pixkexw7QHBoCnYbf1QRv8LaaBDtB"
+            title="Quick fire playlist"
+            locale="da"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── YouTube CTA ───────────────────────────────────────────────── -->
+  <section class="bg-ab-green text-white py-14 px-8 lg:px-16">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <p class="font-black leading-tight tracking-[-0.03em] text-white"
+         style="font-size: clamp(1.75rem, 4vw, 2.75rem);">
+        Se alt på vores kanal
+      </p>
+      <a
+        href="https://www.youtube.com/@akademisk-boldklub"
+        target="_blank"
+        rel="noreferrer"
+        class="shrink-0 inline-flex items-center gap-3 bg-ab-neon text-ab-green font-black px-8 py-4 text-lg tracking-[-0.02em] hover:bg-white transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 shrink-0" aria-hidden="true">
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+        YouTube
+      </a>
+    </div>
+  </section>
+
+</Base>

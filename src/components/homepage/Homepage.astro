@@ -1,0 +1,872 @@
+---
+import { fetchCollectionType } from '@/lib/strapi/client';
+import {
+  fetchABEvents,
+  fetchABPlayers,
+  getTeamLogoSrc,
+  type SIPlayer,
+} from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
+import { strapiMediaUrl } from '@/lib/strapi/client';
+import SquadCard from '@/components/SquadCard.astro';
+import MatchScheduleList from '@/components/MatchScheduleList.astro';
+import MiniCalendar from '@/components/MiniCalendar.astro';
+import { translate } from '@/lib/i18n';
+import { decodeHtml } from '@/lib/utils';
+import { fetchCollectionProducts } from '@/lib/shopify';
+import StandingsWidget from '@/components/StandingsWidget.astro';
+import Img from '@/components/Img.astro';
+
+interface Props {
+  locale: 'da' | 'en';
+}
+
+const { locale } = Astro.props;
+
+const [articles, events, players] = await Promise.all([
+  fetchCollectionType<any[]>('articles', {
+    locale,
+    sort: ['originalPublishedAt:desc'],
+    populate: ['image', 'categories'],
+    pagination: { pageSize: 8 },
+  }).catch(() => [] as any[]),
+  fetchABEvents({ locale, limit: 20 }).catch(() => [] as any[]),
+  fetchABPlayers(locale).catch((): SIPlayer[] => []),
+]);
+
+const positionOrder: Record<string, number> = {
+  keeper: 0,
+  defender: 1,
+  midfielder: 2,
+  forward: 3,
+};
+const sortedPlayers = [...players].sort(
+  (a, b) => (positionOrder[a.position] ?? 4) - (positionOrder[b.position] ?? 4)
+);
+
+const nextMatch = events.find(
+  (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
+);
+const recentResults = events
+  .filter((e: any) => e.statusType === 'finished')
+  .slice(0, 5);
+
+const abHome = nextMatch ? nextMatch.homeId === abConfig.teamId : false;
+const opponent = nextMatch
+  ? abHome
+    ? nextMatch.awayName
+    : nextMatch.homeName
+  : null;
+const opponentId = nextMatch
+  ? abHome
+    ? nextMatch.awayId
+    : nextMatch.homeId
+  : null;
+const oppLogo = opponentId ? getTeamLogoSrc(opponentId) : null;
+const matchDateStr = nextMatch
+  ? new Date(nextMatch.startDate).toLocaleDateString(
+      locale === 'da' ? 'da-DK' : 'en-US',
+      {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      }
+    )
+  : null;
+const matchTimeStr = nextMatch
+  ? new Date(nextMatch.startDate).toLocaleTimeString(
+      locale === 'da' ? 'da-DK' : 'en-GB',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }
+    )
+  : null;
+
+function articlePath(slug: string) {
+  return locale === 'en' ? `/en/news/${slug}` : `/nyheder/${slug}`;
+}
+const enSlugs: Record<string, string> = {
+  '/kampe': '/matches',
+  '/hold': '/squad',
+  '/nyheder': '/news',
+};
+function localPath(daPath: string) {
+  if (locale !== 'en') return daPath;
+  return `/en${enSlugs[daPath] ?? daPath}`;
+}
+
+const shopifyProducts = await fetchCollectionProducts('311129374820', 3).catch(() => [] as Awaited<ReturnType<typeof fetchCollectionProducts>>);
+
+const staticProducts = [
+  {
+    name: translate(locale, 'productGreenTShirt'),
+    price: 'DKK 89',
+    originalPrice: 'DKK 169',
+    img: '/images/product-1.png',
+    href: 'https://shop.ab.dk/products/green-academic-football-club-t-shirt?variant=47392935051364',
+  },
+  {
+    name: translate(locale, 'productGreenSweatshirt'),
+    price: 'DKK 129',
+    originalPrice: 'DKK 249',
+    img: '/images/product-2.png',
+    href: 'https://shop.ab.dk/products/green-academic-football-club-sweatshirt?variant=47392934035556',
+  },
+  {
+    name: translate(locale, 'productGreySweater'),
+    price: 'DKK 219',
+    originalPrice: 'DKK 429',
+    img: '/images/product-3.png',
+    href: 'https://shop.ab.dk/products/knowledgecotton-apparel-grey-monochromatic-ab-logo?variant=47392933249124',
+  },
+];
+
+const products = shopifyProducts.length > 0
+  ? shopifyProducts.map(p => ({
+      name: p.title,
+      price: p.price,
+      originalPrice: p.compareAtPrice,
+      img: p.imageUrl,
+      href: p.url,
+    }))
+  : staticProducts;
+
+const heroSlides = [
+  {
+    img: '/images/hero.jpg',
+    alt: 'AB 1889',
+    headline: translate(locale, 'heroShopHeadline'),
+    subtitle: translate(locale, 'heroShopSubtitle'),
+    ctaLabel: translate(locale, 'heroShopNow'),
+    ctaUrl: 'https://shop.ab.dk',
+  },
+  {
+    img: '/images/matches-header-bg.png',
+    alt: translate(locale, 'heroMatchesAlt'),
+    headline: translate(locale, 'heroMatchesHeadline'),
+    subtitle: translate(locale, 'heroMatchesSubtitle'),
+    ctaLabel: translate(locale, 'heroMatchesCta'),
+    ctaUrl: localPath('/kampe'),
+  },
+  {
+    img: '/images/join-team-ab-bg.png',
+    alt: translate(locale, 'heroJoinAlt'),
+    headline: translate(locale, 'heroJoinHeadline'),
+    subtitle: translate(locale, 'heroJoinSubtitle'),
+    ctaLabel: translate(locale, 'heroJoinCta'),
+    ctaUrl: localPath('/om/bliv-medlem'),
+  },
+];
+---
+
+<style>
+  @keyframes dot-fill {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+</style>
+
+<!-- ── Hero Slider ───────────────────────────────────────── -->
+<section
+  id="hero-slider"
+  class="relative w-full overflow-hidden h-[60svh] min-h-[560px] max-h-[960px] cursor-grab active:cursor-grabbing select-none">
+
+  <!-- Horizontal track: all slides side-by-side -->
+  <div id="hero-track" class="flex h-full will-change-transform" style="transform:translateX(0)">
+    {
+      heroSlides.map((slide, i) => (
+        <div class="relative flex-shrink-0 w-full h-full">
+          <img
+            src={slide.img}
+            alt={slide.alt}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            draggable="false"
+            class="w-full h-full object-cover object-center pointer-events-none"
+          />
+          <div class="absolute inset-0 bg-black/20" />
+          <div class="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
+            <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance text-center">
+              {slide.headline}
+            </h1>
+            <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
+              {slide.subtitle}
+            </p>
+            <a href={slide.ctaUrl} class="btn btn-lg btn-beige pointer-events-auto">
+              {slide.ctaLabel}
+            </a>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Timer dot indicators -->
+  <div class="absolute bottom-8 left-0 right-0 z-30 flex justify-center items-center gap-2">
+    {
+      heroSlides.map((_, i) => (
+        <button
+          class="hero-dot relative overflow-hidden"
+          style={`height:4px; border-radius:2px; border:none; padding:0; cursor:pointer; transition:width 0.3s ease; background:rgba(255,255,255,0.35); ${i === 0 ? 'width:48px;' : 'width:16px;'}`}
+          data-dot={i}
+          aria-label={`Slide ${i + 1}`}>
+          <div
+            class="hero-dot-fill"
+            style={`position:absolute; inset:0; background:#fff; transform-origin:left; transform:scaleX(0); ${i === 0 ? `animation:dot-fill ${5000}ms linear forwards;` : ''}`}
+          />
+        </button>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  const DURATION        = 5000;
+  const SNAP_EASE       = 'transform 0.48s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  const SWIPE_THRESHOLD = 50;
+
+  const slider = document.getElementById('hero-slider')!;
+  const track  = document.getElementById('hero-track')!;
+  const dots   = Array.from(document.querySelectorAll<HTMLElement>('.hero-dot'));
+  const fills  = dots.map(d => d.querySelector<HTMLElement>('.hero-dot-fill')!);
+  const total  = dots.length;
+
+  // ── Clone first/last for infinite wrapping ─────────────────
+  // Track layout: [lastClone] [s0] [s1] … [sN] [firstClone]
+  // trackIndex 0 = lastClone, 1..total = real slides, total+1 = firstClone
+  const realSlides = Array.from(track.children) as HTMLElement[];
+  track.prepend(realSlides[total - 1].cloneNode(true));
+  track.append(realSlides[0].cloneNode(true));
+
+  let current    = 0;      // logical slide index (0..total-1)
+  let trackIndex = 1;      // position in expanded track
+  let timer: ReturnType<typeof setInterval>;
+
+  const w = () => slider.offsetWidth;
+
+  function snap(ti: number, animated: boolean) {
+    track.style.transition = animated ? SNAP_EASE : 'none';
+    track.style.transform  = `translateX(${-ti * w()}px)`;
+  }
+
+  // After animated transition to a clone, silently jump to real slide
+  track.addEventListener('transitionend', () => {
+    if (trackIndex === 0) {
+      trackIndex = total;
+      snap(trackIndex, false);
+    } else if (trackIndex === total + 1) {
+      trackIndex = 1;
+      snap(trackIndex, false);
+    }
+  });
+
+  // Start at real slide 0
+  snap(1, false);
+
+  function activateDot(i: number) {
+    dots.forEach((dot, j) => {
+      const fill = fills[j];
+      if (j === i) {
+        dot.style.width = '48px';
+        fill.style.animation = 'none';
+        void fill.offsetWidth;
+        fill.style.animation = `dot-fill ${DURATION}ms linear forwards`;
+      } else {
+        dot.style.width = '16px';
+        fill.style.animation = 'none';
+        fill.style.transform = 'scaleX(0)';
+      }
+    });
+  }
+
+  function goTo(n: number) {
+    current = (n + total) % total;
+    // Route wraps through clones so motion stays directional
+    if (n >= total)  trackIndex = total + 1;   // forward wrap → firstClone
+    else if (n < 0)  trackIndex = 0;           // backward wrap → lastClone
+    else             trackIndex = current + 1;
+    snap(trackIndex, true);
+    activateDot(current);
+  }
+
+  timer = setInterval(() => goTo(current + 1), DURATION);
+
+  dots.forEach((dot, i) => dot.addEventListener('click', () => {
+    clearInterval(timer);
+    goTo(i);
+    timer = setInterval(() => goTo(current + 1), DURATION);
+  }));
+
+  window.addEventListener('resize', () => snap(trackIndex, false), { passive: true });
+
+  // ── Drag ──────────────────────────────────────────────────
+  let dragStartX = 0;
+  let dragDelta  = 0;
+  let dragging   = false;
+  let didDrag    = false;
+
+  slider.addEventListener('pointerdown', (e) => {
+    if ((e.target as Element).closest('a, button')) return;
+    dragStartX = e.clientX;
+    dragDelta  = 0;
+    dragging   = true;
+    didDrag    = false;
+    track.style.transition = 'none';
+    slider.setPointerCapture(e.pointerId);
+  }, { passive: true });
+
+  slider.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    dragDelta = e.clientX - dragStartX;
+    if (Math.abs(dragDelta) > 8) didDrag = true;
+    track.style.transform = `translateX(${-trackIndex * w() + dragDelta}px)`;
+  }, { passive: true });
+
+  slider.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
+    if (Math.abs(dragDelta) > SWIPE_THRESHOLD) {
+      clearInterval(timer);
+      goTo(dragDelta < 0 ? current + 1 : current - 1);
+      timer = setInterval(() => goTo(current + 1), DURATION);
+    } else {
+      snap(trackIndex, true);  // spring back
+    }
+    dragDelta = 0;
+  });
+
+  slider.addEventListener('pointercancel', () => {
+    if (!dragging) return;
+    dragging = false; dragDelta = 0;
+    snap(trackIndex, true);
+  });
+
+  slider.addEventListener('click', (e) => {
+    if (didDrag) { e.preventDefault(); didDrag = false; }
+  }, { capture: true });
+</script>
+
+<!-- ── Player + Standings ────────────────────────────────── -->
+<section
+  id="player-standings"
+  class="content-container py-8 md:py-10 bg-white">
+  <div
+    class="grid lg:grid-cols-[clamp(280px,28vw,460px)_1fr] gap-8 xl:gap-10 items-start">
+    <!-- Left: Player photo + next match + buy tickets -->
+    <div
+      id="player-featured"
+      class="flex flex-col">
+      <div class="relative overflow-hidden bg-rich-black">
+        <Img
+          src="/images/player-featured.png"
+          alt="AB 1889 Player"
+          loading="lazy"
+          class="w-full h-full object-cover object-top aspect-3/4"
+        />
+        <div
+          class="absolute inset-0 bg-linear-to-t from-black/55 to-transparent">
+        </div>
+        <div class="absolute left-4 top-4 flex items-start justify-between">
+          <a
+            class="vivenu-btn btn btn-md btn-green"
+            href="https://billet.ab.dk/?useEmbed=true">
+            {translate(locale, 'buyTickets')}
+          </a>
+        </div>
+      </div>
+
+      <!-- Next match card -->
+      {
+        nextMatch && opponent && (
+          <div
+            id="next-match"
+            class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col">
+            <h3
+              class="font-black text-white leading-[0.86] tracking-[-0.04em] mb-6"
+              style="font-size:clamp(1.75rem,3vw,2.1875rem)">
+              {translate(locale, 'nextMatch')}
+            </h3>
+            <div class="flex items-center justify-between gap-4 flex-1">
+              <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
+                <Img
+                  src="/images/ab-logo-alt.png"
+                  alt="AB"
+                  width="81"
+                  height="81"
+                  class="size-[81px] object-contain"
+                />
+                <span class="text-sm font-normal text-white text-center tracking-[-0.02em]">
+                  AB
+                </span>
+              </div>
+              <div class="flex flex-col items-center text-center text-white flex-1 min-w-0">
+                {matchDateStr && (
+                  <p class="text-lg font-normal tracking-[-0.02em]">
+                    {matchDateStr}
+                  </p>
+                )}
+                {matchTimeStr && (
+                  <p class="text-lg font-black tracking-[-0.02em]">
+                    {matchTimeStr}
+                  </p>
+                )}
+              </div>
+              <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
+                {oppLogo ? (
+                  <img
+                    src={oppLogo}
+                    alt={opponent}
+                    width="81"
+                    height="81"
+                    class="size-[81px] object-contain"
+                  />
+                ) : (
+                  <div class="size-[81px] rounded-full flex items-center justify-center text-sm font-black bg-white/10 text-white">
+                    {opponent.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <span class="text-sm font-normal text-center text-white tracking-[-0.02em] leading-tight">
+                  {opponent}
+                </span>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </div>
+
+    <!-- Right: Standings -->
+    <div
+      id="standings"
+      class="overflow-hidden bg-white shadow-sm">
+      <StandingsWidget locale={locale} />
+    </div>
+  </div>
+</section>
+
+<!-- ── Recent Results ──────────────────────────────────── -->
+{
+  recentResults.length > 0 && (
+    <section
+      id="recent-results"
+      class="bg-white border-t border-gray-100">
+      <div class="content-container py-8 nd:py-10">
+        <div class="flex items-center gap-3 mb-5">
+          <p class="text-xs font-black uppercase text-gray-400 tracking-[0.22em]">
+            {translate(locale, 'recentResults')}
+          </p>
+          <div class="flex-1 h-px bg-gray-200" />
+          <a
+            href={localPath('/kampe')}
+            class="text-xs font-bold text-ab-green">
+            {translate(locale, 'seeAllArrow')}
+          </a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b-2 border-gray-100">
+                <th class="text-left pb-2 text-xs font-black uppercase text-gray-400 tracking-[0.14em] w-[220px]">
+                  {translate(locale, 'date')}
+                </th>
+                <th class="text-left pb-2 text-xs font-black uppercase text-gray-400 tracking-[0.14em]">
+                  {translate(locale, 'homeTeam')}
+                </th>
+                <th class="text-center pb-2 text-xs font-black uppercase text-gray-400 tracking-[0.14em] w-20">
+                  {translate(locale, 'score')}
+                </th>
+                <th class="text-right pb-2 text-xs font-black uppercase text-gray-400 tracking-[0.14em]">
+                  {translate(locale, 'awayTeam')}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentResults.map((event: any) => {
+                const isHome = event.homeId === 9805;
+                return (
+                  <tr class="result-row odd:bg-gray-50 border-b border-gray-100">
+                    <td class="py-3 text-xs text-gray-400 tabular-nums">
+                      {new Date(event.startDate).toLocaleDateString(
+                        locale === 'da' ? 'da-DK' : 'en-GB',
+                        {
+                          weekday: 'short',
+                          day: 'numeric',
+                          month: 'short',
+                        }
+                      )}
+                    </td>
+                    <td
+                      class={`py-3 text-sm font-bold ${isHome ? 'text-ab-green' : 'text-[#111]'}`}>
+                      {event.homeName}
+                    </td>
+                    <td class="py-3 text-sm font-black text-center text-ab-gold tabular-nums tracking-[0.04em]">
+                      {event.score ?? '–'}
+                    </td>
+                    <td
+                      class={`py-3 text-sm font-bold text-right ${!isHome ? 'text-ab-green' : 'text-[#111]'}`}>
+                      {event.awayName}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<!-- ── Join Team AB ──────────────────────────────────────── -->
+<a
+  id="join-team-ab"
+  href={localPath('/myab')}
+  class="flex items-center relative overflow-hidden min-h-[clamp(120px,16vw,200px)] w-full no-underline">
+  <div
+    class="absolute inset-0 bg-[url('/images/join-team-ab-bg.png')] bg-cover bg-center">
+  </div>
+
+  <div class="content-container relative w-full">
+    <div
+      class="flex flex-col md:flex-row items-center justify-between gap-6 w-full">
+      <h2
+        class="font-black text-white leading-none text-[clamp(2.8rem,7vw,6.5rem)] tracking-tighter text-balance normal-case">
+        {translate(locale, 'joinTeamAbHeadline')}
+      </h2>
+      <span
+        class="shrink-0 hidden md:inline-flex items-center px-7 py-3.5 font-bold rounded-full bg-white text-[#111] text-[clamp(0.85rem,1.2vw,1rem)] whitespace-nowrap tracking-[-0.01em]">
+        {translate(locale, 'joinTeamAbCta')}
+      </span>
+    </div>
+  </div>
+</a>
+
+<!-- ── App + ABTV ─────────────────────────────────────────── -->
+<section
+  id="app-abtv"
+  class="bg-white content-container relative w-full pb-0! py-8 md:py-10">
+  <div class="grid md:grid-cols-2 gap-[clamp(12px,2vw,24px)]">
+    <!-- Download App -->
+    <div
+      id="download-app"
+      class="relative overflow-hidden flex flex-col justify-between min-h-[clamp(400px,50vw,620px)]">
+      <!-- Background photo (gradient + players composited) -->
+      <div class="absolute inset-0">
+        <Img
+          src="/images/banner-download-app.png"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          class="w-full h-full object-cover object-center"
+        />
+      </div>
+      <!-- AB 1889 logo -->
+      <img
+        src="/images/download-app-logo.svg"
+        alt=""
+        aria-hidden="true"
+        class="absolute pointer-events-none select-none left-6 top-6 w-[clamp(180px,28vw,340px)] h-auto z-1"
+      />
+      <!-- Content bottom-left -->
+      <div class="absolute bottom-0 left-0 p-8 md:p-10 z">
+        <p class="mb-5 text-banner-subtitle">
+          {translate(locale, 'downloadApp')}
+        </p>
+        <a
+          class="vivenu-btn btn btn-md btn-dark"
+          href="https://billet.ab.dk/?useEmbed=true">
+          {translate(locale, 'download')}
+        </a>
+      </div>
+    </div>
+
+    <!-- ABTV: Watch Live -->
+    <div
+      id="abtv"
+      class="relative overflow-hidden flex flex-col justify-between min-h-[clamp(400px,50vw,620px)]">
+      <div class="absolute inset-0">
+        <Img
+          src="/images/banner-watch-live.png"
+          alt="ABTV"
+          loading="lazy"
+          class="w-full h-full object-cover object-center"
+        />
+        <div
+          class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.75)_0%,rgba(0,0,0,0.15)_60%,transparent_100%)]">
+        </div>
+      </div>
+      <!-- Top: Watch Live -->
+      <div class="relative p-8 md:p-10 z-1">
+        <h2
+          class="font-black text-white leading-[0.82] text-[clamp(3.5rem,9vw,7.5rem)] tracking-tighter normal-case whitespace-pre-line">
+          {translate(locale, 'watchLive')}
+        </h2>
+      </div>
+      <!-- Bottom: subtitle + CTA -->
+      <div class="relative p-8 md:p-10 z-1">
+        <p class="mb-5 max-w-[280px] text-banner-subtitle">
+          {translate(locale, 'abtvSubtitle')}
+        </p>
+        <a
+          href={localPath('/abtv')}
+          class="btn btn-md btn-green">
+          ABTV
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Calendar + Mini-Calendar ───────────────────────────── -->
+<section
+  id="calendar"
+  class="bg-white">
+  <div class="content-container py-8 md:py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <MatchScheduleList
+        locale={locale}
+        events={events}
+      />
+      <MiniCalendar
+        locale={locale}
+        events={events}
+      />
+    </div>
+  </div>
+</section>
+
+<!-- ── Matchday Gear / Shop ──────────────────────────────── -->
+<section
+  id="matchday-gear"
+  class="bg-white border-t border-gray-100">
+  <div class="content-container py-8 md:py-10">
+    <!-- Heading block: centered, large -->
+    <div class="text-center mb-10">
+      <h2
+        class="font-black leading-none mb-4 text-[clamp(3.5rem,9vw,8rem)] tracking-[-0.04em] text-[#111] normal-case text-center">
+        {translate(locale, 'matchdayGear')}
+      </h2>
+      <p class="font-bold text-[clamp(0.95rem,1.5vw,1.1rem)] text-[#111]">
+        {translate(locale, 'matchdayGearSubtitle')}
+      </p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {
+        products.map((p) => (
+          <a
+            href={p.href}
+            target="_blank"
+            rel="noreferrer"
+            class="product-card group block">
+            <div class="overflow-hidden mb-3 aspect-3/4 bg-gray-100">
+              {p.img && (
+                <img
+                  src={p.img}
+                  alt={p.name}
+                  loading="lazy"
+                  class="product-img w-full h-full object-cover object-top transition-transform duration-[450ms] group-hover:scale-[1.03]"
+                />
+              )}
+            </div>
+            <div class="flex items-baseline gap-2 mb-1">
+              <p class="text-sm font-black text-ab-green">{p.price}</p>
+              {p.originalPrice && (
+                <p class="text-xs line-through text-gray-400">
+                  {p.originalPrice}
+                </p>
+              )}
+            </div>
+            <p class="font-black leading-snug text-[clamp(1rem,1.6vw,1.2rem)] text-[#111] tracking-[-0.02em]">
+              {p.name}
+            </p>
+          </a>
+        ))
+      }
+    </div>
+    <div class="text-center mt-10">
+      <a
+        href="https://shop.ab.dk"
+        target="_blank"
+        rel="noreferrer"
+        class="text-sm font-bold underline underline-offset-4 text-ab-green">
+        {translate(locale, 'shopAbStore')}
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── The Squad ──────────────────────────────────────────────── -->
+<section
+  id="squad"
+  class="bg-white">
+  <!-- Hero banner -->
+  <div class="w-full">
+    <Img
+      src="/images/squad-banner.png"
+      alt="AB 1889 Squad"
+      loading="lazy"
+      class="w-full h-auto block"
+    />
+  </div>
+
+  <!-- Players -->
+  <div class="content-container py-8 md:py-10">
+    <!-- Position filter pills -->
+    <div
+      class="flex gap-2 md:gap-3 overflow-x-auto pb-3 mb-8 scrollbar-none [-webkit-overflow-scrolling:touch]">
+      <button
+        data-filter="keeper"
+        class="squad-filter squad-filter-active shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
+        {translate(locale, 'positionGoalkeeper')}
+      </button>
+      <button
+        data-filter="defender"
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
+        {translate(locale, 'positionDefense')}
+      </button>
+      <button
+        data-filter="midfielder"
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
+        {translate(locale, 'positionMidfield')}
+      </button>
+      <button
+        data-filter="forward"
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
+        {translate(locale, 'positionAttack')}
+      </button>
+      <button
+        data-filter="coach"
+        class="squad-filter shrink-0 px-5 py-2 rounded-full font-black text-sm tracking-[-0.02em]">
+        {translate(locale, 'positionCoaching')}
+      </button>
+    </div>
+
+    <!-- Player grid -->
+    {
+      sortedPlayers.length > 0 ? (
+        <div
+          class="grid grid-cols-2 lg:grid-cols-3 gap-x-3.5 md:gap-x-7.5"
+          id="squad-grid">
+          {sortedPlayers.map((player) => (
+            <SquadCard
+              player={player}
+              locale={locale}
+            />
+          ))}
+        </div>
+      ) : null
+    }
+
+    <!-- See Full Squad link -->
+    <div class="text-center mt-10">
+      <a
+        href={localPath('/hold')}
+        class="text-sm font-bold underline underline-offset-4 text-ab-green">
+        {translate(locale, 'seeFullSquad')}
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const filters = document.querySelectorAll(
+      '.squad-filter'
+    ) as NodeListOf<HTMLElement>;
+    const cards = document.querySelectorAll(
+      '.squad-card'
+    ) as NodeListOf<HTMLElement>;
+
+    function setActive(btn: HTMLElement) {
+      filters.forEach((b) => b.classList.remove('squad-filter-active'));
+      btn.classList.add('squad-filter-active');
+    }
+
+    function filterCards(pos: string) {
+      cards.forEach((card) => {
+        card.style.display = card.dataset.position === pos ? '' : 'none';
+      });
+    }
+
+    // Apply default: keeper
+    const defaultFilter = 'keeper';
+    filterCards(defaultFilter);
+
+    filters.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const pos = btn.dataset.filter!;
+        setActive(btn);
+        filterCards(pos);
+      });
+    });
+  })();
+</script>
+
+<!-- ── News — Inside the club ─────────────────────────────── -->
+<section
+  id="news"
+  class="bg-white">
+  <div class="content-container py-14 md:py-20">
+    <div class="text-center mb-10 md:mb-14">
+      <h2
+        class="font-black leading-none mb-4 text-[clamp(3.5rem,9vw,8rem)] tracking-tighter text-[#111] normal-case text-center">
+        {translate(locale, 'insideTheClub')}
+      </h2>
+      <p class="font-bold text-[#111] text-[clamp(0.95rem,1.5vw,1.1rem)]">
+        {translate(locale, 'newsSectionSubtitle')}
+      </p>
+    </div>
+
+    {
+      articles.length > 0 ? (
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
+          {articles.slice(0, 4).map((article: any) => (
+            <a
+              href={articlePath(article.slug)}
+              class="article-card group block">
+              <div class="overflow-hidden mb-4 aspect-3/2 bg-gray-300">
+                {article.image?.url ? (
+                  <img
+                    src={strapiMediaUrl(article.image.url)}
+                    alt={decodeHtml(article.title)}
+                    loading="lazy"
+                    class="article-img w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center font-black text-5xl text-ab-green/15">
+                    AB
+                  </div>
+                )}
+              </div>
+              {article.categories?.[0] && (
+                <p class="font-bold mb-2 underline underline-offset-2 text-[0.8rem] text-ab-green">
+                  {article.categories[0].name}
+                </p>
+              )}
+              <h3 class="font-black leading-snug text-[clamp(1.05rem,1.8vw,1.4rem)] tracking-[-0.03em] text-[#111]">
+                {decodeHtml(article.title)}
+              </h3>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="text-center py-12 text-sm text-gray-400">
+          {translate(locale, 'noNewsYet')}
+        </p>
+      )
+    }
+
+    <div class="mt-12 text-center">
+      <a
+        href={localPath('/nyheder')}
+        class="text-sm font-bold underline underline-offset-4 text-ab-green">
+        {translate(locale, 'seeMoreNews')}
+      </a>
+    </div>
+  </div>
+</section>

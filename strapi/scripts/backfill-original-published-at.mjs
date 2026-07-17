@@ -68,14 +68,41 @@ async function wpGetDateBySlug(locale, slug) {
   return post?.date ?? null;
 }
 
+const OTHER_LOCALE = { da: 'en', en: 'da' };
+
+/**
+ * Some articles from the original bulk migration were stamped with the
+ * *other* locale's WP slug (e.g. a `da` article carrying its English
+ * permalink slug) — confirmed by spot-checking several "unmatched" da
+ * entries against the en WP endpoint using their stored slug and finding a
+ * real post. Falls back to the sibling locale's WP endpoint with the same
+ * slug before giving up.
+ */
+async function wpGetDateBySlugAnyLocale(locale, slug) {
+  const direct = await wpGetDateBySlug(locale, slug);
+  if (direct) return direct;
+  return wpGetDateBySlug(OTHER_LOCALE[locale], slug);
+}
+
 // ── Strapi ─────────────────────────────────────────────────────────────────
 
-/** Page through every article for a locale, small pageSize (see catchup-wp.mjs — full-listing dumps are unreliable against this instance). */
+/**
+ * Page through every article for a locale, small pageSize (see catchup-wp.mjs
+ * — full-listing dumps are unreliable against this instance).
+ *
+ * Sorted by `id:asc` — this MUST be a stable, immutable key. Without an
+ * explicit sort, Strapi's default ordering shifted as the run progressed
+ * (each write here also bumps the article's own `publishedAt`/`updatedAt`,
+ * per Strapi's draft/publish lifecycle), causing offset-based pagination to
+ * skip some articles entirely and revisit others — confirmed: several
+ * articles were silently never processed and stayed null after a full run.
+ */
 async function* strapiListArticles(locale, pageSize = 50) {
   let page = 1;
   while (true) {
     const url = new URL(`${STRAPI}/api/articles`);
     url.searchParams.set('locale', locale);
+    url.searchParams.set('sort[0]', 'id:asc');
     url.searchParams.set('pagination[page]', String(page));
     url.searchParams.set('pagination[pageSize]', String(pageSize));
     url.searchParams.set('fields[0]', 'slug');
@@ -113,14 +140,26 @@ async function backfillLocale(locale) {
   console.log(`\n=== Locale: ${locale} ===`);
   let checked = 0, updated = 0, alreadySet = 0, noWpMatch = 0, failed = 0;
 
+  // List EVERY article into memory before writing anything. Each write
+  // reassigns that article's internal `id` (Strapi's draft/publish
+  // versioning creates a new version, not just a new publishedAt) — so
+  // interleaving listing with writing shifts offset-based pagination
+  // mid-run and silently skips articles, regardless of sort field. Fully
+  // decoupling list-then-write is the only way to guarantee full coverage.
+  const articles = [];
   for await (const article of strapiListArticles(locale)) {
+    articles.push(article);
+  }
+  console.log(`  Listed ${articles.length} articles.`);
+
+  for (const article of articles) {
     checked++;
     if (article.originalPublishedAt) {
       alreadySet++;
       continue;
     }
     try {
-      let wpDate = await wpGetDateBySlug(locale, article.slug);
+      let wpDate = await wpGetDateBySlugAnyLocale(locale, article.slug);
       if (!wpDate) {
         // No matching WP post (renamed/deleted post-migration) — fall back to
         // Strapi's own publishedAt rather than leaving the field null, since a
