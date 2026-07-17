@@ -96,7 +96,7 @@ const partners = strapiPartners.length > 0
             </li>
           </ul>
           <a
-            href={locale === 'en' ? '/en/contact' : '/om/kontakt'}
+            href={locale === 'en' ? '/en/contact' : '/kontakt'}
             class="inline-flex items-center gap-1 text-[0.68rem] font-black text-ab-neon border border-ab-neon/30 px-3 py-1.5 tracking-[0.08em] uppercase hover:bg-ab-neon/10 transition-colors no-underline"
           >
             {locale === 'da' ? 'Kontakt os' : 'Contact'} →
@@ -154,9 +154,9 @@ const partners = strapiPartners.length > 0
           ) : (
             <ul class="flex flex-col">
               {([
-                { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/om/brand', external: false },
-                { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/om/privatlivspolitik', external: false },
-                { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/om/returpolitik', external: false },
+                { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/brand', external: false },
+                { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/privatlivspolitik', external: false },
+                { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/returpolitik', external: false },
               ] as {label:string; href:string; external:boolean}[]).map((item) => (
                 <li>
                   <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>

@@ -18,7 +18,13 @@ const featured = (products ?? []).filter((p: any) => p.featured);
 const all = products ?? [];
 ---
 
-<Base locale="en" title={(pageData?.seo?.title ?? 'Shop') + ' | AB 1889'}>
+<Base
+  locale="en"
+  title={pageData?.seo?.title ?? 'AB Shop | Official Akademisk Boldklub Merchandise'}
+  description="Shop official AB 1889 kits, training wear and fan gear — the new season collection is here."
+  ogTitle="Shop Official AB Merch"
+  ogDescription="Get your hands on the latest AB kit, training wear and fan merchandise."
+>
   <div class="bg-white">
     <div class="border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-5 md:px-12 pt-16 pb-10">

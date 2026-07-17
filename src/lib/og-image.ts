@@ -6,7 +6,17 @@
  * font-family="Arial, sans-serif" silently renders missing-glyph boxes for
  * every character. Embedding the brand font directly via @font-face removes
  * that host dependency entirely.
+ *
+ * The font (and other brand assets used by these endpoints) must be bundled
+ * at build time via Vite's `?inline` import rather than fetched from `/fonts/…`
+ * at request time: these endpoints previously self-fetched such assets over
+ * HTTP from their own origin, which silently returns Vercel's deployment
+ * protection (SSO) interstitial instead of the real file whenever protection
+ * is enabled — the corrupted bytes then fail to parse as a font/image with
+ * no error (fetch follows the redirect to a 200 OK HTML page), producing
+ * tofu text and missing logos instead of a fetch failure.
  */
+import abcCameraHeavyWoff2 from '../../public/fonts/ABCCameraPlain-Heavy.woff2?inline';
 
 export async function fetchBytes(url: string): Promise<Uint8Array> {
   const res = await fetch(url);
@@ -50,16 +60,13 @@ export const OG_COLORS = {
 } as const;
 
 /** Inline <style>@font-face{...}</style> embedding the brand's heavy weight. */
-export async function ogFontFaceStyle(origin: string): Promise<string> {
-  const bytes = await fetchBytes(`${origin}/fonts/ABCCameraPlain-Heavy.woff2`);
-  return `
+export const OG_FONT_FACE_STYLE = `
       <style>
         @font-face {
           font-family: 'ABC Camera Plain';
-          src: url(data:font/woff2;base64,${toBase64(bytes)}) format('woff2');
+          src: url(${abcCameraHeavyWoff2}) format('woff2');
           font-weight: 900;
           font-style: normal;
         }
       </style>
   `;
-}

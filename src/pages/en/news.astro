@@ -1,10 +1,15 @@
 ---
 import Base from '@/layouts/Base.astro';
-import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
+import Pager from '@/components/Pager.astro';
+import { fetchCollectionTypeWithMeta, strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate, decodeHtml } from '@/lib/utils';
 export const prerender = false;
 
 const locale = 'en';
+// Page 1 carries the hero (1 item) + a full 12-item grid = 13 fetched.
+// Every later page is a plain 12-item grid — no hero to make room for.
+const FIRST_PAGE_SIZE = 13;
+const GRID_PAGE_SIZE = 12;
 
 function formatDate(str: string) {
   try {
@@ -14,17 +19,33 @@ function formatDate(str: string) {
   }
 }
 
-const allArticles = await fetchCollectionType<any[]>('articles', {
-  locale,
-  sort: ['publishedAt:desc'],
-  populate: ['image'],
-  pagination: { pageSize: 13 },
-}).catch(() => [] as any[]);
+const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
+const start = page === 1 ? 0 : FIRST_PAGE_SIZE + (page - 2) * GRID_PAGE_SIZE;
+const limit = page === 1 ? FIRST_PAGE_SIZE : GRID_PAGE_SIZE;
 
-const [featured, ...rest] = allArticles;
+const { data: pageArticles, pagination } = await fetchCollectionTypeWithMeta<any[]>('articles', {
+  locale,
+  sort: ['originalPublishedAt:desc'],
+  populate: ['image'],
+  pagination: { start, limit },
+}).catch(() => ({ data: [] as any[], pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } }));
+
+const totalPages =
+  pagination.total <= FIRST_PAGE_SIZE
+    ? 1
+    : 1 + Math.ceil((pagination.total - FIRST_PAGE_SIZE) / GRID_PAGE_SIZE);
+
+// The hero treatment is reserved for the single most recent article — only on page 1.
+const [featured, ...rest] = page === 1 ? pageArticles : [null, ...pageArticles];
 ---
 
-<Base locale="en" title="News | Akademisk Boldklub">
+<Base
+  locale="en"
+  title="Latest News | Akademisk Boldklub (AB 1889)"
+  description="Match reports, transfer news and club updates from Akademisk Boldklub — your source for everything AB."
+  ogTitle="AB News – Latest Updates"
+  ogDescription="Stay up to date with match reports, signings and club news from Akademisk Boldklub."
+>
   {featured ? (
     <section class="relative w-full overflow-hidden" style="height:clamp(400px,52vw,660px)">
       {featured.image?.url ? (
@@ -41,7 +62,7 @@ const [featured, ...rest] = allArticles;
       <div class="relative h-full max-w-7xl mx-auto px-5 md:px-12 flex items-end pb-14 md:pb-20">
         <div style="max-width:560px">
           <time class="block text-xs font-bold uppercase mb-3 text-ab-neon tracking-[0.2em]">
-            {formatDate(featured.publishedAt)}
+            {formatDate(featured.originalPublishedAt ?? featured.publishedAt)}
           </time>
           <h1 class="font-black text-white mb-4 leading-none tracking-[-0.03em]" style="font-size:clamp(1.9rem,4.5vw,3.4rem)">
             {decodeHtml(featured.title)}
@@ -78,7 +99,7 @@ const [featured, ...rest] = allArticles;
                 )}
               </div>
               <time class="block text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.16em]">
-                {formatDate(article.publishedAt)}
+                {formatDate(article.originalPublishedAt ?? article.publishedAt)}
               </time>
               <h2 class="font-bold text-base leading-snug text-[#111] tracking-[-0.01em]">
                 {decodeHtml(article.title)}
@@ -91,6 +112,15 @@ const [featured, ...rest] = allArticles;
           {featured ? 'No further articles.' : 'No news yet.'}
         </p>
       )}
+      <Pager
+        currentPage={page}
+        totalPages={totalPages}
+        basePath="/en/news"
+        prevLabel="← Previous"
+        nextLabel="Next →"
+        pageLabel="Page"
+        ofLabel="of"
+      />
     </div>
   </section>
 </Base>

@@ -16,6 +16,18 @@ const results = await fetchCollectionType<any[]>('pages', {
 
 const page = results[0];
 
+// Legacy WordPress posts used flat permalinks (/en/{slug}/); the new site
+// nests them under /en/news/{slug}. Checked here (not a static redirect-plan
+// entry) because this route already owns the bare /en/:slug pattern.
+if (!page) {
+  const [article] = await fetchCollectionType<any[]>('articles', {
+    locale,
+    filters: { slug: { $eq: slug } },
+    fields: ['slug'],
+  }).catch(() => [] as any[]);
+  if (article) return Astro.redirect(`/en/news/${slug}`, 301);
+}
+
 if (!page) {
   Astro.response.status = 404;
 }

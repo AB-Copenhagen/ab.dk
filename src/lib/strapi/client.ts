@@ -48,6 +48,38 @@ export async function fetchCollectionType<T = unknown[]>(
   return result ?? ([] as unknown as T);
 }
 
+export interface StrapiPagination {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
+}
+
+/** Like fetchCollectionType, but also returns Strapi's pagination meta (needed to render a pager). */
+export async function fetchCollectionTypeWithMeta<T = unknown[]>(
+  collectionName: string,
+  options?: QueryParams,
+): Promise<{ data: T; pagination: StrapiPagination }> {
+  const key = (await cacheKey(collectionName, options)) + '-meta';
+  const emptyPagination: StrapiPagination = {
+    page: options?.pagination?.page ?? 1,
+    pageSize: options?.pagination?.pageSize ?? 0,
+    pageCount: 0,
+    total: 0,
+  };
+  const result = await cache.getWithFallback(
+    key,
+    async () => {
+      const res = await createClient()
+        .collection(collectionName)
+        .find({ ...options, status: 'published' } as never);
+      return { data: res.data as T, pagination: (res.meta as { pagination: StrapiPagination })?.pagination };
+    },
+    { tags: [collectionName] },
+  );
+  return result ?? { data: [] as unknown as T, pagination: emptyPagination };
+}
+
 export async function fetchSingleType<T = unknown>(
   singleTypeName: string,
   options?: QueryParams,

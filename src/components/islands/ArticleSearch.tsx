@@ -7,6 +7,7 @@ interface Article {
   slug: string;
   title: string;
   description?: string;
+  originalPublishedAt?: string;
   publishedAt: string;
   categories?: { name: string }[];
 }
@@ -135,7 +136,7 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
                       fontVariantNumeric: 'tabular-nums',
                     }}
                   >
-                    {formatDate(article.publishedAt)}
+                    {formatDate(article.originalPublishedAt ?? article.publishedAt)}
                   </span>
                   {article.categories?.map((cat, idx) => (
                     <span

@@ -285,6 +285,9 @@ async function importLocale(locale, categoryMap) {
           content: htmlToBlocks(post.content?.rendered ?? ''),
           locale,
           publishedAt: post.date,
+          // Strapi silently overrides `publishedAt` with record-creation time on
+          // create — this is the field that actually preserves the true WP date.
+          originalPublishedAt: post.date,
           ...(categoryConnects.length > 0 ? { categories: { connect: categoryConnects } } : {}),
           ...(imageId ? { image: imageId } : {}),
         },

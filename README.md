@@ -2,7 +2,7 @@
 
 Website for [Akademisk Boldklub](https://ab.dk) — Denmark's oldest football club, founded 1889.
 
-Built with Astro 7 + Strapi, deployed as a Docker container on datum-cloud/compute.
+Built with Astro 7 + Strapi. The frontend deploys to Vercel and the CMS to Strapi Cloud, both automatically on push to `main`.
 
 ---
 
@@ -11,7 +11,7 @@ Built with Astro 7 + Strapi, deployed as a Docker container on datum-cloud/compu
 | Concern     | Choice                                                                   |
 | ----------- | ------------------------------------------------------------------------ |
 | Framework   | Astro 7, TypeScript, `output: 'server'` (hybrid)                         |
-| Adapter     | `@astrojs/node` standalone — runs in the Docker container                |
+| Adapter     | `@astrojs/vercel` — SSR functions on Vercel                              |
 | Styling     | Tailwind v4 (`@tailwindcss/vite`) + CSS tokens (`src/styles/tokens.css`) |
 | CMS         | Strapi v5 (`strapi/`) — articles, pages, products, global config         |
 | Auth        | Descope — web component login flow, session cookie `DS`                  |
@@ -48,8 +48,8 @@ Built with Astro 7 + Strapi, deployed as a Docker container on datum-cloud/compu
 │       └── global.css        # Tailwind v4 entry (@import, @theme, @plugin)
 ├── public/
 │   └── fonts/               # ABC Camera Plain web files (licensed — not committed)
-├── strapi/                  # Strapi CMS (separate Node process)
-├── Dockerfile               # Two-stage Node 22 alpine build for datum-cloud
+├── strapi/                  # Strapi CMS (separate Node process, deploys to Strapi Cloud)
+├── Dockerfile               # Legacy — not used by the current Vercel deploy path
 ├── .env.example             # All required environment variables documented
 ├── astro.config.mjs
 └── tsconfig.json
@@ -59,13 +59,14 @@ Built with Astro 7 + Strapi, deployed as a Docker container on datum-cloud/compu
 
 ## Local development
 
-**Prerequisites:** Node 22, npm, PostgreSQL (for Strapi)
+**Prerequisites:** Node 22, npm
 
 ### 1. Environment
 
 ```bash
 cp .env.example .env.local
-# Fill in STRAPI_URL, STRAPI_API_TOKEN at minimum for local content
+# Point STRAPI_URL at the shared Strapi Cloud instance and fill in STRAPI_API_TOKEN
+# (ask a team member for the URL/token — don't spin up a local Strapi instance, see below)
 ```
 
 ### 2. Astro frontend
@@ -73,14 +74,14 @@ cp .env.example .env.local
 ```bash
 npm install
 npm run dev
-# → http://localhost:4321
+# → http://localhost:1889
 ```
 
-Pages load without Strapi (content falls back to empty state). For live CMS content, start Strapi first.
+That's it for day-to-day work — content comes from the shared Strapi Cloud instance, so there's nothing else to run.
 
-### 3. Strapi CMS
+### Running Strapi locally (rare — advanced/schema work only)
 
-Requires PostgreSQL. Start it, then:
+Nobody on the team runs Strapi locally day-to-day; everyone points `STRAPI_URL` at the shared Strapi Cloud instance. Only spin up a local instance if you're specifically testing a content-type/schema change in isolation before it goes out. Requires PostgreSQL.
 
 ```bash
 cd strapi
@@ -127,7 +128,7 @@ Protection is applied in three layers:
 
 ### Before production launch
 
-1. Set `ALLOW_SEARCH_INDEXING=true` in the **production** environment (Vercel / datum-cloud)
+1. Set `ALLOW_SEARCH_INDEXING=true` in the **production** environment on Vercel
 2. Redeploy and verify:
    - `GET /robots.txt` returns `Allow: /`
    - HTML pages no longer include `noindex` meta tags
@@ -138,21 +139,17 @@ Do **not** set `ALLOW_SEARCH_INDEXING=true` on preview or staging URLs.
 
 ---
 
-## Deploy
+## Branch workflow & deploys
 
-The app runs as a Docker container on datum-cloud/compute.
-
-```bash
-# Build
-docker build -t ab-1889 .
-
-# Run locally
-docker run -p 4321:4321 --env-file .env.local ab-1889
-```
+1. Feature work happens on a short-lived branch, PR'd into the shared staging/preview branch (check `git branch -a` for its current name — it gets renamed periodically during the pre-launch migration, so don't hardcode it in scripts or docs).
+2. The staging branch is periodically merged into `main`.
+3. A push to `main` triggers automatic deploys — no manual step, no CLI login required for routine changes:
+   - **Frontend → Vercel.** Builds via the `@astrojs/vercel` adapter and deploys on push.
+   - **CMS → Strapi Cloud.** The `strapi/` directory (config, content-type schemas, scripts) is watched and redeployed by Strapi Cloud on push to `main`. A schema change (e.g. adding a field to a content type) typically goes live within a couple of minutes.
 
 Health check endpoint: `GET /api/health` → `{"ok":true}`
 
-The container entrypoint is `node ./dist/server/entry.mjs` (Astro Node standalone output).
+The `Dockerfile` at the repo root is legacy from an earlier deploy target and is not part of the current pipeline.
 
 ---
 

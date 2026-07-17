@@ -1,6 +1,7 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { fetchBytes, toBase64, ogFontFaceStyle, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
+import { fetchBytes, toBase64, OG_FONT_FACE_STYLE, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
+import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
 
 export const prerender = false;
 
@@ -34,11 +35,7 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [abCrestBytes, partnerLogoBytes, fontFaceStyle] = await Promise.all([
-      fetchBytes(`${url.origin}/images/ab-crest.svg`),
-      fetchBytes(`${url.origin}${logoPath}`),
-      ogFontFaceStyle(url.origin),
-    ]);
+    const partnerLogoBytes = await fetchBytes(`${url.origin}${logoPath}`);
 
     const cardSize = 360;
     const cardPadding = 48;
@@ -63,16 +60,15 @@ export async function GET({ url }: APIContext) {
     const partnerX = rightCardX + (cardSize - partnerFit.width) / 2;
     const partnerY = cardY + (cardSize - partnerFit.height) / 2;
 
-    const abDataUri = `data:image/svg+xml;base64,${toBase64(abCrestBytes)}`;
     const partnerDataUri = `data:${mimeFor(logoPath)};base64,${toBase64(partnerLogoBytes)}`;
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
-        ${fontFaceStyle}
+        ${OG_FONT_FACE_STYLE}
         <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="${BG_COLOR}"/>
         <rect x="${leftCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>
         <rect x="${rightCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>
-        <image href="${abDataUri}" x="${abX}" y="${abY}" width="${abFit.width}" height="${abFit.height}"/>
+        <image href="${abCrestDataUri}" x="${abX}" y="${abY}" width="${abFit.width}" height="${abFit.height}"/>
         <image href="${partnerDataUri}" x="${partnerX}" y="${partnerY}" width="${partnerFit.width}" height="${partnerFit.height}"/>
         <text x="600" y="${CANVAS_H / 2 + 24}" font-family="${OG_FONT_FAMILY}" font-size="56" font-weight="900" fill="#111111" text-anchor="middle">&#215;</text>
       </svg>

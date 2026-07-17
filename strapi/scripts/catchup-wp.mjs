@@ -261,12 +261,10 @@ async function main() {
   const existingSlugs = await strapiFindExistingSlugs(wpPosts.map(p => p.slug), LOCALE);
   // Strapi stamps `publishedAt` with real creation time no matter what's sent
   // (confirmed: a direct PUT with a custom publishedAt is silently ignored on
-  // this instance) — so within THIS batch, whichever post we create last ends
-  // up looking "most recent". Sort oldest-first so newer WP posts are created
-  // last and correctly rank as more recent relative to each other. This does
-  // NOT fix absolute dates against the pre-existing 650+ articles from the
-  // original bulk migration (those all share their own June 2026 import-time
-  // stamp) — that's a separate, larger cleanup.
+  // this instance) — `originalPublishedAt` (set below) is the field that
+  // actually preserves the true WP date and is what the frontend sorts/
+  // displays by. Order of creation here no longer matters for display, but
+  // oldest-first still reads better in the progress log.
   const missing = wpPosts
     .filter(p => !existingSlugs.has(p.slug) && !EXCLUDE_SLUGS.has(p.slug))
     .sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -332,6 +330,7 @@ async function main() {
           content: htmlToBlocks(post.content?.rendered ?? ''),
           locale: LOCALE,
           publishedAt: post.date,
+          originalPublishedAt: post.date,
           ...(categoryConnects.length > 0 ? { categories: { connect: categoryConnects } } : {}),
           ...(imageId ? { image: imageId } : {}),
         },
