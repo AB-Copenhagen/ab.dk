@@ -12,6 +12,9 @@ import { CONSENT_COOKIE_NAME, parseConsent, hasConsent } from '@/lib/consent';
 interface Props {
   title?: string;
   description?: string;
+  /** Falls back to `title` — set only when the social card should read differently from the <title>/SEO meta description. */
+  ogTitle?: string;
+  ogDescription?: string;
   locale?: Locale;
   ogImage?: string;
   ogType?: 'website' | 'article' | 'profile';
@@ -21,6 +24,8 @@ interface Props {
 const {
   title = 'Akademisk Boldklub — AB 1889',
   description = 'Akademisk Boldklub (AB 1889) er en dansk fodboldklub fra Gladsaxe, grundlagt i 1889. Følg holdet, kampe og nyheder.',
+  ogTitle = title,
+  ogDescription = description,
   locale = 'da',
   ogImage,
   ogType = 'website',
@@ -115,11 +120,11 @@ const statisticsConsented = Astro.isPrerendered
     <meta property="og:locale" content={ogLocale} />
     <meta property="og:locale:alternate" content={ogLocaleAlternate} />
     <meta property="og:image" content={resolvedOgImage} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={resolvedOgImage} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" hreflang="da" href={hreflangDaUrl} />

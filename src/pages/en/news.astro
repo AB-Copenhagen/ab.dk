@@ -39,7 +39,13 @@ const totalPages =
 const [featured, ...rest] = page === 1 ? pageArticles : [null, ...pageArticles];
 ---
 
-<Base locale="en" title="News | Akademisk Boldklub">
+<Base
+  locale="en"
+  title="Latest News | Akademisk Boldklub (AB 1889)"
+  description="Match reports, transfer news and club updates from Akademisk Boldklub — your source for everything AB."
+  ogTitle="AB News – Latest Updates"
+  ogDescription="Stay up to date with match reports, signings and club news from Akademisk Boldklub."
+>
   {featured ? (
     <section class="relative w-full overflow-hidden" style="height:clamp(400px,52vw,660px)">
       {featured.image?.url ? (
