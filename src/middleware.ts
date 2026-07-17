@@ -20,7 +20,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // the two.
     const redirectToLogin = () => {
       context.cookies.delete('DS', { path: '/' });
-      return context.redirect(`${loginUrl}?redirect=${encodeURIComponent(context.url.pathname)}`);
+      return context.redirect(
+        `${loginUrl}?redirect=${encodeURIComponent(context.url.pathname)}`
+      );
     };
 
     const sessionToken =
@@ -38,7 +40,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
         userId: String(claims.sub ?? ''),
         name: typeof claims.name === 'string' ? claims.name : undefined,
         email: typeof claims.email === 'string' ? claims.email : undefined,
-        picture: typeof claims.picture === 'string' ? claims.picture : undefined,
+        picture:
+          typeof claims.picture === 'string' ? claims.picture : undefined,
       };
     } catch {
       // Invalid or expired session — force re-authentication.

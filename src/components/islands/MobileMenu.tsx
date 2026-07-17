@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import type { NavConfig } from '@/lib/nav-config';
-import { isNavLeafActive, isNavItemActive } from '@/lib/nav-config';
+import { isNavItemActive, isNavLeafActive } from '@/lib/nav-config';
 
 interface Props {
   nav: NavConfig;
@@ -118,7 +118,9 @@ export default function MobileMenu({
                       <>
                         <button
                           onClick={() =>
-                            setExpanded(expanded === item.href ? null : item.href)
+                            setExpanded(
+                              expanded === item.href ? null : item.href
+                            )
                           }
                           className={`w-full flex items-center justify-between py-3 text-sm font-bold uppercase tracking-[0.06em] ${isActive ? 'text-ab-beige' : 'text-white'}`}
                         >
@@ -139,7 +141,11 @@ export default function MobileMenu({
                         {expanded === item.href && (
                           <div className="pl-4 mb-2 flex flex-col gap-0.5">
                             {item.children.map((child) => {
-                              const isChildActive = isNavLeafActive(currentPath, child.href, enPrefix);
+                              const isChildActive = isNavLeafActive(
+                                currentPath,
+                                child.href,
+                                enPrefix
+                              );
                               return (
                                 <a
                                   key={child.href}

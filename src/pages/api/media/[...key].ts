@@ -38,9 +38,11 @@ export const GET: APIRoute = async ({ params, request }) => {
     const acceptsWebp = request.headers.get('Accept')?.includes('image/webp');
 
     if (isPng && acceptsWebp && res.Body) {
-      const bytes = await (res.Body as { transformToByteArray(): Promise<Uint8Array> }).transformToByteArray();
+      const bytes = await (
+        res.Body as { transformToByteArray(): Promise<Uint8Array> }
+      ).transformToByteArray();
       const webpBuffer = await sharp(bytes).webp({ quality: 85 }).toBuffer();
-      return new Response(webpBuffer, {
+      return new Response(new Uint8Array(webpBuffer), {
         status: 200,
         headers: {
           'Content-Type': 'image/webp',

@@ -11,14 +11,21 @@ function tokenize(s: string): string[] {
     .toLowerCase()
     .replace(/[^a-z0-9æøå]/g, ' ')
     .split(' ')
-    .filter(w => w.length >= 3);
+    .filter((w) => w.length >= 3);
 }
 
 function opponentsMatch(billetKey: string, siName: string): boolean {
   const bt = tokenize(billetKey);
   const st = tokenize(siName);
   if (bt.length === 0 || st.length === 0) return false;
-  return bt.some(b => st.some(s => b === s || (b.length >= 4 && s.includes(b)) || (s.length >= 4 && b.includes(s))));
+  return bt.some((b) =>
+    st.some(
+      (s) =>
+        b === s ||
+        (b.length >= 4 && s.includes(b)) ||
+        (s.length >= 4 && b.includes(s))
+    )
+  );
 }
 
 export async function fetchBilletTicketMap(): Promise<Map<string, string>> {
@@ -43,7 +50,10 @@ export async function fetchBilletTicketMap(): Promise<Map<string, string>> {
   return map;
 }
 
-export function findTicketUrl(billetMap: Map<string, string>, opponentName: string): string | null {
+export function findTicketUrl(
+  billetMap: Map<string, string>,
+  opponentName: string
+): string | null {
   for (const [key, url] of billetMap) {
     if (opponentsMatch(key, opponentName)) return url;
   }

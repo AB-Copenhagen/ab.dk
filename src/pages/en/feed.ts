@@ -1,7 +1,8 @@
 import type { APIContext } from 'astro';
-import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
+
 import { blocksToHtml } from '@/lib/blocks-to-html';
 import { buildWpRssFeed } from '@/lib/rss-wp';
+import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 import { decodeHtml } from '@/lib/utils';
 
 export const prerender = false;
@@ -19,7 +20,10 @@ interface StrapiArticle {
 }
 
 export async function GET(context: APIContext) {
-  const site = (context.site?.toString() ?? context.url.origin).replace(/\/$/, '');
+  const site = (context.site?.toString() ?? context.url.origin).replace(
+    /\/$/,
+    ''
+  );
 
   const articles = await fetchCollectionType<StrapiArticle[]>('articles', {
     locale: 'en',
@@ -36,8 +40,12 @@ export async function GET(context: APIContext) {
     feedUrl: `${site}/en/feed`,
     language: 'en-US',
     items: articles.map((article) => {
-      const mediaUrl = article.image?.url ? strapiMediaUrl(article.image.url) : '';
-      const absoluteMediaUrl = mediaUrl.startsWith('http') ? mediaUrl : `${site}${mediaUrl}`;
+      const mediaUrl = article.image?.url
+        ? strapiMediaUrl(article.image.url)
+        : '';
+      const absoluteMediaUrl = mediaUrl.startsWith('http')
+        ? mediaUrl
+        : `${site}${mediaUrl}`;
       const imgTag = mediaUrl
         ? `<p><img src="${absoluteMediaUrl}" alt="${decodeHtml(article.title)}" /></p>`
         : '';
@@ -46,7 +54,11 @@ export async function GET(context: APIContext) {
         title: decodeHtml(article.title),
         link: `${site}/en/news/${article.slug}`,
         creator: 'Akademisk Boldklub',
-        pubDate: new Date(article.originalPublishedAt ?? article.publishedAt ?? article.createdAt),
+        pubDate: new Date(
+          article.originalPublishedAt ??
+            article.publishedAt ??
+            article.createdAt
+        ),
         categories: categories.length ? categories : ['News'],
         excerpt: decodeHtml(article.description ?? ''),
         contentHtml: imgTag + blocksToHtml(article.content),

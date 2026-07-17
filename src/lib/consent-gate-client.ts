@@ -1,4 +1,4 @@
-import { CONSENT_COOKIE_NAME, parseConsent, hasConsent } from '@/lib/consent';
+import { CONSENT_COOKIE_NAME, hasConsent, parseConsent } from '@/lib/consent';
 import type { ConsentCategory, ConsentState } from '@/lib/consent';
 
 function readCookie(name: string): string | undefined {
@@ -27,7 +27,9 @@ export function onConsentChange(
     onDenied();
   }
 
-  window.addEventListener('ab:consent-updated', ((e: CustomEvent<ConsentState>) => {
+  window.addEventListener('ab:consent-updated', ((
+    e: CustomEvent<ConsentState>
+  ) => {
     if (hasConsent(e.detail, category)) {
       onGranted();
     } else if (onDenied) {

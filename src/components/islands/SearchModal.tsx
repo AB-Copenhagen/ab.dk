@@ -194,7 +194,10 @@ export default function SearchModal({ locale }: Props) {
                     <div className="w-[52px] h-[40px] bg-[#F3F4F6] rounded-[4px] shrink-0 flex items-center justify-center">
                       <span
                         className="text-[1.1rem] font-black"
-                        style={{ color: 'color-mix(in srgb, var(--ab-green) 20%, transparent)' }}
+                        style={{
+                          color:
+                            'color-mix(in srgb, var(--ab-green) 20%, transparent)',
+                        }}
                       >
                         AB
                       </span>

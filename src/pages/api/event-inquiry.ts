@@ -47,7 +47,9 @@ export const POST: APIRoute = async ({ request }) => {
     phone?.trim() ? `Telefon: ${phone.trim()}` : null,
     eventType?.trim() ? `Type af arrangement: ${eventType.trim()}` : null,
     eventDate?.trim() ? `Ønsket dato: ${eventDate.trim()}` : null,
-    guestCount?.toString().trim() ? `Antal gæster: ${guestCount.toString().trim()}` : null,
+    guestCount?.toString().trim()
+      ? `Antal gæster: ${guestCount.toString().trim()}`
+      : null,
   ].filter(Boolean);
 
   try {
@@ -64,12 +66,9 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ success: false, error: errMessage }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ success: false, error: errMessage }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 };

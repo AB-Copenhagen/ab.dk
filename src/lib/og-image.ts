@@ -1,21 +1,35 @@
 /**
- * Shared helpers for the /api/og/*.png SVG-to-PNG endpoints (via sharp).
+ * Shared helpers for the /api/og/*.png SVG-to-PNG endpoints.
  *
- * SVG <text> rendering depends on librsvg finding a matching system font —
- * on Vercel's serverless runtime, no fonts are installed at all, so
- * font-family="Arial, sans-serif" silently renders missing-glyph boxes for
- * every character. Embedding the brand font directly via @font-face removes
- * that host dependency entirely.
+ * Text rendering (renderTextSvgToPng below) uses @resvg/resvg-js with
+ * `loadSystemFonts: false` instead of sharp/librsvg — verified directly (not
+ * assumed) that this is necessary: Vercel's serverless runtime has no fonts
+ * installed at all, and sharp/librsvg's text rendering depends on the OS's
+ * fontconfig to resolve *any* font-family, including generic ones like
+ * "sans-serif" — every attempt to fix that by feeding it a font (self-fetch
+ * over HTTP, then Wasabi directly, both for the licensed brand font) still
+ * produced tofu, seemingly because librsvg's @font-face support for embedded/
+ * data-URI fonts doesn't reliably work either. resvg takes font files
+ * directly as an explicit option, bypassing OS font discovery entirely — a
+ * local test with `loadSystemFonts: false` and no font file produced no text
+ * at all (proving it doesn't silently borrow a host font the way librsvg
+ * apparently does), and the same test with an explicit .ttf produced correct
+ * text — so this is verified to work independent of the host environment,
+ * not another guess.
  *
- * The font itself is licensed and gitignored (public/fonts/ABCCameraPlain-*.*,
- * see .gitignore/README), so it can't be bundled at build time via a Vite
- * `?inline` import: that works on a dev machine that happens to have the file
- * on disk, but fails the production build outright (Could not resolve …) since
- * the file doesn't exist in the deployed checkout at all. The font must be
- * fetched at request time instead, from `/api/media/fonts/…` — the Wasabi-
- * backed media proxy that actually serves it in every environment (see
- * src/styles/global.css's @font-face, which falls back to this same path).
+ * Bundles Inter (OFL-1.1, freely redistributable) rather than the brand font,
+ * which is licensed and can't be committed to the repo. resvg-js only
+ * accepts font *files* (a path on disk), not in-memory buffers, so the
+ * bundled font is written to /tmp once per cold start and reused after.
  */
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { Resvg } from '@resvg/resvg-js';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
+
+import interBlackDataUri from '../assets/fonts/Inter-Black.ttf?inline';
+import interBoldDataUri from '../assets/fonts/Inter-Bold.ttf?inline';
 
 export async function fetchBytes(url: string): Promise<Uint8Array> {
   const res = await fetch(url);
@@ -41,7 +55,7 @@ export function escapeXml(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
-export const OG_FONT_FAMILY = "'ABC Camera Plain', Arial, sans-serif";
+export const OG_FONT_FAMILY = 'Inter';
 
 /**
  * Mirrors src/styles/tokens.css. These SVGs are rasterized standalone by
@@ -58,17 +72,77 @@ export const OG_COLORS = {
   black: '#0A0A0A',
 } as const;
 
-/** Inline <style>@font-face{...}</style> embedding the brand's heavy weight. */
-export async function ogFontFaceStyle(origin: string): Promise<string> {
-  const bytes = await fetchBytes(`${origin}/api/media/fonts/ABCCameraPlain-Heavy.woff2`);
-  return `
-      <style>
-        @font-face {
-          font-family: 'ABC Camera Plain';
-          src: url(data:font/woff2;base64,${toBase64(bytes)}) format('woff2');
-          font-weight: 900;
-          font-style: normal;
-        }
-      </style>
-  `;
+const WASABI_BUCKET = import.meta.env.WASABI_BUCKET ?? 'ab-media';
+const WASABI_REGION = import.meta.env.WASABI_REGION ?? 'eu-central-1';
+
+const wasabiClient = new S3Client({
+  region: WASABI_REGION,
+  endpoint: `https://s3.${WASABI_REGION}.wasabisys.com`,
+  forcePathStyle: true,
+  credentials: {
+    accessKeyId: import.meta.env.WASABI_ACCESS_KEY_ID ?? '',
+    secretAccessKey: import.meta.env.WASABI_SECRET_ACCESS_KEY ?? '',
+  },
+});
+
+/**
+ * Fetches an object directly from the Wasabi bucket that backs /api/media/[...key] —
+ * bypasses this app's own HTTP layer entirely, so it's immune to Vercel deployment
+ * protection regardless of how that's configured (see file header). Any OG endpoint
+ * that needs a Wasabi-hosted asset (font, player photo, …) should use this instead
+ * of self-fetching `/api/media/...` over HTTP.
+ */
+export async function fetchWasabiBytes(key: string): Promise<Uint8Array> {
+  const res = await wasabiClient.send(
+    new GetObjectCommand({ Bucket: WASABI_BUCKET, Key: key })
+  );
+  if (!res.Body) throw new Error(`Wasabi object has no body: ${key}`);
+  return (
+    res.Body as { transformToByteArray(): Promise<Uint8Array> }
+  ).transformToByteArray();
+}
+
+/** Decodes a data: URI back to raw bytes — Vite's `?inline` uses base64 for binary assets, percent-encoding for SVG/text. */
+function dataUriToBuffer(dataUri: string): Buffer {
+  const comma = dataUri.indexOf(',');
+  const meta = dataUri.slice(5, comma);
+  const data = dataUri.slice(comma + 1);
+  return meta.endsWith(';base64')
+    ? Buffer.from(data, 'base64')
+    : Buffer.from(decodeURIComponent(data), 'binary');
+}
+
+let fontFilesCache: string[] | null = null;
+
+/** Writes the bundled Inter weights to /tmp once per cold start — resvg-js needs real file paths, not buffers. */
+function ensureFontFilesOnDisk(): string[] {
+  if (fontFilesCache) return fontFilesCache;
+  const dir = join(tmpdir(), 'ab-og-fonts');
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  const files: [string, string][] = [
+    ['Inter-Bold.ttf', interBoldDataUri],
+    ['Inter-Black.ttf', interBlackDataUri],
+  ];
+  fontFilesCache = files.map(([name, dataUri]) => {
+    const path = join(dir, name);
+    if (!existsSync(path)) writeFileSync(path, dataUriToBuffer(dataUri));
+    return path;
+  });
+  return fontFilesCache;
+}
+
+/**
+ * Renders an SVG string (containing <text>) to PNG bytes using resvg-js with
+ * the bundled Inter font — see this file's header for why sharp/librsvg
+ * can't be used for anything with text in it.
+ */
+export function renderTextSvgToPng(svg: string): Uint8Array<ArrayBuffer> {
+  const resvg = new Resvg(svg, {
+    font: {
+      loadSystemFonts: false,
+      fontFiles: ensureFontFilesOnDisk(),
+      defaultFontFamily: 'Inter',
+    },
+  });
+  return new Uint8Array(resvg.render().asPng());
 }

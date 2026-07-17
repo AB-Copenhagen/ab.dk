@@ -1,5 +1,6 @@
 const domain = import.meta.env.SHOPIFY_DOMAIN as string | undefined;
-const accessToken = import.meta.env.SHOPIFY_STOREFRONT_CLIENT_SECRET as string | undefined;
+const accessToken = import.meta.env.SHOPIFY_STOREFRONT_CLIENT_SECRET as
+  string | undefined;
 
 const API_VERSION = '2024-01';
 
@@ -19,8 +20,12 @@ interface GqlResponse<T> {
   errors?: { message: string }[];
 }
 
-async function storefront<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
-  if (!domain || !accessToken) throw new Error('Shopify env vars not configured');
+async function storefront<T>(
+  query: string,
+  variables?: Record<string, unknown>
+): Promise<T> {
+  if (!domain || !accessToken)
+    throw new Error('Shopify env vars not configured');
 
   const res = await fetch(`https://${domain}/api/${API_VERSION}/graphql.json`, {
     method: 'POST',
@@ -104,9 +109,15 @@ type CollectionData = {
           id: string;
           title: string;
           handle: string;
-          priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
-          compareAtPriceRange: { maxVariantPrice: { amount: string; currencyCode: string } };
-          images: { edges: { node: { url: string; altText: string | null } }[] };
+          priceRange: {
+            minVariantPrice: { amount: string; currencyCode: string };
+          };
+          compareAtPriceRange: {
+            maxVariantPrice: { amount: string; currencyCode: string };
+          };
+          images: {
+            edges: { node: { url: string; altText: string | null } }[];
+          };
         };
       }[];
     };
@@ -137,7 +148,9 @@ export async function fetchCollectionProducts(
       title: node.title,
       handle: node.handle,
       price: formatPrice(price.amount, price.currencyCode),
-      compareAtPrice: hasCompare ? formatPrice(compareAt.amount, compareAt.currencyCode) : null,
+      compareAtPrice: hasCompare
+        ? formatPrice(compareAt.amount, compareAt.currencyCode)
+        : null,
       imageUrl: img?.url ?? null,
       imageAlt: img?.altText ?? node.title,
       url: `https://${domain}/products/${node.handle}`,

@@ -397,14 +397,14 @@ html::-webkit-scrollbar {
 }
 
 /* ── External-link indicator ─────────────────────────────────────────── */
-a[target="_blank"]:not([aria-label])::after {
+a[target='_blank']:not([aria-label])::after {
   content: '\00a0↗';
   font-size: 0.68em;
   vertical-align: super;
   line-height: 1;
   opacity: 0.5;
 }
-.nav-utility a[target="_blank"]::after,
-.nav-main a[target="_blank"]::after {
+.nav-utility a[target='_blank']::after,
+.nav-main a[target='_blank']::after {
   content: none;
 }

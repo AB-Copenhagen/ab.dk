@@ -1,23 +1,22 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { OG_COLORS } from '@/lib/og-image';
-import monogramDataUri from '../../../../public/images/logo-behind-player.svg?inline';
+
 import crestDataUri from '../../../../public/images/ab-crest-white.svg?inline';
+import monogramDataUri from '../../../../public/images/logo-behind-player.svg?inline';
+import { OG_COLORS, fetchWasabiBytes } from '@/lib/og-image';
 
 export const prerender = false;
 
 const CANVAS_W = 1200;
 const CANVAS_H = 630;
 
-// Only same-origin player photo paths are allowed — this endpoint fetches
-// `photo` server-side, so it must not become an open SSRF proxy.
-const SAFE_PHOTO_PATH = /^\/api\/media\/players\/[a-z0-9-]+\.(png|jpg|jpeg|webp)$/;
-
-async function fetchBytes(url: string): Promise<Uint8Array> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Fetch failed: ${url} (${res.status})`);
-  return new Uint8Array(await res.arrayBuffer());
-}
+// Only same-origin player photo paths are allowed — this endpoint takes
+// `photo` from the client, so it must not become an open SSRF proxy. Matched
+// against the /api/media/ proxy's URL shape even though the photo is fetched
+// directly from Wasabi below (not through that proxy) — keeps the accepted
+// shape identical regardless of which fetch strategy serves it.
+const SAFE_PHOTO_PATH =
+  /^\/api\/media\/players\/[a-z0-9-]+\.(png|jpg|jpeg|webp)$/;
 
 function toBase64(bytes: Uint8Array): string {
   let binary = '';
@@ -36,7 +35,10 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const photoBuffer = await fetchBytes(`${url.origin}${photoPath}`);
+    // photoPath is /api/media/{key} — strip the proxy prefix and fetch the
+    // same Wasabi object directly, rather than self-fetching over HTTP.
+    const wasabiKey = photoPath.replace(/^\/api\/media\//, '');
+    const photoBuffer = await fetchWasabiBytes(wasabiKey);
 
     const photoMeta = await sharp(photoBuffer).metadata();
     const photoAspect = (photoMeta.width ?? 1) / (photoMeta.height ?? 1);
@@ -73,7 +75,7 @@ export async function GET({ url }: APIContext) {
 
     const png = await sharp(new TextEncoder().encode(svg)).png().toBuffer();
 
-    return new Response(png, {
+    return new Response(new Uint8Array(png), {
       headers: {
         'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=3600, s-maxage=86400',

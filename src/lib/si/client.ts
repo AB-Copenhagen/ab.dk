@@ -39,7 +39,9 @@ export interface SIEvent {
 }
 
 /** Normalise the API's score field to a "H-A" string, or null if unavailable. */
-export function formatEventScore(score: SIScoreData | string | null | undefined): string | null {
+export function formatEventScore(
+  score: SIScoreData | string | null | undefined
+): string | null {
   if (!score) return null;
   if (typeof score === 'string') return score;
   const h = Number(score.home);
@@ -333,9 +335,7 @@ export async function fetchTeamForm(
 ): Promise<TeamFormResult[]> {
   const { limit = 5, locale = 'da' } = options;
 
-  const toDate =
-    options.beforeDate ??
-    new Date().toISOString().slice(0, 10);
+  const toDate = options.beforeDate ?? new Date().toISOString().slice(0, 10);
 
   const fromDate = new Date(
     new Date(toDate).getTime() - 365 * 24 * 60 * 60 * 1000
@@ -355,12 +355,12 @@ export async function fetchTeamForm(
   // API returns ASC; reverse to newest-first, take the most recent N, then
   // reverse again so the component receives oldest-first for left→right display.
   const recent = (data.events ?? [])
-    .filter(e => e.statusType === 'finished' && e.score)
+    .filter((e) => e.statusType === 'finished' && e.score)
     .reverse()
     .slice(0, limit)
     .reverse();
 
-  return recent.map(e => {
+  return recent.map((e) => {
     const isHome = e.homeId === teamId;
     const opponentName = isHome ? e.awayName : e.homeName;
     const opponentId = isHome ? e.awayId : e.homeId;
