@@ -20,14 +20,14 @@ const daToEn: Record<string, string> = {
   '/stab/': '/staff/',
   '/konto': '/account',
   '/konto/profil': '/account/profile',
-  '/om/brand': '/brand',
+  '/brand': '/brand',
   '/om/ledelse': '/about/leadership',
-  '/om/faellesskab': '/community',
+  '/faellesskab': '/community',
   '/medier': '/media',
-  '/om/kontakt': '/contact',
+  '/kontakt': '/contact',
   '/events': '/events',
-  '/om/privatlivspolitik': '/privacy-policy',
-  '/om/returpolitik': '/refund-and-returns-policy',
+  '/privatlivspolitik': '/privacy-policy',
+  '/returpolitik': '/refund-and-returns-policy',
 };
 
 const enToDa: Record<string, string> = Object.fromEntries(

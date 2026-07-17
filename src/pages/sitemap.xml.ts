@@ -32,9 +32,9 @@ const STATIC_ROUTES: [string, string][] = [
   ['/om/historik', '/en/about/history'],
   ['/om/stadion', '/en/about/stadium'],
   ['/om/ledelse', '/en/about/leadership'],
-  ['/om/faellesskab', '/en/community'],
-  ['/om/brand', '/en/brand'],
-  ['/om/kontakt', '/en/contact'],
+  ['/faellesskab', '/en/community'],
+  ['/brand', '/en/brand'],
+  ['/kontakt', '/en/contact'],
   ['/partnere', '/en/partners'],
   ['/hospitality', '/en/hospitality'],
   ['/medier', '/en/media'],
@@ -43,8 +43,8 @@ const STATIC_ROUTES: [string, string][] = [
   ['/kampdag', '/en/matchday'],
   ['/myab', '/en/myab'],
   ['/abtv', '/en/abtv'],
-  ['/om/privatlivspolitik', '/en/privacy-policy'],
-  ['/om/returpolitik', '/en/refund-and-returns-policy'],
+  ['/privatlivspolitik', '/en/privacy-policy'],
+  ['/returpolitik', '/en/refund-and-returns-policy'],
 ];
 
 // Strapi collections addressed by a plain `slug` field, fetched per-locale (locales are not

@@ -87,7 +87,7 @@ const da: NavConfig = {
         { label: 'Stadion', href: '/om/stadion' },
         { label: 'Ledelse', href: '/om/ledelse' },
         { label: 'Medier & Presse', href: '/medier' },
-        { label: 'Kontakt', href: '/om/kontakt' },
+        { label: 'Kontakt', href: '/kontakt' },
       ],
     },
     {
@@ -95,7 +95,7 @@ const da: NavConfig = {
       href: '/myab',
       children: [
         { label: 'Join MyAB', href: '/myab' },
-        { label: 'Fællesskab', href: '/om/faellesskab' },
+        { label: 'Fællesskab', href: '/faellesskab' },
         { label: 'Partnere', href: '/partnere' },
         { label: 'Arrangementer', href: '/events' },
         { label: 'Gæsteoplevelser', href: '/hospitality' },
