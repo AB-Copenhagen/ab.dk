@@ -7,16 +7,15 @@
  * every character. Embedding the brand font directly via @font-face removes
  * that host dependency entirely.
  *
- * The font (and other brand assets used by these endpoints) must be bundled
- * at build time via Vite's `?inline` import rather than fetched from `/fonts/…`
- * at request time: these endpoints previously self-fetched such assets over
- * HTTP from their own origin, which silently returns Vercel's deployment
- * protection (SSO) interstitial instead of the real file whenever protection
- * is enabled — the corrupted bytes then fail to parse as a font/image with
- * no error (fetch follows the redirect to a 200 OK HTML page), producing
- * tofu text and missing logos instead of a fetch failure.
+ * The font itself is licensed and gitignored (public/fonts/ABCCameraPlain-*.*,
+ * see .gitignore/README), so it can't be bundled at build time via a Vite
+ * `?inline` import: that works on a dev machine that happens to have the file
+ * on disk, but fails the production build outright (Could not resolve …) since
+ * the file doesn't exist in the deployed checkout at all. The font must be
+ * fetched at request time instead, from `/api/media/fonts/…` — the Wasabi-
+ * backed media proxy that actually serves it in every environment (see
+ * src/styles/global.css's @font-face, which falls back to this same path).
  */
-import abcCameraHeavyWoff2 from '../../public/fonts/ABCCameraPlain-Heavy.woff2?inline';
 
 export async function fetchBytes(url: string): Promise<Uint8Array> {
   const res = await fetch(url);
@@ -60,13 +59,16 @@ export const OG_COLORS = {
 } as const;
 
 /** Inline <style>@font-face{...}</style> embedding the brand's heavy weight. */
-export const OG_FONT_FACE_STYLE = `
+export async function ogFontFaceStyle(origin: string): Promise<string> {
+  const bytes = await fetchBytes(`${origin}/api/media/fonts/ABCCameraPlain-Heavy.woff2`);
+  return `
       <style>
         @font-face {
           font-family: 'ABC Camera Plain';
-          src: url(${abcCameraHeavyWoff2}) format('woff2');
+          src: url(data:font/woff2;base64,${toBase64(bytes)}) format('woff2');
           font-weight: 900;
           font-style: normal;
         }
       </style>
   `;
+}
