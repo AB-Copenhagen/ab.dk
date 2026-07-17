@@ -22,7 +22,7 @@ if (!article) return Astro.redirect('/nyheder');
 
 const allArticles = await fetchCollectionType<any[]>('articles', {
   locale,
-  sort: ['publishedAt:desc'],
+  sort: ['originalPublishedAt:desc'],
   populate: ['image', 'categories'],
   pagination: { pageSize: 50 },
 }).catch(() => [] as any[]);
@@ -58,7 +58,7 @@ const articleSchema = {
   headline: decodeHtml(article.title),
   description: articleDescription,
   image: absoluteImageUrl ? [absoluteImageUrl] : undefined,
-  datePublished: article.publishedAt,
+  datePublished: article.originalPublishedAt ?? article.publishedAt,
   dateModified: article.updatedAt ?? article.publishedAt,
   author: { '@type': 'Organization', name: 'Akademisk Boldklub' },
   publisher: {
@@ -110,7 +110,7 @@ const articleSchema = {
           </p>
         )}
         <time class="font-bold text-sm text-[#111]">
-          {formatDate(article.publishedAt)}
+          {formatDate(article.originalPublishedAt ?? article.publishedAt)}
         </time>
       </div>
     </div>

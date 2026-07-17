@@ -1,0 +1,68 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+  prevLabel: string;
+  nextLabel: string;
+  pageLabel: string;
+  ofLabel: string;
+}
+
+const { currentPage, totalPages, basePath, prevLabel, nextLabel, pageLabel, ofLabel } = Astro.props;
+
+function pageHref(page: number) {
+  return page <= 1 ? basePath : `${basePath}?page=${page}`;
+}
+---
+
+{
+  totalPages > 1 && (
+    <nav
+      class="flex flex-col items-center gap-4 mt-16 md:mt-20 pt-8 border-t border-gray-100"
+      aria-label="Pagination"
+    >
+      <div class="flex items-center gap-6">
+        {currentPage > 1 ? (
+          <a href={pageHref(currentPage - 1)} class="text-sm font-bold text-ab-green hover:underline">
+            {prevLabel}
+          </a>
+        ) : (
+          <span class="text-sm font-bold text-gray-300">{prevLabel}</span>
+        )}
+        <span class="text-sm text-gray-400">{pageLabel}</span>
+        <select
+          class="pager-select border border-gray-200 rounded-md px-2 py-1 text-sm font-bold text-ab-green tabular-nums"
+          data-base-path={basePath}
+          aria-label={pageLabel}
+        >
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <option value={p} selected={p === currentPage}>
+              {p}
+            </option>
+          ))}
+        </select>
+        <span class="text-sm text-gray-400">
+          {ofLabel} {totalPages}
+        </span>
+        {currentPage < totalPages ? (
+          <a href={pageHref(currentPage + 1)} class="text-sm font-bold text-ab-green hover:underline">
+            {nextLabel}
+          </a>
+        ) : (
+          <span class="text-sm font-bold text-gray-300">{nextLabel}</span>
+        )}
+      </div>
+    </nav>
+  )
+}
+
+<script>
+  document.querySelectorAll<HTMLSelectElement>('.pager-select').forEach((select) => {
+    select.addEventListener('change', () => {
+      const base = select.dataset.basePath ?? '';
+      const page = select.value;
+      window.location.href = page === '1' ? base : `${base}?page=${page}`;
+    });
+  });
+</script>

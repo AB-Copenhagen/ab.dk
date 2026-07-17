@@ -13,6 +13,7 @@ interface StrapiArticle {
   content?: unknown;
   categories?: { name: string }[];
   image?: { url: string };
+  originalPublishedAt?: string;
   publishedAt?: string;
   createdAt: string;
 }
@@ -22,7 +23,7 @@ export async function GET(context: APIContext) {
 
   const articles = await fetchCollectionType<StrapiArticle[]>('articles', {
     locale: 'en',
-    sort: ['publishedAt:desc'],
+    sort: ['originalPublishedAt:desc'],
     populate: ['image', 'categories'],
     pagination: { pageSize: 50 },
     status: 'published',
@@ -45,7 +46,7 @@ export async function GET(context: APIContext) {
         title: decodeHtml(article.title),
         link: `${site}/en/news/${article.slug}`,
         creator: 'Akademisk Boldklub',
-        pubDate: new Date(article.publishedAt ?? article.createdAt),
+        pubDate: new Date(article.originalPublishedAt ?? article.publishedAt ?? article.createdAt),
         categories: categories.length ? categories : ['News'],
         excerpt: decodeHtml(article.description ?? ''),
         contentHtml: imgTag + blocksToHtml(article.content),
