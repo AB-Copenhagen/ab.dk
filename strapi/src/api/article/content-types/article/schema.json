@@ -93,6 +93,14 @@
         "videos",
         "audios"
       ]
+    },
+    "originalPublishedAt": {
+      "type": "datetime",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   }
 }
