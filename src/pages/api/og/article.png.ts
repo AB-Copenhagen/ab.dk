@@ -67,13 +67,11 @@ export async function GET({ url }: APIContext) {
     `;
 
     const png = await sharp(coverImage)
-      .composite([
-        { input: new TextEncoder().encode(overlaySvg), top: 0, left: 0 },
-      ])
+      .composite([{ input: Buffer.from(overlaySvg), top: 0, left: 0 }])
       .png()
       .toBuffer();
 
-    return new Response(png, {
+    return new Response(new Uint8Array(png), {
       headers: {
         'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=3600, s-maxage=86400',

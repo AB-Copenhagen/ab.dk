@@ -1,5 +1,4 @@
 import type { APIContext } from 'astro';
-import sharp from 'sharp';
 
 import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
 import divisionLogoDataUri from '../../../../public/images/division-1-logo-white.svg?inline';
@@ -8,6 +7,7 @@ import {
   OG_FONT_FAMILY,
   escapeXml,
   fetchBytes,
+  renderTextSvgToPng,
   toBase64,
 } from '@/lib/og-image';
 
@@ -101,7 +101,7 @@ export async function GET({ url }: APIContext) {
       </svg>
     `;
 
-    const png = await sharp(new TextEncoder().encode(svg)).png().toBuffer();
+    const png = renderTextSvgToPng(svg);
 
     return new Response(png, {
       headers: {

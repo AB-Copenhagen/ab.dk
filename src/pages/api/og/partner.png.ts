@@ -2,7 +2,7 @@ import type { APIContext } from 'astro';
 import sharp from 'sharp';
 
 import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
-import { OG_COLORS, OG_FONT_FAMILY } from '@/lib/og-image';
+import { OG_COLORS, OG_FONT_FAMILY, renderTextSvgToPng } from '@/lib/og-image';
 
 export const prerender = false;
 
@@ -102,7 +102,7 @@ export async function GET({ url }: APIContext) {
       </svg>
     `;
 
-    const png = await sharp(new TextEncoder().encode(svg)).png().toBuffer();
+    const png = renderTextSvgToPng(svg);
 
     return new Response(png, {
       headers: {

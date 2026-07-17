@@ -42,7 +42,7 @@ export const GET: APIRoute = async ({ params, request }) => {
         res.Body as { transformToByteArray(): Promise<Uint8Array> }
       ).transformToByteArray();
       const webpBuffer = await sharp(bytes).webp({ quality: 85 }).toBuffer();
-      return new Response(webpBuffer, {
+      return new Response(new Uint8Array(webpBuffer), {
         status: 200,
         headers: {
           'Content-Type': 'image/webp',
