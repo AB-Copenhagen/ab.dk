@@ -53,31 +53,33 @@ const awayLabel = locale === 'en' ? 'A' : 'U';
         />
         <span class="text-sm font-bold text-[#111] w-36 truncate shrink-0">{teamName}</span>
 
-        <div class="flex items-center gap-1.5 flex-1">
-          {form.length === 0 ? (
-            <span class="text-xs text-[#bbb]">{locale === 'en' ? 'No data' : 'Ingen data'}</span>
-          ) : (
-            form.map(r => (
-              <span
-                class="w-7 h-7 rounded-full flex items-center justify-center text-[0.6rem] font-black shrink-0 cursor-default"
-                style={outcomeStyle(r.outcome)}
-                title={`${r.isHome ? homeLabel : awayLabel} ${r.opponentName}  ${r.score}`}
-              >
-                {r.outcome}
-              </span>
-            ))
+        <div class="flex items-center gap-3 flex-1 min-w-0 overflow-x-auto [&::-webkit-scrollbar]:hidden" style="scrollbar-width:none">
+          <div class="flex items-center gap-1.5 shrink-0">
+            {form.length === 0 ? (
+              <span class="text-xs text-[#bbb] whitespace-nowrap">{locale === 'en' ? 'No data' : 'Ingen data'}</span>
+            ) : (
+              form.map(r => (
+                <span
+                  class="w-7 h-7 rounded-full flex items-center justify-center text-[0.6rem] font-black shrink-0 cursor-default"
+                  style={outcomeStyle(r.outcome)}
+                  title={`${r.isHome ? homeLabel : awayLabel} ${r.opponentName}  ${r.score}`}
+                >
+                  {r.outcome}
+                </span>
+              ))
+            )}
+          </div>
+
+          {form.length > 0 && (
+            <span class="text-xs font-bold text-[#999] shrink-0 tabular-nums whitespace-nowrap">
+              {form.filter(r => r.outcome === 'W').length}W
+              {' '}
+              {form.filter(r => r.outcome === 'D').length}D
+              {' '}
+              {form.filter(r => r.outcome === 'L').length}L
+            </span>
           )}
         </div>
-
-        {form.length > 0 && (
-          <span class="text-xs font-bold text-[#999] shrink-0 tabular-nums">
-            {form.filter(r => r.outcome === 'W').length}W
-            {' '}
-            {form.filter(r => r.outcome === 'D').length}D
-            {' '}
-            {form.filter(r => r.outcome === 'L').length}L
-          </span>
-        )}
       </div>
     ))}
   </div>

@@ -33,9 +33,9 @@ const navLabel = locale === 'da' ? 'Historisk tidslinje' : 'Historical timeline'
 <nav
   id="timeline-topbar"
   aria-label={navLabel}
-  class="sticky z-40 bg-white border-b border-[#E5E7EB]"
+  class="sticky z-40 bg-white border-b border-[#E5E7EB] overflow-x-hidden"
   style="top: var(--nav-height, 92px)">
-  <div class="max-w-7xl mx-auto px-8 lg:px-20 h-12 flex items-center gap-1">
+  <div class="max-w-7xl mx-auto px-8 lg:px-20 h-12 flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden" style="scrollbar-width: none;">
     {
       eras.map((era, i) => (
         <>

@@ -194,12 +194,16 @@ export default function MiniCalendar({
               <a
                 key={i}
                 href={`${kampeHref}#${cell.dateKey}`}
-                className={`${base} font-black hover:bg-ab-green/10 transition-colors`}
+                className={`${base} flex-col gap-1 font-black bg-ab-green/10 hover:bg-ab-green/20 transition-colors`}
                 style={cell.isToday ? { background: '#fff' } : undefined}
                 onMouseEnter={() => setHoveredKey(cell.dateKey)}
                 onMouseLeave={() => setHoveredKey(null)}
               >
-                {cell.day}
+                <span>{cell.day}</span>
+                <span
+                  className="w-[5px] h-[5px] rounded-full bg-ab-green"
+                  aria-hidden="true"
+                />
               </a>
             );
           }

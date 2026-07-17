@@ -1,5 +1,6 @@
 ---
 import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
+import { PARTNERS } from '@/data/partners';
 
 interface Props {
   locale?: string;
@@ -21,40 +22,59 @@ const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 tran
 const FALLBACK_PARTNERS = [
   { name: 'Myriad360', src: '/images/sponsors/myriad360.png',   url: 'https://myriad360.com/',        logoWidth: 185, logoHeight: 62 },
   { name: 'Datum',     src: '/images/sponsors/datum.png',       url: 'https://datum.net/',            logoWidth: 240, logoHeight: 80 },
-  { name: 'Lind',      src: '/images/sponsors/lind-law.png',    url: 'https://lindlaw.dk/',           logoWidth: 85,  logoHeight: 23 },
+  { name: 'Lind Law',  src: '/images/sponsors/lind-law.png',    url: 'https://lindlaw.dk/',           logoWidth: 85,  logoHeight: 23 },
   { name: 'Select',    src: '/images/sponsors/select-sport.png', url: 'https://dk.select-sport.com/', logoWidth: 200, logoHeight: 65 },
   { name: 'Unisport',  src: '/images/sponsors/unisport.png',    url: 'https://www.select-sport.com/', logoWidth: 160, logoHeight: 52 },
 ];
 
+/** Resolve a sponsor's external URL to its internal partner page, when one exists. */
+function toPartnerHref(externalUrl: string): string | undefined {
+  const slug = PARTNERS.find((p) => p.website === externalUrl)?.slug;
+  if (!slug) return undefined;
+  return locale === 'en' ? `/en/partners/${slug}` : `/partnere/${slug}`;
+}
+
 const strapiPartners = await fetchPartners();
-const partners = strapiPartners.length > 0
-  ? strapiPartners.map((p) => ({
-      name: p.name,
-      src: strapiMediaUrl(p.logo?.url),
-      url: p.url ?? '',
-      logoWidth: p.logoWidth,
-      logoHeight: p.logoHeight,
-    }))
-  : FALLBACK_PARTNERS;
+const partners = (
+  strapiPartners.length > 0
+    ? strapiPartners.map((p) => ({
+        name: p.name,
+        src: strapiMediaUrl(p.logo?.url),
+        url: p.url ?? '',
+        logoWidth: p.logoWidth,
+        logoHeight: p.logoHeight,
+      }))
+    : FALLBACK_PARTNERS
+).map((p) => ({ ...p, href: toPartnerHref(p.url) ?? p.url }));
 ---
 
 <!-- Sponsor row (white bg) -->
 <div class="overflow-hidden bg-white border-t border-gray-200 py-12">
   <div class="max-w-7xl mx-auto px-8">
-    <div class="flex flex-wrap items-center justify-center gap-8 md:flex-nowrap md:justify-between">
+    <div class="grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-10 md:flex md:flex-nowrap md:justify-between md:gap-8">
       {
-        partners.map(({ src, name, url, logoWidth, logoHeight }) => (
-          <a href={url} target="_blank" rel="noreferrer" aria-label={name} class="shrink-0">
-            <img
-              src={src}
-              alt={name}
-              width={logoWidth}
-              height={logoHeight}
-              class="sponsor-logo object-contain object-center"
-              style={`width:${logoWidth}px;height:${logoHeight}px`}
-            />
-          </a>
-        ))
+        partners.map(({ src, name, href, logoWidth, logoHeight }, index) => {
+          const isInternal = href.startsWith('/');
+          const isLoneLastItem = index === partners.length - 1 && partners.length % 2 === 1;
+          return (
+            <a
+              href={href}
+              target={isInternal ? undefined : '_blank'}
+              rel={isInternal ? undefined : 'noreferrer'}
+              aria-label={name}
+              class={`shrink-0 ${isLoneLastItem ? 'col-span-2 md:col-span-1' : ''}`}
+            >
+              <img
+                src={src}
+                alt={name}
+                width={logoWidth}
+                height={logoHeight}
+                class="sponsor-logo object-contain object-center"
+                style={`width:${logoWidth}px;height:${logoHeight}px`}
+              />
+            </a>
+          );
+        })
       }
     </div>
   </div>
@@ -75,7 +95,7 @@ const partners = strapiPartners.length > 0
       </div>
 
       <!-- Center: link columns -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-10 lg:gap-16">
+      <div class="grid grid-cols-3 gap-4 sm:gap-8 lg:gap-16">
         <!-- Contact -->
         <div>
           <p class={footerHeadingClass}>
@@ -101,14 +121,14 @@ const partners = strapiPartners.length > 0
           >
             {locale === 'da' ? 'Kontakt os' : 'Contact'} →
           </a>
-          <div class="flex gap-2.5 mt-5">
-            <a href="https://www.instagram.com/abfodbold/" target="_blank" rel="noreferrer" aria-label="Instagram" class="w-8 h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
+          <div class="flex gap-2 sm:gap-2.5 mt-5">
+            <a href="https://www.instagram.com/abfodbold/" target="_blank" rel="noreferrer" aria-label="Instagram" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
               <svg class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg>
             </a>
-            <a href="https://www.facebook.com/akademiskboldklub" target="_blank" rel="noreferrer" aria-label="Facebook" class="w-8 h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
+            <a href="https://www.facebook.com/akademiskboldklub" target="_blank" rel="noreferrer" aria-label="Facebook" class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
               <svg class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
             </a>
-            <a href="https://www.youtube.com/@akademisk-boldklub" target="_blank" rel="noreferrer" aria-label="YouTube" class="group w-8 h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
+            <a href="https://www.youtube.com/@akademisk-boldklub" target="_blank" rel="noreferrer" aria-label="YouTube" class="group w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-white/20 text-white/50 hover:border-white/50 hover:text-white transition-all no-underline">
               <!-- Default: filled play button -->
               <svg class="w-[14px] h-[14px] block group-hover:hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.96-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
               <!-- Hover: play button punched out as a hole -->
