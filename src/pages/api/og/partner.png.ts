@@ -2,7 +2,7 @@ import type { APIContext } from 'astro';
 import sharp from 'sharp';
 
 import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
-import { OG_COLORS, OG_FONT_FAMILY, ogFontFaceStyle } from '@/lib/og-image';
+import { OG_COLORS, OG_FONT_FAMILY } from '@/lib/og-image';
 
 export const prerender = false;
 
@@ -68,8 +68,6 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const fontFaceStyle = await ogFontFaceStyle();
-
     const cardSize = 360;
     const cardPadding = 48;
     const innerBox = cardSize - cardPadding * 2;
@@ -95,7 +93,6 @@ export async function GET({ url }: APIContext) {
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
-        ${fontFaceStyle}
         <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="${BG_COLOR}"/>
         <rect x="${leftCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>
         <rect x="${rightCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>

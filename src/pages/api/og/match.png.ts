@@ -8,7 +8,6 @@ import {
   OG_FONT_FAMILY,
   escapeXml,
   fetchBytes,
-  ogFontFaceStyle,
   toBase64,
 } from '@/lib/og-image';
 
@@ -53,9 +52,10 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [homeLogoDataUri, awayLogoDataUri, fontFaceStyle] = await Promise.all(
-      [logoDataUri(homeLogo), logoDataUri(awayLogo), ogFontFaceStyle()]
-    );
+    const [homeLogoDataUri, awayLogoDataUri] = await Promise.all([
+      logoDataUri(homeLogo),
+      logoDataUri(awayLogo),
+    ]);
 
     const crestSize = 200;
     const homeCrestX = 300 - crestSize / 2;
@@ -72,7 +72,6 @@ export async function GET({ url }: APIContext) {
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
-        ${fontFaceStyle}
         <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="#2A2A2A"/>
 
         <!-- Top left: division logo + label -->

@@ -1,29 +1,17 @@
 /**
  * Shared helpers for the /api/og/*.png SVG-to-PNG endpoints (via sharp).
  *
- * SVG <text> rendering depends on librsvg finding a matching system font —
- * on Vercel's serverless runtime, no fonts are installed at all, so
- * font-family="Arial, sans-serif" silently renders missing-glyph boxes for
- * every character. Embedding the brand font directly via @font-face removes
- * that host dependency entirely.
+ * Text uses a plain system-font stack (see OG_FONT_FAMILY below), not the
+ * brand font — Vercel's serverless runtime has no fonts installed at all, so
+ * embedding the brand font required fetching it at request time on every
+ * call, and every fetch strategy tried (self-fetch over HTTP, then Wasabi
+ * directly) still produced tofu text on at least one endpoint for reasons
+ * that couldn't be pinned down without server-side log access. Dropped in
+ * favor of a plain, reliable sans-serif rather than keep chasing it.
  *
- * The font itself is licensed and gitignored (public/fonts/ABCCameraPlain-*.*,
- * see .gitignore/README), so it can't be bundled at build time via a Vite
- * `?inline` import: that works on a dev machine that happens to have the file
- * on disk, but fails the production build outright (Could not resolve …) since
- * the file doesn't exist in the deployed checkout at all.
- *
- * It's fetched directly from Wasabi S3 (see fetchWasabiBytes below) rather
- * than self-fetched over HTTP from `/api/media/fonts/…`: a server-side fetch
- * to this app's own origin doesn't carry the caller's session, so on any
- * deployment with Vercel deployment protection enabled, that self-fetch gets
- * silently redirected to the SSO login page instead of the real file —
- * fetch() follows the redirect and returns 200, so the corrupted HTML gets
- * embedded as if it were valid asset data with no error thrown, producing
- * tofu text (or a missing/broken image, for anything binary). Fetching
- * straight from Wasabi sidesteps Vercel's protection entirely — the same
- * principle applies to any other Wasabi-hosted asset these endpoints need
- * (e.g. player photos), not just this font.
+ * fetchWasabiBytes below is still used for genuinely dynamic Wasabi-hosted
+ * assets (player photos, article cover images) — those fetch correctly, this
+ * was specifically a font-loading problem.
  */
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
@@ -51,7 +39,7 @@ export function escapeXml(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
-export const OG_FONT_FAMILY = "'ABC Camera Plain', Arial, sans-serif";
+export const OG_FONT_FAMILY = 'Arial, Helvetica, sans-serif';
 
 /**
  * Mirrors src/styles/tokens.css. These SVGs are rasterized standalone by
@@ -96,19 +84,4 @@ export async function fetchWasabiBytes(key: string): Promise<Uint8Array> {
   return (
     res.Body as { transformToByteArray(): Promise<Uint8Array> }
   ).transformToByteArray();
-}
-
-/** Inline <style>@font-face{...}</style> embedding the brand's heavy weight. */
-export async function ogFontFaceStyle(): Promise<string> {
-  const bytes = await fetchWasabiBytes('fonts/ABCCameraPlain-Heavy.woff2');
-  return `
-      <style>
-        @font-face {
-          font-family: 'ABC Camera Plain';
-          src: url(data:font/woff2;base64,${toBase64(bytes)}) format('woff2');
-          font-weight: 900;
-          font-style: normal;
-        }
-      </style>
-  `;
 }
