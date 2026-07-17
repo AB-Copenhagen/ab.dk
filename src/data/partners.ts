@@ -24,16 +24,6 @@ export const PARTNERS: Partner[] = [
     tier: 'principal',
   },
   {
-    slug: 'plane',
-    name: 'Plane',
-    logo: '/images/sponsors/plane.png',
-    logoSize: 'w-[200px] h-[65px]',
-    website: 'https://plane.so/',
-    tier: 'principal',
-    description:
-      'Plane brings projects, docs, and AI-powered workflows into one unified workspace so teams and agents can plan, execute, and stay aligned. Plane is project management and knowledge management for teams and agents.',
-  },
-  {
     slug: 'datum',
     name: 'Datum',
     logo: '/images/sponsors/datum.png',
@@ -44,6 +34,14 @@ export const PARTNERS: Partner[] = [
       'Datum is an \'open network cloud\' designed to unlock internet superpowers (e.g. advanced network and connectivity services) for every agent, app, and builder. Unlike a traditional CDN or hyperscaler cloud: 100% focused on modern, "alt cloud" service providers; code is open source (AGPLv3) so you can run it anywhere if needed. Prioritizing agent-first and developer experiences.',
   },
   {
+    slug: 'lind-advokater',
+    name: 'Lind',
+    logo: '/images/sponsors/lind-law.png',
+    logoSize: 'w-[85px] h-[23px]',
+    website: 'https://lindlaw.dk/',
+    tier: 'principal',
+  },
+  {
     slug: 'select-sport',
     name: 'Select Sport',
     logo: '/images/sponsors/select-sport.png',
@@ -52,11 +50,11 @@ export const PARTNERS: Partner[] = [
     tier: 'principal',
   },
   {
-    slug: 'carlsberg',
-    name: 'Carlsberg',
-    logo: '/images/sponsors/carlsberg.png',
-    logoSize: 'w-[262px] h-[88px]',
-    website: 'https://carlsbergdanmark.dk/',
+    slug: 'unisport',
+    name: 'Unisport',
+    logo: '/images/sponsors/unisport.png',
+    logoSize: 'w-[200px] h-[65px]',
+    website: 'https://www.select-sport.com/',
     tier: 'principal',
   },
 
@@ -83,12 +81,6 @@ export const PARTNERS: Partner[] = [
     slug: 'weibel-data',
     name: 'Weibel Data og overvågning',
     logo: '/images/sponsors/partners/weibel-data.png',
-    tier: 'network',
-  },
-  {
-    slug: 'unisport',
-    name: 'Unisport',
-    logo: '/images/sponsors/partners/unisport.png',
     tier: 'network',
   },
   {
@@ -119,12 +111,6 @@ export const PARTNERS: Partner[] = [
     slug: 'poul-holm-sport',
     name: 'Poul Holm Sport',
     logo: '/images/sponsors/partners/poul-holm-sport.gif',
-    tier: 'network',
-  },
-  {
-    slug: 'lind-advokater',
-    name: 'Lind Advokater',
-    logo: '/images/sponsors/partners/lind-advokater.png',
     tier: 'network',
   },
   {
