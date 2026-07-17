@@ -33,11 +33,17 @@ const {
 } = Astro.props;
 
 // Canonical/hreflang always point at the production domain. og:image, however, must be
-// reachable by whatever host actually served this response — on local dev or a Vercel
-// preview/staging deployment that's the local/preview URL, not ab.dk (which won't resolve
-// to this app pre-launch).
-const isVercelProduction = import.meta.env.VERCEL_ENV === 'production';
-const assetOrigin = isVercelProduction ? (Astro.site?.origin ?? Astro.url.origin) : Astro.url.origin;
+// reachable by whatever host actually served this response — on local dev, a Vercel
+// preview, or a pre-launch alias domain (e.g. www-new.ab.dk) that's the request's own
+// origin, not ab.dk (which still serves the old site and won't resolve this app's routes).
+// Keying off the request hostname rather than VERCEL_ENV matters because Vercel marks
+// every domain aliased to the Production deployment as VERCEL_ENV=production, including
+// pre-launch alias domains — not just the final canonical ab.dk.
+const isCanonicalHost =
+  Astro.url.hostname === 'ab.dk' || Astro.url.hostname === 'www.ab.dk';
+const assetOrigin = isCanonicalHost
+  ? (Astro.site?.origin ?? Astro.url.origin)
+  : Astro.url.origin;
 const resolvedOgImage = ogImage
   ? (ogImage.startsWith('http') ? ogImage : `${assetOrigin}${ogImage}`)
   : `${assetOrigin}/images/og-default.png`;
