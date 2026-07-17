@@ -47,7 +47,7 @@ export async function GET({ url }: APIContext) {
     const [homeLogoDataUri, awayLogoDataUri, fontFaceStyle] = await Promise.all([
       logoDataUri(homeLogo),
       logoDataUri(awayLogo),
-      ogFontFaceStyle(url.origin),
+      ogFontFaceStyle(),
     ]);
 
     const crestSize = 200;

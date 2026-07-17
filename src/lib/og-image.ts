@@ -11,11 +11,20 @@
  * see .gitignore/README), so it can't be bundled at build time via a Vite
  * `?inline` import: that works on a dev machine that happens to have the file
  * on disk, but fails the production build outright (Could not resolve …) since
- * the file doesn't exist in the deployed checkout at all. The font must be
- * fetched at request time instead, from `/api/media/fonts/…` — the Wasabi-
- * backed media proxy that actually serves it in every environment (see
- * src/styles/global.css's @font-face, which falls back to this same path).
+ * the file doesn't exist in the deployed checkout at all.
+ *
+ * It's fetched directly from Wasabi S3 (see fetchFontBytes below) rather than
+ * self-fetched over HTTP from `/api/media/fonts/…`: this endpoint's own
+ * server-side fetch to its own origin doesn't carry the caller's session, so
+ * on any deployment with Vercel deployment protection enabled, a self-fetch
+ * gets silently redirected to the SSO login page instead of the real file —
+ * fetch() follows the redirect and returns 200, so the corrupted HTML gets
+ * embedded as if it were a valid font with no error thrown, producing tofu
+ * text. Fetching straight from Wasabi sidesteps Vercel's protection entirely,
+ * the same way the away-team crest (fetched from the external SI API CDN)
+ * always worked regardless of deployment protection.
  */
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 export async function fetchBytes(url: string): Promise<Uint8Array> {
   const res = await fetch(url);
@@ -58,9 +67,29 @@ export const OG_COLORS = {
   black: '#0A0A0A',
 } as const;
 
+const WASABI_BUCKET = import.meta.env.WASABI_BUCKET ?? 'ab-media';
+const WASABI_REGION = import.meta.env.WASABI_REGION ?? 'eu-central-1';
+
+const wasabiClient = new S3Client({
+  region: WASABI_REGION,
+  endpoint: `https://s3.${WASABI_REGION}.wasabisys.com`,
+  forcePathStyle: true,
+  credentials: {
+    accessKeyId: import.meta.env.WASABI_ACCESS_KEY_ID ?? '',
+    secretAccessKey: import.meta.env.WASABI_SECRET_ACCESS_KEY ?? '',
+  },
+});
+
+/** Fetches an object directly from the Wasabi bucket that backs /api/media/ — bypasses HTTP entirely. */
+async function fetchFontBytes(key: string): Promise<Uint8Array> {
+  const res = await wasabiClient.send(new GetObjectCommand({ Bucket: WASABI_BUCKET, Key: key }));
+  if (!res.Body) throw new Error(`Wasabi object has no body: ${key}`);
+  return (res.Body as { transformToByteArray(): Promise<Uint8Array> }).transformToByteArray();
+}
+
 /** Inline <style>@font-face{...}</style> embedding the brand's heavy weight. */
-export async function ogFontFaceStyle(origin: string): Promise<string> {
-  const bytes = await fetchBytes(`${origin}/api/media/fonts/ABCCameraPlain-Heavy.woff2`);
+export async function ogFontFaceStyle(): Promise<string> {
+  const bytes = await fetchFontBytes('fonts/ABCCameraPlain-Heavy.woff2');
   return `
       <style>
         @font-face {

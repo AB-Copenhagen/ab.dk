@@ -37,7 +37,7 @@ export async function GET({ url }: APIContext) {
   try {
     const [partnerLogoBytes, fontFaceStyle] = await Promise.all([
       fetchBytes(`${url.origin}${logoPath}`),
-      ogFontFaceStyle(url.origin),
+      ogFontFaceStyle(),
     ]);
 
     const cardSize = 360;
