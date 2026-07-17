@@ -1,6 +1,8 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { fetchBytes, toBase64, escapeXml, ogFontFaceStyle, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
+import { fetchBytes, toBase64, escapeXml, OG_FONT_FACE_STYLE, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
+import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
+import divisionLogoDataUri from '../../../../public/images/division-1-logo-white.svg?inline';
 
 export const prerender = false;
 
@@ -16,11 +18,12 @@ function isSafeLogoUrl(value: string): boolean {
   return value === SAFE_AB_CREST || SAFE_CDN_LOGO.test(value);
 }
 
-async function logoDataUri(url: string, origin: string): Promise<string> {
-  const absolute = url.startsWith('http') ? url : `${origin}${url}`;
-  const bytes = await fetchBytes(absolute);
-  const mime = url.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
-  return `data:${mime};base64,${toBase64(bytes)}`;
+// The AB crest is a local static asset — bundled at build time (see abCrestDataUri
+// above) instead of fetched, so only the external SI API crest needs a live fetch.
+async function logoDataUri(url: string): Promise<string> {
+  if (url === SAFE_AB_CREST) return abCrestDataUri;
+  const bytes = await fetchBytes(url);
+  return `data:image/png;base64,${toBase64(bytes)}`;
 }
 
 export async function GET({ url }: APIContext) {
@@ -41,13 +44,10 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [homeLogoDataUri, awayLogoDataUri, divisionLogoBytes, fontFaceStyle] = await Promise.all([
-      logoDataUri(homeLogo, url.origin),
-      logoDataUri(awayLogo, url.origin),
-      fetchBytes(`${url.origin}/images/division-1-logo-white.svg`),
-      ogFontFaceStyle(url.origin),
+    const [homeLogoDataUri, awayLogoDataUri] = await Promise.all([
+      logoDataUri(homeLogo),
+      logoDataUri(awayLogo),
     ]);
-    const divisionLogoDataUri = `data:image/svg+xml;base64,${toBase64(divisionLogoBytes)}`;
 
     const crestSize = 200;
     const homeCrestX = 300 - crestSize / 2;
@@ -64,7 +64,7 @@ export async function GET({ url }: APIContext) {
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
-        ${fontFaceStyle}
+        ${OG_FONT_FACE_STYLE}
         <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="#2A2A2A"/>
 
         <!-- Top left: division logo + label -->

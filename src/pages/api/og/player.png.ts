@@ -1,6 +1,8 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
 import { OG_COLORS } from '@/lib/og-image';
+import monogramDataUri from '../../../../public/images/logo-behind-player.svg?inline';
+import crestDataUri from '../../../../public/images/ab-crest-white.svg?inline';
 
 export const prerender = false;
 
@@ -34,11 +36,7 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [photoBuffer, monogramBuffer, crestBuffer] = await Promise.all([
-      fetchBytes(`${url.origin}${photoPath}`),
-      fetchBytes(`${url.origin}/images/logo-behind-player.svg`),
-      fetchBytes(`${url.origin}/images/ab-crest-white.svg`),
-    ]);
+    const photoBuffer = await fetchBytes(`${url.origin}${photoPath}`);
 
     const photoMeta = await sharp(photoBuffer).metadata();
     const photoAspect = (photoMeta.width ?? 1) / (photoMeta.height ?? 1);
@@ -56,8 +54,6 @@ export async function GET({ url }: APIContext) {
     const crestY = Math.round(CANVAS_H / 2 - crestSize / 2);
 
     const photoDataUri = `data:image/png;base64,${toBase64(photoBuffer)}`;
-    const monogramDataUri = `data:image/svg+xml;base64,${toBase64(monogramBuffer)}`;
-    const crestDataUri = `data:image/svg+xml;base64,${toBase64(crestBuffer)}`;
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
