@@ -1,6 +1,6 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { fetchBytes, toBase64, OG_FONT_FACE_STYLE, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
+import { fetchBytes, toBase64, ogFontFaceStyle, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
 import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
 
 export const prerender = false;
@@ -35,7 +35,10 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const partnerLogoBytes = await fetchBytes(`${url.origin}${logoPath}`);
+    const [partnerLogoBytes, fontFaceStyle] = await Promise.all([
+      fetchBytes(`${url.origin}${logoPath}`),
+      ogFontFaceStyle(url.origin),
+    ]);
 
     const cardSize = 360;
     const cardPadding = 48;
@@ -64,7 +67,7 @@ export async function GET({ url }: APIContext) {
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
-        ${OG_FONT_FACE_STYLE}
+        ${fontFaceStyle}
         <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="${BG_COLOR}"/>
         <rect x="${leftCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>
         <rect x="${rightCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>

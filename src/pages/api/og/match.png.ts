@@ -1,6 +1,6 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { fetchBytes, toBase64, escapeXml, OG_FONT_FACE_STYLE, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
+import { fetchBytes, toBase64, escapeXml, ogFontFaceStyle, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
 import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
 import divisionLogoDataUri from '../../../../public/images/division-1-logo-white.svg?inline';
 
@@ -44,9 +44,10 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [homeLogoDataUri, awayLogoDataUri] = await Promise.all([
+    const [homeLogoDataUri, awayLogoDataUri, fontFaceStyle] = await Promise.all([
       logoDataUri(homeLogo),
       logoDataUri(awayLogo),
+      ogFontFaceStyle(url.origin),
     ]);
 
     const crestSize = 200;
@@ -64,7 +65,7 @@ export async function GET({ url }: APIContext) {
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
-        ${OG_FONT_FACE_STYLE}
+        ${fontFaceStyle}
         <rect width="${CANVAS_W}" height="${CANVAS_H}" fill="#2A2A2A"/>
 
         <!-- Top left: division logo + label -->
