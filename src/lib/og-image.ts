@@ -13,16 +13,17 @@
  * on disk, but fails the production build outright (Could not resolve …) since
  * the file doesn't exist in the deployed checkout at all.
  *
- * It's fetched directly from Wasabi S3 (see fetchFontBytes below) rather than
- * self-fetched over HTTP from `/api/media/fonts/…`: this endpoint's own
- * server-side fetch to its own origin doesn't carry the caller's session, so
- * on any deployment with Vercel deployment protection enabled, a self-fetch
- * gets silently redirected to the SSO login page instead of the real file —
+ * It's fetched directly from Wasabi S3 (see fetchWasabiBytes below) rather
+ * than self-fetched over HTTP from `/api/media/fonts/…`: a server-side fetch
+ * to this app's own origin doesn't carry the caller's session, so on any
+ * deployment with Vercel deployment protection enabled, that self-fetch gets
+ * silently redirected to the SSO login page instead of the real file —
  * fetch() follows the redirect and returns 200, so the corrupted HTML gets
- * embedded as if it were a valid font with no error thrown, producing tofu
- * text. Fetching straight from Wasabi sidesteps Vercel's protection entirely,
- * the same way the away-team crest (fetched from the external SI API CDN)
- * always worked regardless of deployment protection.
+ * embedded as if it were valid asset data with no error thrown, producing
+ * tofu text (or a missing/broken image, for anything binary). Fetching
+ * straight from Wasabi sidesteps Vercel's protection entirely — the same
+ * principle applies to any other Wasabi-hosted asset these endpoints need
+ * (e.g. player photos), not just this font.
  */
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
@@ -80,8 +81,14 @@ const wasabiClient = new S3Client({
   },
 });
 
-/** Fetches an object directly from the Wasabi bucket that backs /api/media/ — bypasses HTTP entirely. */
-async function fetchFontBytes(key: string): Promise<Uint8Array> {
+/**
+ * Fetches an object directly from the Wasabi bucket that backs /api/media/[...key] —
+ * bypasses this app's own HTTP layer entirely, so it's immune to Vercel deployment
+ * protection regardless of how that's configured (see file header). Any OG endpoint
+ * that needs a Wasabi-hosted asset (font, player photo, …) should use this instead
+ * of self-fetching `/api/media/...` over HTTP.
+ */
+export async function fetchWasabiBytes(key: string): Promise<Uint8Array> {
   const res = await wasabiClient.send(new GetObjectCommand({ Bucket: WASABI_BUCKET, Key: key }));
   if (!res.Body) throw new Error(`Wasabi object has no body: ${key}`);
   return (res.Body as { transformToByteArray(): Promise<Uint8Array> }).transformToByteArray();
@@ -89,7 +96,7 @@ async function fetchFontBytes(key: string): Promise<Uint8Array> {
 
 /** Inline <style>@font-face{...}</style> embedding the brand's heavy weight. */
 export async function ogFontFaceStyle(): Promise<string> {
-  const bytes = await fetchFontBytes('fonts/ABCCameraPlain-Heavy.woff2');
+  const bytes = await fetchWasabiBytes('fonts/ABCCameraPlain-Heavy.woff2');
   return `
       <style>
         @font-face {
