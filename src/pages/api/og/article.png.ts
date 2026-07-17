@@ -1,7 +1,8 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { fetchWasabiBytes } from '@/lib/og-image';
+
 import crestDataUri from '../../../../public/images/ab-crest-white.svg?inline';
+import { fetchWasabiBytes } from '@/lib/og-image';
 
 export const prerender = false;
 
