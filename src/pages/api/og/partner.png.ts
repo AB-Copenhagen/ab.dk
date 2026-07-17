@@ -1,7 +1,8 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { ogFontFaceStyle, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
+
 import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
+import { OG_COLORS, OG_FONT_FAMILY, ogFontFaceStyle } from '@/lib/og-image';
 
 export const prerender = false;
 
@@ -42,15 +43,26 @@ function dataUriToBytes(dataUri: string): Uint8Array {
 }
 
 /** Contain-fit dimensions for an image inside a box, given its natural size. */
-function containFit(naturalW: number, naturalH: number, boxW: number, boxH: number) {
+function containFit(
+  naturalW: number,
+  naturalH: number,
+  boxW: number,
+  boxH: number
+) {
   const scale = Math.min(boxW / naturalW, boxH / naturalH);
-  return { width: Math.round(naturalW * scale), height: Math.round(naturalH * scale) };
+  return {
+    width: Math.round(naturalW * scale),
+    height: Math.round(naturalH * scale),
+  };
 }
 
 export async function GET({ url }: APIContext) {
   const logoPath = url.searchParams.get('logo');
 
-  const partnerDataUri = logoPath && SAFE_LOGO_PATH.test(logoPath) ? sponsorLogos.get(logoPath) : undefined;
+  const partnerDataUri =
+    logoPath && SAFE_LOGO_PATH.test(logoPath)
+      ? sponsorLogos.get(logoPath)
+      : undefined;
   if (!partnerDataUri) {
     return new Response('Invalid logo path', { status: 400 });
   }

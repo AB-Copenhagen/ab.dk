@@ -89,9 +89,13 @@ const wasabiClient = new S3Client({
  * of self-fetching `/api/media/...` over HTTP.
  */
 export async function fetchWasabiBytes(key: string): Promise<Uint8Array> {
-  const res = await wasabiClient.send(new GetObjectCommand({ Bucket: WASABI_BUCKET, Key: key }));
+  const res = await wasabiClient.send(
+    new GetObjectCommand({ Bucket: WASABI_BUCKET, Key: key })
+  );
   if (!res.Body) throw new Error(`Wasabi object has no body: ${key}`);
-  return (res.Body as { transformToByteArray(): Promise<Uint8Array> }).transformToByteArray();
+  return (
+    res.Body as { transformToByteArray(): Promise<Uint8Array> }
+  ).transformToByteArray();
 }
 
 /** Inline <style>@font-face{...}</style> embedding the brand's heavy weight. */

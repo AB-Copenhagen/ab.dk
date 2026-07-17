@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+
 import { onConsentChange } from '@/lib/consent-gate-client';
 
 interface SiWidgetProps {

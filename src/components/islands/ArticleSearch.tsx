@@ -136,13 +136,18 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
                       fontVariantNumeric: 'tabular-nums',
                     }}
                   >
-                    {formatDate(article.originalPublishedAt ?? article.publishedAt)}
+                    {formatDate(
+                      article.originalPublishedAt ?? article.publishedAt
+                    )}
                   </span>
                   {article.categories?.map((cat, idx) => (
                     <span
                       key={idx}
                       className="text-[0.6rem] font-bold uppercase px-2 py-0.5 text-ab-green tracking-[0.1em]"
-                      style={{ background: 'color-mix(in srgb, var(--ab-green) 10%, transparent)' }}
+                      style={{
+                        background:
+                          'color-mix(in srgb, var(--ab-green) 10%, transparent)',
+                      }}
                     >
                       {cat.name}
                     </span>

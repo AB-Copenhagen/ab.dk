@@ -3,6 +3,7 @@ import vercel from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, envField } from 'astro/config';
 import { fileURLToPath } from 'url';
+
 import { legacyRedirects } from './src/lib/redirects.ts';
 
 const src = (rel) => fileURLToPath(new URL(`./src/${rel}`, import.meta.url));

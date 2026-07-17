@@ -1,8 +1,16 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { fetchBytes, toBase64, escapeXml, ogFontFaceStyle, OG_FONT_FAMILY, OG_COLORS } from '@/lib/og-image';
+
 import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
 import divisionLogoDataUri from '../../../../public/images/division-1-logo-white.svg?inline';
+import {
+  OG_COLORS,
+  OG_FONT_FAMILY,
+  escapeXml,
+  fetchBytes,
+  ogFontFaceStyle,
+  toBase64,
+} from '@/lib/og-image';
 
 export const prerender = false;
 
@@ -12,7 +20,8 @@ const CANVAS_H = 630;
 // Team crest sources are restricted to the AB crest (local) or the known SI API CDN host —
 // this endpoint fetches these server-side, so arbitrary URLs must not be accepted.
 const SAFE_AB_CREST = '/images/ab-crest.svg';
-const SAFE_CDN_LOGO = /^https:\/\/dxugi372p6nmc\.cloudfront\.net\/spdk\/current\/256x256\/\d+\/teamlogo\.png$/;
+const SAFE_CDN_LOGO =
+  /^https:\/\/dxugi372p6nmc\.cloudfront\.net\/spdk\/current\/256x256\/\d+\/teamlogo\.png$/;
 
 function isSafeLogoUrl(value: string): boolean {
   return value === SAFE_AB_CREST || SAFE_CDN_LOGO.test(value);
@@ -44,11 +53,9 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [homeLogoDataUri, awayLogoDataUri, fontFaceStyle] = await Promise.all([
-      logoDataUri(homeLogo),
-      logoDataUri(awayLogo),
-      ogFontFaceStyle(),
-    ]);
+    const [homeLogoDataUri, awayLogoDataUri, fontFaceStyle] = await Promise.all(
+      [logoDataUri(homeLogo), logoDataUri(awayLogo), ogFontFaceStyle()]
+    );
 
     const crestSize = 200;
     const homeCrestX = 300 - crestSize / 2;

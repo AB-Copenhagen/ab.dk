@@ -20,7 +20,9 @@ export const DEFAULT_CONSENT: ConsentState = {
 };
 
 /** Parse a raw (URI-encoded JSON) cookie value into a ConsentState. Returns null if absent/invalid. */
-export function parseConsent(raw: string | undefined | null): ConsentState | null {
+export function parseConsent(
+  raw: string | undefined | null
+): ConsentState | null {
   if (!raw) return null;
   try {
     const parsed = JSON.parse(decodeURIComponent(raw));

@@ -1,8 +1,9 @@
 import type { APIContext } from 'astro';
-import { fetchCollectionType } from '@/lib/strapi/client';
-import { fetchABEvents, fetchABPlayers } from '@/lib/si/client';
-import { PARTNERS } from '@/data/partners';
+
 import { COACHING_STAFF } from '@/data/coaching-staff';
+import { PARTNERS } from '@/data/partners';
+import { fetchABEvents, fetchABPlayers } from '@/lib/si/client';
+import { fetchCollectionType } from '@/lib/strapi/client';
 import { escapeHtml } from '@/lib/utils';
 
 export const prerender = false;
@@ -49,14 +50,29 @@ const STATIC_ROUTES: [string, string][] = [
 
 // Strapi collections addressed by a plain `slug` field, fetched per-locale (locales are not
 // assumed to share the same slug, so each is listed independently rather than paired).
-const STRAPI_COLLECTIONS: { name: string; daPath: (slug: string) => string; enPath: (slug: string) => string }[] = [
+const STRAPI_COLLECTIONS: {
+  name: string;
+  daPath: (slug: string) => string;
+  enPath: (slug: string) => string;
+}[] = [
   { name: 'pages', daPath: (s) => `/${s}`, enPath: (s) => `/en/${s}` },
-  { name: 'articles', daPath: (s) => `/nyheder/${s}`, enPath: (s) => `/en/news/${s}` },
-  { name: 'products', daPath: (s) => `/products/${s}`, enPath: (s) => `/en/products/${s}` },
+  {
+    name: 'articles',
+    daPath: (s) => `/nyheder/${s}`,
+    enPath: (s) => `/en/news/${s}`,
+  },
+  {
+    name: 'products',
+    daPath: (s) => `/products/${s}`,
+    enPath: (s) => `/en/products/${s}`,
+  },
 ];
 
 export async function GET(context: APIContext) {
-  const site = (context.site?.toString() ?? context.url.origin).replace(/\/$/, '');
+  const site = (context.site?.toString() ?? context.url.origin).replace(
+    /\/$/,
+    ''
+  );
   const abs = (path: string) => `${site}${path}`;
 
   const entries: SitemapEntry[] = [];
@@ -73,14 +89,16 @@ export async function GET(context: APIContext) {
 
   for (const col of STRAPI_COLLECTIONS) {
     for (const locale of ['da', 'en'] as const) {
-      const items = await fetchCollectionType<{ slug: string; updatedAt?: string }[]>(
-        col.name,
-        { locale, pagination: { pageSize: 100 } }
-      ).catch(() => [] as { slug: string; updatedAt?: string }[]);
+      const items = await fetchCollectionType<
+        { slug: string; updatedAt?: string }[]
+      >(col.name, { locale, pagination: { pageSize: 100 } }).catch(
+        () => [] as { slug: string; updatedAt?: string }[]
+      );
 
       for (const item of items) {
         if (!item.slug) continue;
-        const path = locale === 'da' ? col.daPath(item.slug) : col.enPath(item.slug);
+        const path =
+          locale === 'da' ? col.daPath(item.slug) : col.enPath(item.slug);
         entries.push({ loc: abs(path), lastmod: item.updatedAt });
       }
     }
@@ -125,7 +143,9 @@ function buildSitemapXml(entries: SitemapEntry[]): string {
             `<xhtml:link rel="alternate" hreflang="${escapeHtml(a.hreflang)}" href="${escapeHtml(a.href)}" />`
         )
         .join('');
-      const lastmod = entry.lastmod ? `<lastmod>${entry.lastmod.slice(0, 10)}</lastmod>` : '';
+      const lastmod = entry.lastmod
+        ? `<lastmod>${entry.lastmod.slice(0, 10)}</lastmod>`
+        : '';
       return `<url><loc>${escapeHtml(entry.loc)}</loc>${lastmod}${alternates}</url>`;
     })
     .join('');

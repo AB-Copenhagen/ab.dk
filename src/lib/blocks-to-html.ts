@@ -3,10 +3,7 @@
 // e.g. server-only RSS feed generation.
 
 function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function renderInline(node: any): string {
@@ -34,7 +31,10 @@ function renderBlock(node: any): string {
     case 'list': {
       const tag = node.format === 'ordered' ? 'ol' : 'ul';
       const items = (node.children ?? [])
-        .map((li: any) => `<li>${(li.children ?? []).map(renderInline).join('')}</li>`)
+        .map(
+          (li: any) =>
+            `<li>${(li.children ?? []).map(renderInline).join('')}</li>`
+        )
         .join('');
       return `<${tag}>${items}</${tag}>`;
     }

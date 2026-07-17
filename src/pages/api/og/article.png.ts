@@ -8,7 +8,8 @@ const CANVAS_H = 630;
 
 // Only same-origin Strapi media-proxy paths are allowed — this endpoint fetches
 // `image` server-side, so it must not become an open SSRF proxy.
-const SAFE_IMAGE_PATH = /^\/api\/media\/uploads\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|gif)$/i;
+const SAFE_IMAGE_PATH =
+  /^\/api\/media\/uploads\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|gif)$/i;
 
 async function fetchBytes(url: string): Promise<Uint8Array> {
   const res = await fetch(url);
@@ -63,7 +64,9 @@ export async function GET({ url }: APIContext) {
     `;
 
     const png = await sharp(coverImage)
-      .composite([{ input: new TextEncoder().encode(overlaySvg), top: 0, left: 0 }])
+      .composite([
+        { input: new TextEncoder().encode(overlaySvg), top: 0, left: 0 },
+      ])
       .png()
       .toBuffer();
 

@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
+
 import { fetchABEvents } from '@/lib/si/client';
 
 export async function GET(context: APIContext) {

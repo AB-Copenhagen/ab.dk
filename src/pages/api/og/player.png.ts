@@ -1,8 +1,9 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
-import { OG_COLORS, fetchWasabiBytes } from '@/lib/og-image';
-import monogramDataUri from '../../../../public/images/logo-behind-player.svg?inline';
+
 import crestDataUri from '../../../../public/images/ab-crest-white.svg?inline';
+import monogramDataUri from '../../../../public/images/logo-behind-player.svg?inline';
+import { OG_COLORS, fetchWasabiBytes } from '@/lib/og-image';
 
 export const prerender = false;
 
@@ -14,7 +15,8 @@ const CANVAS_H = 630;
 // against the /api/media/ proxy's URL shape even though the photo is fetched
 // directly from Wasabi below (not through that proxy) — keeps the accepted
 // shape identical regardless of which fetch strategy serves it.
-const SAFE_PHOTO_PATH = /^\/api\/media\/players\/[a-z0-9-]+\.(png|jpg|jpeg|webp)$/;
+const SAFE_PHOTO_PATH =
+  /^\/api\/media\/players\/[a-z0-9-]+\.(png|jpg|jpeg|webp)$/;
 
 function toBase64(bytes: Uint8Array): string {
   let binary = '';
