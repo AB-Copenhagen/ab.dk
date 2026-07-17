@@ -100,7 +100,7 @@ export default function MobileMenu({
                   href={item.href}
                   target={item.external ? '_blank' : undefined}
                   rel={item.external ? 'noreferrer' : undefined}
-                  className={`text-xs font-bold uppercase py-2 border-b tracking-[0.18em] border-white/[0.04] ${item.highlight ? 'text-ab-gold' : 'text-white/40'}`}
+                  className={`text-sm font-bold uppercase py-2 border-b tracking-[0.14em] border-white/[0.04] ${item.highlight ? 'text-ab-gold' : 'text-white/80'}`}
                   onClick={() => setOpen(false)}
                 >
                   {item.label}
@@ -150,7 +150,7 @@ export default function MobileMenu({
                                 <a
                                   key={child.href}
                                   href={enPrefix + child.href}
-                                  className={`py-2 text-xs tracking-[0.04em] ${isChildActive ? 'text-ab-beige font-bold' : 'text-white/50'}`}
+                                  className={`py-2 text-sm tracking-[0.02em] ${isChildActive ? 'text-ab-beige font-bold' : 'text-white/80'}`}
                                   onClick={() => setOpen(false)}
                                 >
                                   {child.label}
@@ -179,7 +179,7 @@ export default function MobileMenu({
               <div className="mt-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <a
-                    href="https://www.instagram.com/ab1889.dk"
+                    href="https://www.instagram.com/abfodbold/"
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Instagram"
@@ -196,7 +196,7 @@ export default function MobileMenu({
                     </svg>
                   </a>
                   <a
-                    href="https://www.facebook.com/AB1889"
+                    href="https://www.facebook.com/akademiskboldklub"
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Facebook"
@@ -213,7 +213,7 @@ export default function MobileMenu({
                     </svg>
                   </a>
                   <a
-                    href="https://www.youtube.com/@ab1889"
+                    href="https://www.youtube.com/@akademisk-boldklub"
                     target="_blank"
                     rel="noreferrer"
                     aria-label="YouTube"
@@ -233,10 +233,59 @@ export default function MobileMenu({
 
                 <a
                   href={switchedLocalePath ?? (locale === 'da' ? '/en' : '/')}
-                  className="text-xs font-bold uppercase text-white/30 tracking-[0.18em]"
+                  aria-label={
+                    locale === 'da' ? 'Switch to English' : 'Skift til dansk'
+                  }
+                  className="flex items-center opacity-80 hover:opacity-100 transition-opacity"
                   onClick={() => setOpen(false)}
                 >
-                  {locale === 'da' ? 'EN' : 'DA'}
+                  {locale === 'da' ? (
+                    // Flag of the United Kingdom
+                    <svg
+                      width="22"
+                      height="16"
+                      viewBox="0 0 60 30"
+                      aria-hidden="true"
+                    >
+                      <clipPath id="mobile-lang-gb-clip">
+                        <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+                      </clipPath>
+                      <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+                      <path
+                        d="M0,0 L60,30 M60,0 L0,30"
+                        stroke="#fff"
+                        strokeWidth="6"
+                      />
+                      <path
+                        d="M0,0 L60,30 M60,0 L0,30"
+                        clipPath="url(#mobile-lang-gb-clip)"
+                        stroke="#C8102E"
+                        strokeWidth="4"
+                      />
+                      <path
+                        d="M30,0 v30 M0,15 h60"
+                        stroke="#fff"
+                        strokeWidth="10"
+                      />
+                      <path
+                        d="M30,0 v30 M0,15 h60"
+                        stroke="#C8102E"
+                        strokeWidth="6"
+                      />
+                    </svg>
+                  ) : (
+                    // Flag of Denmark
+                    <svg
+                      width="22"
+                      height="16"
+                      viewBox="0 0 30 21"
+                      aria-hidden="true"
+                    >
+                      <rect width="30" height="21" fill="#C8102E" />
+                      <rect x="9" width="4" height="21" fill="#fff" />
+                      <rect y="8.5" width="30" height="4" fill="#fff" />
+                    </svg>
+                  )}
                 </a>
               </div>
             </nav>

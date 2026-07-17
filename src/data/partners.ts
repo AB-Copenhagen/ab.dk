@@ -35,7 +35,7 @@ export const PARTNERS: Partner[] = [
   },
   {
     slug: 'lind-advokater',
-    name: 'Lind',
+    name: 'Lind Law',
     logo: '/images/sponsors/lind-law.png',
     logoSize: 'w-[85px] h-[23px]',
     website: 'https://lindlaw.dk/',

@@ -38,6 +38,14 @@ const nameParts = player.name.trim().split(' ');
 const firstName = nameParts[0];
 const lastName = nameParts.slice(1).join(' ');
 
+// A single long unbreakable word (e.g. "Benediktsson") can overflow the name column
+// and bleed into the photo at the default size, since text-wrap:balance only breaks on spaces.
+const longestWord = Math.max(...nameParts.map((part) => part.length));
+const nameFontClamp =
+  longestWord > 10
+    ? 'clamp(0.8rem,1.7vw,1.4rem)'
+    : 'clamp(0.95rem,2.1vw,1.75rem)';
+
 function toSlug(name: string) {
   return name
     .toLowerCase()
@@ -94,7 +102,7 @@ const playerHref =
     <div>
       <p
         class="font-black leading-tight"
-        style={`font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance; color:${textColor};`}>
+        style={`font-size:${nameFontClamp}; letter-spacing:-0.025em; text-wrap:balance; overflow-wrap:anywhere; color:${textColor};`}>
         {firstName}<br />{lastName}
       </p>
       <p
