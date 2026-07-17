@@ -1,30 +1,19 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
+import { fetchWasabiBytes } from '@/lib/og-image';
+import crestDataUri from '../../../../public/images/ab-crest-white.svg?inline';
 
 export const prerender = false;
 
 const CANVAS_W = 1200;
 const CANVAS_H = 630;
 
-// Only same-origin Strapi media-proxy paths are allowed — this endpoint fetches
-// `image` server-side, so it must not become an open SSRF proxy.
+// Only Strapi media-proxy-shaped paths are allowed — this endpoint takes
+// `image` from the client, so it must not become an open SSRF proxy. Matched
+// against the /api/media/ proxy's URL shape even though the image is fetched
+// directly from Wasabi below (not through that proxy), same as player.png.ts.
 const SAFE_IMAGE_PATH =
   /^\/api\/media\/uploads\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|gif)$/i;
-
-async function fetchBytes(url: string): Promise<Uint8Array> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Fetch failed: ${url} (${res.status})`);
-  return new Uint8Array(await res.arrayBuffer());
-}
-
-function toBase64(bytes: Uint8Array): string {
-  let binary = '';
-  const chunkSize = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-  }
-  return btoa(binary);
-}
 
 export async function GET({ url }: APIContext) {
   const imagePath = url.searchParams.get('image');
@@ -34,10 +23,10 @@ export async function GET({ url }: APIContext) {
   }
 
   try {
-    const [imageBytes, crestBytes] = await Promise.all([
-      fetchBytes(`${url.origin}${imagePath}`),
-      fetchBytes(`${url.origin}/images/ab-crest-white.svg`),
-    ]);
+    // imagePath is /api/media/{key} — strip the proxy prefix and fetch the
+    // same Wasabi object directly, rather than self-fetching over HTTP.
+    const wasabiKey = imagePath.replace(/^\/api\/media\//, '');
+    const imageBytes = await fetchWasabiBytes(wasabiKey);
 
     const coverImage = await sharp(imageBytes)
       .resize(CANVAS_W, CANVAS_H, { fit: 'cover', position: 'centre' })
@@ -47,7 +36,6 @@ export async function GET({ url }: APIContext) {
     const crestSize = 100;
     const crestX = Math.round((CANVAS_W - crestSize) / 2);
     const crestY = CANVAS_H - crestSize - 40;
-    const crestDataUri = `data:image/svg+xml;base64,${toBase64(crestBytes)}`;
 
     const overlaySvg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
