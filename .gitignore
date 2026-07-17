@@ -12,6 +12,7 @@ docs
 .env.*.local
 .claude
 .agents
+skills-lock.json
 
 # Astro build output
 dist
