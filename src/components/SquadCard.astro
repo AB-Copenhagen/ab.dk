@@ -38,13 +38,18 @@ const nameParts = player.name.trim().split(' ');
 const firstName = nameParts[0];
 const lastName = nameParts.slice(1).join(' ');
 
-// A single long unbreakable word (e.g. "Benediktsson") can overflow the name column
-// and bleed into the photo at the default size, since text-wrap:balance only breaks on spaces.
+// A single long unbreakable word (e.g. "Koudelka", "Benediktsson") can overflow the name
+// column at the default size, since text-wrap:balance only breaks on spaces. Scale the font
+// down in steps as the longest word grows, rather than letting it break mid-word.
 const longestWord = Math.max(...nameParts.map((part) => part.length));
 const nameFontClamp =
   longestWord > 10
-    ? 'clamp(0.8rem,1.7vw,1.4rem)'
-    : 'clamp(0.95rem,2.1vw,1.75rem)';
+    ? 'clamp(0.62rem,1.3vw,0.95rem)'
+    : longestWord > 8
+      ? 'clamp(0.7rem,1.5vw,1.15rem)'
+      : longestWord > 6
+        ? 'clamp(0.8rem,1.7vw,1.4rem)'
+        : 'clamp(0.95rem,2.1vw,1.75rem)';
 
 function toSlug(name: string) {
   return name
@@ -67,7 +72,7 @@ const playerHref =
 <!--
   Card frame: aspect-ratio 593:503 (full frame incl. overflow zone at top)
   Green background rectangle: occupies bottom 84.1% of frame (423/503)
-  Photo: right ~51%, full frame height — so it naturally "overflows" above the background
+  Photo: right ~46%, full frame height — so it naturally "overflows" above the background
 -->
 <a
   href={playerHref}
@@ -79,9 +84,9 @@ const playerHref =
     style={`height:84.1%; background:${cardBg};`}>
   </div>
 
-  <!-- Player photo: right 51%, full height of card frame -->
+  <!-- Player photo: right 46%, full height of card frame -->
   <div
-    class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[51%]">
+    class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[46%]">
     {
       photoUrl ? (
         <img
@@ -95,9 +100,9 @@ const playerHref =
     }
   </div>
 
-  <!-- Text layer: left 53%, pinned to bottom 84% of frame -->
+  <!-- Text layer: left 58%, pinned to bottom 84% of frame -->
   <div
-    class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10 h-[84.1%] w-[53%]">
+    class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10 h-[84.1%] w-[58%]">
     <!-- Name + position -->
     <div>
       <p
