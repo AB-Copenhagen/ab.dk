@@ -1,8 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro';
 import SquadCard from '@/components/SquadCard.astro';
+import StaffCard from '@/components/StaffCard.astro';
 import { fetchABPlayers, type SIPlayer } from '@/lib/si/client';
-import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
+import { COACHING_STAFF } from '@/data/coaching-staff';
 import Img from '@/components/Img.astro';
 import { EXCLUDED_PLAYER_SLUGS } from '@/lib/si/player-photos';
 import { resolveShirtNumber } from '@/data/player-cms-data';
@@ -88,7 +89,7 @@ for (const p of players) {
                   style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; text-transform:none;">
                   {POSITION_GROUPS[key]}
                 </h2>
-                <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-3 md:gap-x-7">
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-7">
                   {group.map((player) => (
                     <SquadCard
                       player={player}
@@ -108,37 +109,8 @@ for (const p of players) {
           style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; text-transform:none;">
           Trænerstab
         </h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-3 md:gap-x-7">
-          {COACHING_STAFF.map((staff) => {
-            const parts = staff.name.trim().split(' ');
-            const firstName = parts[0];
-            const lastName = parts.slice(1).join(' ');
-            const initials = staffInitials(staff.name);
-            return (
-              <a href={`/stab/${staff.slug}`} class="relative block group aspect-[593/503]">
-                <div class="absolute inset-x-0 bottom-0 transition-all duration-300 group-hover:brightness-95" style="height:84.1%; background:#EBEBEB;"></div>
-                <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl" style="width:51%;">
-                  <img src={staff.photo} alt={staff.name} loading="lazy"
-                       class="absolute inset-0 w-full h-full object-cover object-top"
-                       onerror="this.style.opacity='0'" />
-                </div>
-                <div class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10"
-                     style="height:84.1%; width:53%;">
-                  <div>
-                    <p class="font-black leading-tight text-ab-green"
-                       style="font-size:clamp(0.95rem,2.1vw,1.75rem); letter-spacing:-0.025em; text-wrap:balance;">
-                      {firstName}<br />{lastName}
-                    </p>
-                    <p class="text-xs mt-1 font-medium" style="color:color-mix(in srgb, var(--ab-green) 60%, transparent);">{staff.role.da}</p>
-                  </div>
-                  <p class="font-black leading-none select-none tracking-[-0.04em]"
-                     style="font-size:clamp(2.5rem,6.5vw,6.5rem); color:color-mix(in srgb, var(--ab-green) 18%, transparent);">
-                    {initials}
-                  </p>
-                </div>
-              </a>
-            );
-          })}
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-7">
+          {COACHING_STAFF.map((staff) => <StaffCard staff={staff} locale="da" />)}
         </div>
       </section>
     </div>

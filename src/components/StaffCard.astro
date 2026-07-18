@@ -1,0 +1,71 @@
+---
+import { getPersonCardSizing } from '@/lib/person-card-sizing';
+import type { StaffMember } from '@/data/coaching-staff';
+import { staffInitials } from '@/data/coaching-staff';
+
+interface Props {
+  staff: StaffMember;
+  locale: 'da' | 'en';
+}
+
+const { staff, locale } = Astro.props;
+
+const roleLabel = staff.role[locale];
+const initials = staffInitials(staff.name);
+
+const nameParts = staff.name.trim().split(' ');
+const firstName = nameParts[0];
+const lastName = nameParts.slice(1).join(' ');
+
+// Same overflow risk as SquadCard: a long name or a wrapping two-word role (e.g.
+// "Head Coach") can push the initials past the bottom of the card.
+const { nameFontClamp, numberFontClamp, labelFontClamp } = getPersonCardSizing(
+  staff.name,
+  roleLabel
+);
+
+const staffHref = locale === 'da' ? `/stab/${staff.slug}` : `/en/staff/${staff.slug}`;
+---
+
+<!-- Card frame: same 593:503 layout as SquadCard, styled gray for staff -->
+<a href={staffHref} class="staff-card block relative group aspect-[593/503]">
+  <div
+    class="absolute inset-x-0 bottom-0 transition-all duration-300 group-hover:brightness-95"
+    style="height:84.1%; background:#EBEBEB;">
+  </div>
+
+  <!-- Photo: right 46%, full height of card frame -->
+  <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[46%]">
+    <img
+      src={staff.photo}
+      alt={staff.name}
+      loading="lazy"
+      class="absolute inset-0 w-full h-full object-cover object-left-bottom"
+      onerror="this.style.opacity='0'"
+    />
+  </div>
+
+  <!-- Text layer: left 58%, pinned to bottom 84% of frame. overflow-hidden is a safety net,
+       see SquadCard.astro for the full rationale. -->
+  <div
+    class="absolute inset-x-0 bottom-0 flex flex-col justify-between overflow-hidden p-4 md:p-5 z-10 h-[84.1%] w-[58%]">
+    <div>
+      <p
+        class="font-black leading-tight text-ab-green"
+        style={`font-size:${nameFontClamp}; letter-spacing:-0.025em; text-wrap:balance; overflow-wrap:anywhere;`}>
+        {firstName}<br />{lastName}
+      </p>
+      <p
+        class="mt-1 font-medium"
+        style={`font-size:${labelFontClamp}; color:color-mix(in srgb, var(--ab-green) 60%, transparent);`}>
+        {roleLabel}
+      </p>
+    </div>
+
+    <p
+      class="font-black leading-none select-none tracking-[-0.04em]"
+      style={`font-size:${numberFontClamp}; color:color-mix(in srgb, var(--ab-green) 18%, transparent);`}>
+      {initials}
+    </p>
+  </div>
+</a>

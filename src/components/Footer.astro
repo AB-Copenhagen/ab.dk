@@ -90,13 +90,14 @@ const partners = (
         <img
           src="/images/ab-logo-wordmark.svg"
           alt="AB 1889"
-          class="w-[clamp(180px,18vw,300px)] h-auto"
+          class="w-[clamp(90px,18vw,300px)] md:w-[clamp(180px,18vw,300px)] h-auto"
         />
       </div>
 
       <!-- Center: link columns -->
-      <div class="grid grid-cols-3 gap-4 sm:gap-8 lg:gap-16">
-        <!-- Contact -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-8 lg:gap-16">
+        <!-- Contact: its own column on mobile (Explore + Resources stack in the 2nd column
+             below), and its own column again at sm: alongside the other two -->
         <div>
           <p class={footerHeadingClass}>
             {locale === 'da' ? 'Kontakt' : 'Contact'}
@@ -137,6 +138,9 @@ const partners = (
           </div>
         </div>
 
+        <!-- Explore + Resources: stacked in their own column on mobile (sm:contents drops
+             this wrapper at sm: so both become independent grid columns again) -->
+        <div class="flex flex-col gap-8 sm:contents">
         <!-- Explore -->
         <div>
           <p class={footerHeadingClass}>{locale === 'da' ? 'Udforsk' : 'Explore'}</p>
@@ -189,6 +193,7 @@ const partners = (
               </li>
             </ul>
           )}
+        </div>
         </div>
       </div>
 
