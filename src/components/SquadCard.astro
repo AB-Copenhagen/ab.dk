@@ -1,5 +1,6 @@
 ---
 import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
+import { getPersonCardSizing } from '@/lib/person-card-sizing';
 
 interface Props {
   player: {
@@ -38,13 +39,13 @@ const nameParts = player.name.trim().split(' ');
 const firstName = nameParts[0];
 const lastName = nameParts.slice(1).join(' ');
 
-// A single long unbreakable word (e.g. "Benediktsson") can overflow the name column
-// and bleed into the photo at the default size, since text-wrap:balance only breaks on spaces.
-const longestWord = Math.max(...nameParts.map((part) => part.length));
-const nameFontClamp =
-  longestWord > 10
-    ? 'clamp(0.8rem,1.7vw,1.4rem)'
-    : 'clamp(0.95rem,2.1vw,1.75rem)';
+// A long name (a single unbreakable word, or 3+ parts that wrap to 3 lines) can grow tall
+// enough to push the jersey number past the bottom of the card. Shrink name + number
+// together as that risk grows, rather than letting either overflow.
+const { nameFontClamp, numberFontClamp, labelFontClamp } = getPersonCardSizing(
+  player.name,
+  posLabel
+);
 
 function toSlug(name: string) {
   return name
@@ -67,7 +68,7 @@ const playerHref =
 <!--
   Card frame: aspect-ratio 593:503 (full frame incl. overflow zone at top)
   Green background rectangle: occupies bottom 84.1% of frame (423/503)
-  Photo: right ~51%, full frame height — so it naturally "overflows" above the background
+  Photo: right ~46%, full frame height — so it naturally "overflows" above the background
 -->
 <a
   href={playerHref}
@@ -79,25 +80,27 @@ const playerHref =
     style={`height:84.1%; background:${cardBg};`}>
   </div>
 
-  <!-- Player photo: right 51%, full height of card frame -->
+  <!-- Player photo: right 46%, full height of card frame -->
   <div
-    class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[51%]">
+    class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[46%]">
     {
       photoUrl ? (
         <img
           src={photoUrl}
           alt={player.name}
           loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover object-top"
+          class="absolute inset-0 w-full h-full object-cover object-left-bottom"
           onerror="this.style.opacity='0'"
         />
       ) : null
     }
   </div>
 
-  <!-- Text layer: left 53%, pinned to bottom 84% of frame -->
+  <!-- Text layer: left 58%, pinned to bottom 84% of frame. overflow-hidden is a safety net —
+       the sizing above should keep everything in bounds, but nothing should ever visually
+       escape past the card if an unexpectedly long name/label combination still doesn't fit. -->
   <div
-    class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10 h-[84.1%] w-[53%]">
+    class="absolute inset-x-0 bottom-0 flex flex-col justify-between overflow-hidden p-4 md:p-5 z-10 h-[84.1%] w-[58%]">
     <!-- Name + position -->
     <div>
       <p
@@ -106,8 +109,8 @@ const playerHref =
         {firstName}<br />{lastName}
       </p>
       <p
-        class="text-xs mt-1 font-medium"
-        style={`color:${textMuted};`}>
+        class="mt-1 font-medium"
+        style={`font-size:${labelFontClamp}; color:${textMuted};`}>
         {posLabel}
       </p>
     </div>
@@ -117,7 +120,7 @@ const playerHref =
       number != null ? (
         <p
           class="font-black leading-none select-none"
-          style={`font-size:clamp(2.5rem,6.5vw,6.5rem); letter-spacing:-0.04em; color:${textColor};`}>
+          style={`font-size:${numberFontClamp}; letter-spacing:-0.04em; color:${textColor};`}>
           {number}
         </p>
       ) : null
