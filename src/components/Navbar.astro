@@ -74,22 +74,68 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
       </div>
       <div class="w-px h-4 bg-white/20 shrink-0"></div>
       <!-- Login / My account -->
-      <a
-        href={authHref}
-        class="flex items-center gap-2 text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity">
-        {authLabel}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 20 19"
-          fill="none">
-          <path
-            d="M8.57541 10.9615C11.1318 10.9615 13.2165 8.82761 13.2165 6.21156C13.2165 3.59551 11.1315 1.46166 8.57541 1.46166C6.01927 1.46166 3.93429 3.59551 3.93429 6.21156C3.93429 8.82761 6.01927 10.9615 8.57541 10.9615ZM14.2164 10.618C13.4381 10.618 12.7027 10.9322 12.1457 11.4949C11.1889 12.4741 9.92504 13.0076 8.57552 13.0076C7.22601 13.0076 5.95495 12.4669 4.99826 11.4949C4.44846 10.9249 3.71299 10.618 2.92755 10.618C2.14926 10.618 1.41379 10.9249 0.856844 11.4949C0.307047 12.0576 0 12.8103 0 13.6142C0 14.418 0.307047 15.1634 0.856844 15.7334C2.91327 17.8453 5.65517 19 8.56844 19C11.4817 19 14.2236 17.8381 16.28 15.7334C16.8298 15.1707 17.1369 14.418 17.1369 13.6142C17.1369 12.8103 16.8298 12.0649 16.28 11.4949C15.7302 10.9322 14.9948 10.618 14.2093 10.618H14.2164Z"
-            fill="white"
-          ></path>
-        </svg>
-      </a>
+      {isLoggedIn ? (
+        <div class="relative group">
+          <a
+            href={authHref}
+            class="flex items-center gap-2 text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity">
+            {authLabel}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 20 19"
+              fill="none">
+              <path
+                d="M8.57541 10.9615C11.1318 10.9615 13.2165 8.82761 13.2165 6.21156C13.2165 3.59551 11.1315 1.46166 8.57541 1.46166C6.01927 1.46166 3.93429 3.59551 3.93429 6.21156C3.93429 8.82761 6.01927 10.9615 8.57541 10.9615ZM14.2164 10.618C13.4381 10.618 12.7027 10.9322 12.1457 11.4949C11.1889 12.4741 9.92504 13.0076 8.57552 13.0076C7.22601 13.0076 5.95495 12.4669 4.99826 11.4949C4.44846 10.9249 3.71299 10.618 2.92755 10.618C2.14926 10.618 1.41379 10.9249 0.856844 11.4949C0.307047 12.0576 0 12.8103 0 13.6142C0 14.418 0.307047 15.1634 0.856844 15.7334C2.91327 17.8453 5.65517 19 8.56844 19C11.4817 19 14.2236 17.8381 16.28 15.7334C16.8298 15.1707 17.1369 14.418 17.1369 13.6142C17.1369 12.8103 16.8298 12.0649 16.28 11.4949C15.7302 10.9322 14.9948 10.618 14.2093 10.618H14.2164Z"
+                fill="white"
+              ></path>
+            </svg>
+            <svg
+              width="10"
+              height="6"
+              viewBox="0 0 10 6"
+              fill="none"
+              class="opacity-70 transition-transform group-hover:rotate-180"
+              aria-hidden="true">
+              <path
+                d="M1 1l4 4 4-4"
+                stroke="white"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </a>
+          <div class="absolute top-full right-0 hidden group-hover:block z-50 pt-3">
+            <div class="min-w-[160px] shadow-2xl bg-[#004A3A] border-t-[3px] border-ab-beige">
+              <button
+                type="button"
+                id="nav-logout-btn"
+                class="block w-full cursor-pointer px-5 py-3 text-left font-black text-sm text-white/80 tracking-[-0.02em] no-underline transition-colors border-l-2 border-transparent hover:bg-white/10 hover:text-white">
+                {nav.logout}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <a
+          href={authHref}
+          class="flex items-center gap-2 text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity">
+          {authLabel}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 20 19"
+            fill="none">
+            <path
+              d="M8.57541 10.9615C11.1318 10.9615 13.2165 8.82761 13.2165 6.21156C13.2165 3.59551 11.1315 1.46166 8.57541 1.46166C6.01927 1.46166 3.93429 3.59551 3.93429 6.21156C3.93429 8.82761 6.01927 10.9615 8.57541 10.9615ZM14.2164 10.618C13.4381 10.618 12.7027 10.9322 12.1457 11.4949C11.1889 12.4741 9.92504 13.0076 8.57552 13.0076C7.22601 13.0076 5.95495 12.4669 4.99826 11.4949C4.44846 10.9249 3.71299 10.618 2.92755 10.618C2.14926 10.618 1.41379 10.9249 0.856844 11.4949C0.307047 12.0576 0 12.8103 0 13.6142C0 14.418 0.307047 15.1634 0.856844 15.7334C2.91327 17.8453 5.65517 19 8.56844 19C11.4817 19 14.2236 17.8381 16.28 15.7334C16.8298 15.1707 17.1369 14.418 17.1369 13.6142C17.1369 12.8103 16.8298 12.0649 16.28 11.4949C15.7302 10.9322 14.9948 10.618 14.2093 10.618H14.2164Z"
+              fill="white"
+            ></path>
+          </svg>
+        </a>
+      )}
       <div class="w-px h-4 bg-white/20 shrink-0"></div>
       <!-- Language selector -->
       <div class="flex items-center gap-4">
@@ -260,6 +306,9 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
         switchedLocalePath={locale === 'da' ? enPath : daPath}
         loginHref={authHref}
         loginLabel={authLabel}
+        isLoggedIn={isLoggedIn}
+        logoutLabel={nav.logout}
+        logoutRedirectHref={loginHref}
         toggleId="mobile-menu-open-btn"
       />
       <SearchModal
@@ -269,6 +318,13 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
     </div>
   </div>
 </header>
+
+<script is:inline define:vars={{ loginHref }}>
+  document.getElementById('nav-logout-btn')?.addEventListener('click', async () => {
+    await fetch('/api/auth/session', { method: 'DELETE' });
+    location.href = loginHref;
+  });
+</script>
 
 <script>
   const hdr = document.querySelector('header.sticky');
@@ -316,14 +372,18 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
     transition: none !important;
   }
 
-  /* Utility bar slides up */
+  /* Utility bar slides up. Overflow stays visible at rest so the "My
+     account" dropdown (absolutely positioned inside this bar) isn't
+     clipped by the 45px box — it only needs to hide content once the
+     bar is actually collapsing to zero height on scroll. */
   .nav-utility {
     height: 45px;
-    overflow: hidden;
+    overflow: visible;
     transition: height 0.34s cubic-bezier(0.4, 0, 0.2, 1);
   }
   header.nav-scrolled .nav-utility {
     height: 0;
+    overflow: hidden;
   }
 
   /* Main nav morphs via padding — content breathes, not just the box */
