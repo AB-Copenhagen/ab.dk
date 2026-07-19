@@ -45,6 +45,13 @@ const quickLinks = [
                 Akademisk Boldklub
               </p>
               <h1 class="text-lg font-black text-neutral-900">{name || email || 'Min profil'}</h1>
+              <button
+                type="button"
+                id="sidebar-logout-btn"
+                class="mt-1 cursor-pointer text-[11px] font-semibold uppercase tracking-widest text-neutral-400 no-underline transition-colors hover:text-neutral-700"
+              >
+                Log ud
+              </button>
             </div>
           </div>
         </div>
@@ -124,13 +131,15 @@ const quickLinks = [
     <script is:inline src="https://unpkg.com/@descope/user-profile-widget@0.14.3/dist/index.js"></script>
   )}
 
+  <script>
+    document.getElementById('sidebar-logout-btn')?.addEventListener('click', async () => {
+      await fetch('/api/auth/session', { method: 'DELETE' });
+      location.href = '/konto';
+    });
+  </script>
+
   {DESCOPE_PROJECT_ID && (
     <script is:inline define:vars={{ DESCOPE_PROJECT_ID }}>
-      const logout = async () => {
-        await fetch('/api/auth/session', { method: 'DELETE' });
-        location.href = '/konto';
-      };
-
       // These buttons render with size="sm", but the widget's internal CSS only
       // reacts to theme="small" — size="sm" is inert, so they render at Lumo's
       // default medium size. Their icons are either a hardcoded oversized SVG
@@ -176,8 +185,20 @@ const quickLinks = [
       `;
 
       const tightenSpacing = (root) => {
-        root.querySelectorAll('#userAttrsContainer, #authMethodsContainer, #logoutContainer').forEach((container) => {
+        root.querySelectorAll('#userAttrsContainer, #authMethodsContainer').forEach((container) => {
           injectShadowStyle(container, CONTAINER_INNER_CSS);
+        });
+        // Logout now lives in the sidebar identity card instead of the
+        // widget. The widget renders section separators as their own
+        // <descope-divider> elements (confirmed via live DOM inspection —
+        // it's a sibling, not a border on either container), so hiding
+        // #logoutContainer also means hiding the divider right before it.
+        root.querySelectorAll('#logoutContainer').forEach((container) => {
+          container.style.setProperty('display', 'none', 'important');
+          const divider = container.previousElementSibling;
+          if (divider?.tagName === 'DESCOPE-DIVIDER') {
+            divider.style.setProperty('display', 'none', 'important');
+          }
         });
         root.querySelectorAll('.descope-user-attribute, .descope-user-passkeys, .descope-user-auth-method').forEach((row) => {
           row.style.setProperty('margin', '0', 'important');
@@ -201,7 +222,6 @@ const quickLinks = [
         el.setAttribute('project-id', DESCOPE_PROJECT_ID);
         el.setAttribute('widget-id', 'user-profile-widget');
         el.setAttribute('theme', 'light');
-        el.logout = logout;
         document.getElementById('descope-profile-container')?.appendChild(el);
 
         if (el.shadowRoot) {

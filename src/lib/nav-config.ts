@@ -63,6 +63,7 @@ export interface NavConfig {
   primary: NavItem[];
   login: string;
   myAccount: string;
+  logout: string;
   openMenu: string;
   closeMenu: string;
 }
@@ -104,6 +105,7 @@ const da: NavConfig = {
   ],
   login: 'Log ind',
   myAccount: 'Min konto',
+  logout: 'Log ud',
   openMenu: 'Åbn menu',
   closeMenu: 'Luk menu',
 };
@@ -145,6 +147,7 @@ const en: NavConfig = {
   ],
   login: 'Sign in',
   myAccount: 'My account',
+  logout: 'Log out',
   openMenu: 'Open menu',
   closeMenu: 'Close menu',
 };

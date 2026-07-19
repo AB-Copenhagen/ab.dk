@@ -12,6 +12,9 @@ interface Props {
   switchedLocalePath?: string;
   loginHref?: string;
   loginLabel?: string;
+  isLoggedIn?: boolean;
+  logoutLabel?: string;
+  logoutRedirectHref?: string;
   toggleId?: string;
 }
 
@@ -23,6 +26,9 @@ export default function MobileMenu({
   switchedLocalePath,
   loginHref,
   loginLabel,
+  isLoggedIn = false,
+  logoutLabel,
+  logoutRedirectHref,
   toggleId = 'mobile-menu-open-btn',
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -90,6 +96,20 @@ export default function MobileMenu({
                     </svg>
                     {loginLabel ?? (locale === 'da' ? 'Log ind' : 'Sign in')}
                   </a>
+                )}
+                {isLoggedIn && (
+                  <button
+                    type="button"
+                    className="ml-auto text-white/60 font-medium text-sm no-underline transition-colors hover:text-white"
+                    onClick={async () => {
+                      await fetch('/api/auth/session', { method: 'DELETE' });
+                      window.location.href =
+                        logoutRedirectHref ??
+                        (locale === 'da' ? '/konto' : '/en/account');
+                    }}
+                  >
+                    {logoutLabel ?? (locale === 'da' ? 'Log ud' : 'Log out')}
+                  </button>
                 )}
               </div>
 
