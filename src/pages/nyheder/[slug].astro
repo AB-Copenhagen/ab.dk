@@ -24,8 +24,25 @@ if (!article) return Astro.redirect('/nyheder');
 // translation when one exists (only populated when an editor used Strapi's
 // "Add locale" flow rather than creating an independent EN entry) — DA/EN
 // slugs are otherwise unrelated strings, so the nav's generic path-prefix
-// swap can't guess the right target. Falls back to the EN listing page.
-const enTranslationSlug = article.localizations?.[0]?.slug;
+// swap can't guess the right target.
+let enTranslationSlug = article.localizations?.[0]?.slug;
+
+// Most existing articles were published as independent DA/EN entries (no
+// Strapi-native link at all — confirmed against live data: 508 of 816 DA
+// articles are "strays" like this). They still share the same real-world
+// originalPublishedAt timestamp even though slug/title are unrelated
+// per-locale fields, so that's the best available fallback match.
+if (!enTranslationSlug && article.originalPublishedAt) {
+  const strayMatch = await fetchCollectionType<any[]>('articles', {
+    locale: 'en',
+    filters: { originalPublishedAt: { $eq: article.originalPublishedAt } },
+    fields: ['slug'],
+    pagination: { pageSize: 1 },
+  }).catch(() => [] as any[]);
+  enTranslationSlug = strayMatch[0]?.slug;
+}
+
+// Falls back to the EN listing page when neither match is found.
 const alternateLocalePath = enTranslationSlug ? `/en/news/${enTranslationSlug}` : undefined;
 
 const allArticles = await fetchCollectionType<any[]>('articles', {
