@@ -14,11 +14,19 @@ const STRAPI_URL = import.meta.env.STRAPI_URL ?? 'http://localhost:1337';
 const results = await fetchCollectionType<any[]>('articles', {
   locale,
   filters: { slug: { $eq: slug } },
-  populate: ['image', 'categories'],
+  populate: { image: true, categories: true, localizations: { fields: ['slug'] } },
 }).catch(() => [] as any[]);
 
 const article = results[0];
 if (!article) return Astro.redirect('/en/news');
+
+// Strapi's i18n localizations relation links this article to its Danish
+// original when one exists (only populated when an editor used Strapi's
+// "Add locale" flow rather than creating an independent DA entry) — DA/EN
+// slugs are otherwise unrelated strings, so the nav's generic path-prefix
+// swap can't guess the right target. Falls back to the DA listing page.
+const daTranslationSlug = article.localizations?.[0]?.slug;
+const alternateLocalePath = daTranslationSlug ? `/nyheder/${daTranslationSlug}` : undefined;
 
 const allArticles = await fetchCollectionType<any[]>('articles', {
   locale,
@@ -82,6 +90,7 @@ const articleSchema = {
   ogImage={ogCardImageUrl}
   ogType="article"
   structuredData={articleSchema}
+  alternateLocalePath={alternateLocalePath}
 >
   <article class="text-[#111]">
 

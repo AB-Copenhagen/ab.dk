@@ -19,6 +19,11 @@ interface Props {
   ogImage?: string;
   ogType?: 'website' | 'article' | 'profile';
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  /** Overrides the language-switch target for the OTHER locale, for pages where the generic
+   * path-prefix swap can't work (e.g. news article detail pages, where the DA/EN slugs are
+   * independent CMS fields with no relation to each other). Absolute pathname, e.g. `/en/news/foo`.
+   * Omit to fall back to the automatic prefix swap. */
+  alternateLocalePath?: string;
 }
 
 const {
@@ -30,6 +35,7 @@ const {
   ogImage,
   ogType = 'website',
   structuredData,
+  alternateLocalePath,
 } = Astro.props;
 
 // Canonical/hreflang always point at the production domain. og:image, however, must be
@@ -48,8 +54,14 @@ const resolvedOgImage = ogImage
   ? (ogImage.startsWith('http') ? ogImage : `${assetOrigin}${ogImage}`)
   : `${assetOrigin}/images/og-default.png`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
-const hreflangDaUrl = new URL(switchLocalePath(Astro.url.pathname, 'da'), Astro.site).href;
-const hreflangEnUrl = new URL(switchLocalePath(Astro.url.pathname, 'en'), Astro.site).href;
+const hreflangDaUrl = new URL(
+  locale === 'da' ? Astro.url.pathname : (alternateLocalePath ?? switchLocalePath(Astro.url.pathname, 'da')),
+  Astro.site,
+).href;
+const hreflangEnUrl = new URL(
+  locale === 'en' ? Astro.url.pathname : (alternateLocalePath ?? switchLocalePath(Astro.url.pathname, 'en')),
+  Astro.site,
+).href;
 const ogLocale = locale === 'en' ? 'en_US' : 'da_DK';
 const ogLocaleAlternate = locale === 'en' ? 'da_DK' : 'en_US';
 
@@ -151,7 +163,7 @@ const statisticsConsented = Astro.isPrerendered
     )}
   </head>
   <body class="min-h-screen bg-white text-[#111]">
-    <Navbar locale={locale} />
+    <Navbar locale={locale} alternateLocalePath={alternateLocalePath} />
     <main>
       <slot />
     </main>
