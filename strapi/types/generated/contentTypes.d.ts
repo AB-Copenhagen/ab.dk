@@ -460,7 +460,12 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
     categories: Schema.Attribute.Relation<
       'manyToMany',
       'api::category.category'
-    >;
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     content: Schema.Attribute.Blocks &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
