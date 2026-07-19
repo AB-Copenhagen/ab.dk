@@ -6,14 +6,17 @@ import { translate, switchLocalePath, type Locale } from '@/lib/i18n';
 
 interface Props {
   locale?: Locale;
+  /** Overrides the language-switch target for the OTHER locale — see Base.astro's prop of
+   * the same name. Falls back to the generic path-prefix swap when omitted. */
+  alternateLocalePath?: string;
 }
 
-const { locale = 'da' } = Astro.props;
+const { locale = 'da', alternateLocalePath } = Astro.props;
 const nav = getNavConfig(locale);
 const enPrefix = locale === 'en' ? '/en' : '';
 const currentPath = Astro.url.pathname;
-const daPath = switchLocalePath(currentPath, 'da');
-const enPath = switchLocalePath(currentPath, 'en');
+const daPath = locale === 'en' && alternateLocalePath ? alternateLocalePath : switchLocalePath(currentPath, 'da');
+const enPath = locale === 'da' && alternateLocalePath ? alternateLocalePath : switchLocalePath(currentPath, 'en');
 
 // Presence-only check for nav display purposes (not a security boundary — the actual
 // gated routes validate the session properly in middleware.ts). Skipped on prerendered

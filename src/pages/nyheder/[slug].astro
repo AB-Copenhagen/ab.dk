@@ -14,11 +14,36 @@ const STRAPI_URL = import.meta.env.STRAPI_URL ?? 'http://localhost:1337';
 const results = await fetchCollectionType<any[]>('articles', {
   locale,
   filters: { slug: { $eq: slug } },
-  populate: ['image', 'categories'],
+  populate: { image: true, categories: true, localizations: { fields: ['slug'] } },
 }).catch(() => [] as any[]);
 
 const article = results[0];
 if (!article) return Astro.redirect('/nyheder');
+
+// Strapi's i18n localizations relation links this article to its English
+// translation when one exists (only populated when an editor used Strapi's
+// "Add locale" flow rather than creating an independent EN entry) — DA/EN
+// slugs are otherwise unrelated strings, so the nav's generic path-prefix
+// swap can't guess the right target.
+let enTranslationSlug = article.localizations?.[0]?.slug;
+
+// Most existing articles were published as independent DA/EN entries (no
+// Strapi-native link at all — confirmed against live data: 508 of 816 DA
+// articles are "strays" like this). They still share the same real-world
+// originalPublishedAt timestamp even though slug/title are unrelated
+// per-locale fields, so that's the best available fallback match.
+if (!enTranslationSlug && article.originalPublishedAt) {
+  const strayMatch = await fetchCollectionType<any[]>('articles', {
+    locale: 'en',
+    filters: { originalPublishedAt: { $eq: article.originalPublishedAt } },
+    fields: ['slug'],
+    pagination: { pageSize: 1 },
+  }).catch(() => [] as any[]);
+  enTranslationSlug = strayMatch[0]?.slug;
+}
+
+// Falls back to the EN listing page when neither match is found.
+const alternateLocalePath = enTranslationSlug ? `/en/news/${enTranslationSlug}` : undefined;
 
 const allArticles = await fetchCollectionType<any[]>('articles', {
   locale,
@@ -82,6 +107,7 @@ const articleSchema = {
   ogImage={ogCardImageUrl}
   ogType="article"
   structuredData={articleSchema}
+  alternateLocalePath={alternateLocalePath}
 >
   <article class="text-[#111]">
 
