@@ -80,6 +80,10 @@ export const COACHING_STAFF: StaffMember[] = [
     photo: '/api/media/players/albert-kaarnoe.png',
     role: { da: 'Fysioterapeut', en: 'Physiotherapist' },
     nationality: { da: 'Dansk', en: 'Danish' },
+    bio: {
+      en: 'Albert is a physiotherapy student at Copenhagen University College (Københavns Professionshøjskole), a sports enthusiast and someone who genuinely enjoys helping people feel stronger, move better and reach their goals. He is passionate about creating a positive environment where people feel supported and confident throughout their journey.',
+      da: 'Albert er fysioterapistuderende ved Københavns Professionshøjskole, sportsentusiast og en, der oprigtigt nyder at hjælpe mennesker med at blive stærkere, bevæge sig bedre og nå deres mål. Han brænder for at skabe et positivt miljø, hvor mennesker føler sig støttet og trygge gennem hele deres forløb.',
+    },
   },
   {
     slug: 'kim-villy-nielsen',
