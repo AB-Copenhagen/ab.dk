@@ -172,9 +172,12 @@ const articleSchema = {
           <!-- Center: category + body + share -->
           <div class="text-[#111]">
             {article.categories?.[0] && (
-              <p class="font-bold mb-6 underline underline-offset-2 text-[0.85rem] text-ab-green">
+              <a
+                href={`/en/news?category=${article.categories[0].documentId}`}
+                class="inline-block mb-6 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline bg-ab-green text-white transition-colors hover:opacity-90"
+              >
                 {article.categories[0].name}
-              </p>
+              </a>
             )}
             {article.content && (
               <div class="article-prose">
