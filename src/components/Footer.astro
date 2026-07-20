@@ -11,7 +11,7 @@ const { locale = 'da', globalData } = Astro.props;
 const d = globalData;
 const year = new Date().getFullYear();
 
-const resourceLinks = d?.policy_links as
+const resourceLinks = d?.footer?.policy_links as
   { text: string; URL: string }[] | undefined;
 
 const footerHeadingClass =
@@ -211,7 +211,7 @@ const partners = (
   <!-- Neon green copyright strip -->
   <div class="bg-ab-neon flex items-center justify-center px-8 py-4">
     <p class="text-xs text-rich-black text-center tracking-[-0.01em]">
-      {d?.copyright ?? `© ${year} AB Gladsaxe. All rights reserved.`}
+      {d?.footer?.copyright ?? `© ${year} AB Gladsaxe. All rights reserved.`}
     </p>
   </div>
 </footer>
