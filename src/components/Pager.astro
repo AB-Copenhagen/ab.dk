@@ -7,12 +7,17 @@ interface Props {
   nextLabel: string;
   pageLabel: string;
   ofLabel: string;
+  /** Extra query string to preserve across page links, e.g. "category=abc123" (no leading `?`/`&`). */
+  extraQuery?: string;
 }
 
-const { currentPage, totalPages, basePath, prevLabel, nextLabel, pageLabel, ofLabel } = Astro.props;
+const { currentPage, totalPages, basePath, prevLabel, nextLabel, pageLabel, ofLabel, extraQuery } = Astro.props;
 
 function pageHref(page: number) {
-  return page <= 1 ? basePath : `${basePath}?page=${page}`;
+  const params = new URLSearchParams(extraQuery ?? '');
+  if (page > 1) params.set('page', String(page));
+  const qs = params.toString();
+  return qs ? `${basePath}?${qs}` : basePath;
 }
 ---
 
@@ -34,6 +39,7 @@ function pageHref(page: number) {
         <select
           class="pager-select border border-gray-200 rounded-md px-2 py-1 text-sm font-bold text-ab-green tabular-nums"
           data-base-path={basePath}
+          data-extra-query={extraQuery ?? ''}
           aria-label={pageLabel}
         >
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
@@ -62,7 +68,10 @@ function pageHref(page: number) {
     select.addEventListener('change', () => {
       const base = select.dataset.basePath ?? '';
       const page = select.value;
-      window.location.href = page === '1' ? base : `${base}?page=${page}`;
+      const params = new URLSearchParams(select.dataset.extraQuery ?? '');
+      if (page !== '1') params.set('page', page);
+      const qs = params.toString();
+      window.location.href = qs ? `${base}?${qs}` : base;
     });
   });
 </script>

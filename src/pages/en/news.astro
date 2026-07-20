@@ -1,7 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import Pager from '@/components/Pager.astro';
-import { fetchCollectionTypeWithMeta, strapiMediaUrl } from '@/lib/strapi/client';
+import { fetchCollectionType, fetchCollectionTypeWithMeta, strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate, decodeHtml } from '@/lib/utils';
 export const prerender = false;
 
@@ -20,23 +20,48 @@ function formatDate(str: string) {
 }
 
 const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10) || 1);
-const start = page === 1 ? 0 : FIRST_PAGE_SIZE + (page - 2) * GRID_PAGE_SIZE;
-const limit = page === 1 ? FIRST_PAGE_SIZE : GRID_PAGE_SIZE;
+
+// Category browser — categories share a documentId across DA/EN locale variants
+// (Strapi's i18n link), so it's a stable filter key regardless of which
+// locale's category name is displayed. Sorted most-populated first.
+// "Featured News" (documentId pcrdkof02i4geu3ysmwdod9g) is an internal
+// catch-all tag used to drive homepage/other placement, not a meaningful
+// browsing category for readers — hidden from the pill bar.
+const HIDDEN_CATEGORY_IDS = new Set(['pcrdkof02i4geu3ysmwdod9g']);
+const categories = (
+  await fetchCollectionType<any[]>('categories', {
+    locale,
+    populate: { articles: { count: true } },
+  }).catch(() => [] as any[])
+).filter((c: any) => !HIDDEN_CATEGORY_IDS.has(c.documentId));
+categories.sort((a: any, b: any) => (b.articles?.count ?? 0) - (a.articles?.count ?? 0));
+
+const activeCategory = Astro.url.searchParams.get('category');
+const categoryFilter = activeCategory ? { categories: { documentId: { $eq: activeCategory } } } : undefined;
+const extraQuery = activeCategory ? `category=${activeCategory}` : '';
+
+// A filtered category view is a plain card grid — no hero — so every page
+// (including page 1) uses the uniform grid page size, not the hero+grid split.
+const start = !activeCategory && page === 1 ? 0 : (activeCategory ? (page - 1) * GRID_PAGE_SIZE : FIRST_PAGE_SIZE + (page - 2) * GRID_PAGE_SIZE);
+const limit = !activeCategory && page === 1 ? FIRST_PAGE_SIZE : GRID_PAGE_SIZE;
 
 const { data: pageArticles, pagination } = await fetchCollectionTypeWithMeta<any[]>('articles', {
   locale,
   sort: ['originalPublishedAt:desc'],
   populate: ['image'],
+  filters: categoryFilter,
   pagination: { start, limit },
 }).catch(() => ({ data: [] as any[], pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } }));
 
-const totalPages =
-  pagination.total <= FIRST_PAGE_SIZE
+const totalPages = activeCategory
+  ? Math.max(1, Math.ceil(pagination.total / GRID_PAGE_SIZE))
+  : pagination.total <= FIRST_PAGE_SIZE
     ? 1
     : 1 + Math.ceil((pagination.total - FIRST_PAGE_SIZE) / GRID_PAGE_SIZE);
 
-// The hero treatment is reserved for the single most recent article — only on page 1.
-const [featured, ...rest] = page === 1 ? pageArticles : [null, ...pageArticles];
+// The hero treatment is reserved for the single most recent article on the
+// unfiltered, first page — a filtered category view is always a plain grid.
+const [featured, ...rest] = !activeCategory && page === 1 ? pageArticles : [null, ...pageArticles];
 ---
 
 <Base
@@ -80,6 +105,33 @@ const [featured, ...rest] = page === 1 ? pageArticles : [null, ...pageArticles];
     </section>
   ) : null}
 
+  {categories.length > 0 && (
+    <div class="bg-white border-b border-gray-100">
+      <div class="max-w-7xl mx-auto px-5 md:px-12 py-5 flex flex-wrap gap-2">
+        <a
+          href="/en/news"
+          class:list={[
+            'px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline transition-colors',
+            !activeCategory ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
+          ]}
+        >
+          All
+        </a>
+        {categories.map((c: any) => (
+          <a
+            href={`/en/news?category=${c.documentId}`}
+            class:list={[
+              'px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline transition-colors',
+              activeCategory === c.documentId ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
+            ]}
+          >
+            {c.name}
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+
   <section class="bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-12 md:py-16">
       {rest.length > 0 ? (
@@ -109,13 +161,14 @@ const [featured, ...rest] = page === 1 ? pageArticles : [null, ...pageArticles];
         </div>
       ) : (
         <p class="text-center py-24 text-sm text-gray-400">
-          {featured ? 'No further articles.' : 'No news yet.'}
+          {featured ? 'No further articles.' : activeCategory ? 'No articles in this category yet.' : 'No news yet.'}
         </p>
       )}
       <Pager
         currentPage={page}
         totalPages={totalPages}
         basePath="/en/news"
+        extraQuery={extraQuery}
         prevLabel="← Previous"
         nextLabel="Next →"
         pageLabel="Page"
