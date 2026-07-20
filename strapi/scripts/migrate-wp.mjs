@@ -93,10 +93,54 @@ async function strapiPost(path, body, params = {}) {
   return json;
 }
 
+async function strapiPut(path, body, params = {}) {
+  if (DRY_RUN) {
+    console.log(`[DRY] PUT ${path}`, JSON.stringify(body?.data ?? body).slice(0, 120));
+    return { data: { documentId: 'dry-run-id' } };
+  }
+  const url = new URL(`${STRAPI}/api${path}`);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { ...authHeader, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); } catch { throw new Error(`${res.status}: ${text.slice(0, 200)}`); }
+  if (!res.ok) {
+    const detail = json?.error?.details ?? json?.error?.message ?? JSON.stringify(json);
+    throw new Error(`${res.status}: ${detail}`);
+  }
+  return json;
+}
+
 async function strapiDelete(path) {
   if (DRY_RUN) { console.log(`[DRY] DELETE ${path}`); return; }
   const res = await fetch(`${STRAPI}/api${path}`, { method: 'DELETE', headers: authHeader });
   if (!res.ok) throw new Error(`Strapi DELETE ${path} → ${res.status}`);
+}
+
+/**
+ * Looks for an existing article in the other locale with the same
+ * originalPublishedAt timestamp, so the second locale imported can be created
+ * as a proper Strapi locale variant of it instead of an independent, unrelated
+ * document (the bug behind ~500 DA/EN articles never showing up as
+ * translations of each other in Strapi's admin). Only links on an unambiguous
+ * single match — a handful of WP posts share a timestamp with an unrelated
+ * post in the other locale, and guessing wrong there is worse than not linking.
+ */
+async function strapiFindLinkableDocument(originalPublishedAt, otherLocale) {
+  if (!TOKEN) return null;
+  const url = new URL(`${STRAPI}/api/articles`);
+  url.searchParams.set('locale', otherLocale);
+  url.searchParams.set('filters[originalPublishedAt][$eq]', originalPublishedAt);
+  url.searchParams.set('fields[0]', 'documentId');
+  url.searchParams.set('pagination[pageSize]', '2');
+  const res = await fetch(url, { headers: authHeader });
+  if (!res.ok) throw new Error(`Strapi linkable-document check → ${res.status}`);
+  const json = await res.json();
+  return json.data.length === 1 ? json.data[0].documentId : null;
 }
 
 // ── Cleanup ───────────────────────────────────────────────────────────────────
@@ -293,9 +337,16 @@ async function importLocale(locale, categoryMap) {
         },
       };
 
-      await strapiPost('/articles', body, { locale });
+      const otherLocale = locale === 'da' ? 'en' : 'da';
+      const linkedDocumentId = await strapiFindLinkableDocument(post.date, otherLocale).catch(() => null);
+      if (linkedDocumentId) {
+        await strapiPut(`/articles/${linkedDocumentId}`, body, { locale });
+        console.log(`${prefix} ✓ ${post.title.rendered} (linked to existing ${otherLocale} document ${linkedDocumentId})`);
+      } else {
+        await strapiPost('/articles', body, { locale });
+        console.log(`${prefix} ✓ ${post.title.rendered}`);
+      }
       ok++;
-      console.log(`${prefix} ✓ ${post.title.rendered}`);
     } catch (e) {
       fail++;
       console.warn(`${prefix} ✗ ${post.slug}: ${e.message}`);
