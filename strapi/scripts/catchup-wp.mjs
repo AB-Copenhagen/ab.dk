@@ -179,21 +179,61 @@ async function strapiUploadImage(remoteUrl, filename) {
   return files?.[0]?.id ?? null;
 }
 
-async function strapiCreateArticle(body) {
+const OTHER_LOCALE = LOCALE === 'da' ? 'en' : 'da';
+
+/**
+ * Looks for an existing article in the other locale with the same
+ * originalPublishedAt timestamp, so the new article can be created as a proper
+ * Strapi locale variant of it instead of an independent, unrelated document
+ * (the bug behind ~500 DA/EN articles never showing up as translations of each
+ * other in Strapi's admin). Only links on an unambiguous single match — a
+ * handful of WP posts share a timestamp with an unrelated post in the other
+ * locale, and guessing wrong there is worse than not linking at all.
+ */
+async function strapiFindLinkableDocument(originalPublishedAt) {
+  if (!TOKEN) return null;
+  const url = new URL(`${STRAPI}/api/articles`);
+  url.searchParams.set('locale', OTHER_LOCALE);
+  url.searchParams.set('filters[originalPublishedAt][$eq]', originalPublishedAt);
+  url.searchParams.set('fields[0]', 'documentId');
+  url.searchParams.set('pagination[pageSize]', '2');
+  const json = await withRetry(async () => {
+    const res = await fetch(url, { headers: authHeader });
+    if (!res.ok) throw new Error(`Strapi linkable-document check → ${res.status}`);
+    return res.json();
+  }, 'Strapi linkable-document check');
+  return json.data.length === 1 ? json.data[0].documentId : null;
+}
+
+async function strapiCreateOrLinkArticle(body) {
+  const linkedDocumentId = await strapiFindLinkableDocument(body.data.originalPublishedAt).catch(() => null);
+
   if (DRY_RUN) {
-    console.log(`  [DRY] Would create article`, JSON.stringify(body.data).slice(0, 150));
+    const action = linkedDocumentId
+      ? `Would link to existing ${OTHER_LOCALE} document ${linkedDocumentId}`
+      : 'Would create article';
+    console.log(`  [DRY] ${action}`, JSON.stringify(body.data).slice(0, 150));
     return { documentId: 'dry-run-id' };
   }
+
+  const method = linkedDocumentId ? 'PUT' : 'POST';
+  const url = linkedDocumentId
+    ? `${STRAPI}/api/articles/${linkedDocumentId}?locale=${LOCALE}`
+    : `${STRAPI}/api/articles?locale=${LOCALE}`;
+  if (linkedDocumentId) {
+    console.log(`  ↳ linking to existing ${OTHER_LOCALE} document ${linkedDocumentId}`);
+  }
+
   const json = await withRetry(async () => {
-    const res = await fetch(`${STRAPI}/api/articles?locale=${LOCALE}`, {
-      method: 'POST',
+    const res = await fetch(url, {
+      method,
       headers: { ...authHeader, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
     const responseBody = await res.json();
-    if (!res.ok) throw new Error(`create article → ${res.status}: ${JSON.stringify(responseBody)}`);
+    if (!res.ok) throw new Error(`${method} article → ${res.status}: ${JSON.stringify(responseBody)}`);
     return responseBody;
-  }, 'create article');
+  }, `${method} article`);
   return json.data;
 }
 
@@ -322,7 +362,7 @@ async function main() {
 
       const description = htmlToPlain(post.excerpt?.rendered ?? post.content?.rendered ?? '', 300);
 
-      await strapiCreateArticle({
+      await strapiCreateOrLinkArticle({
         data: {
           title: post.title.rendered,
           slug: post.slug,
