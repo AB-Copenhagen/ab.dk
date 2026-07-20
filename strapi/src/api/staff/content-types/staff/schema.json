@@ -3,7 +3,7 @@
   "collectionName": "staff_members",
   "info": {
     "singularName": "staff",
-    "pluralName": "staff",
+    "pluralName": "staff-members",
     "displayName": "Staff"
   },
   "options": {

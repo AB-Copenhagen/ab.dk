@@ -352,6 +352,22 @@ export interface ItemsRayItems extends Struct.ComponentSchema {
   };
 }
 
+export interface MatchSocialEmbed extends Struct.ComponentSchema {
+  collectionName: 'components_match_social_embeds';
+  info: {
+    displayName: 'Social Embed';
+    icon: 'twitter';
+  };
+  attributes: {
+    caption: Schema.Attribute.String;
+    embedCode: Schema.Attribute.Text & Schema.Attribute.Required;
+    platform: Schema.Attribute.Enumeration<
+      ['instagram', 'twitter', 'youtube', 'facebook', 'tiktok']
+    > &
+      Schema.Attribute.Required;
+  };
+}
+
 export interface SharedButton extends Struct.ComponentSchema {
   collectionName: 'components_shared_buttons';
   info: {
@@ -530,6 +546,7 @@ declare module '@strapi/strapi' {
       'items.input': ItemsInput;
       'items.left-navbar-items': ItemsLeftNavbarItems;
       'items.ray-items': ItemsRayItems;
+      'match.social-embed': MatchSocialEmbed;
       'shared.button': SharedButton;
       'shared.form': SharedForm;
       'shared.launches': SharedLaunches;
