@@ -88,7 +88,9 @@ const POSITION_OVERRIDES: Record<string, string> = Object.fromEntries(
 // Returns the CSS object-position value for a Wasabi photo slug (e.g. 'andreas-sondergaard').
 // Shared by both name-resolved players (below) and staff, whose photo slug is
 // already known directly (StaffMember.slug) without needing the SI name lookup.
-export function getPhotoPositionForSlug(slug: string | null | undefined): string {
+export function getPhotoPositionForSlug(
+  slug: string | null | undefined
+): string {
   if (!slug) return 'left bottom';
   return POSITION_OVERRIDES[slug] ?? 'left bottom';
 }
