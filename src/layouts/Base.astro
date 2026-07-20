@@ -95,7 +95,10 @@ const structuredDataList = [
 
 let globalData: any = null;
 try {
-  globalData = await fetchSingleType('global', { locale });
+  globalData = await fetchSingleType('global', {
+    locale,
+    populate: { footer: { populate: '*' } },
+  });
 } catch {
   // CMS unavailable — render with fallbacks
 }
