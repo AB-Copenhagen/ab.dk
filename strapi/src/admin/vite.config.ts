@@ -26,4 +26,13 @@ export default (config: UserConfig): UserConfig =>
         },
       },
     ],
+    build: {
+      // public/uploads/ can grow to thousands of local files (this project uses
+      // the S3/Wasabi upload provider, so nothing there is actually served in
+      // production). Static files are served directly from public/ at runtime via
+      // koa-static (@strapi/core's strapi::public middleware) — /uploads/* is
+      // excluded from that route entirely — so nothing reads the dist/build copy
+      // Vite would otherwise make on every build. Skip it.
+      copyPublicDir: false,
+    },
   } as UserConfig);
