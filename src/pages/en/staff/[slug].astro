@@ -11,7 +11,7 @@ if (!staff) return Astro.redirect('/en/squad');
 let bio: string | null = staff.bio?.en ?? null;
 try {
   const { fetchCollectionType } = await import('@/lib/strapi/client');
-  const results = await fetchCollectionType<{ slug: string; bio?: string }[]>('staff', {
+  const results = await fetchCollectionType<{ slug: string; bio?: string }[]>('staff-members', {
     filters: { slug: { $eq: staff.slug } },
     locale: 'en',
   }).catch(() => []);

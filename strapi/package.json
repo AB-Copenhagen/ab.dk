@@ -20,6 +20,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@sensinum/strapi-plugin-mcp": "^1.1.0",
     "@strapi/plugin-cloud": "5.49.0",
     "@strapi/plugin-seo": "^2.0.4",
     "@strapi/plugin-users-permissions": "5.49.0",

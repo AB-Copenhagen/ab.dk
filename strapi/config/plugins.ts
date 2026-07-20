@@ -61,4 +61,14 @@ export default ({ env }: { env: (key: string, fallback?: string) => string }) =>
       ],
     },
   },
+  // Dev-only: exposes Strapi content types/services over MCP for AI assistants.
+  // Explicitly disabled in config/env/production/plugins.ts — never enable in production.
+  mcp: {
+    enabled: true,
+    config: {
+      session: {
+        type: 'memory',
+      },
+    },
+  },
 });
