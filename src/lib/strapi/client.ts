@@ -1,5 +1,6 @@
 import { strapi } from '@strapi/client';
 import { cache } from '@/lib/strapi-revalidate';
+import { isPreviewEnabled } from '@/lib/preview-context';
 
 const STRAPI_URL = (import.meta.env.STRAPI_URL ?? 'http://localhost:1337').replace(/\/$/, '');
 const STRAPI_TOKEN: string | undefined = import.meta.env.STRAPI_API_TOKEN;
@@ -34,17 +35,19 @@ export async function fetchCollectionType<T = unknown[]>(
   collectionName: string,
   options?: QueryParams,
 ): Promise<T> {
+  const preview = isPreviewEnabled();
+  const fetcher = async () => {
+    const { data } = await createClient()
+      .collection(collectionName)
+      .find({ ...options, status: preview ? 'draft' : 'published' } as never);
+    return data as T;
+  };
+  // Draft content must never be written to the shared cache — it isn't keyed on
+  // draft/published status, so caching here would either leak drafts to public
+  // visitors or serve stale published data back to the previewing editor.
+  if (preview) return fetcher();
   const key = await cacheKey(collectionName, options);
-  const result = await cache.getWithFallback<T>(
-    key,
-    async () => {
-      const { data } = await createClient()
-        .collection(collectionName)
-        .find({ ...options, status: 'published' } as never);
-      return data as T;
-    },
-    { tags: [collectionName] },
-  );
+  const result = await cache.getWithFallback<T>(key, fetcher, { tags: [collectionName] });
   return result ?? ([] as unknown as T);
 }
 
@@ -60,23 +63,22 @@ export async function fetchCollectionTypeWithMeta<T = unknown[]>(
   collectionName: string,
   options?: QueryParams,
 ): Promise<{ data: T; pagination: StrapiPagination }> {
-  const key = (await cacheKey(collectionName, options)) + '-meta';
+  const preview = isPreviewEnabled();
   const emptyPagination: StrapiPagination = {
     page: options?.pagination?.page ?? 1,
     pageSize: options?.pagination?.pageSize ?? 0,
     pageCount: 0,
     total: 0,
   };
-  const result = await cache.getWithFallback(
-    key,
-    async () => {
-      const res = await createClient()
-        .collection(collectionName)
-        .find({ ...options, status: 'published' } as never);
-      return { data: res.data as T, pagination: (res.meta as { pagination: StrapiPagination })?.pagination };
-    },
-    { tags: [collectionName] },
-  );
+  const fetcher = async () => {
+    const res = await createClient()
+      .collection(collectionName)
+      .find({ ...options, status: preview ? 'draft' : 'published' } as never);
+    return { data: res.data as T, pagination: (res.meta as { pagination: StrapiPagination })?.pagination };
+  };
+  if (preview) return fetcher();
+  const key = (await cacheKey(collectionName, options)) + '-meta';
+  const result = await cache.getWithFallback(key, fetcher, { tags: [collectionName] });
   return result ?? { data: [] as unknown as T, pagination: emptyPagination };
 }
 
@@ -84,17 +86,16 @@ export async function fetchSingleType<T = unknown>(
   singleTypeName: string,
   options?: QueryParams,
 ): Promise<T> {
+  const preview = isPreviewEnabled();
+  const fetcher = async () => {
+    const { data } = await createClient()
+      .single(singleTypeName)
+      .find({ ...options, status: preview ? 'draft' : 'published' } as never);
+    return data as T;
+  };
+  if (preview) return fetcher();
   const key = await cacheKey(singleTypeName, options);
-  const result = await cache.getWithFallback<T>(
-    key,
-    async () => {
-      const { data } = await createClient()
-        .single(singleTypeName)
-        .find({ ...options, status: 'published' } as never);
-      return data as T;
-    },
-    { tags: [singleTypeName] },
-  );
+  const result = await cache.getWithFallback<T>(key, fetcher, { tags: [singleTypeName] });
   return result as T;
 }
 
@@ -103,17 +104,16 @@ export async function fetchDocument<T = unknown>(
   documentId: string,
   options?: QueryParams,
 ): Promise<T> {
+  const preview = isPreviewEnabled();
+  const fetcher = async () => {
+    const { data } = await createClient()
+      .collection(collectionName)
+      .findOne(documentId, { ...options, status: preview ? 'draft' : 'published' } as never);
+    return data as T;
+  };
+  if (preview) return fetcher();
   const key = `strapi-${collectionName}-doc-${documentId}-${JSON.stringify(options ?? {})}`;
-  const result = await cache.getWithFallback<T>(
-    key,
-    async () => {
-      const { data } = await createClient()
-        .collection(collectionName)
-        .findOne(documentId, { ...options, status: 'published' } as never);
-      return data as T;
-    },
-    { tags: [collectionName] },
-  );
+  const result = await cache.getWithFallback<T>(key, fetcher, { tags: [collectionName] });
   return result as T;
 }
 

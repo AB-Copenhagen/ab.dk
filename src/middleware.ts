@@ -1,8 +1,10 @@
+import type { APIContext, MiddlewareNext } from 'astro';
 import { defineMiddleware } from 'astro:middleware';
 
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
 import { descope } from '@/lib/descope-server';
 import { switchLocalePath } from '@/lib/i18n';
+import { PREVIEW_COOKIE, runWithPreview } from '@/lib/preview-context';
 
 const LOCALE_COOKIE = 'locale';
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
@@ -31,6 +33,17 @@ function prefersDanish(acceptLanguage: string): boolean {
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  // Prerendered pages have no live request/cookies to check — and touching
+  // context.cookies here would itself access Astro.request.headers, which Astro
+  // warns about on prerendered routes.
+  const isPreview =
+    !context.isPrerendered &&
+    context.cookies.get(PREVIEW_COOKIE)?.value === '1';
+
+  return runWithPreview(isPreview, () => handleRequest(context, next));
+});
+
+async function handleRequest(context: APIContext, next: MiddlewareNext) {
   // Locale resolution — stored in locals for use in layouts
   const locale = context.url.pathname.startsWith('/en') ? 'en' : 'da';
   context.locals.locale = locale;
@@ -127,4 +140,4 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   return response;
-});
+}
