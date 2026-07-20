@@ -1,5 +1,9 @@
+// Returns the path without the /en prefix (added by the handler below). Article
+// and blog-page differ by locale entirely (/nyheder vs /news) — /blog/* still
+// exists but is only a legacy 301 redirect stub kept for old inbound links.
 const getPreviewPathname = (uid, { locale, document }): string | null => {
   const { slug } = document;
+  const isEnglish = locale === 'en';
 
   switch (uid) {
     case 'api::page.page': {
@@ -13,9 +17,9 @@ const getPreviewPathname = (uid, { locale, document }): string | null => {
     case 'api::product-page.product-page':
       return '/products';
     case 'api::article.article':
-      return `/blog/${slug}`;
+      return isEnglish ? `/news/${slug}` : `/nyheder/${slug}`;
     case 'api::blog-page.blog-page':
-      return '/blog';
+      return isEnglish ? '/news' : '/nyheder';
     default:
       return null;
   }
@@ -56,9 +60,11 @@ export default ({ env }) => {
             return null;
           }
 
-          // Use Next.js draft mode
+          // Danish is the unprefixed default route (/nyheder), English is under /en
+          // (/en/news) — see .cursor/rules/i18n-routing.mdc.
+          const localePrefix = locale === 'en' ? '/en' : '';
           const urlSearchParams = new URLSearchParams({
-            url: `/${locale ?? 'en'}${pathname}`,
+            url: `${localePrefix}${pathname}`,
             secret: previewSecret,
             status,
           });
