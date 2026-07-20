@@ -107,27 +107,48 @@ const [featured, ...rest] = !activeCategory && page === 1 ? pageArticles : [null
 
   {categories.length > 0 && (
     <div class="bg-white border-b border-gray-100">
-      <div class="max-w-7xl mx-auto px-5 md:px-12 py-5 flex flex-wrap gap-2">
-        <a
-          href="/en/news"
-          class:list={[
-            'px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline transition-colors',
-            !activeCategory ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
-          ]}
-        >
-          All
-        </a>
-        {categories.map((c: any) => (
+      <div class="max-w-7xl mx-auto px-5 md:px-12 py-5">
+        <!-- Mobile: dropdown (pill row wraps to 2-3 rows on narrow screens otherwise) -->
+        <div class="relative sm:hidden">
+          <select
+            class="category-select w-full appearance-none border border-gray-200 rounded-full pl-4 pr-10 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-gray-600 bg-white"
+            aria-label="Filter by category"
+          >
+            <option value="/en/news" selected={!activeCategory}>All</option>
+            {categories.map((c: any) => (
+              <option value={`/en/news?category=${c.documentId}`} selected={activeCategory === c.documentId}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+          <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </div>
+
+        <!-- Desktop/tablet: pill row -->
+        <div class="hidden sm:flex flex-wrap gap-2">
           <a
-            href={`/en/news?category=${c.documentId}`}
+            href="/en/news"
             class:list={[
               'px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline transition-colors',
-              activeCategory === c.documentId ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
+              !activeCategory ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
             ]}
           >
-            {c.name}
+            All
           </a>
-        ))}
+          {categories.map((c: any) => (
+            <a
+              href={`/en/news?category=${c.documentId}`}
+              class:list={[
+                'px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline transition-colors',
+                activeCategory === c.documentId ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
+              ]}
+            >
+              {c.name}
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   )}
@@ -181,3 +202,11 @@ const [featured, ...rest] = !activeCategory && page === 1 ? pageArticles : [null
 <style>
   .news-hero-cta:hover { background: white; color: black; border-color: white; }
 </style>
+
+<script>
+  document.querySelectorAll<HTMLSelectElement>('.category-select').forEach((select) => {
+    select.addEventListener('change', () => {
+      window.location.href = select.value;
+    });
+  });
+</script>
