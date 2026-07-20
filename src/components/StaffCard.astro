@@ -2,6 +2,7 @@
 import { getPersonCardSizing } from '@/lib/person-card-sizing';
 import type { StaffMember } from '@/data/coaching-staff';
 import { staffInitials } from '@/data/coaching-staff';
+import { getPhotoPositionForSlug } from '@/lib/si/player-photos';
 
 interface Props {
   staff: StaffMember;
@@ -12,6 +13,7 @@ const { staff, locale } = Astro.props;
 
 const roleLabel = staff.role[locale];
 const initials = staffInitials(staff.name);
+const photoPosition = getPhotoPositionForSlug(staff.slug);
 
 const nameParts = staff.name.trim().split(' ');
 const firstName = nameParts[0];
@@ -34,21 +36,22 @@ const staffHref = locale === 'da' ? `/stab/${staff.slug}` : `/en/staff/${staff.s
     style="height:84.1%; background:#EBEBEB;">
   </div>
 
-  <!-- Photo: right 46%, full height of card frame -->
-  <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[46%]">
+  <!-- Photo: right 52%, full height of card frame -->
+  <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[52%]">
     <img
       src={staff.photo}
       alt={staff.name}
       loading="lazy"
-      class="absolute inset-0 w-full h-full object-cover object-left-bottom"
+      class="absolute inset-0 w-full h-full object-cover"
+      style={`object-position: ${photoPosition};`}
       onerror="this.style.opacity='0'"
     />
   </div>
 
-  <!-- Text layer: left 58%, pinned to bottom 84% of frame. overflow-hidden is a safety net,
+  <!-- Text layer: left 52%, pinned to bottom 84% of frame. overflow-hidden is a safety net,
        see SquadCard.astro for the full rationale. -->
   <div
-    class="absolute inset-x-0 bottom-0 flex flex-col justify-between overflow-hidden p-4 md:p-5 z-10 h-[84.1%] w-[58%]">
+    class="absolute inset-x-0 bottom-0 flex flex-col justify-between overflow-hidden p-4 md:p-5 z-10 h-[84.1%] w-[52%]">
     <div>
       <p
         class="font-black leading-tight text-ab-green"
