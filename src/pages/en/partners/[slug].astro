@@ -1,14 +1,14 @@
 ---
 import Base from '@/layouts/Base.astro';
 import Img from '@/components/Img.astro';
-import { findPartner } from '@/data/partners';
+import { findPartner, TIER_LABELS } from '@/data/partners';
 
 const { slug } = Astro.params;
 const partner = findPartner(slug ?? '');
 
 if (!partner) return Astro.redirect('/en/partners', 302);
 
-const tierLabel = partner.tier === 'principal' ? 'Principal Partner' : 'AB Partner';
+const tierLabel = TIER_LABELS[partner.tier].en;
 const backHref = '/en/partners';
 const ogCardImageUrl = `/api/og/partner.png?logo=${encodeURIComponent(partner.logo)}`;
 ---
