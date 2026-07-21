@@ -182,7 +182,7 @@ const heroSlides = [
     {
       heroSlides.map((slide, i) => (
         <div class="relative flex-shrink-0 w-full h-full">
-          <img
+          <Img
             src={slide.img}
             alt={slide.alt}
             loading={i === 0 ? 'eager' : 'lazy'}
@@ -527,9 +527,12 @@ const heroSlides = [
   id="join-team-ab"
   href={localPath('/myab')}
   class="flex items-center relative overflow-hidden min-h-[clamp(120px,16vw,200px)] w-full no-underline">
-  <div
-    class="absolute inset-0 bg-[url('/images/join-team-ab-bg.png')] bg-cover bg-center">
-  </div>
+  <Img
+    src="/images/join-team-ab-bg.png"
+    alt=""
+    aria-hidden="true"
+    class="absolute inset-0 w-full h-full object-cover object-center"
+  />
 
   <div class="content-container relative w-full">
     <div
@@ -665,7 +668,7 @@ const heroSlides = [
             class="product-card group block">
             <div class="overflow-hidden mb-3 aspect-3/4 bg-gray-100">
               {p.img && (
-                <img
+                <Img
                   src={p.img}
                   alt={p.name}
                   loading="lazy"

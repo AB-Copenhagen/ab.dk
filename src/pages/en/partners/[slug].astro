@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import Img from '@/components/Img.astro';
 import { findPartner } from '@/data/partners';
 
 const { slug } = Astro.params;
@@ -39,7 +40,7 @@ const ogCardImageUrl = `/api/og/partner.png?logo=${encodeURIComponent(partner.lo
       <!-- Logo box -->
       <div class="border border-gray-100 w-full overflow-hidden">
         <div class="flex items-center justify-center bg-[#F8F8F8] px-12 py-14">
-          <img
+          <Img
             src={partner.logo}
             alt={partner.name}
             class="max-h-36 max-w-[360px] w-full object-contain"
