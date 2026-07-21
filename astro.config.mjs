@@ -15,6 +15,13 @@ export default defineConfig({
   server: { port: 1889 },
   adapter: vercel({
     imageService: true,
+    imagesConfig: {
+      // Vercel only serves widths from this list — anything else silently
+      // falls back to the source's full size. Superset of Vercel's own
+      // defaults (640/750/828/1080/1200/1920/2048/3840) plus smaller
+      // breakpoints for thumbnails and half-width banners.
+      sizes: [320, 400, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    },
   }),
   image: {
     remotePatterns: [

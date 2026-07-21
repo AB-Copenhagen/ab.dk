@@ -16,6 +16,13 @@ import { decodeHtml } from '@/lib/utils';
 import { fetchCollectionProducts } from '@/lib/shopify';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 import Img from '@/components/Img.astro';
+import matchesHeaderBg from '@/assets/images/matches-header-bg.png';
+import joinTeamAbBg from '@/assets/images/join-team-ab-bg.png';
+import bannerDownloadApp from '@/assets/images/banner-download-app.png';
+import bannerWatchLive from '@/assets/images/banner-watch-live.png';
+import product1Img from '@/assets/images/product-1.png';
+import product2Img from '@/assets/images/product-2.png';
+import product3Img from '@/assets/images/product-3.png';
 
 interface Props {
   locale: 'da' | 'en';
@@ -104,21 +111,21 @@ const staticProducts = [
     name: translate(locale, 'productGreenTShirt'),
     price: 'DKK 89',
     originalPrice: 'DKK 169',
-    img: '/images/product-1.png',
+    img: product1Img,
     href: 'https://shop.ab.dk/products/green-academic-football-club-t-shirt?variant=47392935051364',
   },
   {
     name: translate(locale, 'productGreenSweatshirt'),
     price: 'DKK 129',
     originalPrice: 'DKK 249',
-    img: '/images/product-2.png',
+    img: product2Img,
     href: 'https://shop.ab.dk/products/green-academic-football-club-sweatshirt?variant=47392934035556',
   },
   {
     name: translate(locale, 'productGreySweater'),
     price: 'DKK 219',
     originalPrice: 'DKK 429',
-    img: '/images/product-3.png',
+    img: product3Img,
     href: 'https://shop.ab.dk/products/knowledgecotton-apparel-grey-monochromatic-ab-logo?variant=47392933249124',
   },
 ];
@@ -143,7 +150,7 @@ const heroSlides = [
     ctaUrl: 'https://shop.ab.dk',
   },
   {
-    img: '/images/matches-header-bg.png',
+    img: matchesHeaderBg,
     alt: translate(locale, 'heroMatchesAlt'),
     headline: translate(locale, 'heroMatchesHeadline'),
     subtitle: translate(locale, 'heroMatchesSubtitle'),
@@ -151,7 +158,7 @@ const heroSlides = [
     ctaUrl: localPath('/kampe'),
   },
   {
-    img: '/images/join-team-ab-bg.png',
+    img: joinTeamAbBg,
     alt: translate(locale, 'heroJoinAlt'),
     headline: translate(locale, 'heroJoinHeadline'),
     subtitle: translate(locale, 'heroJoinSubtitle'),
@@ -187,6 +194,8 @@ const heroSlides = [
             alt={slide.alt}
             loading={i === 0 ? 'eager' : 'lazy'}
             draggable="false"
+            widths={[640, 828, 1200, 1920]}
+            sizes="100vw"
             class="w-full h-full object-cover object-center pointer-events-none"
           />
           <div class="absolute inset-0 bg-black/20" />
@@ -528,9 +537,11 @@ const heroSlides = [
   href={localPath('/myab')}
   class="flex items-center relative overflow-hidden min-h-[clamp(120px,16vw,200px)] w-full no-underline">
   <Img
-    src="/images/join-team-ab-bg.png"
+    src={joinTeamAbBg}
     alt=""
     aria-hidden="true"
+    widths={[640, 828, 1200, 1920]}
+    sizes="100vw"
     class="absolute inset-0 w-full h-full object-cover object-center"
   />
 
@@ -561,10 +572,12 @@ const heroSlides = [
       <!-- Background photo (gradient + players composited) -->
       <div class="absolute inset-0">
         <Img
-          src="/images/banner-download-app.png"
+          src={bannerDownloadApp}
           alt=""
           aria-hidden="true"
           loading="lazy"
+          widths={[480, 640, 828, 1200]}
+          sizes="(min-width: 768px) 50vw, 100vw"
           class="w-full h-full object-cover object-center"
         />
       </div>
@@ -594,9 +607,11 @@ const heroSlides = [
       class="relative overflow-hidden flex flex-col justify-between min-h-[clamp(400px,50vw,620px)]">
       <div class="absolute inset-0">
         <Img
-          src="/images/banner-watch-live.png"
+          src={bannerWatchLive}
           alt="ABTV"
           loading="lazy"
+          widths={[480, 640, 828, 1200]}
+          sizes="(min-width: 768px) 50vw, 100vw"
           class="w-full h-full object-cover object-center"
         />
         <div
@@ -672,6 +687,8 @@ const heroSlides = [
                   src={p.img}
                   alt={p.name}
                   loading="lazy"
+                  widths={[400, 480, 640, 828]}
+                  sizes="(min-width: 640px) 33vw, 100vw"
                   class="product-img w-full h-full object-cover object-top transition-transform duration-[450ms] group-hover:scale-[1.03]"
                 />
               )}
