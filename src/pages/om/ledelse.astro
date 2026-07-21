@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import Img from '@/components/Img.astro';
 
 export const prerender = true;
 
@@ -167,7 +168,7 @@ function initials(name: string) {
               data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
-                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                {photo && <Img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
                 <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
                   <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
                 </div>
@@ -182,7 +183,7 @@ function initials(name: string) {
             <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo ? (
-                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
+                  <Img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
                 ) : (
                   <div class="w-full h-full flex items-center justify-center bg-ab-green">
                     <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
@@ -219,7 +220,7 @@ function initials(name: string) {
               data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
-                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                {photo && <Img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
                 <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
                   <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
                 </div>
@@ -234,7 +235,7 @@ function initials(name: string) {
             <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo ? (
-                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
+                  <Img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
                 ) : (
                   <div class="w-full h-full flex items-center justify-center bg-ab-green">
                     <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
@@ -271,7 +272,7 @@ function initials(name: string) {
               data-photo-pos={photoPos ?? 'object-center'}
             >
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
-                {photo && <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
+                {photo && <Img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos} group-hover:scale-105 transition-transform duration-500`} onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />}
                 <div class="w-full h-full items-center justify-center bg-ab-green" style={photo ? 'display:none' : 'display:flex'}>
                   <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>
                 </div>
@@ -286,7 +287,7 @@ function initials(name: string) {
             <div class="border border-[#E5E7EB] flex items-center overflow-hidden">
               <div class="w-[7.2rem] h-[7.2rem] flex-shrink-0 overflow-hidden bg-[#E0E0DA]">
                 {photo ? (
-                  <img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
+                  <Img src={photo} alt={name} class={`w-full h-full object-cover ${photoPos}`} />
                 ) : (
                   <div class="w-full h-full flex items-center justify-center bg-ab-green">
                     <span class="font-black text-white text-lg tracking-[-0.04em]">{initials(name)}</span>

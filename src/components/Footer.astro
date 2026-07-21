@@ -1,6 +1,7 @@
 ---
 import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
 import { PARTNERS } from '@/data/partners';
+import Img from '@/components/Img.astro';
 
 interface Props {
   locale?: string;
@@ -64,7 +65,7 @@ const partners = (
               aria-label={name}
               class={`shrink-0 ${isLoneLastItem ? 'col-span-2 md:col-span-1' : ''}`}
             >
-              <img
+              <Img
                 src={src}
                 alt={name}
                 width={logoWidth}

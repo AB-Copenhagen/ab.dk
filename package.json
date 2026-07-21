@@ -9,6 +9,7 @@
     "check": "astro check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "images:webp": "node scripts/generate-webp.mjs",
     "postinstall": "husky"
   },
   "dependencies": {

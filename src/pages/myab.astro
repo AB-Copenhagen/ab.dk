@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import Img from '@/components/Img.astro';
 
 export const prerender = true;
 
@@ -101,7 +102,7 @@ const groups: Group[] = [
           </div>
         </div>
         <div class="flex justify-center">
-          <img
+          <Img
             src="/images/myab-app-preview.png"
             alt="Skærmbillede af AB's fan-app"
             class="w-full max-w-[280px] h-auto"

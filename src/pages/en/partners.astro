@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import Img from '@/components/Img.astro';
 import heroImage from '@/assets/images/IMG_7926.jpeg';
 import { principalPartners, networkPartners } from '@/data/partners';
 ---
@@ -14,11 +15,9 @@ import { principalPartners, networkPartners } from '@/data/partners';
 
   <!-- Hero -->
   <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
-    <img
-      src={heroImage.src}
+    <Img
+      src={heroImage}
       alt="Partner boards at Gladsaxe Stadium"
-      width={heroImage.width}
-      height={heroImage.height}
       class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.5] saturate-[0.6]"
     />
     <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_70%)]"></div>
@@ -72,7 +71,7 @@ import { principalPartners, networkPartners } from '@/data/partners';
             href={`/en/partners/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
             <div class="flex items-center justify-center px-6 py-10 flex-1">
-              <img
+              <Img
                 src={p.logo}
                 alt={p.name}
                 class:list={['object-contain object-center', p.logoSize ?? 'max-h-16 max-w-full']}
@@ -106,7 +105,7 @@ import { principalPartners, networkPartners } from '@/data/partners';
             href={`/en/partners/${p.slug}`}
             class="group relative flex flex-col bg-white border border-surface-border rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
             <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
-              <img
+              <Img
                 src={p.logo}
                 alt={p.name}
                 class="max-h-14 max-w-full object-contain"

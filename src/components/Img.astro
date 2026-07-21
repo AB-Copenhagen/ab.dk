@@ -2,9 +2,10 @@
 /**
  * Universal drop-in for <img> that auto-serves WebP.
  *
- * - Local public paths (/images/foo.png): outputs <picture> with .webp source + .png fallback
+ * - Local public paths (/images/foo.png or .jpg): outputs <picture> with .webp source + original fallback
  * - Imported ImageMetadata: delegates to astro:assets <Image> (Vercel optimizer)
- * - Remote URLs: plain <img> (proxy or CDN handle format)
+ * - Remote URLs and /api/media/* proxy paths: plain <img> (CDN or the proxy's own
+ *   Accept-header negotiation handles format instead — see api/media/[...key].ts)
  *
  * Usage:
  *   <Img src="/images/hero.png" alt="Hero" width={1200} height={600} />
@@ -41,12 +42,14 @@ const {
 const width = widthProp !== undefined ? Number(widthProp) : undefined;
 const height = heightProp !== undefined ? Number(heightProp) : undefined;
 
-const isImageMetadata = src !== null && typeof src === 'object' && 'src' in src;
-const isLocalPublicPng =
-  typeof src === 'string' && src.startsWith('/') && src.endsWith('.png');
+const CONVERTIBLE_LOCAL_IMAGE = /^\/images\/.*\.(png|jpe?g)$/i;
 
-const webpSrc = isLocalPublicPng
-  ? (src as string).replace(/\.png$/, '.webp')
+const isImageMetadata = src !== null && typeof src === 'object' && 'src' in src;
+const isLocalConvertibleImage =
+  typeof src === 'string' && CONVERTIBLE_LOCAL_IMAGE.test(src);
+
+const webpSrc = isLocalConvertibleImage
+  ? (src as string).replace(/\.(png|jpe?g)$/i, '.webp')
   : null;
 ---
 
@@ -64,7 +67,7 @@ const webpSrc = isLocalPublicPng
       format="webp"
       {...rest}
     />
-  ) : isLocalPublicPng && webpSrc ? (
+  ) : isLocalConvertibleImage && webpSrc ? (
     <picture>
       <source srcset={webpSrc} type="image/webp" />
       <img

@@ -34,10 +34,10 @@ export const GET: APIRoute = async ({ params, request }) => {
       ? 'public, max-age=31536000, immutable'
       : 'public, max-age=86400';
 
-    const isPng = /\.png$/i.test(key);
+    const isConvertible = /\.(png|jpe?g)$/i.test(key);
     const acceptsWebp = request.headers.get('Accept')?.includes('image/webp');
 
-    if (isPng && acceptsWebp && res.Body) {
+    if (isConvertible && acceptsWebp && res.Body) {
       const bytes = await (
         res.Body as { transformToByteArray(): Promise<Uint8Array> }
       ).transformToByteArray();
