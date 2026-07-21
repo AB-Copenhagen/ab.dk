@@ -39,6 +39,15 @@ interface Props {
 
 const { locale } = Astro.props;
 
+const now = new Date();
+// Fetch the full current season: from ~11 months ago to ~3 months ahead
+// (mirrors src/pages/kampe.astro), so the homepage doesn't get stuck on
+// whatever the SI API returns by default when no date range is given.
+const seasonFrom = new Date(now);
+seasonFrom.setMonth(seasonFrom.getMonth() - 11);
+const seasonTo = new Date(now);
+seasonTo.setMonth(seasonTo.getMonth() + 3);
+
 const [articles, events, players] = await Promise.all([
   fetchCollectionType<any[]>('articles', {
     locale,
@@ -46,7 +55,12 @@ const [articles, events, players] = await Promise.all([
     populate: ['image', 'categories'],
     pagination: { pageSize: 8 },
   }).catch(() => [] as any[]),
-  fetchABEvents({ locale, limit: 20 }).catch(() => [] as any[]),
+  fetchABEvents({
+    locale,
+    limit: 200,
+    fromDate: seasonFrom.toISOString().slice(0, 10),
+    toDate: seasonTo.toISOString().slice(0, 10),
+  }).catch(() => [] as any[]),
   fetchABPlayers(locale).catch((): SIPlayer[] => []),
 ]);
 
@@ -60,10 +74,17 @@ const sortedPlayers = [...players].sort(
   (a, b) => (positionOrder[a.position] ?? 4) - (positionOrder[b.position] ?? 4)
 );
 
-const nextMatch = events.find(
+const upcomingEvents = events
+  .filter((e: any) => new Date(e.startDate) >= now)
+  .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+const pastEvents = events
+  .filter((e: any) => new Date(e.startDate) < now)
+  .sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+const nextMatch = upcomingEvents.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
 );
-const recentResults = events
+const recentResults = pastEvents
   .filter((e: any) => e.statusType === 'finished')
   .slice(0, 5);
 
