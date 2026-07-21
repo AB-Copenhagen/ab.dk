@@ -2,6 +2,14 @@
 import { abConfig } from '@/lib/config/ab';
 import { translate, type Locale } from '@/lib/i18n';
 import { getTeamLogoSrc, formatEventScore, type SIEvent } from '@/lib/si/client';
+import {
+  fmtDate,
+  dtAttrs,
+  WEEKDAY_LONG_OPTS,
+  MONTH_DAY_OPTS,
+  TIME_OPTS,
+  GRID_DATE_OPTS,
+} from '@/lib/dateFormat';
 
 export type MatchListFilter = 'upcoming' | 'home' | 'away' | 'results';
 
@@ -18,29 +26,19 @@ const isPast = filter === 'results';
 const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB';
 
 function fmtDay(d: string) {
-  return new Date(d).toLocaleDateString(dateLocale, { weekday: 'long' });
+  return fmtDate(d, dateLocale, WEEKDAY_LONG_OPTS);
 }
 
 function fmtMonthDay(d: string) {
-  return new Date(d).toLocaleDateString(dateLocale, {
-    month: 'long',
-    day: 'numeric',
-  });
+  return fmtDate(d, dateLocale, MONTH_DAY_OPTS);
 }
 
 function fmtTime(d: string) {
-  return new Date(d).toLocaleTimeString(dateLocale, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return fmtDate(d, dateLocale, TIME_OPTS);
 }
 
 function fmtGridDate(d: string) {
-  return new Date(d).toLocaleDateString(dateLocale, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-  });
+  return fmtDate(d, dateLocale, GRID_DATE_OPTS);
 }
 
 function emptyMessage(f: MatchListFilter): string {
@@ -107,9 +105,9 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
             </div>
             <div class="match-card-body">
               <div class="match-card-date">
-                <p class="match-card-weekday">{fmtDay(event.startDate)}</p>
-                <p class="match-card-day">{fmtMonthDay(event.startDate)}</p>
-                <p class="match-card-time">{fmtTime(event.startDate)}</p>
+                <p class="match-card-weekday" {...dtAttrs(event.startDate, dateLocale, WEEKDAY_LONG_OPTS)}>{fmtDay(event.startDate)}</p>
+                <p class="match-card-day" {...dtAttrs(event.startDate, dateLocale, MONTH_DAY_OPTS)}>{fmtMonthDay(event.startDate)}</p>
+                <p class="match-card-time" {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtTime(event.startDate)}</p>
               </div>
               <div class="match-teams">
                 <div class="match-teams-grid">
@@ -182,7 +180,7 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
 
             <div class={`px-4 py-1.5 flex items-center justify-between border-b shrink-0 gap-2 ${isABHome ? 'bg-ab-green border-ab-green' : 'bg-[#F0F4F0] border-gray-200'}`}>
               <span class={`text-xs font-medium shrink-0 ${isABHome ? 'text-white/80' : 'text-[#555]'}`}>
-                {fmtGridDate(event.startDate)} · {fmtTime(event.startDate)}
+                <span {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{fmtGridDate(event.startDate)}</span> · <span {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtTime(event.startDate)}</span>
               </span>
               <span class={`text-xs truncate text-right ${isABHome ? 'text-ab-neon font-bold' : 'text-[#999]'}`}>{isABHome ? (locale === 'en' ? 'HOME' : 'HJEMME') : venue}</span>
             </div>
@@ -237,3 +235,8 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
     </div>
   )}
 </div>
+
+<script>
+  import { localizeDates } from '@/lib/dateFormat.client';
+  localizeDates();
+</script>
