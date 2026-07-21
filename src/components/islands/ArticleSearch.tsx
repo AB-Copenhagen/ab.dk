@@ -1,7 +1,7 @@
 import FuzzySearch from 'fuzzy-search';
 import { useEffect, useState } from 'react';
 
-import { truncate } from '@/lib/utils';
+import { decodeHtml, truncate } from '@/lib/utils';
 
 interface Article {
   slug: string;
@@ -118,14 +118,14 @@ export default function ArticleSearch({ articles, locale, basePath }: Props) {
                   className="text-sm font-bold text-white group-hover:opacity-80 transition-opacity leading-snug"
                   style={{ letterSpacing: '-0.01em' }}
                 >
-                  {article.title}
+                  {decodeHtml(article.title)}
                 </p>
                 {article.description && (
                   <p
                     className="text-xs mt-1.5 leading-relaxed"
                     style={{ color: T.muted }}
                   >
-                    {truncate(article.description, 100)}
+                    {truncate(decodeHtml(article.description), 100)}
                   </p>
                 )}
                 <div className="flex gap-2 items-center mt-2 flex-wrap">

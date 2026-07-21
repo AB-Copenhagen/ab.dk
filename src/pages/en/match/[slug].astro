@@ -8,6 +8,7 @@ import { fetchMatchContent, strapiMediaUrl } from '@/lib/strapi/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import Img from '@/components/Img.astro';
+import { decodeHtml } from '@/lib/utils';
 
 export const prerender = false;
 
@@ -452,7 +453,7 @@ const matchSchema = {
                       </div>
                     )}
                     <p class="text-sm font-bold text-[#111] leading-snug group-hover:underline line-clamp-3">
-                      {article.title}
+                      {decodeHtml(article.title)}
                     </p>
                   </a>
                 ))}

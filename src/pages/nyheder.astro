@@ -71,7 +71,7 @@ const [featured, ...rest] = !activeCategory && page === 1 ? pageArticles : [null
       {featured.image?.url ? (
         <img
           src={strapiMediaUrl(featured.image.url)}
-          alt={featured.title}
+          alt={decodeHtml(featured.title)}
           loading="eager"
           class="absolute inset-0 w-full h-full object-cover object-center"
         />
@@ -164,7 +164,7 @@ const [featured, ...rest] = !activeCategory && page === 1 ? pageArticles : [null
                 {article.image?.url ? (
                   <img
                     src={strapiMediaUrl(article.image.url)}
-                    alt={article.title}
+                    alt={decodeHtml(article.title)}
                     loading="lazy"
                     class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                   />
