@@ -6,6 +6,7 @@ import { fetchABEvents } from '@/lib/si/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import Img from '@/components/Img.astro';
+import matchesHeaderBg from '@/assets/images/matches-header-bg.png';
 export const prerender = false;
 
 const locale = 'en';
@@ -55,10 +56,13 @@ for (const event of upcoming) {
   <!-- Hero -->
   <div class="relative w-full">
     <Img
-      src="/images/matches-header-bg.png"
+      src={matchesHeaderBg}
       alt="AB 1889 Matches"
       class="w-full h-auto block"
       loading="eager"
+      fetchpriority="high"
+      widths={[640, 828, 1200, 1920, 3840]}
+      sizes="100vw"
     />
     <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 55%, transparent 100%);"></div>
     <div class="absolute inset-0 flex items-end px-8 lg:px-16 pb-10">
