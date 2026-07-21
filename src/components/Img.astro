@@ -30,6 +30,8 @@ interface Props {
   widths?: number[];
   /** `sizes` attribute paired with `widths` — required by astro:assets whenever `widths` has more than one entry. */
   sizes?: string;
+  /** ImageMetadata sources only — the Vercel image service defaults to 100 (near-lossless) when omitted. */
+  quality?: number | 'low' | 'mid' | 'high' | 'max';
   [key: string]: unknown;
 }
 
@@ -44,6 +46,7 @@ const {
   style,
   widths,
   sizes,
+  quality = 80,
   ...rest
 } = Astro.props;
 
@@ -75,6 +78,7 @@ const webpSrc = isLocalConvertibleImage
       style={style}
       widths={widths}
       sizes={sizes}
+      quality={quality}
       formats={['webp']}
       {...rest}
     />

@@ -34,7 +34,8 @@ const posLabel = positionLabels[pos]?.[locale] ?? player.position ?? '';
 const isKeeper = pos === 'keeper';
 const cardBg = isKeeper ? 'var(--ab-beige)' : 'var(--ab-green)';
 const textColor = isKeeper ? '#111' : '#fff';
-const textMuted = isKeeper ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)';
+// 0.5/0.6 alpha both fail WCAG AA contrast (~3.4:1) against these brand backgrounds at this font size.
+const textMuted = isKeeper ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)';
 
 const nameParts = player.name.trim().split(' ');
 const firstName = nameParts[0];
