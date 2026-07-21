@@ -7,6 +7,11 @@ export const MONTH_DAY_OPTS: Intl.DateTimeFormatOptions = {
   month: 'long',
   day: 'numeric',
 };
+export const MONTH_DAY_YEAR_SHORT_OPTS: Intl.DateTimeFormatOptions = {
+  month: 'long',
+  day: 'numeric',
+  year: '2-digit',
+};
 export const TIME_OPTS: Intl.DateTimeFormatOptions = {
   hour: '2-digit',
   minute: '2-digit',

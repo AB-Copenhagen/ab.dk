@@ -6,7 +6,7 @@ import {
   getTeamLogoSrc,
   type SIPlayer,
 } from '@/lib/si/client';
-import { abConfig } from '@/lib/config/ab';
+import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
 import { strapiMediaUrl } from '@/lib/strapi/client';
 import SquadCard from '@/components/SquadCard.astro';
 import MatchScheduleList from '@/components/MatchScheduleList.astro';
@@ -40,11 +40,11 @@ interface Props {
 const { locale } = Astro.props;
 
 const now = new Date();
-// Fetch the full current season: from ~11 months ago to ~3 months ahead
-// (mirrors src/pages/kampe.astro), so the homepage doesn't get stuck on
-// whatever the SI API returns by default when no date range is given.
-const seasonFrom = new Date(now);
-seasonFrom.setMonth(seasonFrom.getMonth() - 11);
+// Fetch from the start of the current season through ~3 months ahead, so the
+// homepage doesn't get stuck on whatever the SI API returns by default when
+// no date range is given, and doesn't mix in leftover results from the
+// previous season.
+const seasonFrom = new Date(CURRENT_SEASON_START);
 const seasonTo = new Date(now);
 seasonTo.setMonth(seasonTo.getMonth() + 3);
 
