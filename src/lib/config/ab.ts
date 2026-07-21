@@ -20,3 +20,6 @@ export const abConfig = {
     ? Number(import.meta.env.AB_SEASON_ID)
     : null,
 } as const;
+
+/** Start date of the current season — update when a new season kicks off. */
+export const CURRENT_SEASON_START = '2026-07-24';
