@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
+import { decodeHtml } from '@/lib/utils';
 
 export const GET: APIRoute = async ({ url }) => {
   const q = url.searchParams.get('q')?.trim() ?? '';
@@ -23,8 +24,8 @@ export const GET: APIRoute = async ({ url }) => {
 
   const shaped = results.map((a: any) => ({
     slug: a.slug,
-    title: a.title,
-    excerpt: a.description ?? '',
+    title: decodeHtml(a.title),
+    excerpt: a.description ? decodeHtml(a.description) : '',
     category: a.categories?.[0]?.name ?? null,
     imageUrl: a.image?.url ? strapiMediaUrl(a.image.url) : null,
   }));
