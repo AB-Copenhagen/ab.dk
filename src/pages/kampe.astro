@@ -28,8 +28,12 @@ try {
   });
 } catch { /* SI API unavailable */ }
 const filter = (Astro.url.searchParams.get('filter') ?? 'upcoming') as MatchListFilter;
-const upcoming = events.filter((e) => new Date(e.startDate) >= now);
-const finished = events.filter((e) => new Date(e.startDate) < now).reverse();
+const upcoming = events
+  .filter((e) => new Date(e.startDate) >= now)
+  .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+const finished = events
+  .filter((e) => new Date(e.startDate) < now)
+  .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
 
 const displayEvents =
   filter === 'home'    ? upcoming.filter((e) => e.homeId === abConfig.teamId) :

@@ -2,14 +2,7 @@
 import { abConfig } from '@/lib/config/ab';
 import { translate, type Locale } from '@/lib/i18n';
 import { getTeamLogoSrc, formatEventScore, type SIEvent } from '@/lib/si/client';
-import {
-  fmtDate,
-  dtAttrs,
-  WEEKDAY_LONG_OPTS,
-  MONTH_DAY_OPTS,
-  TIME_OPTS,
-  GRID_DATE_OPTS,
-} from '@/lib/dateFormat';
+import { fmtDate, dtAttrs, TIME_OPTS, GRID_DATE_OPTS } from '@/lib/dateFormat';
 
 export type MatchListFilter = 'upcoming' | 'home' | 'away' | 'results';
 
@@ -24,14 +17,6 @@ const { locale, events, filter = 'upcoming', ticketByEventId } = Astro.props;
 const isPast = filter === 'results';
 
 const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB';
-
-function fmtDay(d: string) {
-  return fmtDate(d, dateLocale, WEEKDAY_LONG_OPTS);
-}
-
-function fmtMonthDay(d: string) {
-  return fmtDate(d, dateLocale, MONTH_DAY_OPTS);
-}
 
 function fmtTime(d: string) {
   return fmtDate(d, dateLocale, TIME_OPTS);
@@ -105,8 +90,7 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
             </div>
             <div class="match-card-body">
               <div class="match-card-date">
-                <p class="match-card-weekday" {...dtAttrs(event.startDate, dateLocale, WEEKDAY_LONG_OPTS)}>{fmtDay(event.startDate)}</p>
-                <p class="match-card-day" {...dtAttrs(event.startDate, dateLocale, MONTH_DAY_OPTS)}>{fmtMonthDay(event.startDate)}</p>
+                <p class="match-card-day" {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{fmtGridDate(event.startDate)}</p>
                 <p class="match-card-time" {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtTime(event.startDate)}</p>
               </div>
               <div class="match-teams">
