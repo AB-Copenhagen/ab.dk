@@ -25,6 +25,13 @@ import product2Img from '@/assets/images/product-2.png';
 import product3Img from '@/assets/images/product-3.png';
 import heroImg from '@/assets/images/hero.jpg';
 import playerFeaturedImg from '@/assets/images/player-featured.png';
+import {
+  fmtDate,
+  dtAttrs,
+  DATE_WEEKDAY_MONTH_DAY_OPTS,
+  TIME_24H_OPTS,
+  DATE_SHORT_OPTS,
+} from '@/lib/dateFormat';
 
 interface Props {
   locale: 'da' | 'en';
@@ -72,25 +79,13 @@ const opponentId = nextMatch
     : nextMatch.homeId
   : null;
 const oppLogo = opponentId ? getTeamLogoSrc(opponentId) : null;
+const matchDateLocale = locale === 'da' ? 'da-DK' : 'en-US';
+const matchTimeLocale = locale === 'da' ? 'da-DK' : 'en-GB';
 const matchDateStr = nextMatch
-  ? new Date(nextMatch.startDate).toLocaleDateString(
-      locale === 'da' ? 'da-DK' : 'en-US',
-      {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-      }
-    )
+  ? fmtDate(nextMatch.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS)
   : null;
 const matchTimeStr = nextMatch
-  ? new Date(nextMatch.startDate).toLocaleTimeString(
-      locale === 'da' ? 'da-DK' : 'en-GB',
-      {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      }
-    )
+  ? fmtDate(nextMatch.startDate, matchTimeLocale, TIME_24H_OPTS)
   : null;
 
 function articlePath(slug: string) {
@@ -419,13 +414,13 @@ const heroSlides = [
                 </span>
               </div>
               <div class="flex flex-col items-center text-center text-white flex-1 min-w-0">
-                {matchDateStr && (
-                  <p class="text-lg font-normal tracking-[-0.02em]">
+                {matchDateStr && nextMatch && (
+                  <p class="text-lg font-normal tracking-[-0.02em]" {...dtAttrs(nextMatch.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS)}>
                     {matchDateStr}
                   </p>
                 )}
-                {matchTimeStr && (
-                  <p class="text-lg font-black tracking-[-0.02em]">
+                {matchTimeStr && nextMatch && (
+                  <p class="text-lg font-black tracking-[-0.02em]" {...dtAttrs(nextMatch.startDate, matchTimeLocale, TIME_24H_OPTS)}>
                     {matchTimeStr}
                   </p>
                 )}
@@ -504,15 +499,8 @@ const heroSlides = [
                 const isHome = event.homeId === 9805;
                 return (
                   <tr class="result-row odd:bg-gray-50 border-b border-gray-100">
-                    <td class="py-3 text-xs text-gray-400 tabular-nums">
-                      {new Date(event.startDate).toLocaleDateString(
-                        locale === 'da' ? 'da-DK' : 'en-GB',
-                        {
-                          weekday: 'short',
-                          day: 'numeric',
-                          month: 'short',
-                        }
-                      )}
+                    <td class="py-3 text-xs text-gray-400 tabular-nums" {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}>
+                      {fmtDate(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}
                     </td>
                     <td
                       class={`py-3 text-sm font-bold ${isHome ? 'text-ab-green' : 'text-[#111]'}`}>
@@ -895,3 +883,8 @@ const heroSlides = [
     </div>
   </div>
 </section>
+
+<script>
+  import { localizeDates } from '@/lib/dateFormat.client';
+  localizeDates();
+</script>

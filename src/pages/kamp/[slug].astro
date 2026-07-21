@@ -9,6 +9,7 @@ import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import Img from '@/components/Img.astro';
 import { decodeHtml } from '@/lib/utils';
+import { fmtDate, dtAttrs, DATE_LONG_YEAR_OPTS, TIME_OPTS } from '@/lib/dateFormat';
 
 export const prerender = false;
 
@@ -42,24 +43,9 @@ const isFinished = statusType === 'finished';
 const isUpcoming = !isLive && !isFinished;
 const isHome = event.homeId === abConfig.teamId;
 
-const matchDate = new Date(startDate).toLocaleDateString('da-DK', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-});
-const matchDateDay = new Date(startDate).toLocaleDateString('da-DK', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
-const matchTime = new Date(startDate).toLocaleTimeString('da-DK', {
-  hour: '2-digit',
-  minute: '2-digit',
-});
+const matchDate = fmtDate(startDate, 'da-DK', { ...DATE_LONG_YEAR_OPTS, ...TIME_OPTS });
+const matchDateDay = fmtDate(startDate, 'da-DK', DATE_LONG_YEAR_OPTS);
+const matchTime = fmtDate(startDate, 'da-DK', TIME_OPTS);
 
 const cmsMatch = await fetchMatchContent(eventId).catch(() => null);
 const accentColor = cmsMatch?.accentColor ?? 'var(--ab-green)';
@@ -202,7 +188,7 @@ const matchSchema = {
             <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
             <path d="M5 1v3M11 1v3M2 7h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
           </svg>
-          <span class="font-semibold capitalize">{matchDateDay}</span>
+          <span class="font-semibold capitalize" {...dtAttrs(startDate, 'da-DK', DATE_LONG_YEAR_OPTS)}>{matchDateDay}</span>
         </div>
         <!-- Clock icon + time -->
         <div class="inline-flex items-center gap-2 text-white/60" style="font-size:0.8125rem">
@@ -210,7 +196,7 @@ const matchSchema = {
             <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
             <path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span class="font-semibold">{matchTime}</span>
+          <span class="font-semibold" {...dtAttrs(startDate, 'da-DK', TIME_OPTS)}>{matchTime}</span>
         </div>
         <!-- Home / Away badge -->
         <span
@@ -401,8 +387,8 @@ const matchSchema = {
                   <path d="M5 1v3M11 1v3M2 7h12" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
                 </svg>
                 <div>
-                  <p class="font-bold text-[#111] capitalize">{matchDateDay}</p>
-                  <p class="text-[#888] mt-0.5">{matchTime}</p>
+                  <p class="font-bold text-[#111] capitalize" {...dtAttrs(startDate, 'da-DK', DATE_LONG_YEAR_OPTS)}>{matchDateDay}</p>
+                  <p class="text-[#888] mt-0.5" {...dtAttrs(startDate, 'da-DK', TIME_OPTS)}>{matchTime}</p>
                 </div>
               </div>
               <div class="flex items-start gap-3">
@@ -466,4 +452,9 @@ const matchSchema = {
       </div>
     </div>
   </div>
+
+  <script>
+    import { localizeDates } from '@/lib/dateFormat.client';
+    localizeDates();
+  </script>
 </Base>

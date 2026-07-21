@@ -1,5 +1,6 @@
 ---
 import { fetchABEvents } from '@/lib/si/client';
+import { fmtDate, dtAttrs, DATE_TIME_SHORT_OPTS } from '@/lib/dateFormat';
 
 interface Props {
   locale: 'da' | 'en';
@@ -25,10 +26,7 @@ try {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString(
-    locale === 'da' ? 'da-DK' : 'en-GB',
-    { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }
-  );
+  return fmtDate(dateStr, locale === 'da' ? 'da-DK' : 'en-GB', DATE_TIME_SHORT_OPTS);
 }
 ---
 
@@ -54,7 +52,7 @@ function formatDate(dateStr: string) {
              onmouseleave={`this.style.background='transparent'`}>
 
           <!-- Date row -->
-          <p class="text-xs mb-1" style={`color:${dateColor}`}>{formatDate(event.startDate)}</p>
+          <p class="text-xs mb-1" style={`color:${dateColor}`} {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_TIME_SHORT_OPTS)}>{formatDate(event.startDate)}</p>
 
           <!-- Teams row -->
           <div class="flex items-center gap-2">
@@ -92,3 +90,8 @@ function formatDate(dateStr: string) {
     })}
   </div>
 )}
+
+<script>
+  import { localizeDates } from '@/lib/dateFormat.client';
+  localizeDates();
+</script>

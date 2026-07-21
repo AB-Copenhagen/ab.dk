@@ -4,6 +4,7 @@ import Img from '@/components/Img.astro';
 import { fetchABEvents } from '@/lib/si/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+import { fmtDate, dtAttrs, DATE_LONG_YEAR_OPTS, TIME_OPTS } from '@/lib/dateFormat';
 
 export const prerender = false;
 
@@ -27,13 +28,11 @@ function ticketUrl(opponentName: string): string {
   return findTicketUrl(billetMap, opponentName) ?? 'https://billet.ab.dk/';
 }
 
-function fmtDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-  });
+function fmtEventDate(d: string) {
+  return fmtDate(d, 'en-GB', DATE_LONG_YEAR_OPTS);
 }
-function fmtTime(d: string) {
-  return new Date(d).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+function fmtEventTime(d: string) {
+  return fmtDate(d, 'en-GB', TIME_OPTS);
 }
 ---
 
@@ -142,8 +141,8 @@ function fmtTime(d: string) {
                 <!-- Date column -->
                 <div class="shrink-0 sm:w-40 relative z-10 pointer-events-none">
                   <p class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-neon mb-0.5">Match Day</p>
-                  <p class="font-black text-[1rem] text-[#111] tracking-[-0.03em] leading-tight">{fmtDate(event.startDate)}</p>
-                  <p class="text-[0.85rem] text-[#888] mt-0.5">{fmtTime(event.startDate)}</p>
+                  <p class="font-black text-[1rem] text-[#111] tracking-[-0.03em] leading-tight" {...dtAttrs(event.startDate, 'en-GB', DATE_LONG_YEAR_OPTS)}>{fmtEventDate(event.startDate)}</p>
+                  <p class="text-[0.85rem] text-[#888] mt-0.5" {...dtAttrs(event.startDate, 'en-GB', TIME_OPTS)}>{fmtEventTime(event.startDate)}</p>
                 </div>
                 <!-- Match info -->
                 <div class="flex-1 min-w-0 relative z-10 pointer-events-none">
@@ -209,4 +208,8 @@ function fmtTime(d: string) {
     </div>
   </section>
 
+  <script>
+    import { localizeDates } from '@/lib/dateFormat.client';
+    localizeDates();
+  </script>
 </Base>
