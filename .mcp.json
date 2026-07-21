@@ -3,6 +3,10 @@
     "strapi": {
       "type": "http",
       "url": "http://localhost:1337/api/mcp/streamable"
+    },
+    "shopify": {
+      "type": "http",
+      "url": "https://shop.ab.dk/api/mcp"
     }
   }
 }
