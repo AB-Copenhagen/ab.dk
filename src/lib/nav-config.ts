@@ -10,6 +10,8 @@ export interface NavLeaf {
   href: string;
   /** Extra path prefixes that should also count as active — e.g. detail pages living under a different URL segment than the listing page. */
   activePrefixes?: string[];
+  /** True for off-site links (e.g. the Shopify store): href is used as-is (no enPrefix), opens in a new tab, and is never treated as the active nav item. */
+  external?: boolean;
 }
 
 export interface NavItemSimple extends NavLeaf {
@@ -73,7 +75,6 @@ const da: NavConfig = {
     left: [
       { label: 'Join MyAB', href: '/myab', highlight: true },
       { label: 'Billetter', href: 'https://billet.ab.dk/', external: true },
-      { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
   },
   primary: [
@@ -102,9 +103,10 @@ const da: NavConfig = {
         { label: 'Gæsteoplevelser', href: '/hospitality' },
       ],
     },
+    { label: 'Shop', href: 'https://shop.ab.dk', external: true },
   ],
-  login: 'Log ind',
-  myAccount: 'Min konto',
+  login: 'Log ind på MyAB',
+  myAccount: 'Min MyAB-konto',
   logout: 'Log ud',
   openMenu: 'Åbn menu',
   closeMenu: 'Luk menu',
@@ -115,7 +117,6 @@ const en: NavConfig = {
     left: [
       { label: 'Join MyAB', href: '/en/myab', highlight: true },
       { label: 'Tickets', href: 'https://billet.ab.dk/', external: true },
-      { label: 'Shop', href: 'https://shop.ab.dk', external: true },
     ],
   },
   primary: [
@@ -144,9 +145,10 @@ const en: NavConfig = {
         { label: 'Hospitality', href: '/hospitality' },
       ],
     },
+    { label: 'Shop', href: 'https://shop.ab.dk', external: true },
   ],
-  login: 'Sign in',
-  myAccount: 'My account',
+  login: 'MyAB login',
+  myAccount: 'My MyAB account',
   logout: 'Log out',
   openMenu: 'Open menu',
   closeMenu: 'Close menu',

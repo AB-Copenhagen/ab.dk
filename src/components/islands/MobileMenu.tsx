@@ -131,6 +131,35 @@ export default function MobileMenu({
 
               {/* ── Primary nav ── */}
               {nav.primary.map((item) => {
+                if (item.external) {
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1.5 py-3 text-sm font-black uppercase tracking-[0.06em] text-ab-gold"
+                      onClick={() => setOpen(false)}
+                    >
+                      {item.label}
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M3 9L9 3M9 3H4M9 3V8"
+                          stroke="currentColor"
+                          strokeWidth="1.4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </a>
+                  );
+                }
                 const isActive = isNavItemActive(currentPath, item, enPrefix);
                 return (
                   <div key={item.href}>
