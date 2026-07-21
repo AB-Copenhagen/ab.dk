@@ -1,4 +1,13 @@
-export type PartnerTier = 'principal' | 'network';
+export type PartnerTier = 'supreme' | 'premium' | 'local-hero' | 'ab1889';
+
+export const TIER_LABELS: Record<PartnerTier, { da: string; en: string }> = {
+  supreme: { da: 'Supreme Partner', en: 'Supreme Partner' },
+  premium: { da: 'Premium Partner', en: 'Premium Partner' },
+  'local-hero': { da: 'Local Hero Partner', en: 'Local Hero Partner' },
+  ab1889: { da: 'AB 1889 Partner', en: 'AB 1889 Partner' },
+};
+
+const PLACEHOLDER_LOGO = '/images/sponsors/partner-logo-placeholder.svg';
 
 export interface Partner {
   slug: string;
@@ -14,223 +23,134 @@ export interface Partner {
 }
 
 export const PARTNERS: Partner[] = [
-  // ── Principal partners ──────────────────────────────────────────────────────
-  {
-    slug: 'myriad360',
-    name: 'Myriad360',
-    logo: '/images/sponsors/myriad360.png',
-    logoSize: 'w-[230px] h-[78px]',
-    website: 'https://myriad360.com/',
-    tier: 'principal',
-  },
+  // ── Supreme partner ──────────────────────────────────────────────────────
   {
     slug: 'datum',
     name: 'Datum',
     logo: '/images/sponsors/datum.png',
     logoSize: 'w-[300px] h-[100px]',
     website: 'https://datum.net/',
-    tier: 'principal',
+    tier: 'supreme',
     description:
       'Datum is an \'open network cloud\' designed to unlock internet superpowers (e.g. advanced network and connectivity services) for every agent, app, and builder. Unlike a traditional CDN or hyperscaler cloud: 100% focused on modern, "alt cloud" service providers; code is open source (AGPLv3) so you can run it anywhere if needed. Prioritizing agent-first and developer experiences.',
   },
   {
-    slug: 'lind-advokater',
-    name: 'Lind Law',
-    logo: '/images/sponsors/lind-law.png',
-    logoSize: 'w-[85px] h-[23px]',
-    website: 'https://lindlaw.dk/',
-    tier: 'principal',
+    slug: 'myriad360',
+    name: 'Myriad 360',
+    logo: '/images/sponsors/myriad360.png',
+    logoSize: 'w-[230px] h-[51px]',
+    website: 'https://myriad360.com/',
+    tier: 'supreme',
   },
+
+  // ── Premium partner ──────────────────────────────────────────────────────
   {
-    slug: 'select-sport',
-    name: 'Select Sport',
+    slug: 'select',
+    name: 'Select',
     logo: '/images/sponsors/select-sport.png',
     logoSize: 'w-[200px] h-[65px]',
     website: 'https://dk.select-sport.com/',
-    tier: 'principal',
+    tier: 'premium',
   },
   {
     slug: 'unisport',
     name: 'Unisport',
     logo: '/images/sponsors/unisport.png',
     logoSize: 'w-[200px] h-[65px]',
-    website: 'https://www.select-sport.com/',
-    tier: 'principal',
+    tier: 'premium',
+  },
+  {
+    slug: 'lind',
+    name: 'LIND',
+    logo: '/images/sponsors/lind-law.png',
+    logoSize: 'w-[85px] h-[23px]',
+    website: 'https://lindlaw.dk/',
+    tier: 'premium',
+  },
+  {
+    slug: 'ambrosia-group',
+    name: 'Ambrosia Group',
+    logo: PLACEHOLDER_LOGO,
+    tier: 'premium',
+  },
+  {
+    slug: 'dagrofa',
+    name: 'Dagrofa',
+    logo: PLACEHOLDER_LOGO,
+    tier: 'premium',
   },
 
-  // ── Network partners ────────────────────────────────────────────────────────
+  // ── Local Hero partner ───────────────────────────────────────────────────
   {
-    slug: 't4c',
-    name: 'T4C A/S',
-    logo: '/images/sponsors/partners/t4c.jpg',
-    tier: 'network',
-  },
-  {
-    slug: 'ks-jydekrogen',
-    name: 'K/S Jydekrogen',
-    logo: '/images/sponsors/partners/ks-jydekrogen.png',
-    tier: 'network',
-  },
-  {
-    slug: 'fodeksperterne',
-    name: 'Fodeksperterne',
-    logo: '/images/sponsors/partners/fodeksperterne.png',
-    tier: 'network',
-  },
-  {
-    slug: 'weibel-data',
-    name: 'Weibel Data og overvågning',
-    logo: '/images/sponsors/partners/weibel-data.png',
-    tier: 'network',
-  },
-  {
-    slug: 'lomax',
-    name: 'Lomax',
-    logo: '/images/sponsors/partners/lomax.jpeg',
-    tier: 'network',
-  },
-  {
-    slug: 'waseen',
-    name: 'Waseen',
-    logo: '/images/sponsors/partners/waseen.jpeg',
-    tier: 'network',
-  },
-  {
-    slug: 'steaking',
-    name: 'Steaking',
-    logo: '/images/sponsors/partners/steaking.jpg',
-    tier: 'network',
-  },
-  {
-    slug: 'kasper-svenstrup-media',
-    name: 'Kasper Svenstrup Media',
-    logo: '/images/sponsors/partners/kasper-svenstrup-media.png',
-    tier: 'network',
-  },
-  {
-    slug: 'poul-holm-sport',
-    name: 'Poul Holm Sport',
-    logo: '/images/sponsors/partners/poul-holm-sport.gif',
-    tier: 'network',
-  },
-  {
-    slug: 'laudrup-vin',
-    name: 'Laudrup Vin',
-    logo: '/images/sponsors/partners/laudrup-vin.png',
-    tier: 'network',
-  },
-  {
-    slug: 'symbion',
-    name: 'Symbion',
-    logo: '/images/sponsors/partners/symbion.png',
-    tier: 'network',
-  },
-  {
-    slug: 'pure-shots',
-    name: 'Pure Shots',
-    logo: '/images/sponsors/partners/pure-shots.png',
-    tier: 'network',
-  },
-  {
-    slug: 'baker-tilly',
-    name: 'Baker Tilly',
-    logo: '/images/sponsors/partners/baker-tilly.png',
-    tier: 'network',
-  },
-  {
-    slug: 'virum-torv-advokater',
-    name: 'Virum Torv Advokater',
-    logo: '/images/sponsors/partners/virum-torv-advokater.svg',
-    tier: 'network',
-  },
-  {
-    slug: 'soccerzoom',
-    name: 'SoccerZoom',
-    logo: '/images/sponsors/partners/soccerzoom.png',
-    tier: 'network',
-  },
-  {
-    slug: 'apo-pharm',
-    name: 'Apo Pharm',
-    logo: '/images/sponsors/partners/apo-pharm.png',
-    tier: 'network',
-  },
-  {
-    slug: 'plus-leasing',
-    name: 'Plus Leasing',
-    logo: '/images/sponsors/partners/plus-leasing.png',
-    tier: 'network',
+    slug: 'hagelund',
+    name: 'Hagelund ApS',
+    logo: PLACEHOLDER_LOGO,
+    tier: 'local-hero',
   },
   {
     slug: 'dancontainer',
     name: 'Dancontainer',
     logo: '/images/sponsors/partners/dancontainer.jpg',
-    tier: 'network',
+    tier: 'local-hero',
+  },
+
+  // ── AB 1889 partner ──────────────────────────────────────────────────────
+  {
+    slug: 'bagerdygtigt',
+    name: 'Bagerdygtigt ApS',
+    logo: PLACEHOLDER_LOGO,
+    tier: 'ab1889',
   },
   {
-    slug: 'soepromenaden',
-    name: 'Søpromenaden',
-    logo: '/images/sponsors/partners/soepromenaden.webp',
-    tier: 'network',
+    slug: 'dva',
+    name: 'DVA',
+    logo: PLACEHOLDER_LOGO,
+    tier: 'ab1889',
   },
   {
-    slug: 'view2net',
-    name: 'View2net',
-    logo: '/images/sponsors/partners/view2net.png',
-    tier: 'network',
+    slug: 'epact',
+    name: 'ePact',
+    logo: PLACEHOLDER_LOGO,
+    tier: 'ab1889',
   },
   {
-    slug: 'buffetkompagniet',
-    name: 'Buffetkompagniet',
-    logo: '/images/sponsors/partners/buffetkompagniet.png',
-    tier: 'network',
+    slug: 'sds-rengoering',
+    name: 'SDS Rengøring ApS',
+    logo: PLACEHOLDER_LOGO,
+    tier: 'ab1889',
   },
   {
-    slug: 'weibel-el-teknik',
-    name: 'Weibel El-teknik',
+    slug: 'plus-leasing',
+    name: 'Plus Leasing',
+    logo: '/images/sponsors/partners/plus-leasing.png',
+    tier: 'ab1889',
+  },
+  {
+    slug: 'travel-4-companies',
+    name: 'Travel 4 Companies A/S',
+    logo: '/images/sponsors/partners/t4c.jpg',
+    tier: 'ab1889',
+  },
+  {
+    slug: 'weibel-e',
+    name: 'Weibel E',
     logo: '/images/sponsors/partners/weibel-el-teknik.png',
-    tier: 'network',
+    tier: 'ab1889',
   },
   {
-    slug: 'meny-kaffe',
-    name: 'Meny Kaffe',
-    logo: '/images/sponsors/partners/meny-kaffe.png',
-    tier: 'network',
-  },
-  {
-    slug: 'nordsjaelland-sportsfysioterapi',
-    name: 'Nordsjælland Sportsfysioterapi',
-    logo: '/images/sponsors/partners/nordsjaelland-sportsfysioterapi.png',
-    tier: 'network',
-  },
-  {
-    slug: 'meny-soeborg',
-    name: 'Meny Søborg',
-    logo: '/images/sponsors/partners/meny-soeborg.png',
-    tier: 'network',
-  },
-  {
-    slug: 'capio-privathospital',
-    name: 'Capio Privathospital',
-    logo: '/images/sponsors/partners/capio-privathospital.png',
-    tier: 'network',
-  },
-  {
-    slug: 'bella-skilte-print',
-    name: 'Bella — Skilte & Print',
-    logo: '/images/sponsors/partners/bella-skilte-print.png',
-    tier: 'network',
-  },
-  {
-    slug: 'ejendomsfoto',
-    name: 'Ejendomsfoto',
-    logo: '/images/sponsors/partners/ejendomsfoto.png',
-    tier: 'network',
+    slug: 'weibel-data',
+    name: 'Weibel Data',
+    logo: '/images/sponsors/partners/weibel-data.png',
+    tier: 'ab1889',
   },
 ];
 
-export const principalPartners = PARTNERS.filter((p) => p.tier === 'principal');
-export const networkPartners = PARTNERS.filter((p) => p.tier === 'network');
+export const supremePartners = PARTNERS.filter((p) => p.tier === 'supreme');
+export const premiumPartners = PARTNERS.filter((p) => p.tier === 'premium');
+export const localHeroPartners = PARTNERS.filter(
+  (p) => p.tier === 'local-hero'
+);
+export const ab1889Partners = PARTNERS.filter((p) => p.tier === 'ab1889');
 
 export function findPartner(slug: string): Partner | undefined {
   return PARTNERS.find((p) => p.slug === slug);
