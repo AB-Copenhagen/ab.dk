@@ -23,6 +23,8 @@ import bannerWatchLive from '@/assets/images/banner-watch-live.png';
 import product1Img from '@/assets/images/product-1.png';
 import product2Img from '@/assets/images/product-2.png';
 import product3Img from '@/assets/images/product-3.png';
+import heroImg from '@/assets/images/hero.jpg';
+import playerFeaturedImg from '@/assets/images/player-featured.png';
 
 interface Props {
   locale: 'da' | 'en';
@@ -142,7 +144,7 @@ const products = shopifyProducts.length > 0
 
 const heroSlides = [
   {
-    img: '/images/hero.jpg',
+    img: heroImg,
     alt: 'AB 1889',
     headline: translate(locale, 'heroShopHeadline'),
     subtitle: translate(locale, 'heroShopSubtitle'),
@@ -193,6 +195,7 @@ const heroSlides = [
             src={slide.img}
             alt={slide.alt}
             loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
             draggable="false"
             widths={[640, 828, 1200, 1920]}
             sizes="100vw"
@@ -372,9 +375,11 @@ const heroSlides = [
       class="flex flex-col">
       <div class="relative overflow-hidden bg-rich-black">
         <Img
-          src="/images/player-featured.png"
+          src={playerFeaturedImg}
           alt="AB 1889 Player"
           loading="lazy"
+          widths={[400, 480, 640, 828]}
+          sizes="(min-width: 1024px) 30vw, 100vw"
           class="w-full h-full object-cover object-top aspect-3/4"
         />
         <div
@@ -395,11 +400,11 @@ const heroSlides = [
           <div
             id="next-match"
             class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col">
-            <h3
+            <h2
               class="font-black text-white leading-[0.86] tracking-[-0.04em] mb-6"
               style="font-size:clamp(1.75rem,3vw,2.1875rem)">
               {translate(locale, 'nextMatch')}
-            </h3>
+            </h2>
             <div class="flex items-center justify-between gap-4 flex-1">
               <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
                 <Img
@@ -696,7 +701,7 @@ const heroSlides = [
             <div class="flex items-baseline gap-2 mb-1">
               <p class="text-sm font-black text-ab-green">{p.price}</p>
               {p.originalPrice && (
-                <p class="text-xs line-through text-gray-400">
+                <p class="text-xs line-through text-gray-500">
                   {p.originalPrice}
                 </p>
               )}
