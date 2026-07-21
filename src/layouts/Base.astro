@@ -65,6 +65,16 @@ const hreflangEnUrl = new URL(
 const ogLocale = locale === 'en' ? 'en_US' : 'da_DK';
 const ogLocaleAlternate = locale === 'en' ? 'da_DK' : 'en_US';
 
+// First-visit language auto-detection for prerendered pages. Astro's middleware only sees
+// real per-request headers on SSR routes — prerendered routes (most of the site) get a
+// synthetic build-time request with no Accept-Language, so the server-side redirect in
+// src/middleware.ts can never fire there. This client-side fallback covers those pages:
+// it runs before <body> is parsed, so the redirect (when it fires) preempts most of the
+// Danish content flash. Only forward da->en, mirroring the middleware's own scope — a
+// Danish-preferring visitor landing directly on an /en/ page is left alone.
+const autoDetectTargetPath =
+  locale === 'da' ? switchLocalePath(Astro.url.pathname, 'en') : null;
+
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'SportsTeam',
@@ -124,6 +134,27 @@ const statisticsConsented = Astro.isPrerendered
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {autoDetectTargetPath && (
+      <script is:inline define:vars={{ targetPath: autoDetectTargetPath }}>
+        (function () {
+          try {
+            if (/(?:^|;\s*)locale=/.test(document.cookie)) return;
+            var langs =
+              navigator.languages && navigator.languages.length
+                ? navigator.languages
+                : [navigator.language || ''];
+            var prefersDanish =
+              !langs[0] || langs[0].toLowerCase().indexOf('da') === 0;
+            var maxAge = 60 * 60 * 24 * 365;
+            document.cookie =
+              'locale=' + (prefersDanish ? 'da' : 'en') + '; path=/; max-age=' + maxAge;
+            if (!prefersDanish) {
+              window.location.replace(targetPath + window.location.search);
+            }
+          } catch (e) {}
+        })();
+      </script>
+    )}
     <title>{title}</title>
     <meta name="description" content={description} />
     {
