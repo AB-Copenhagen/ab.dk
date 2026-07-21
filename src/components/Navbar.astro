@@ -13,6 +13,8 @@ interface Props {
 
 const { locale = 'da', alternateLocalePath } = Astro.props;
 const nav = getNavConfig(locale);
+const centeredNavItems = nav.primary.filter((item) => !item.external);
+const shopNavItem = nav.primary.find((item) => item.external);
 const enPrefix = locale === 'en' ? '/en' : '';
 const currentPath = Astro.url.pathname;
 const daPath = locale === 'en' && alternateLocalePath ? alternateLocalePath : switchLocalePath(currentPath, 'da');
@@ -47,13 +49,6 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
         class="text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity">
         {locale === 'da' ? 'Køb billetter' : 'Buy Tickets'}
       </a>
-      <a
-        href="https://shop.ab.dk"
-        target="_blank"
-        rel="noreferrer"
-        class="text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity"
-        >{translate(locale, 'shop')}</a
-      >
     </div>
     <!-- Social icons + Login + lang -->
     <div class="flex items-center gap-5 px-6">
@@ -221,7 +216,7 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
     <nav
       class="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8 xl:gap-12">
       {
-        nav.primary.map((item) => {
+        centeredNavItems.map((item) => {
           const isActive = isNavItemActive(currentPath, item, enPrefix);
           return (
             <div class="relative group">
@@ -261,8 +256,43 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
       }
     </nav>
 
-    <!-- Right: Search + Mobile -->
+    <!-- Right: Shop + Search + Mobile -->
     <div class="flex flex-1 items-center justify-end gap-3 min-w-0 shrink-0">
+      {shopNavItem && (
+        <a
+          href={shopNavItem.href}
+          target="_blank"
+          rel="noreferrer"
+          class="hidden lg:flex items-center gap-1.5 font-black text-sm bg-ab-gold text-ab-green rounded-[22px] px-5 py-[10px] no-underline tracking-[-0.03em] hover:bg-ab-beige transition-colors">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+            <path d="M3 6h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
+            <path
+              d="M16 10a4 4 0 0 1-8 0"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+          {shopNavItem.label}
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path
+              d="M3 9L9 3M9 3H4M9 3V8"
+              stroke="currentColor"
+              stroke-width="1.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </a>
+      )}
       <button
         id="search-open-btn"
         class="hidden lg:flex items-center gap-2 font-black text-sm bg-[rgba(15,148,118,0.5)] text-white border-none rounded-[22px] px-5 py-[10px] cursor-pointer tracking-[-0.03em] hover:bg-[rgba(15,148,118,0.8)] transition-colors"
