@@ -25,6 +25,8 @@ const OVERRIDES: Record<string, string> = {
 export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
   'daniel-a-pedersen',
   'jeppe-gertsen',
+  'anton-boye',
+  'noah-maale',
 ]);
 
 export function getPlayerPhotoKey(
