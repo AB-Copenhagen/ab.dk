@@ -3,10 +3,10 @@
 // stale shirt numbers, and merging in players not yet synced by SI. Keeping
 // this in one place means every squad view (homepage, /hold, /en/squad)
 // stays in sync with the exclusion/override source of truth.
-import { fetchABPlayers, type Locale, type SIPlayer } from './client';
+import { type Locale, type SIPlayer, fetchABPlayers } from './client';
 import { EXCLUDED_PLAYER_SLUGS } from './player-photos';
-import { resolveShirtNumber } from '@/data/player-cms-data';
 import { manualPlayersAsSIPlayers } from '@/data/manual-players';
+import { resolveShirtNumber } from '@/data/player-cms-data';
 
 function slugifyName(name: string): string {
   return name
@@ -24,7 +24,10 @@ export async function getSquadPlayers(locale: Locale): Promise<SIPlayer[]> {
     const raw = await fetchABPlayers(locale);
     players = raw
       .filter((p) => !p.name || !EXCLUDED_PLAYER_SLUGS.has(slugifyName(p.name)))
-      .map((p) => ({ ...p, shirtNumber: resolveShirtNumber(p.id, p.shirtNumber) }));
+      .map((p) => ({
+        ...p,
+        shirtNumber: resolveShirtNumber(p.id, p.shirtNumber),
+      }));
   } catch {
     /* SI unavailable */
   }
