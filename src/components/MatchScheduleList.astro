@@ -1,7 +1,7 @@
 ---
 import { localePath, translate, type Locale } from '@/lib/i18n';
 import { getTeamLogoSrc, type SIEvent } from '@/lib/si/client';
-import { fmtDate, dtAttrs, WEEKDAY_LONG_OPTS, MONTH_DAY_YEAR_SHORT_OPTS, TIME_12H_OPTS } from '@/lib/dateFormat';
+import { fmtDate, dtAttrs, GRID_DATE_OPTS, TIME_12H_OPTS } from '@/lib/dateFormat';
 
 interface Props {
   locale: Locale;
@@ -13,7 +13,7 @@ const { locale, events, limit = 7 } = Astro.props;
 
 const rows = [...events]
   .sort(
-    (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+    (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
   )
   .slice(0, limit);
 
@@ -66,9 +66,8 @@ function eventVenue(event: SIEvent): string {
 
     {
       rows.map((event, i) => {
-        const weekdayLocale = locale === 'da' ? 'da-DK' : 'en-US';
-        const weekday = fmtDate(event.startDate, weekdayLocale, WEEKDAY_LONG_OPTS);
-        const monthDay = fmtDate(event.startDate, weekdayLocale, MONTH_DAY_YEAR_SHORT_OPTS);
+        const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB';
+        const dateStr = fmtDate(event.startDate, dateLocale, GRID_DATE_OPTS);
         const timeStr = fmtDate(event.startDate, 'en-US', TIME_12H_OPTS);
         const scoreStr =
           event.statusType === 'finished'
@@ -81,7 +80,7 @@ function eventVenue(event: SIEvent): string {
               'grid items-center px-6 py-3 gap-2 grid-cols-[2fr_1.75fr_90px_1.75fr_1.5fr] border-t border-[#EBEBEB]',
               i % 2 === 0 ? 'widget-row-even' : 'widget-row-odd',
             ]}>
-            <span class="widget-td font-black"><span {...dtAttrs(event.startDate, weekdayLocale, WEEKDAY_LONG_OPTS)}>{weekday}</span>, <span {...dtAttrs(event.startDate, weekdayLocale, MONTH_DAY_YEAR_SHORT_OPTS)}>{monthDay}</span> – <span {...dtAttrs(event.startDate, 'en-US', TIME_12H_OPTS)}>{timeStr}</span></span>
+            <span class="widget-td font-black"><span {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{dateStr}</span> – <span {...dtAttrs(event.startDate, 'en-US', TIME_12H_OPTS)}>{timeStr}</span></span>
             <span class="widget-td font-normal flex items-center gap-2 justify-end">
               {event.homeName}
               <img
