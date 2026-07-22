@@ -70,36 +70,42 @@ const groups: Group[] = [
           <p class="text-[#666] text-[0.9rem] mb-4">
             MyAB is available exclusively through AB's official fan app — download it below.
           </p>
-          <div class="flex flex-wrap gap-3">
+          <div class="flex flex-wrap items-center gap-4">
             <a
               href="https://apps.apple.com/id/app/myab/id6760774439"
               target="_blank"
               rel="noreferrer noopener"
               aria-label="Download on the App Store (opens in new tab)"
-              class="inline-flex items-center gap-2.5 bg-[#111] text-white px-5 py-2.5 no-underline hover:opacity-85 transition-opacity"
+              class="inline-flex hover:opacity-85 transition-opacity"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.87-1.99 1.55-2.987 1.55-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.45zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.63 0 2.85.06 4.35 2.15-.115.07-2.55 1.51-2.52 4.4.03 3.5 3.05 4.65 3.11 4.66z"/></svg>
-              <span>
-                <span class="block text-[0.55rem] leading-none text-white/60">Download on the</span>
-                <span class="block font-black text-[0.9rem] leading-tight tracking-[-0.02em]">App Store</span>
-              </span>
+              <img
+                src="https://toolbox.marketingtools.apple.com/api/badges/download-on-the-app-store/black/en-us?size=250x83"
+                alt="Download on the App Store"
+                width="144"
+                height="48"
+                class="h-12 w-auto"
+                loading="lazy"
+              />
             </a>
             <a
               href="https://play.google.com/store/apps/details?id=dk.ab.club&hl=en_US&pli=1"
               target="_blank"
               rel="noreferrer noopener"
               aria-label="Get it on Google Play (opens in new tab)"
-              class="inline-flex items-center gap-2.5 bg-[#111] text-white px-5 py-2.5 no-underline hover:opacity-85 transition-opacity"
+              class="inline-flex hover:opacity-85 transition-opacity"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.6 2.2c-.4.2-.6.6-.6 1.1v17.4c0 .5.2.9.6 1.1l9.9-9.8L3.6 2.2zm11 9.7 2.7-2.7-9.5-5.4c-.2-.1-.5-.2-.7-.2l7.5 8.3zm0 1.4-7.5 8.3c.2 0 .5-.1.7-.2l9.5-5.4-2.7-2.7zm3.6-3.6-3-1.7-2.9 2.9 2.9 2.9 3-1.7c.6-.4.9-.9.9-1.4s-.3-1-.9-1.4z"/></svg>
-              <span>
-                <span class="block text-[0.55rem] leading-none text-white/60">Get it on</span>
-                <span class="block font-black text-[0.9rem] leading-tight tracking-[-0.02em]">Google Play</span>
-              </span>
+              <img
+                src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                alt="Get it on Google Play"
+                width="124"
+                height="48"
+                class="h-12 w-auto"
+                loading="lazy"
+              />
             </a>
           </div>
         </div>
-        <div class="flex justify-center lg:items-start">
+        <div class="flex justify-center lg:items-start lg:-mt-[380px] relative z-10">
           <Img
             src="/images/myab-app-preview.png"
             alt="Screenshot of the AB fan app"
