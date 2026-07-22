@@ -1,6 +1,6 @@
 ---
+import AppScreenshotCarousel from '@/components/AppScreenshotCarousel.astro';
 import Base from '@/layouts/Base.astro';
-import Img from '@/components/Img.astro';
 
 export const prerender = true;
 
@@ -9,6 +9,15 @@ interface Group {
   intro: string;
   items: string[];
 }
+
+const appShots = [
+  { src: '/images/myab-app-shot-1-home.jpg', alt: 'MyAB app home screen with upcoming match and news' },
+  { src: '/images/myab-app-shot-2-wallet.jpg', alt: 'Tickets and membership card in MyAB Wallet' },
+  { src: '/images/myab-app-shot-3-competitions.jpg', alt: 'Enter competitions for tickets and prizes' },
+  { src: '/images/myab-app-shot-4-matches.jpg', alt: "See all of AB's matches and buy tickets" },
+  { src: '/images/myab-app-shot-5-tv.jpg', alt: 'Watch highlights and livestreams in MyAB' },
+  { src: '/images/myab-app-shot-6-matchday.jpg', alt: 'Detailed match info and standings on matchday' },
+];
 
 const groups: Group[] = [
   {
@@ -46,74 +55,47 @@ const groups: Group[] = [
   ogDescription="Get exclusive content, discounts and live streams with MyAB, the official fan membership from Akademisk Boldklub."
 >
 
-  <!-- Hero -->
-  <div class="bg-ab-black py-16 px-8 lg:px-20">
-    <div class="max-w-7xl mx-auto">
-      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
-      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7rem)] tracking-[-0.04em] mb-6">MyAB</h1>
-      <p class="font-black text-white max-w-[42ch]" style="font-size:clamp(1.1rem,2.2vw,1.4rem);line-height:1.4">
-        Become an AB Insider with MyAB, exclusively within the AB fan app!
-      </p>
-    </div>
-  </div>
-
-  <!-- Price + pitch + app download -->
+  <!-- App download -->
   <section class="bg-white py-[clamp(48px,7vw,80px)]">
-    <div class="max-w-7xl mx-auto px-8 lg:px-20">
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-        <div>
-          <p class="text-[#333] max-w-[62ch] mb-8" style="font-size:clamp(1rem,1.6vw,1.1875rem);line-height:1.7">
-            Want to keep up with all things AB and be the ultimate supporter?
-            Get closer to the club with exclusive content, member-only
-            rewards, partner discounts, and premium app features.
-          </p>
-          <p class="text-[#666] text-[0.9rem] mb-4">
-            MyAB is available exclusively through AB's official fan app — download it below.
-          </p>
-          <div class="flex flex-wrap items-center gap-4">
-            <a
-              href="https://apps.apple.com/id/app/myab/id6760774439"
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label="Download on the App Store (opens in new tab)"
-              class="inline-flex hover:opacity-85 transition-opacity"
-            >
-              <img
-                src="https://toolbox.marketingtools.apple.com/api/badges/download-on-the-app-store/black/en-us?size=250x83"
-                alt="Download on the App Store"
-                width="144"
-                height="48"
-                class="h-12 w-auto"
-                loading="lazy"
-              />
-            </a>
-            <a
-              href="https://play.google.com/store/apps/details?id=dk.ab.club&hl=en_US&pli=1"
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label="Get it on Google Play (opens in new tab)"
-              class="inline-flex hover:opacity-85 transition-opacity"
-            >
-              <img
-                src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                alt="Get it on Google Play"
-                width="124"
-                height="48"
-                class="h-12 w-auto"
-                loading="lazy"
-              />
-            </a>
-          </div>
-        </div>
-        <div class="flex justify-center lg:items-start lg:-mt-[380px] relative z-10">
-          <Img
-            src="/images/myab-app-preview.png"
-            alt="Screenshot of the AB fan app"
-            class="w-full max-w-[210px] h-auto"
-            loading="lazy"
-          />
-        </div>
+    <div class="max-w-4xl mx-auto px-8 text-center">
+      <h1 class="font-black text-[#111] text-center max-w-[32ch] mx-auto mb-10" style="font-size:clamp(1.75rem,4vw,2.75rem);line-height:1.2;letter-spacing:-0.02em">
+        Become an AB Insider with MyAB, exclusively within the AB fan app!
+      </h1>
+
+      <div class="inline-flex p-4 border border-[#E5E7EB] bg-white">
+        <img
+          src="/api/qr/app.png"
+          alt="QR code to download the MyAB app"
+          width="150"
+          height="150"
+          class="w-[150px] h-[150px]"
+          loading="lazy"
+        />
       </div>
+      <p class="text-[#333] mt-6 mb-14" style="font-size:1rem;line-height:1.6">
+        To download the app, open the camera on your mobile device.
+        Point it at the QR code, and you're good to go.
+      </p>
+
+      <AppScreenshotCarousel shots={appShots} />
+
+      <p class="text-[#666] text-[0.9rem] mt-10 max-w-[48ch] mx-auto" style="line-height:1.7">
+        MyAB is available exclusively through AB's official fan app —
+        download it by scanning the QR code, or download directly on{' '}
+        <a
+          href="https://play.google.com/store/apps/details?id=dk.ab.club&hl=en_US&pli=1"
+          target="_blank"
+          rel="noreferrer noopener"
+          class="underline hover:text-ab-green transition-colors"
+        >Google Play</a>{' '}
+        or{' '}
+        <a
+          href="https://apps.apple.com/id/app/myab/id6760774439"
+          target="_blank"
+          rel="noreferrer noopener"
+          class="underline hover:text-ab-green transition-colors"
+        >Apple App Store</a>.
+      </p>
     </div>
   </section>
 
