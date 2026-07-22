@@ -82,7 +82,7 @@ const POSITION_OVERRIDES: Record<string, string> = Object.fromEntries(
     'noah-engell-christensen',
     'ovonte-mullings',
     'emil-mygind-jensen',
-  ].map((slug) => [slug, '-50% bottom'])
+  ].map((slug) => [slug, 'left bottom'])
 );
 
 // Returns the CSS object-position value for a Wasabi photo slug (e.g. 'andreas-sondergaard').
