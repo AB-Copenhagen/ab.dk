@@ -34,6 +34,40 @@ export function resolveName(
   return PLAYER_CMS_DATA[siPlayerId]?.name ?? apiName;
 }
 
+// Matches the ASCII transliteration the SI API itself already uses for these
+// letters elsewhere (e.g. "Søren" -> "Soeren") — so a corrected name with
+// Danish characters still slugifies the same way an SI-sourced ASCII name would.
+function transliterateDanish(name: string): string {
+  return name
+    .replace(/[æÆ]/g, 'ae')
+    .replace(/[øØ]/g, 'oe')
+    .replace(/[åÅ]/g, 'aa');
+}
+
+export function slugify(name: string): string {
+  return transliterateDanish(name)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/'/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/**
+ * Builds the `{id}-{slug}` URL segment for a player's detail page, using the
+ * corrected display name so the URL doesn't repeat a truncated/mangled SI name.
+ * The leading id is what actually resolves the page — the slug text is
+ * cosmetic and safe to change without breaking existing links.
+ */
+export function getPlayerSlug(
+  siPlayerId: number,
+  apiName: string | null
+): string {
+  const name = resolveName(siPlayerId, apiName) ?? apiName ?? '';
+  return `${siPlayerId}-${slugify(name)}`;
+}
+
 export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
   // ── Goalkeepers ───────────────────────────────────────────────────────────
 
