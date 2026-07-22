@@ -1,6 +1,11 @@
 ---
-import { getPlayerPhotoUrl, getPlayerPhotoPosition } from '@/lib/si/player-photos';
+import {
+  getPlayerPhotoUrl,
+  getPlayerPhotoPosition,
+  PENDING_PHOTO_SHIRT_NUMBERS,
+} from '@/lib/si/player-photos';
 import { getPersonCardSizing } from '@/lib/person-card-sizing';
+import { resolveName, getPlayerSlug, slugify } from '@/data/player-cms-data';
 
 interface Props {
   player: {
@@ -19,8 +24,18 @@ interface Props {
 const { player, locale, href } = Astro.props;
 
 const number = player.shirtNumber ?? player.jerseyNumber;
-const photoUrl = getPlayerPhotoUrl(player.name);
+// Photo lookup stays keyed on the raw SI name (may be ASCII-mangled or
+// truncated, e.g. "Soeren Ilsoee" or "Milan Rasmussen") — Wasabi filenames
+// were uploaded against that raw name, not the corrected display name.
+// SI API responses aren't runtime-validated, so shirtNumber can arrive as a
+// numeric string for some players — coerce before the Set lookup.
+const photoPending =
+  number != null && PENDING_PHOTO_SHIRT_NUMBERS.has(Number(number));
+const photoUrl = photoPending ? null : getPlayerPhotoUrl(player.name);
 const photoPosition = getPlayerPhotoPosition(player.name);
+const displayName =
+  (player.id != null ? resolveName(player.id, player.name) : null) ??
+  player.name;
 
 const positionLabels: Record<string, { da: string; en: string }> = {
   keeper: { da: 'Målmand', en: 'Goalkeeper' },
@@ -37,31 +52,23 @@ const textColor = isKeeper ? '#111' : '#fff';
 // 0.5/0.6 alpha both fail WCAG AA contrast (~3.4:1) against these brand backgrounds at this font size.
 const textMuted = isKeeper ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)';
 
-const nameParts = player.name.trim().split(' ');
-const firstName = nameParts[0];
-const lastName = nameParts.slice(1).join(' ');
+// Surname gets its own line, alone — every other part shares the line above it.
+// A long surname (e.g. "Benediktsson") is far more likely to fit whole when it
+// isn't sharing its line with a first/middle name.
+const nameParts = displayName.trim().split(' ');
+const firstLine = nameParts.slice(0, -1).join(' ');
+const surname = nameParts[nameParts.length - 1];
 
 // A long name (a single unbreakable word, or 3+ parts that wrap to 3 lines) can grow tall
 // enough to push the jersey number past the bottom of the card. Shrink name + number
 // together as that risk grows, rather than letting either overflow.
 const { nameFontClamp, numberFontClamp, labelFontClamp } = getPersonCardSizing(
-  player.name,
+  displayName,
   posLabel
 );
 
-function toSlug(name: string) {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/'/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
-const playerSlug = player.id
-  ? `${player.id}-${toSlug(player.name)}`
-  : toSlug(player.name);
+const playerSlug =
+  player.id != null ? getPlayerSlug(player.id, player.name) : slugify(player.name);
 const playerHref =
   href ??
   (locale === 'da' ? `/spiller/${playerSlug}` : `/en/player/${playerSlug}`);
@@ -89,7 +96,7 @@ const playerHref =
       photoUrl ? (
         <img
           src={photoUrl}
-          alt={player.name}
+          alt={displayName}
           loading="lazy"
           class="absolute inset-0 w-full h-full object-cover"
           style={`object-position: ${photoPosition};`}
@@ -99,17 +106,17 @@ const playerHref =
     }
   </div>
 
-  <!-- Text layer: left 52%, pinned to bottom 84% of frame. overflow-hidden is a safety net —
-       the sizing above should keep everything in bounds, but nothing should ever visually
-       escape past the card if an unexpectedly long name/label combination still doesn't fit. -->
+  <!-- Text layer: left 52%, pinned to bottom 84% of frame. No overflow clipping on the name —
+       an exceptionally long surname is allowed to bleed rightward over the photo rather than
+       being clipped invisibly or force-broken mid-word; the sizing above keeps this rare. -->
   <div
-    class="absolute inset-x-0 bottom-0 flex flex-col justify-between overflow-hidden p-4 md:p-5 z-10 h-[84.1%] w-[52%]">
+    class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10 h-[84.1%] w-[52%]">
     <!-- Name + position -->
     <div>
       <p
         class="font-black leading-tight"
-        style={`font-size:${nameFontClamp}; letter-spacing:-0.025em; text-wrap:balance; overflow-wrap:anywhere; color:${textColor};`}>
-        {firstName}<br />{lastName}
+        style={`font-size:${nameFontClamp}; letter-spacing:-0.025em; color:${textColor};`}>
+        {firstLine ? (<>{firstLine}<br /><span class="whitespace-nowrap">{surname}</span></>) : <span class="whitespace-nowrap">{surname}</span>}
       </p>
       <p
         class="mt-1 font-medium"

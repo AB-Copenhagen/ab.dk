@@ -2,6 +2,7 @@ import type { APIContext } from 'astro';
 
 import { COACHING_STAFF } from '@/data/coaching-staff';
 import { PARTNERS } from '@/data/partners';
+import { getPlayerSlug } from '@/data/player-cms-data';
 import { fetchABEvents, fetchABPlayers } from '@/lib/si/client';
 import { fetchCollectionType } from '@/lib/strapi/client';
 import { escapeHtml } from '@/lib/utils';
@@ -12,16 +13,6 @@ interface SitemapEntry {
   loc: string;
   lastmod?: string;
   alternates?: { hreflang: string; href: string }[];
-}
-
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/'/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
 }
 
 // da/en URL pairs for statically-routed pages (mirrors src/lib/i18n.ts's slug map).
@@ -114,7 +105,7 @@ export async function GET(context: APIContext) {
   // Players — `{id}-{slugified name}`, identical slug in both locales.
   const players = await fetchABPlayers('da').catch(() => []);
   for (const player of players) {
-    const slug = `${player.id}-${toSlug(player.name)}`;
+    const slug = getPlayerSlug(player.id, player.name);
     entries.push({ loc: abs(`/spiller/${slug}`) });
     entries.push({ loc: abs(`/en/player/${slug}`) });
   }

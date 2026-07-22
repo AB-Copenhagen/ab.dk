@@ -1,14 +1,12 @@
 ---
 import { fetchCollectionType } from '@/lib/strapi/client';
-import {
-  fetchABEvents,
-  fetchABPlayers,
-  getTeamLogoSrc,
-  type SIPlayer,
-} from '@/lib/si/client';
+import { fetchABEvents, getTeamLogoSrc } from '@/lib/si/client';
+import { getSquadPlayers } from '@/lib/si/squad';
 import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
 import { strapiMediaUrl } from '@/lib/strapi/client';
 import SquadCard from '@/components/SquadCard.astro';
+import StaffCard from '@/components/StaffCard.astro';
+import { COACHING_STAFF } from '@/data/coaching-staff';
 import MatchScheduleList from '@/components/MatchScheduleList.astro';
 import MiniCalendar from '@/components/MiniCalendar.astro';
 import { translate } from '@/lib/i18n';
@@ -61,7 +59,7 @@ const [articles, events, players] = await Promise.all([
     fromDate: seasonFrom.toISOString().slice(0, 10),
     toDate: seasonTo.toISOString().slice(0, 10),
   }).catch(() => [] as any[]),
-  fetchABPlayers(locale).catch((): SIPlayer[] => []),
+  getSquadPlayers(locale),
 ]);
 
 const positionOrder: Record<string, number> = {
@@ -791,6 +789,14 @@ const heroSlides = [
               player={player}
               locale={locale}
             />
+          ))}
+          {COACHING_STAFF.map((staff) => (
+            <div class="squad-card" data-position="coach">
+              <StaffCard
+                staff={staff}
+                locale={locale}
+              />
+            </div>
           ))}
         </div>
       ) : null

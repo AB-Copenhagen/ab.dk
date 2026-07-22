@@ -25,7 +25,13 @@ const OVERRIDES: Record<string, string> = {
 export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
   'daniel-a-pedersen',
   'jeppe-gertsen',
+  'anton-boye',
+  'noah-maale',
 ]);
+
+// Shirt numbers still waiting on the new jersey photo shoot — hide just the
+// photo (card keeps showing name, position, and number) until it's uploaded.
+export const PENDING_PHOTO_SHIRT_NUMBERS = new Set<number>([3, 4, 10, 17]);
 
 export function getPlayerPhotoKey(
   name: string | null | undefined
@@ -82,7 +88,7 @@ const POSITION_OVERRIDES: Record<string, string> = Object.fromEntries(
     'noah-engell-christensen',
     'ovonte-mullings',
     'emil-mygind-jensen',
-  ].map((slug) => [slug, '-50% bottom'])
+  ].map((slug) => [slug, 'left bottom'])
 );
 
 // Returns the CSS object-position value for a Wasabi photo slug (e.g. 'andreas-sondergaard').

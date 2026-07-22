@@ -73,7 +73,7 @@ export interface NavConfig {
 const da: NavConfig = {
   preHeader: {
     left: [
-      { label: 'Join MyAB', href: '/myab', highlight: true },
+      { label: 'Bliv MyAB-medlem', href: '/myab', highlight: true },
       { label: 'Billetter', href: 'https://billet.ab.dk/', external: true },
     ],
   },
@@ -96,7 +96,7 @@ const da: NavConfig = {
       label: 'Bliv involveret',
       href: '/myab',
       children: [
-        { label: 'Join MyAB', href: '/myab' },
+        { label: 'MyAB', href: '/myab' },
         { label: 'Fællesskab', href: '/faellesskab' },
         { label: 'Partnere', href: '/partnere' },
         { label: 'Arrangementer', href: '/events' },

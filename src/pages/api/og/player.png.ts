@@ -1,7 +1,7 @@
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
 
-import crestDataUri from '../../../../public/images/ab-crest-white.svg?inline';
+import crestDataUri from '../../../../public/images/ab-crest-subtract.svg?inline';
 import monogramDataUri from '../../../../public/images/logo-behind-player.svg?inline';
 import { OG_COLORS, fetchWasabiBytes } from '@/lib/og-image';
 
