@@ -1,5 +1,9 @@
 ---
-import { getPlayerPhotoUrl, getPlayerPhotoPosition } from '@/lib/si/player-photos';
+import {
+  getPlayerPhotoUrl,
+  getPlayerPhotoPosition,
+  PENDING_PHOTO_SHIRT_NUMBERS,
+} from '@/lib/si/player-photos';
 import { getPersonCardSizing } from '@/lib/person-card-sizing';
 import { resolveName, getPlayerSlug, slugify } from '@/data/player-cms-data';
 
@@ -23,7 +27,11 @@ const number = player.shirtNumber ?? player.jerseyNumber;
 // Photo lookup stays keyed on the raw SI name (may be ASCII-mangled or
 // truncated, e.g. "Soeren Ilsoee" or "Milan Rasmussen") — Wasabi filenames
 // were uploaded against that raw name, not the corrected display name.
-const photoUrl = getPlayerPhotoUrl(player.name);
+// SI API responses aren't runtime-validated, so shirtNumber can arrive as a
+// numeric string for some players — coerce before the Set lookup.
+const photoPending =
+  number != null && PENDING_PHOTO_SHIRT_NUMBERS.has(Number(number));
+const photoUrl = photoPending ? null : getPlayerPhotoUrl(player.name);
 const photoPosition = getPlayerPhotoPosition(player.name);
 const displayName =
   (player.id != null ? resolveName(player.id, player.name) : null) ??

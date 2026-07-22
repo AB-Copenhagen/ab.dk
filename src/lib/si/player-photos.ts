@@ -29,6 +29,10 @@ export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
   'noah-maale',
 ]);
 
+// Shirt numbers still waiting on the new jersey photo shoot — hide just the
+// photo (card keeps showing name, position, and number) until it's uploaded.
+export const PENDING_PHOTO_SHIRT_NUMBERS = new Set<number>([3, 4, 10, 17]);
+
 export function getPlayerPhotoKey(
   name: string | null | undefined
 ): string | null {
