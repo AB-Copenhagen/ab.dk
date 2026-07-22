@@ -84,7 +84,7 @@ export const PARTNERS: Partner[] = [
   {
     slug: 'hagelund',
     name: 'Hagelund ApS',
-    logo: PLACEHOLDER_LOGO,
+    logo: '/images/sponsors/partners/hagelund.png',
     tier: 'local-hero',
   },
   {
@@ -110,7 +110,7 @@ export const PARTNERS: Partner[] = [
   {
     slug: 'epact',
     name: 'ePact',
-    logo: PLACEHOLDER_LOGO,
+    logo: '/images/sponsors/partners/epact.png',
     tier: 'ab1889',
   },
   {
