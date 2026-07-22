@@ -8,7 +8,7 @@ import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
 import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
 import type { StrapiPlayer } from '@/lib/strapi/client';
 import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
-import { resolveShirtNumber } from '@/data/player-cms-data';
+import { resolveShirtNumber, resolveName } from '@/data/player-cms-data';
 import { findManualPlayer } from '@/data/manual-players';
 
 export const prerender = false;
@@ -72,7 +72,10 @@ if (!player) {
 }
 
 const { name, position, countryName, birthDate, height } = player;
+// Photo/slug lookups stay keyed on the raw SI name (may be ASCII-mangled,
+// e.g. "Soeren Ilsoee") — only the rendered text uses the corrected name.
 const photoUrl = getPlayerPhotoUrl(name);
+const displayName = resolveName(playerId, name) ?? name;
 
 const posLabels: Record<string, string> = {
   keeper:     'Goalkeeper',
@@ -82,7 +85,7 @@ const posLabels: Record<string, string> = {
 };
 const posLabel = posLabels[position?.toLowerCase() ?? ''] ?? position;
 
-const pageTitle = `${name} | Akademisk Boldklub`;
+const pageTitle = `${displayName} | Akademisk Boldklub`;
 
 const dob = birthDate
   ? new Date(birthDate).toLocaleDateString('en-GB', {
@@ -100,7 +103,7 @@ const galleryImages = (cmsPlayer?.gallery ?? []).map(img => ({
 
 const playerDescription = cmsPlayer?.bio
   ? cmsPlayer.bio.slice(0, 160)
-  : `${name}${posLabel ? `, ${posLabel}` : ''} for Akademisk Boldklub (AB 1889).`;
+  : `${displayName}${posLabel ? `, ${posLabel}` : ''} for Akademisk Boldklub (AB 1889).`;
 const absolutePhotoUrl = photoUrl ? `https://ab.dk${photoUrl}` : undefined;
 const ogCardImageUrl = photoUrl
   ? `/api/og/player.png?photo=${encodeURIComponent(photoUrl)}`
@@ -109,7 +112,7 @@ const ogCardImageUrl = photoUrl
 const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name,
+  name: displayName,
   jobTitle: posLabel,
   nationality: countryName,
   birthDate: birthDate ?? undefined,
@@ -148,7 +151,7 @@ const personSchema = {
       <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
         <img
           src={photoUrl}
-          alt={name}
+          alt={displayName}
           loading="eager"
           class="h-full w-auto max-w-none"
           onerror="this.style.display='none'"
@@ -158,7 +161,7 @@ const personSchema = {
 
     <PlayerHeroContent
       locale="en"
-      name={name}
+      name={displayName}
       positionLabel={posLabel}
       shirtNumber={shirtNumber}
     />
@@ -219,7 +222,7 @@ const personSchema = {
       <div class="w-full overflow-hidden aspect-[16/7]">
         <img
           src={galleryImages[0].src}
-          alt={galleryImages[0].alternativeText ?? name}
+          alt={galleryImages[0].alternativeText ?? displayName}
           class="w-full h-full object-cover"
         />
       </div>
@@ -230,7 +233,7 @@ const personSchema = {
             <div class="overflow-hidden aspect-square">
               <img
                 src={img.src}
-                alt={img.alternativeText ?? name}
+                alt={img.alternativeText ?? displayName}
                 class="w-full h-full object-cover"
               />
             </div>

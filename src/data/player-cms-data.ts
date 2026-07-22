@@ -11,6 +11,11 @@ export interface StaticPlayerEntry {
    * changes number mid-season and SI hasn't caught up yet.
    */
   shirtNumber?: number;
+  /**
+   * Overrides a name from the SI API that's missing Danish characters
+   * (e.g. "Soeren Ilsoee" instead of "Søren Ilsøe").
+   */
+  name?: string;
 }
 
 /** Prefers a manual shirt-number override over the (possibly stale) SI API value. */
@@ -19,6 +24,14 @@ export function resolveShirtNumber(
   apiShirtNumber: number | null
 ): number | null {
   return PLAYER_CMS_DATA[siPlayerId]?.shirtNumber ?? apiShirtNumber;
+}
+
+/** Prefers a manual name override over the (possibly ASCII-mangled) SI API value. */
+export function resolveName(
+  siPlayerId: number,
+  apiName: string | null
+): string | null {
+  return PLAYER_CMS_DATA[siPlayerId]?.name ?? apiName;
 }
 
 export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
@@ -168,6 +181,7 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
 
   1079276: {
     // #15 Søren Ilsøe
+    name: 'Søren Ilsøe',
     nickname: 'FireLake',
     formerClubs: 'Esbjerg, Odense, NE Huskies, UConn Huskies',
     bio: {
@@ -240,6 +254,7 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
 
   1614159: {
     // #7 Noah Engell Christensen
+    name: 'Noah Engell Christensen',
     nickname: 'Engell',
     formerClubs: 'AB, OB U19, HIK',
     bio: {
@@ -250,6 +265,7 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
 
   1075424: {
     // #9 Emil Mygind Jensen
+    name: 'Emil Mygind Jensen',
     nickname: 'Myg',
     formerClubs: 'Herlev IF',
     bio: {
@@ -284,6 +300,7 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
 
   1163786: {
     // #18 Milan Silva Rasmussen
+    name: 'Milan Silva Rasmussen',
     formerClubs: 'B.93, Helsingborgs IF, HIK',
     bio: {
       en: "A fun fact about Milan is that he's half Brazilian. In his spare time, he enjoys quality time with friends and family.",

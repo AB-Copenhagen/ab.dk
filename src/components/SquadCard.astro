@@ -1,6 +1,7 @@
 ---
 import { getPlayerPhotoUrl, getPlayerPhotoPosition } from '@/lib/si/player-photos';
 import { getPersonCardSizing } from '@/lib/person-card-sizing';
+import { resolveName } from '@/data/player-cms-data';
 
 interface Props {
   player: {
@@ -19,8 +20,14 @@ interface Props {
 const { player, locale, href } = Astro.props;
 
 const number = player.shirtNumber ?? player.jerseyNumber;
+// Photo/slug lookups stay keyed on the raw SI name (may be ASCII-mangled or
+// truncated, e.g. "Soeren Ilsoee" or "Milan Rasmussen") — only the rendered
+// text uses the corrected name.
 const photoUrl = getPlayerPhotoUrl(player.name);
 const photoPosition = getPlayerPhotoPosition(player.name);
+const displayName =
+  (player.id != null ? resolveName(player.id, player.name) : null) ??
+  player.name;
 
 const positionLabels: Record<string, { da: string; en: string }> = {
   keeper: { da: 'Målmand', en: 'Goalkeeper' },
@@ -37,7 +44,7 @@ const textColor = isKeeper ? '#111' : '#fff';
 // 0.5/0.6 alpha both fail WCAG AA contrast (~3.4:1) against these brand backgrounds at this font size.
 const textMuted = isKeeper ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)';
 
-const nameParts = player.name.trim().split(' ');
+const nameParts = displayName.trim().split(' ');
 const firstName = nameParts[0];
 const lastName = nameParts.slice(1).join(' ');
 
@@ -45,7 +52,7 @@ const lastName = nameParts.slice(1).join(' ');
 // enough to push the jersey number past the bottom of the card. Shrink name + number
 // together as that risk grows, rather than letting either overflow.
 const { nameFontClamp, numberFontClamp, labelFontClamp } = getPersonCardSizing(
-  player.name,
+  displayName,
   posLabel
 );
 
@@ -89,7 +96,7 @@ const playerHref =
       photoUrl ? (
         <img
           src={photoUrl}
-          alt={player.name}
+          alt={displayName}
           loading="lazy"
           class="absolute inset-0 w-full h-full object-cover"
           style={`object-position: ${photoPosition};`}
