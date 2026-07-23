@@ -21,7 +21,6 @@ import bannerWatchLive from '@/assets/images/banner-watch-live.png';
 import product1Img from '@/assets/images/product-1.png';
 import product2Img from '@/assets/images/product-2.png';
 import product3Img from '@/assets/images/product-3.png';
-import heroImg from '@/assets/images/hero.jpg';
 import heroAbReturnsImg from '@/assets/images/hero-ab-returns.jpg';
 import playerFeaturedImg from '@/assets/images/player-featured.png';
 import {
@@ -172,38 +171,43 @@ const products = shopifyProducts.length > 0
 
 const heroSlides = [
   {
+    type: 'image' as const,
     img: heroAbReturnsImg,
     alt: translate(locale, 'heroDivisionAlt'),
     headline: translate(locale, 'heroDivisionHeadline'),
     ctaLabel: translate(locale, 'heroDivisionCta'),
+    ctaVariant: 'btn-beige',
     ctaUrl:
       locale === 'en'
         ? '/en/news/ab-returns-to-1-division'
         : '/nyheder/ab-vender-tilbage-til-betinia-liga',
   },
   {
-    img: heroImg,
-    alt: 'AB 1889',
-    headline: translate(locale, 'heroShopHeadline'),
-    subtitle: translate(locale, 'heroShopSubtitle'),
+    type: 'video' as const,
+    video: locale === 'da' ? '/videos/hero-merch-da.mp4' : '/videos/hero-merch-en.mp4',
     ctaLabel: translate(locale, 'heroShopNow'),
     ctaUrl: 'https://shop.ab.dk',
+    ctaVariant: 'btn-beige',
   },
   {
+    type: 'image' as const,
     img: matchesHeaderBg,
     alt: translate(locale, 'heroMatchesAlt'),
     headline: translate(locale, 'heroMatchesHeadline'),
     subtitle: translate(locale, 'heroMatchesSubtitle'),
     ctaLabel: translate(locale, 'heroMatchesCta'),
     ctaUrl: localPath('/kampe'),
+    ctaVariant: 'btn-beige',
   },
   {
+    type: 'image' as const,
     img: joinTeamAbBg,
     alt: translate(locale, 'heroJoinAlt'),
     headline: translate(locale, 'heroJoinHeadline'),
     subtitle: translate(locale, 'heroJoinSubtitle'),
     ctaLabel: translate(locale, 'heroJoinCta'),
     ctaUrl: localPath('/om/bliv-medlem'),
+    ctaVariant: 'btn-beige',
   },
 ];
 ---
@@ -228,65 +232,143 @@ const heroSlides = [
   <div id="hero-track" class="flex h-full will-change-transform" style="transform:translateX(0)">
     {
       heroSlides.map((slide, i) => (
-        <div class="relative flex-shrink-0 w-full h-full">
-          <Img
-            src={slide.img}
-            alt={slide.alt}
-            loading={i === 0 ? 'eager' : 'lazy'}
-            fetchpriority={i === 0 ? 'high' : undefined}
-            draggable="false"
-            widths={[640, 828, 1200, 1920]}
-            sizes="100vw"
-            class="w-full h-full object-cover object-center pointer-events-none"
-          />
-          <div class="absolute inset-0 bg-black/20" />
-          <div class="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
-            <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance text-center">
-              {slide.headline}
-            </h1>
-            {slide.subtitle && (
-              <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
-                {slide.subtitle}
-              </p>
-            )}
-            <a href={slide.ctaUrl} class="btn btn-lg btn-beige pointer-events-auto">
-              {slide.ctaLabel}
-            </a>
-          </div>
+        <div class={`relative flex-shrink-0 w-full h-full ${slide.type === 'video' ? 'bg-ab-black' : ''}`}>
+          {slide.type === 'video' ? (
+            <video
+              src={slide.video}
+              muted
+              playsinline
+              preload={i === 0 ? 'auto' : 'none'}
+              draggable="false"
+              class="hero-video w-full h-full max-w-[1680px] mx-auto object-cover object-center pointer-events-none"
+            />
+          ) : (
+            <Img
+              src={slide.img}
+              alt={slide.alt}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : undefined}
+              draggable="false"
+              widths={[640, 828, 1200, 1920]}
+              sizes="100vw"
+              class="w-full h-full object-cover object-center pointer-events-none"
+            />
+          )}
+          {slide.type === 'video' ? (
+            <div class="absolute inset-0 z-10 flex flex-col items-center justify-end pb-28 px-6 text-center">
+              <a href={slide.ctaUrl} target="_blank" rel="noopener noreferrer" class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                {slide.ctaLabel}
+              </a>
+            </div>
+          ) : (
+            <>
+              <div class="absolute inset-0 bg-black/20" />
+              <div class="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
+                <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance text-center">
+                  {slide.headline}
+                </h1>
+                {slide.subtitle && (
+                  <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
+                    {slide.subtitle}
+                  </p>
+                )}
+                <a href={slide.ctaUrl} class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                  {slide.ctaLabel}
+                </a>
+              </div>
+            </>
+          )}
         </div>
       ))
     }
   </div>
 
-  <!-- Timer dot indicators -->
-  <div class="absolute bottom-8 left-0 right-0 z-30 flex justify-center items-center gap-2">
-    {
-      heroSlides.map((_, i) => (
-        <button
-          class="hero-dot relative overflow-hidden"
-          style={`height:4px; border-radius:2px; border:none; padding:0; cursor:pointer; transition:width 0.3s ease; background:rgba(255,255,255,0.35); ${i === 0 ? 'width:48px;' : 'width:16px;'}`}
-          data-dot={i}
-          aria-label={`Slide ${i + 1}`}>
-          <div
-            class="hero-dot-fill"
-            style={`position:absolute; inset:0; background:#fff; transform-origin:left; transform:scaleX(0); ${i === 0 ? `animation:dot-fill ${5000}ms linear forwards;` : ''}`}
-          />
-        </button>
-      ))
-    }
+  <!-- Scrim so the indicator/controls stay legible regardless of slide brightness -->
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-28 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+  <!-- Dot indicators (centered) -->
+  <div class="absolute bottom-8 left-0 right-0 z-30 flex justify-center items-center">
+    <div id="hero-dots" class="flex items-center gap-2 h-7 cursor-default">
+      {
+        heroSlides.map((_, i) => (
+          <button
+            class="hero-dot relative overflow-hidden"
+            style={`height:4px; border-radius:2px; border:none; padding:0; cursor:pointer; transition:width 0.3s ease; background:rgba(255,255,255,0.35); ${i === 0 ? 'width:48px;' : 'width:16px;'}`}
+            data-dot={i}
+            aria-label={`Slide ${i + 1}`}>
+            <div
+              class="hero-dot-fill"
+              style={`position:absolute; inset:0; background:#fff; transform-origin:left; transform:scaleX(0); ${i === 0 ? `animation:dot-fill ${5000}ms linear forwards;` : ''}`}
+            />
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Prev/pause/next controls, grouped at the right -->
+  <div id="hero-controls" class="absolute bottom-8 right-6 z-30 flex items-center gap-2 cursor-default">
+    <button
+      type="button"
+      id="hero-prev-btn"
+      class="flex items-center justify-center size-7 rounded-full bg-black/35 hover:bg-black/50 backdrop-blur-sm transition-colors text-white shrink-0 cursor-pointer"
+      aria-label={translate(locale, 'previousSlide')}>
+      <svg width="7" height="12" viewBox="0 0 7 12" fill="none" aria-hidden="true">
+        <path d="M6 1L1 6L6 11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <button
+      type="button"
+      id="hero-pause-btn"
+      class="flex items-center justify-center size-7 rounded-full bg-black/35 hover:bg-black/50 backdrop-blur-sm transition-colors text-white shrink-0 cursor-pointer"
+      aria-pressed="false"
+      aria-label={translate(locale, 'pauseSlideshow')}
+      data-label-pause={translate(locale, 'pauseSlideshow')}
+      data-label-play={translate(locale, 'playSlideshow')}>
+      <svg id="hero-pause-icon" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+        <rect x="0" y="0" width="3" height="10" />
+        <rect x="7" y="0" width="3" height="10" />
+      </svg>
+      <svg id="hero-play-icon" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true" style="display:none;">
+        <path d="M0 0 L9 5 L0 10 Z" />
+      </svg>
+    </button>
+    <button
+      type="button"
+      id="hero-next-btn"
+      class="flex items-center justify-center size-7 rounded-full bg-black/35 hover:bg-black/50 backdrop-blur-sm transition-colors text-white shrink-0 cursor-pointer"
+      aria-label={translate(locale, 'nextSlide')}>
+      <svg width="7" height="12" viewBox="0 0 7 12" fill="none" aria-hidden="true">
+        <path d="M1 1L6 6L1 11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
   </div>
 </section>
 
 <script>
-  const DURATION        = 5000;
+  const IMAGE_DURATION  = 5000;
   const SNAP_EASE       = 'transform 0.48s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
   const SWIPE_THRESHOLD = 50;
 
-  const slider = document.getElementById('hero-slider')!;
-  const track  = document.getElementById('hero-track')!;
-  const dots   = Array.from(document.querySelectorAll<HTMLElement>('.hero-dot'));
-  const fills  = dots.map(d => d.querySelector<HTMLElement>('.hero-dot-fill')!);
-  const total  = dots.length;
+  const slider    = document.getElementById('hero-slider')!;
+  const track     = document.getElementById('hero-track')!;
+  const dots      = Array.from(document.querySelectorAll<HTMLElement>('.hero-dot'));
+  const fills     = dots.map(d => d.querySelector<HTMLElement>('.hero-dot-fill')!);
+  const pauseBtn  = document.getElementById('hero-pause-btn')!;
+  const pauseIcon = document.getElementById('hero-pause-icon')!;
+  const playIcon  = document.getElementById('hero-play-icon')!;
+  const prevBtn   = document.getElementById('hero-prev-btn')!;
+  const nextBtn   = document.getElementById('hero-next-btn')!;
+  const total     = dots.length;
+
+  // Keep the swipe/drag handling below from hijacking taps on the
+  // indicator dots and prev/pause/next controls.
+  const dotsWrap     = document.getElementById('hero-dots')!;
+  const controlsWrap = document.getElementById('hero-controls')!;
+  [dotsWrap, controlsWrap].forEach((el) => {
+    el.style.touchAction = 'auto';
+    el.addEventListener('pointerdown', (e) => e.stopPropagation());
+  });
 
   // ── Clone first/last for infinite wrapping ─────────────────
   // Track layout: [lastClone] [s0] [s1] … [sN] [firstClone]
@@ -295,9 +377,13 @@ const heroSlides = [
   track.prepend(realSlides[total - 1].cloneNode(true));
   track.append(realSlides[0].cloneNode(true));
 
-  let current    = 0;      // logical slide index (0..total-1)
-  let trackIndex = 1;      // position in expanded track
-  let timer: ReturnType<typeof setInterval>;
+  let current       = 0;      // logical slide index (0..total-1)
+  let trackIndex     = 1;      // position in expanded track
+  let paused         = false;
+  let activeVideo: HTMLVideoElement | null = null;
+  let advanceTimer: ReturnType<typeof setTimeout> | null = null;
+  let advanceDeadline = 0;     // epoch ms the pending image-slide advance fires at
+  let pausedRemainingMs = 0;   // time left on that advance when paused (image slides only)
 
   const w = () => slider.offsetWidth;
 
@@ -306,53 +392,145 @@ const heroSlides = [
     track.style.transform  = `translateX(${-ti * w()}px)`;
   }
 
+  function clearAdvanceTimer() {
+    if (advanceTimer !== null) {
+      clearTimeout(advanceTimer);
+      advanceTimer = null;
+    }
+  }
+
+  function armImageTimer(ms: number) {
+    clearAdvanceTimer();
+    advanceDeadline = Date.now() + ms;
+    advanceTimer = setTimeout(() => goTo(current + 1), ms);
+  }
+
+  // Video slides advance on their own 'ended' event so the clip always
+  // plays out in full; image slides advance on a fixed timer.
+  function scheduleAdvance(ti: number) {
+    clearAdvanceTimer();
+    if (paused) return;
+    const video = (track.children[ti] as HTMLElement).querySelector('video');
+    if (video) return; // handled by the 'ended' listener below
+    armImageTimer(IMAGE_DURATION);
+  }
+
+  // Starts the dot-fill animation sized to the slide's actual duration —
+  // fixed for image slides, the clip length (once known) for video slides.
+  function armFill(dotIndex: number, video: HTMLVideoElement | null) {
+    const fill = fills[dotIndex];
+    const apply = (ms: number) => {
+      fill.style.animation = 'none';
+      void fill.offsetWidth;
+      fill.style.animation = `dot-fill ${ms}ms linear forwards`;
+      fill.style.animationPlayState = paused ? 'paused' : 'running';
+    };
+    if (!video) { apply(IMAGE_DURATION); return; }
+    if (video.readyState >= 1 && !Number.isNaN(video.duration)) apply(video.duration * 1000);
+    else video.addEventListener('loadedmetadata', () => apply(video.duration * 1000), { once: true });
+  }
+
+  // Only the active slide's video plays; every other one pauses and resets.
+  function activateVideo(ti: number) {
+    activeVideo = null;
+    Array.from(track.children).forEach((slideEl, idx) => {
+      const video = slideEl.querySelector('video');
+      if (!video) return;
+      if (idx === ti) {
+        activeVideo = video;
+        video.currentTime = 0;
+        if (!paused) video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }
+
+  // Every video (real slides + clones) advances the slider on 'ended', but
+  // only while it's the one actually driving the currently shown slide.
+  Array.from(track.children).forEach((slideEl) => {
+    const video = slideEl.querySelector('video');
+    video?.addEventListener('ended', () => {
+      if (!paused && video === activeVideo) goTo(current + 1);
+    });
+  });
+
   // After animated transition to a clone, silently jump to real slide
   track.addEventListener('transitionend', () => {
     if (trackIndex === 0) {
       trackIndex = total;
       snap(trackIndex, false);
+      activateVideo(trackIndex);
     } else if (trackIndex === total + 1) {
       trackIndex = 1;
       snap(trackIndex, false);
+      activateVideo(trackIndex);
     }
   });
 
-  // Start at real slide 0
-  snap(1, false);
-
-  function activateDot(i: number) {
+  function activateDot(i: number, video: HTMLVideoElement | null) {
     dots.forEach((dot, j) => {
-      const fill = fills[j];
       if (j === i) {
         dot.style.width = '48px';
-        fill.style.animation = 'none';
-        void fill.offsetWidth;
-        fill.style.animation = `dot-fill ${DURATION}ms linear forwards`;
+        armFill(j, video);
       } else {
         dot.style.width = '16px';
-        fill.style.animation = 'none';
-        fill.style.transform = 'scaleX(0)';
+        fills[j].style.animation = 'none';
+        fills[j].style.transform = 'scaleX(0)';
       }
     });
   }
 
   function goTo(n: number) {
+    pausedRemainingMs = 0; // a manual/auto jump always starts a fresh slide
     current = (n + total) % total;
     // Route wraps through clones so motion stays directional
     if (n >= total)  trackIndex = total + 1;   // forward wrap → firstClone
     else if (n < 0)  trackIndex = 0;           // backward wrap → lastClone
     else             trackIndex = current + 1;
     snap(trackIndex, true);
-    activateDot(current);
+    activateVideo(trackIndex);
+    activateDot(current, activeVideo);
+    scheduleAdvance(trackIndex);
   }
 
-  timer = setInterval(() => goTo(current + 1), DURATION);
+  function setPaused(next: boolean) {
+    paused = next;
+    pauseBtn.setAttribute('aria-pressed', String(paused));
+    pauseBtn.setAttribute(
+      'aria-label',
+      paused ? pauseBtn.dataset.labelPlay! : pauseBtn.dataset.labelPause!
+    );
+    pauseIcon.style.display = paused ? 'none' : '';
+    playIcon.style.display  = paused ? '' : 'none';
+    fills.forEach((f) => { f.style.animationPlayState = paused ? 'paused' : 'running'; });
 
-  dots.forEach((dot, i) => dot.addEventListener('click', () => {
-    clearInterval(timer);
-    goTo(i);
-    timer = setInterval(() => goTo(current + 1), DURATION);
-  }));
+    if (paused) {
+      if (advanceTimer !== null) pausedRemainingMs = Math.max(0, advanceDeadline - Date.now());
+      clearAdvanceTimer();
+      activeVideo?.pause();
+    } else {
+      activeVideo?.play().catch(() => {});
+      if (pausedRemainingMs > 0) {
+        armImageTimer(pausedRemainingMs);
+        pausedRemainingMs = 0;
+      } else {
+        scheduleAdvance(trackIndex);
+      }
+    }
+  }
+
+  pauseBtn.addEventListener('click', () => setPaused(!paused));
+
+  // Start at real slide 0
+  snap(1, false);
+  activateVideo(1);
+  activateDot(0, activeVideo);
+  scheduleAdvance(1);
+
+  dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
 
   window.addEventListener('resize', () => snap(trackIndex, false), { passive: true });
 
@@ -363,7 +541,7 @@ const heroSlides = [
   let didDrag    = false;
 
   slider.addEventListener('pointerdown', (e) => {
-    if ((e.target as Element).closest('a, button')) return;
+    if ((e.target as Element).closest('a, button, #hero-dots, #hero-controls')) return;
     dragStartX = e.clientX;
     dragDelta  = 0;
     dragging   = true;
@@ -383,9 +561,7 @@ const heroSlides = [
     if (!dragging) return;
     dragging = false;
     if (Math.abs(dragDelta) > SWIPE_THRESHOLD) {
-      clearInterval(timer);
       goTo(dragDelta < 0 ? current + 1 : current - 1);
-      timer = setInterval(() => goTo(current + 1), DURATION);
     } else {
       snap(trackIndex, true);  // spring back
     }
