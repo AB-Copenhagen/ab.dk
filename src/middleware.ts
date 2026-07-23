@@ -3,7 +3,7 @@ import { defineMiddleware } from 'astro:middleware';
 
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
 import { descope } from '@/lib/descope-server';
-import { switchLocalePath } from '@/lib/i18n';
+import { type Locale, switchLocalePath } from '@/lib/i18n';
 import { PREVIEW_COOKIE, runWithPreview } from '@/lib/preview-context';
 
 const LOCALE_COOKIE = 'locale';
@@ -14,6 +14,28 @@ const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 // bot's language instead of the page's.
 const BOT_USER_AGENT_PATTERN =
   /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegrambot|discordbot|slackbot|pinterestbot|ia_archiver|bingpreview/i;
+
+/**
+ * True if this request was triggered by navigating from another page on this
+ * site (an in-site link, e.g. LangSwitch), as opposed to a fresh top-level
+ * visit (typed URL, bookmark, or an external link) — needed to tell "the user
+ * just clicked to Danish, respect it" apart from "the user landed on the bare
+ * (Danish-by-default) URL again and we should honor their stored preference."
+ */
+function isSameSiteNavigation(context: APIContext): boolean {
+  const secFetchSite = context.request.headers.get('sec-fetch-site');
+  if (secFetchSite)
+    return secFetchSite === 'same-origin' || secFetchSite === 'same-site';
+
+  // Older/uncommon clients that skip Sec-Fetch-Site — fall back to Referer.
+  const referer = context.request.headers.get('referer');
+  if (!referer) return false;
+  try {
+    return new URL(referer).host === context.url.host;
+  } catch {
+    return false;
+  }
+}
 
 /** True if Danish is the browser's highest-priority language, or the header gives no usable signal. */
 function prefersDanish(acceptLanguage: string): boolean {
@@ -63,24 +85,41 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
     );
 
   if (isPageRequest && !isBot) {
-    const hasLocaleCookie = context.cookies.has(LOCALE_COOKIE);
+    const cookieLocale = context.cookies.get(LOCALE_COOKIE)?.value;
 
-    if (!hasLocaleCookie && locale === 'da') {
-      const acceptLanguage =
-        context.request.headers.get('accept-language') ?? '';
-      if (!prefersDanish(acceptLanguage)) {
-        context.cookies.set(LOCALE_COOKIE, 'en', {
-          path: '/',
-          maxAge: ONE_YEAR_SECONDS,
-        });
-        const targetPath = switchLocalePath(context.url.pathname, 'en');
-        return context.redirect(`${targetPath}${context.url.search}`, 302);
+    if (!cookieLocale) {
+      // First visit ever, no stored preference — auto-detect from Accept-Language.
+      if (locale === 'da') {
+        const acceptLanguage =
+          context.request.headers.get('accept-language') ?? '';
+        if (!prefersDanish(acceptLanguage)) {
+          context.cookies.set(LOCALE_COOKIE, 'en', {
+            path: '/',
+            maxAge: ONE_YEAR_SECONDS,
+          });
+          const targetPath = switchLocalePath(context.url.pathname, 'en');
+          return context.redirect(`${targetPath}${context.url.search}`, 302);
+        }
       }
+    } else if (cookieLocale !== locale && !isSameSiteNavigation(context)) {
+      // Returning visitor landing fresh (bookmark, typed URL, external link) on
+      // a page whose implied locale doesn't match their stored preference —
+      // honor the stored preference instead of silently reverting it. Danish
+      // has no URL prefix, so every unprefixed page looks identical to a bare
+      // first-visit; without this, re-visiting the bare domain after choosing
+      // English would fall through to the sync below and silently overwrite
+      // the cookie back to 'da'. In-site navigations (LangSwitch, internal
+      // links) are excluded so an explicit manual switch always wins.
+      const targetPath = switchLocalePath(
+        context.url.pathname,
+        cookieLocale as Locale
+      );
+      return context.redirect(`${targetPath}${context.url.search}`, 302);
     }
 
     // Keeps the cookie in sync with whatever locale is actually being served — this
-    // is what makes a manual switch via LangSwitch stick on the next cookie-less
-    // check above, overriding whatever auto-detect previously decided.
+    // is what makes a manual switch via LangSwitch stick, overriding whatever the
+    // stored preference previously was.
     context.cookies.set(LOCALE_COOKIE, locale, {
       path: '/',
       maxAge: ONE_YEAR_SECONDS,
