@@ -46,14 +46,22 @@ const matchDate = fmtDate(startDate, 'en-GB', { ...DATE_LONG_YEAR_OPTS, ...TIME_
 const matchDateDay = fmtDate(startDate, 'en-GB', DATE_LONG_YEAR_OPTS);
 const matchTime = fmtDate(startDate, 'en-GB', TIME_OPTS);
 
-const cmsMatch = await fetchMatchContent(eventId).catch(() => null);
+const beforeDate = startDate.slice(0, 10);
+const [cmsMatch, billetMap, homeForm, awayForm] = await Promise.all([
+  fetchMatchContent(eventId).catch(() => null),
+  isHome ? fetchBilletTicketMap().catch(() => null) : Promise.resolve(null),
+  fetchTeamForm(event.homeId, { beforeDate, locale: 'en' }).catch(() => []),
+  fetchTeamForm(event.awayId, { beforeDate, locale: 'en' }).catch(() => []),
+]);
 const accentColor = cmsMatch?.accentColor ?? 'var(--ab-green)';
 const articles = cmsMatch?.articles ?? [];
 const socialEmbeds = cmsMatch?.socialEmbeds ?? [];
 
-const billetFallback = isHome
-  ? await fetchBilletTicketMap().then(m => findTicketUrl(m, awayName) ?? 'https://billet.ab.dk/').catch(() => 'https://billet.ab.dk/')
-  : null;
+const billetFallback = billetMap
+  ? (findTicketUrl(billetMap, awayName) ?? 'https://billet.ab.dk/')
+  : isHome
+    ? 'https://billet.ab.dk/'
+    : null;
 const ticketUrl = cmsMatch?.ticketUrl ?? billetFallback;
 
 const venueName = event.properties?.venueName ?? (isHome ? 'Gladsaxe Stadium' : awayName);
@@ -61,12 +69,6 @@ const venueName = event.properties?.venueName ?? (isHome ? 'Gladsaxe Stadium' : 
 const WIDGET_TEAM_ID = 10202;
 const WIDGET_TOURNAMENT_ID = 46;
 const WIDGET_SEASON_ID = 16387;
-
-const beforeDate = startDate.slice(0, 10);
-const [homeForm, awayForm] = await Promise.all([
-  fetchTeamForm(event.homeId, { beforeDate, locale: 'en' }).catch(() => []),
-  fetchTeamForm(event.awayId, { beforeDate, locale: 'en' }).catch(() => []),
-]);
 
 const matchDescription = `${homeName} vs ${awayName} — ${matchDate} at ${venueName}.`;
 const ogImageParams = new URLSearchParams({

@@ -46,7 +46,7 @@ const seasonFrom = new Date(CURRENT_SEASON_START);
 const seasonTo = new Date(now);
 seasonTo.setMonth(seasonTo.getMonth() + 3);
 
-const [articles, events, players] = await Promise.all([
+const [articles, events, players, shopifyProducts] = await Promise.all([
   fetchCollectionType<any[]>('articles', {
     locale,
     sort: ['originalPublishedAt:desc'],
@@ -60,6 +60,9 @@ const [articles, events, players] = await Promise.all([
     toDate: seasonTo.toISOString().slice(0, 10),
   }).catch(() => [] as any[]),
   getSquadPlayers(locale),
+  fetchCollectionProducts('311129374820', 3).catch(
+    () => [] as Awaited<ReturnType<typeof fetchCollectionProducts>>
+  ),
 ]);
 
 const positionOrder: Record<string, number> = {
@@ -119,8 +122,6 @@ function localPath(daPath: string) {
   if (locale !== 'en') return daPath;
   return `/en${enSlugs[daPath] ?? daPath}`;
 }
-
-const shopifyProducts = await fetchCollectionProducts('311129374820', 3).catch(() => [] as Awaited<ReturnType<typeof fetchCollectionProducts>>);
 
 const staticProducts = [
   {

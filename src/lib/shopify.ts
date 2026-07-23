@@ -1,8 +1,18 @@
+import { CacheManager, FileCacheDriver } from '@datum-cloud/strapi-revalidate';
+
 const domain = import.meta.env.SHOPIFY_DOMAIN as string | undefined;
-const accessToken = import.meta.env.SHOPIFY_STOREFRONT_CLIENT_SECRET as
+const accessToken = import.meta.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN as
   string | undefined;
 
 const API_VERSION = '2024-01';
+
+// /tmp is writable on Vercel serverless; project dir is not.
+const CACHE_DIR = '/tmp/shopify-cache';
+const cache = new CacheManager({
+  primary: new FileCacheDriver({ dir: CACHE_DIR }),
+  fallback: new FileCacheDriver({ dir: `${CACHE_DIR}-fallback` }),
+  defaultTtl: 60 * 5,
+});
 
 export interface ShopifyProduct {
   id: string;
@@ -20,6 +30,18 @@ interface GqlResponse<T> {
   errors?: { message: string }[];
 }
 
+async function storefrontCacheKey(
+  query: string,
+  variables?: Record<string, unknown>
+): Promise<string> {
+  const bytes = new TextEncoder().encode(JSON.stringify({ query, variables }));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const hash = Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return `shopify-${hash}`;
+}
+
 async function storefront<T>(
   query: string,
   variables?: Record<string, unknown>
@@ -27,20 +49,38 @@ async function storefront<T>(
   if (!domain || !accessToken)
     throw new Error('Shopify env vars not configured');
 
-  const res = await fetch(`https://${domain}/api/${API_VERSION}/graphql.json`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': accessToken,
+  const key = await storefrontCacheKey(query, variables);
+  const result = await cache.getWithFallback<T>(
+    key,
+    async () => {
+      try {
+        const res = await fetch(
+          `https://${domain}/api/${API_VERSION}/graphql.json`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Shopify-Storefront-Access-Token': accessToken,
+            },
+            body: JSON.stringify({ query, variables }),
+          }
+        );
+        if (!res.ok) return null;
+        const json = (await res.json()) as GqlResponse<T>;
+        if (json.errors?.length) return null;
+        return json.data;
+      } catch {
+        return null;
+      }
     },
-    body: JSON.stringify({ query, variables }),
-  });
+    { tags: ['shopify'] }
+  );
 
-  if (!res.ok) throw new Error(`Shopify API error: ${res.status}`);
-
-  const json = (await res.json()) as GqlResponse<T>;
-  if (json.errors?.length) throw new Error(json.errors[0].message);
-  return json.data;
+  if (result === null)
+    throw new Error(
+      'Shopify API error: request failed, no cached data available'
+    );
+  return result;
 }
 
 const COLLECTION_BY_ID_QUERY = `
