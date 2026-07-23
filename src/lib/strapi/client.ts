@@ -188,10 +188,27 @@ export interface StrapiSocialEmbed {
 
 export interface StrapiMatchArticle {
   id: number;
+  documentId: string;
   title: string;
   slug: string;
   description?: string;
   image?: { url: string; alternativeText?: string };
+}
+
+type MatchArticleLinkRole = 'pre_match' | 'post_match' | 'community_news' | 'other';
+
+interface RawStrapiMatchArticleLink {
+  role: MatchArticleLinkRole;
+  article?: { documentId: string } | null;
+}
+
+interface RawStrapiMatchContent {
+  eventId: number;
+  ticketUrl?: string;
+  accentColor?: string;
+  bannerImage?: { url: string; alternativeText?: string; width?: number; height?: number };
+  articleLinks?: RawStrapiMatchArticleLink[];
+  socialEmbeds?: StrapiSocialEmbed[];
 }
 
 export interface StrapiMatchContent {
@@ -199,18 +216,71 @@ export interface StrapiMatchContent {
   ticketUrl?: string;
   accentColor?: string;
   bannerImage?: { url: string; alternativeText?: string; width?: number; height?: number };
-  articles?: StrapiMatchArticle[];
+  preMatchArticle: StrapiMatchArticle | null;
+  postMatchArticle: StrapiMatchArticle | null;
+  communityNewsArticles: StrapiMatchArticle[];
+  otherArticles: StrapiMatchArticle[];
   socialEmbeds?: StrapiSocialEmbed[];
 }
 
-/** Fetch optional CMS content for a match by SI event ID. Returns null if not found. */
-export async function fetchMatchContent(eventId: number): Promise<StrapiMatchContent | null> {
-  const results = await fetchCollectionType<StrapiMatchContent[]>('match-contents', {
+/**
+ * Fetch optional CMS content for a match by SI event ID, resolved to `locale`.
+ *
+ * `articleLinks` only stores a relation to an article's shared documentId (the
+ * same document across both da/en versions) — this fetches the actual
+ * localized article data for the requested locale in a follow-up query,
+ * rather than depending on Strapi's populate to guess the right locale for a
+ * relation on a non-localized parent.
+ */
+export async function fetchMatchContent(
+  eventId: number,
+  locale: string,
+): Promise<StrapiMatchContent | null> {
+  const results = await fetchCollectionType<RawStrapiMatchContent[]>('match-contents', {
     filters: { eventId: { $eq: eventId } },
-    populate: ['bannerImage', 'articles', 'articles.image', 'socialEmbeds'],
+    populate: {
+      bannerImage: true,
+      socialEmbeds: true,
+      articleLinks: { populate: { article: true } },
+    },
     status: 'published',
   }).catch(() => []);
-  return results[0] ?? null;
+  const raw = results[0];
+  if (!raw) return null;
+
+  const links = raw.articleLinks ?? [];
+  const documentIds = [
+    ...new Set(links.map((link) => link.article?.documentId).filter((id): id is string => Boolean(id))),
+  ];
+
+  const articlesByDocumentId = new Map<string, StrapiMatchArticle>();
+  if (documentIds.length > 0) {
+    const articles = await fetchCollectionType<StrapiMatchArticle[]>('articles', {
+      filters: { documentId: { $in: documentIds } },
+      locale,
+      populate: ['image'],
+      status: 'published',
+    }).catch(() => []);
+    for (const article of articles) articlesByDocumentId.set(article.documentId, article);
+  }
+
+  const resolveRole = (role: MatchArticleLinkRole): StrapiMatchArticle[] =>
+    links
+      .filter((link) => link.role === role)
+      .map((link) => (link.article ? articlesByDocumentId.get(link.article.documentId) : undefined))
+      .filter((article): article is StrapiMatchArticle => Boolean(article));
+
+  return {
+    eventId: raw.eventId,
+    ticketUrl: raw.ticketUrl,
+    accentColor: raw.accentColor,
+    bannerImage: raw.bannerImage,
+    preMatchArticle: resolveRole('pre_match')[0] ?? null,
+    postMatchArticle: resolveRole('post_match')[0] ?? null,
+    communityNewsArticles: resolveRole('community_news'),
+    otherArticles: resolveRole('other'),
+    socialEmbeds: raw.socialEmbeds,
+  };
 }
 
 // ── Partner / sponsor data ────────────────────────────────────────────────────
