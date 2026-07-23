@@ -13,7 +13,11 @@
     "eventId": {
       "type": "integer",
       "required": true,
-      "unique": true
+      "unique": true,
+      "customField": "global::match-picker"
+    },
+    "title": {
+      "type": "string"
     },
     "ticketUrl": {
       "type": "string"
