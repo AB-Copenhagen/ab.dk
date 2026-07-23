@@ -51,7 +51,7 @@ const [articles, events, players] = await Promise.all([
     locale,
     sort: ['originalPublishedAt:desc'],
     populate: ['image', 'categories'],
-    pagination: { pageSize: 8 },
+    pagination: { pageSize: 4 },
   }).catch(() => [] as any[]),
   fetchABEvents({
     locale,
@@ -607,7 +607,9 @@ const heroSlides = [
         </p>
         <a
           class="vivenu-btn btn btn-md btn-dark"
-          href="https://billet.ab.dk/?useEmbed=true">
+          href="https://billet.ab.dk/?useEmbed=true"
+          target="_blank"
+          rel="noreferrer">
           {translate(locale, 'download')}
         </a>
       </div>
@@ -865,7 +867,7 @@ const heroSlides = [
     {
       articles.length > 0 ? (
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
-          {articles.slice(0, 4).map((article: any) => (
+          {articles.map((article: any) => (
             <a
               href={articlePath(article.slug)}
               class="article-card group block">
