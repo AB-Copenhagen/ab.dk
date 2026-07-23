@@ -33,7 +33,7 @@ const MatchPickerInput = React.forwardRef<HTMLInputElement, MatchPickerInputProp
 
     React.useEffect(() => {
       let cancelled = false;
-      get('/api/match-contents/matches')
+      get('/match-contents/matches')
         .then(({ data }) => {
           if (!cancelled) setOptions(Array.isArray(data) ? data : []);
         })
