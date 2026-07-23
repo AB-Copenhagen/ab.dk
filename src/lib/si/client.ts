@@ -6,7 +6,40 @@
  *
  * API docs: https://ss2.tjekscores.dk/superliga-docs/#
  */
+import { CacheManager, FileCacheDriver } from '@datum-cloud/strapi-revalidate';
+
 import { abConfig, siConfig } from '../config/ab';
+
+// /tmp is writable on Vercel serverless; project dir is not.
+const CACHE_DIR = '/tmp/si-cache';
+const cache = new CacheManager({
+  primary: new FileCacheDriver({ dir: CACHE_DIR }),
+  fallback: new FileCacheDriver({ dir: `${CACHE_DIR}-fallback` }),
+  defaultTtl: 60 * 5,
+});
+// Event data includes live scores during matches, so it needs a much shorter
+// TTL than the mostly-static reference data (teams, players, standings).
+const LIVE_TTL = 20;
+
+async function siCacheKey(
+  path: string,
+  params: Record<string, string | number | undefined>
+): Promise<string> {
+  const sorted = Object.keys(params)
+    .sort()
+    .reduce<Record<string, string | number>>((acc, key) => {
+      const value = params[key];
+      if (value !== undefined) acc[key] = value;
+      return acc;
+    }, {});
+  const bytes = new TextEncoder().encode(JSON.stringify(sorted));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const hash = Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  const slug = path.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
+  return `si-${slug}-${hash}`;
+}
 
 export type Locale = 'da' | 'en';
 
@@ -107,26 +140,40 @@ async function siFetch<T>(
   path: string,
   params: Record<string, string | number | undefined> = {}
 ): Promise<T> {
-  const url = new URL(`${siConfig.baseUrl}${path}`);
-  url.searchParams.set('access_token', siConfig.accessToken);
+  const key = await siCacheKey(path, params);
+  const ttl = path.startsWith('/events') ? LIVE_TTL : undefined;
 
-  for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined && value !== null && value !== '') {
-      url.searchParams.set(key, String(value));
-    }
-  }
+  const result = await cache.getWithFallback<T>(
+    key,
+    async () => {
+      try {
+        const url = new URL(`${siConfig.baseUrl}${path}`);
+        url.searchParams.set('access_token', siConfig.accessToken);
 
-  const res = await fetch(url.toString(), {
-    headers: { Accept: 'application/json' },
-  });
+        for (const [k, v] of Object.entries(params)) {
+          if (v !== undefined && v !== null && v !== '') {
+            url.searchParams.set(k, String(v));
+          }
+        }
 
-  if (!res.ok) {
+        const res = await fetch(url.toString(), {
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) return null;
+        return (await res.json()) as T;
+      } catch {
+        return null;
+      }
+    },
+    { ttl, tags: [path] }
+  );
+
+  if (result === null) {
     throw new Error(
-      `SI API error ${res.status} on ${path}: ${await res.text()}`
+      `SI API error on ${path}: request failed, no cached data available`
     );
   }
-
-  return res.json() as Promise<T>;
+  return result;
 }
 
 // ── Events (fixtures & results) ───────────────────────────────────────────────

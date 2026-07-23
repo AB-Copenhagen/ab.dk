@@ -42,3 +42,4 @@ strapi/.strapi-updater*.json
 !.cursor/
 !.cursor/**
 .vercel
+.env*
