@@ -1,5 +1,6 @@
 // Static player CMS data sourced from AB Squad PDF.
 // Used as fallback when Strapi is unreachable. Keyed by SI player ID.
+import type { PlayerPosition } from '@/lib/si/client';
 
 export interface StaticPlayerEntry {
   nickname?: string;
@@ -16,6 +17,8 @@ export interface StaticPlayerEntry {
    * (e.g. "Soeren Ilsoee" instead of "Søren Ilsøe").
    */
   name?: string;
+  /** Overrides a stale/incorrect position from the SI API. */
+  position?: PlayerPosition;
 }
 
 /** Prefers a manual shirt-number override over the (possibly stale) SI API value. */
@@ -32,6 +35,14 @@ export function resolveName(
   apiName: string | null
 ): string | null {
   return PLAYER_CMS_DATA[siPlayerId]?.name ?? apiName;
+}
+
+/** Prefers a manual position override over the (possibly stale) SI API value. */
+export function resolvePosition(
+  siPlayerId: number,
+  apiPosition: string | null
+): string | null {
+  return PLAYER_CMS_DATA[siPlayerId]?.position ?? apiPosition;
 }
 
 // Matches the ASCII transliteration the SI API itself already uses for these
@@ -258,6 +269,7 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
 
   1166286: {
     // #34 Mikkel Brund
+    position: 'defender', // SI API has him as midfielder
     nickname: 'Brund',
     formerClubs: 'Hobro',
     bio: {
@@ -287,8 +299,9 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
   // ── Attackers ─────────────────────────────────────────────────────────────
 
   1614159: {
-    // #7 Noah Engell Christensen
-    name: 'Noah Engell Christensen',
+    // #7 Noah Engell
+    name: 'Noah Engell',
+    position: 'forward',
     nickname: 'Engell',
     formerClubs: 'AB, OB U19, HIK',
     bio: {
@@ -376,6 +389,7 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
 
   1576734: {
     // #37 Frederik Lindgaard
+    position: 'defender', // SI API has him as forward
     nickname: 'Freddy',
     formerClubs: 'AB U19',
     bio: {
@@ -404,6 +418,7 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
 
   1339202: {
     // #88 O'Vonte Mullings
+    position: 'forward', // SI API has him as defender
     nickname: 'O',
     formerClubs: 'New York Red Bulls',
     bio: {

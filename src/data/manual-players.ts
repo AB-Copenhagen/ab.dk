@@ -11,12 +11,13 @@ export interface ManualPlayer {
   name: string;
   position: PlayerPosition;
   shirtNumber: number;
-  birthDate: string;
+  /** Omit while the player's full profile (bio, birth date, etc.) hasn't been supplied yet. */
+  birthDate?: string;
   height?: number;
-  countryName: { da: string; en: string };
+  countryName?: { da: string; en: string };
   nickname?: string;
   formerClubs?: string;
-  bio: { da: string; en: string };
+  bio?: { da: string; en: string };
   quote?: { da: string; en: string };
 }
 
@@ -77,6 +78,13 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
       en: 'AB is the perfect place for me to go',
     },
   },
+  {
+    id: -5,
+    name: 'Gabriel Noga',
+    position: 'defender',
+    shirtNumber: 14,
+    // Bio, birth date, country, etc. pending — profile not supplied yet.
+  },
 ];
 
 export function findManualPlayer(id: number): ManualPlayer | undefined {
@@ -90,7 +98,7 @@ export function manualPlayersAsSIPlayers(): SIPlayer[] {
     name: p.name,
     position: p.position,
     shirtNumber: p.shirtNumber,
-    birthDate: p.birthDate,
+    birthDate: p.birthDate ?? null,
     country: null,
   }));
 }

@@ -6,7 +6,7 @@
 import { type Locale, type SIPlayer, fetchABPlayers } from './client';
 import { EXCLUDED_PLAYER_SLUGS } from './player-photos';
 import { manualPlayersAsSIPlayers } from '@/data/manual-players';
-import { resolveShirtNumber } from '@/data/player-cms-data';
+import { resolvePosition, resolveShirtNumber } from '@/data/player-cms-data';
 
 function slugifyName(name: string): string {
   return name
@@ -27,6 +27,8 @@ export async function getSquadPlayers(locale: Locale): Promise<SIPlayer[]> {
       .map((p) => ({
         ...p,
         shirtNumber: resolveShirtNumber(p.id, p.shirtNumber),
+        position: (resolvePosition(p.id, p.position) ??
+          p.position) as SIPlayer['position'],
       }));
   } catch {
     /* SI unavailable */
