@@ -22,6 +22,7 @@ import product1Img from '@/assets/images/product-1.png';
 import product2Img from '@/assets/images/product-2.png';
 import product3Img from '@/assets/images/product-3.png';
 import heroImg from '@/assets/images/hero.jpg';
+import heroAbReturnsImg from '@/assets/images/hero-ab-returns.jpg';
 import playerFeaturedImg from '@/assets/images/player-featured.png';
 import {
   fmtDate,
@@ -37,6 +38,18 @@ interface Props {
 
 const { locale } = Astro.props;
 
+function formatArticleDate(str: string) {
+  try {
+    return new Date(str).toLocaleDateString(locale === 'en' ? 'en-US' : 'da-DK', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  } catch {
+    return '';
+  }
+}
+
 const now = new Date();
 // Fetch from the start of the current season through ~3 months ahead, so the
 // homepage doesn't get stuck on whatever the SI API returns by default when
@@ -50,7 +63,7 @@ const [articles, events, players, shopifyProducts] = await Promise.all([
   fetchCollectionType<any[]>('articles', {
     locale,
     sort: ['originalPublishedAt:desc'],
-    populate: ['image', 'categories'],
+    populate: ['image'],
     pagination: { pageSize: 4 },
   }).catch(() => [] as any[]),
   fetchABEvents({
@@ -159,6 +172,16 @@ const products = shopifyProducts.length > 0
 
 const heroSlides = [
   {
+    img: heroAbReturnsImg,
+    alt: translate(locale, 'heroDivisionAlt'),
+    headline: translate(locale, 'heroDivisionHeadline'),
+    ctaLabel: translate(locale, 'heroDivisionCta'),
+    ctaUrl:
+      locale === 'en'
+        ? '/en/news/ab-returns-to-1-division'
+        : '/nyheder/ab-vender-tilbage-til-betinia-liga',
+  },
+  {
     img: heroImg,
     alt: 'AB 1889',
     headline: translate(locale, 'heroShopHeadline'),
@@ -221,9 +244,11 @@ const heroSlides = [
             <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance text-center">
               {slide.headline}
             </h1>
-            <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
-              {slide.subtitle}
-            </p>
+            {slide.subtitle && (
+              <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
+                {slide.subtitle}
+              </p>
+            )}
             <a href={slide.ctaUrl} class="btn btn-lg btn-beige pointer-events-auto">
               {slide.ctaLabel}
             </a>
@@ -886,12 +911,10 @@ const heroSlides = [
                   </div>
                 )}
               </div>
-              {article.categories?.[0] && (
-                <p class="font-bold mb-2 underline underline-offset-2 text-[0.8rem] text-ab-green">
-                  {article.categories[0].name}
-                </p>
-              )}
-              <h3 class="font-black leading-snug text-[clamp(1.05rem,1.8vw,1.4rem)] tracking-[-0.03em] text-[#111]">
+              <time class="block text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.16em]">
+                {formatArticleDate(article.originalPublishedAt ?? article.publishedAt)}
+              </time>
+              <h3 class="font-bold text-base leading-snug text-[#111] tracking-[-0.01em]">
                 {decodeHtml(article.title)}
               </h3>
             </a>
