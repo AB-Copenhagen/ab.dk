@@ -48,13 +48,15 @@ const matchTime = fmtDate(startDate, 'en-GB', TIME_OPTS);
 
 const beforeDate = startDate.slice(0, 10);
 const [cmsMatch, billetMap, homeForm, awayForm] = await Promise.all([
-  fetchMatchContent(eventId).catch(() => null),
+  fetchMatchContent(eventId, 'en').catch(() => null),
   isHome ? fetchBilletTicketMap().catch(() => null) : Promise.resolve(null),
   fetchTeamForm(event.homeId, { beforeDate, locale: 'en' }).catch(() => []),
   fetchTeamForm(event.awayId, { beforeDate, locale: 'en' }).catch(() => []),
 ]);
 const accentColor = cmsMatch?.accentColor ?? 'var(--ab-green)';
-const articles = cmsMatch?.articles ?? [];
+const preMatchArticle = cmsMatch?.preMatchArticle ?? null;
+const postMatchArticle = cmsMatch?.postMatchArticle ?? null;
+const otherArticles = [...(cmsMatch?.communityNewsArticles ?? []), ...(cmsMatch?.otherArticles ?? [])];
 const socialEmbeds = cmsMatch?.socialEmbeds ?? [];
 
 const billetFallback = billetMap
@@ -417,12 +419,42 @@ const matchSchema = {
             </a>
           )}
 
-          <!-- Related news -->
-          {articles.length > 0 && (
+          <!-- Pre/Post match reports + related news -->
+          {[
+            { label: 'Pre Match Report', article: preMatchArticle },
+            { label: 'Post Match Report', article: postMatchArticle },
+          ].map(({ label, article }) => article && (
+            <div class="space-y-4">
+              <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">{label}</p>
+              <a href={`/en/news/${article.slug}`} class="flex items-start gap-3 group no-underline">
+                {article.image ? (
+                  <div class="w-16 h-16 rounded overflow-hidden shrink-0 bg-gray-100">
+                    <img
+                      src={strapiMediaUrl(article.image.url)}
+                      alt=""
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <div class="w-16 h-16 rounded shrink-0 bg-[#F0F4F0] flex items-center justify-center">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path d="M4 6h12M4 10h12M4 14h8" stroke="var(--ab-green)" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                )}
+                <p class="text-sm font-bold text-[#111] leading-snug group-hover:underline line-clamp-3">
+                  {decodeHtml(article.title)}
+                </p>
+              </a>
+            </div>
+          ))}
+
+          {otherArticles.length > 0 && (
             <div class="space-y-4">
               <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">Match news</p>
               <div class="space-y-4">
-                {articles.slice(0, 3).map((article) => (
+                {otherArticles.slice(0, 3).map((article) => (
                   <a href={`/en/news/${article.slug}`} class="flex items-start gap-3 group no-underline">
                     {article.image ? (
                       <div class="w-16 h-16 rounded overflow-hidden shrink-0 bg-gray-100">

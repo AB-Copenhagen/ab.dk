@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_match_article_links",
+  "info": {
+    "displayName": "Article Link",
+    "icon": "link",
+    "description": "Associates an article with a match, tagged by its role (Pre Match Report, Post Match Report, etc.)"
+  },
+  "options": {},
+  "attributes": {
+    "role": {
+      "type": "enumeration",
+      "enum": ["pre_match", "post_match", "community_news", "other"],
+      "required": true
+    },
+    "article": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::article.article"
+    }
+  }
+}

@@ -27,10 +27,10 @@
       "required": false,
       "allowedTypes": ["images"]
     },
-    "articles": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::article.article"
+    "articleLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "match.article-link"
     },
     "socialEmbeds": {
       "type": "component",
