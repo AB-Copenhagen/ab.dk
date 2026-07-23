@@ -8,7 +8,7 @@ import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
 import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
 import type { StrapiPlayer } from '@/lib/strapi/client';
 import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
-import { resolveShirtNumber, resolveName } from '@/data/player-cms-data';
+import { resolveShirtNumber, resolveName, resolvePosition } from '@/data/player-cms-data';
 import { findManualPlayer } from '@/data/manual-players';
 
 export const prerender = false;
@@ -34,7 +34,7 @@ if (manualPlayer) {
     id: manualPlayer.id,
     name: manualPlayer.name,
     position: manualPlayer.position,
-    countryName: manualPlayer.countryName.da,
+    countryName: manualPlayer.countryName?.da,
     birthDate: manualPlayer.birthDate,
     height: manualPlayer.height,
   };
@@ -43,7 +43,7 @@ if (manualPlayer) {
     siPlayerId: manualPlayer.id,
     nickname: manualPlayer.nickname,
     formerClubs: manualPlayer.formerClubs,
-    bio: manualPlayer.bio.da,
+    bio: manualPlayer.bio?.da,
     quote: manualPlayer.quote?.da,
   };
 } else {
@@ -72,7 +72,8 @@ if (!player) {
   return Astro.redirect('/hold');
 }
 
-const { name, position, countryName, birthDate, height } = player;
+const { name, countryName, birthDate, height } = player;
+const position = resolvePosition(playerId, player.position) ?? player.position;
 // Photo/slug lookups stay keyed on the raw SI name (may be ASCII-mangled,
 // e.g. "Soeren Ilsoee") — only the rendered text uses the corrected name.
 const photoUrl = getPlayerPhotoUrl(name);
