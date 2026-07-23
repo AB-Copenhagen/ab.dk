@@ -82,21 +82,35 @@ export async function fetchCollectionTypeWithMeta<T = unknown[]>(
   return result ?? { data: [] as unknown as T, pagination: emptyPagination };
 }
 
+// Sentinel cached in place of `null` when a single type genuinely has no
+// entry — `CacheManager.getWithFallback` treats a `null` fetcher result as a
+// failed fetch (skips caching, reads the fallback instead), which would mean
+// a permanently-missing single type is refetched from Strapi on every single
+// request forever. This is JSON-safe so it survives the file cache driver.
+const SINGLE_TYPE_NOT_FOUND = '__strapi_single_type_not_found__';
+
 export async function fetchSingleType<T = unknown>(
   singleTypeName: string,
   options?: QueryParams,
 ): Promise<T> {
   const preview = isPreviewEnabled();
   const fetcher = async () => {
-    const { data } = await createClient()
-      .single(singleTypeName)
-      .find({ ...options, status: preview ? 'draft' : 'published' } as never);
-    return data as T;
+    try {
+      const { data } = await createClient()
+        .single(singleTypeName)
+        .find({ ...options, status: preview ? 'draft' : 'published' } as never);
+      return data as T;
+    } catch (err) {
+      if (err instanceof Error && err.name === 'HTTPNotFoundError') {
+        return SINGLE_TYPE_NOT_FOUND as unknown as T;
+      }
+      throw err;
+    }
   };
   if (preview) return fetcher();
   const key = await cacheKey(singleTypeName, options);
   const result = await cache.getWithFallback<T>(key, fetcher, { tags: [singleTypeName] });
-  return result as T;
+  return (result === (SINGLE_TYPE_NOT_FOUND as unknown as T) ? null : result) as T;
 }
 
 export async function fetchDocument<T = unknown>(
