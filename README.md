@@ -128,7 +128,7 @@ Protection is applied in three layers:
 
 ### Before production launch
 
-1. Set `ALLOW_SEARCH_INDEXING=true` in the **production** environment on Vercel
+1. ~~Set `ALLOW_SEARCH_INDEXING=true` in the **production** environment on Vercel~~ — done; takes effect on the next deploy to `main`
 2. Redeploy and verify:
    - `GET /robots.txt` returns `Allow: /`
    - HTML pages no longer include `noindex` meta tags
