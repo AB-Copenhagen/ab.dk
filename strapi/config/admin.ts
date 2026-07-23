@@ -1,21 +1,24 @@
+// Danish is this site's default locale and is served with no URL prefix
+// (e.g. /kampe); English is served under /en (e.g. /en/kampe).
 const getPreviewPathname = (uid, { locale, document }): string | null => {
   const { slug } = document;
+  const localePrefix = locale === 'en' ? '/en' : '';
 
   switch (uid) {
     case 'api::page.page': {
       if (slug === 'homepage') {
-        return '/';
+        return locale === 'en' ? '/en' : '/';
       }
-      return `/${slug}`;
+      return `${localePrefix}/${slug}`;
     }
     case 'api::product.product':
-      return `/products/${slug}`;
+      return `${localePrefix}/products/${slug}`;
     case 'api::product-page.product-page':
-      return '/products';
+      return `${localePrefix}/products`;
     case 'api::article.article':
-      return `/blog/${slug}`;
+      return locale === 'en' ? `/en/news/${slug}` : `/nyheder/${slug}`;
     case 'api::blog-page.blog-page':
-      return '/blog';
+      return locale === 'en' ? '/en/news' : '/nyheder';
     default:
       return null;
   }
@@ -56,9 +59,8 @@ export default ({ env }) => {
             return null;
           }
 
-          // Use Next.js draft mode
           const urlSearchParams = new URLSearchParams({
-            url: `/${locale ?? 'en'}${pathname}`,
+            url: pathname,
             secret: previewSecret,
             status,
           });

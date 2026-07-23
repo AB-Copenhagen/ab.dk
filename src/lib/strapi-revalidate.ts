@@ -20,7 +20,7 @@ const fallback = new FileCacheDriver({ dir: `${CACHE_DIR}-fallback` });
 export const cache = new CacheManager({
   primary,
   fallback,
-  defaultTtl: 60 * 60, // 1 hour
+  defaultTtl: 60 * 5, // 5 minutes
 });
 
 // Webhook handler — wired up but optional. Configure a Strapi webhook entry
