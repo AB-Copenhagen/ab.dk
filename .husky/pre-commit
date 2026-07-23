@@ -1,1 +1,3 @@
+npm run images:webp
+
 npx tsc --noEmit --project tsconfig.json 2>/dev/null || true
