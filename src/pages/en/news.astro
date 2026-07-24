@@ -28,13 +28,6 @@ const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') ?? '1', 10)
 // catch-all tag used to drive homepage/other placement, not a meaningful
 // browsing category for readers — hidden from the pill bar.
 const HIDDEN_CATEGORY_IDS = new Set(['pcrdkof02i4geu3ysmwdod9g']);
-const categories = (
-  await fetchCollectionType<any[]>('categories', {
-    locale,
-    populate: { articles: { count: true } },
-  }).catch(() => [] as any[])
-).filter((c: any) => !HIDDEN_CATEGORY_IDS.has(c.documentId));
-categories.sort((a: any, b: any) => (b.articles?.count ?? 0) - (a.articles?.count ?? 0));
 
 const activeCategory = Astro.url.searchParams.get('category');
 const categoryFilter = activeCategory ? { categories: { documentId: { $eq: activeCategory } } } : undefined;
@@ -45,13 +38,24 @@ const extraQuery = activeCategory ? `category=${activeCategory}` : '';
 const start = !activeCategory && page === 1 ? 0 : (activeCategory ? (page - 1) * GRID_PAGE_SIZE : FIRST_PAGE_SIZE + (page - 2) * GRID_PAGE_SIZE);
 const limit = !activeCategory && page === 1 ? FIRST_PAGE_SIZE : GRID_PAGE_SIZE;
 
-const { data: pageArticles, pagination } = await fetchCollectionTypeWithMeta<any[]>('articles', {
-  locale,
-  sort: ['originalPublishedAt:desc'],
-  populate: ['image'],
-  filters: categoryFilter,
-  pagination: { start, limit },
-}).catch(() => ({ data: [] as any[], pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } }));
+// Independent Strapi queries — fetched in parallel rather than sequentially
+// so a slow/rate-limited Strapi response only costs one round trip, not two.
+const [rawCategories, { data: pageArticles, pagination }] = await Promise.all([
+  fetchCollectionType<any[]>('categories', {
+    locale,
+    populate: { articles: { count: true } },
+  }).catch(() => [] as any[]),
+  fetchCollectionTypeWithMeta<any[]>('articles', {
+    locale,
+    sort: ['originalPublishedAt:desc'],
+    populate: ['image'],
+    filters: categoryFilter,
+    pagination: { start, limit },
+  }).catch(() => ({ data: [] as any[], pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } })),
+]);
+
+const categories = rawCategories.filter((c: any) => !HIDDEN_CATEGORY_IDS.has(c.documentId));
+categories.sort((a: any, b: any) => (b.articles?.count ?? 0) - (a.articles?.count ?? 0));
 
 const totalPages = activeCategory
   ? Math.max(1, Math.ceil(pagination.total / GRID_PAGE_SIZE))

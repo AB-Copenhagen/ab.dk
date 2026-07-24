@@ -11,11 +11,22 @@ const { slug } = Astro.params;
 const locale = 'en';
 const STRAPI_URL = import.meta.env.STRAPI_URL ?? 'http://localhost:1337';
 
-const results = await fetchCollectionType<any[]>('articles', {
-  locale,
-  filters: { slug: { $eq: slug } },
-  populate: { image: true, categories: true, localizations: { fields: ['slug'] } },
-}).catch(() => [] as any[]);
+// `allArticles` (for the prev/next/related rail below) doesn't depend on the
+// article lookup at all, so it's fetched in parallel rather than after —
+// halves the Strapi round trips this page waits on.
+const [results, allArticles] = await Promise.all([
+  fetchCollectionType<any[]>('articles', {
+    locale,
+    filters: { slug: { $eq: slug } },
+    populate: { image: true, categories: true, localizations: { fields: ['slug'] } },
+  }).catch(() => [] as any[]),
+  fetchCollectionType<any[]>('articles', {
+    locale,
+    sort: ['originalPublishedAt:desc'],
+    populate: ['image', 'categories'],
+    pagination: { pageSize: 50 },
+  }).catch(() => [] as any[]),
+]);
 
 const article = results[0];
 if (!article) return Astro.redirect('/en/news');
@@ -44,13 +55,6 @@ if (!daTranslationSlug && article.originalPublishedAt) {
 
 // Falls back to the DA listing page when neither match is found.
 const alternateLocalePath = daTranslationSlug ? `/nyheder/${daTranslationSlug}` : undefined;
-
-const allArticles = await fetchCollectionType<any[]>('articles', {
-  locale,
-  sort: ['originalPublishedAt:desc'],
-  populate: ['image', 'categories'],
-  pagination: { pageSize: 50 },
-}).catch(() => [] as any[]);
 
 const idx = allArticles.findIndex((a: any) => a.slug === slug);
 const prevArticle = idx < allArticles.length - 1 ? allArticles[idx + 1] : null;
