@@ -12,11 +12,21 @@
  * single dynamic segments), so Astro can't prioritize one over the other — that
  * fallback is instead handled inside [slug].astro/en/[slug].astro when no CMS
  * page matches.
+ *
+ * Two entries stay TEMPORARY (302) instead: the "⚠" page-vs-post cases from
+ * redirect-plan.md, where it's unconfirmed a matching Strapi article exists at
+ * all. They land on the generic listing page either way, so nothing 404s, but
+ * a 302 avoids telling search engines this mapping is final until that's checked.
  */
 
 const PERMANENT_STATUS = 308;
+const TEMPORARY_STATUS = 302;
 
 const to = (destination: string) => ({ status: PERMANENT_STATUS, destination });
+const toTemp = (destination: string) => ({
+  status: TEMPORARY_STATUS,
+  destination,
+});
 
 export const legacyRedirects = {
   // ── Danish ──────────────────────────────────────────────────────────────
@@ -53,7 +63,7 @@ export const legacyRedirects = {
   '/thank-you': to('/'),
   '/delete-profile': to('/konto/profil'),
   '/ab-squad-stories-frederik-lindgaard': to('/abtv'),
-  '/imponerende-generalproeve-broendby-if-besejret-med-3-1': to('/nyheder'),
+  '/imponerende-generalproeve-broendby-if-besejret-med-3-1': toTemp('/nyheder'),
   '/elementor-334': to('/'),
   '/category/[...path]': to('/nyheder'),
   '/author/[...path]': to('/nyheder'),
@@ -98,7 +108,7 @@ export const legacyRedirects = {
   '/en/ab-newsletter': to('/en'),
   '/en/delete-profile': to('/en/account/profile'),
   '/en/ab-squad-stories-frederik-lindgaard': to('/en/abtv'),
-  '/en/impressive-dress-rehearsal-broendby-if-beaten-3-1': to('/en/news'),
+  '/en/impressive-dress-rehearsal-broendby-if-beaten-3-1': toTemp('/en/news'),
   '/en/welcome-to-ab-gladsaxe': to('/en'),
   '/en/category/[...path]': to('/en/news'),
   '/en/author/[...path]': to('/en/news'),
