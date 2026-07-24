@@ -69,24 +69,25 @@ export const legacyRedirects = {
   '/author/[...path]': to('/nyheder'),
   '/tag/[...path]': toTemp('/nyheder'),
   '/spiller': toTemp('/hold'),
-  // Nested legacy WP paths (old taxonomy/category hierarchy) — /nyheder still
-  // resolves its own single-segment /:slug just fine (verified against real
-  // Strapi content, not just local dev, after an earlier false alarm caused
-  // by local dev having no STRAPI_URL/STRAPI_API_TOKEN configured — every
-  // article fetch was silently failing and falling through to [slug].astro's
-  // own not-found redirect, which looks identical to a routing conflict but
-  // isn't one). This only catches the 2+-segment paths /nyheder/:slug can't
-  // match anyway, e.g. the old /nyheder/mit-ab-historierne/* posts.
+  // Nested legacy WP paths (old taxonomy/category hierarchy).
   //
-  // A wildcard (`[...path]`) source CAN break the build, though — confirmed
-  // for real via an actual `npm run build` failure, not a dev-server fluke:
-  // pointing one at a statically prerendered destination (om/stadion,
-  // om/ledelse, faellesskab, and partnere all are) crashes with
+  // IMPORTANT: a wildcard (`[...path]`) source must NEVER redirect to a
+  // destination that shares its own prefix — `/nyheder/[...path] -> /nyheder`
+  // caused a production outage (infinite self-redirect: Vercel's wildcard
+  // matching apparently also matches zero extra segments, so a bare request
+  // to /nyheder matched its own rule and redirected to itself, forever). Same
+  // bug hit /en/news/[...path] -> /en/news. Both are gone for good — there is
+  // no safe way to redirect a prefix's *own* nested sub-paths back to itself
+  // this way. The old /nyheder/mit-ab-historierne/* posts are accepted as
+  // 404s rather than risk this a third time.
+  //
+  // A wildcard source can also break the build if pointed at a statically
+  // prerendered destination (om/stadion, om/ledelse, faellesskab, and
+  // partnere all are) — confirmed via an actual `npm run build` failure:
   // "getStaticPaths() function is required for dynamic routes", thrown
   // against the *destination* page. Exact-match sources (no wildcard) don't
   // have this problem — /gladsaxe-stadion and /kontrolrapport below already
   // redirect to the static /om/stadion just fine.
-  '/nyheder/[...path]': toTemp('/nyheder'),
   '/kategori/[...path]': toTemp('/nyheder'), // Danish WP category-base variant of /category
   '/produkt-kategori/[...path]': toTemp('/products'),
   '/2-division/organisation': toTemp('/om/ledelse'), // exact match, static destination is fine here
@@ -149,7 +150,6 @@ export const legacyRedirects = {
   '/en/author/[...path]': to('/en/news'),
   '/en/whats-new/[...page]': to('/en/news'),
   '/en/tag/[...path]': toTemp('/en/news'),
-  '/en/news/[...path]': toTemp('/en/news'),
   // Would ideally be /en/partners, but that page is statically prerendered —
   // see the Danish section's note on wildcard sources + static destinations.
   '/en/partners/[...path]': toTemp('/en'),
