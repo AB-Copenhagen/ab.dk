@@ -41,13 +41,14 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
         el.setAttribute('locale', 'en-US');
         el.addEventListener('success', async (e) => {
           const sessionJwt = e.detail?.sessionJwt;
+          const refreshJwt = e.detail?.refreshJwt;
           const target = new URLSearchParams(location.search).get('redirect') ?? '/en/account/profile';
           if (!sessionJwt) return;
 
           const res = await fetch('/api/auth/session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionToken: sessionJwt }),
+            body: JSON.stringify({ sessionToken: sessionJwt, refreshToken: refreshJwt }),
           });
           if (res.ok) location.href = target;
         });

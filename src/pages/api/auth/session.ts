@@ -1,6 +1,11 @@
 import type { APIRoute } from 'astro';
 
-import { descope } from '@/lib/descope-server';
+import {
+  REFRESH_COOKIE_MAX_AGE,
+  SESSION_COOKIE_MAX_AGE,
+  descope,
+  sessionCookieOptions,
+} from '@/lib/descope-server';
 
 export const prerender = false;
 
@@ -19,6 +24,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   const json = await request.json().catch(() => null);
   const sessionToken = json?.sessionToken;
+  const refreshToken =
+    typeof json?.refreshToken === 'string' ? json.refreshToken : undefined;
   if (typeof sessionToken !== 'string' || !sessionToken) {
     return new Response(
       JSON.stringify({ success: false, error: 'Missing session token' }),
@@ -41,13 +48,17 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     );
   }
 
-  cookies.set('DS', sessionToken, {
-    path: '/',
-    httpOnly: true,
-    secure: import.meta.env.PROD,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7,
-  });
+  cookies.set('DS', sessionToken, sessionCookieOptions(SESSION_COOKIE_MAX_AGE));
+  // Without the refresh token, there's nothing to renew the session with once
+  // the short-lived session JWT above expires — the visitor gets bounced back
+  // to login on their next visit even though they never explicitly signed out.
+  if (refreshToken) {
+    cookies.set(
+      'DSR',
+      refreshToken,
+      sessionCookieOptions(REFRESH_COOKIE_MAX_AGE)
+    );
+  }
 
   return new Response(JSON.stringify({ success: true }), {
     status: 200,
@@ -57,6 +68,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 export const DELETE: APIRoute = async ({ cookies }) => {
   cookies.delete('DS', { path: '/' });
+  cookies.delete('DSR', { path: '/' });
   return new Response(JSON.stringify({ success: true }), {
     status: 200,
     headers: jsonHeaders,
