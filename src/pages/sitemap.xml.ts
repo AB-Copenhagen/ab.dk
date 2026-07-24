@@ -4,7 +4,7 @@ import { COACHING_STAFF } from '@/data/coaching-staff';
 import { PARTNERS } from '@/data/partners';
 import { getPlayerSlug } from '@/data/player-cms-data';
 import { fetchABEvents, fetchABPlayers } from '@/lib/si/client';
-import { fetchCollectionType } from '@/lib/strapi/client';
+import { fetchCollectionTypeWithMeta } from '@/lib/strapi/client';
 import { escapeHtml } from '@/lib/utils';
 
 export const prerender = false;
@@ -59,6 +59,60 @@ const STRAPI_COLLECTIONS: {
   },
 ];
 
+type SlugItem = { slug: string; updatedAt?: string };
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Strapi Cloud rate-limits bursts of requests, so a single fetched page can transiently
+// fail mid-pagination — retry a few times before accepting we've hit the end.
+async function fetchPageWithRetry(
+  collectionName: string,
+  locale: 'da' | 'en',
+  page: number,
+  pageSize: number,
+  attempts = 3
+) {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await fetchCollectionTypeWithMeta<SlugItem[]>(collectionName, {
+        locale,
+        pagination: { page, pageSize },
+      });
+    } catch {
+      if (attempt === attempts) return null;
+      await sleep(300 * attempt);
+    }
+  }
+  return null;
+}
+
+// Strapi caps pageSize at 100 per request, so collections larger than that (e.g. articles)
+// need every page fetched — otherwise the sitemap silently truncates after the first 100.
+async function fetchAllSlugs(
+  collectionName: string,
+  locale: 'da' | 'en'
+): Promise<SlugItem[]> {
+  const pageSize = 100;
+  const items: SlugItem[] = [];
+  let page = 1;
+  let pageCount = 1;
+
+  do {
+    const result = await fetchPageWithRetry(
+      collectionName,
+      locale,
+      page,
+      pageSize
+    );
+    if (!result) break;
+    items.push(...result.data);
+    pageCount = result.pagination.pageCount;
+    page++;
+  } while (page <= pageCount);
+
+  return items;
+}
+
 export async function GET(context: APIContext) {
   const site = (context.site?.toString() ?? context.url.origin).replace(
     /\/$/,
@@ -78,28 +132,15 @@ export async function GET(context: APIContext) {
     entries.push({ loc: abs(en), alternates });
   }
 
-  const PAGE_SIZE = 100;
   for (const col of STRAPI_COLLECTIONS) {
     for (const locale of ['da', 'en'] as const) {
-      // Loop until a short page comes back — a fixed single-page fetch silently
-      // dropped everything past the first 100 entries once a collection grew
-      // past that (articles alone are 300+ posts post-migration).
-      for (let page = 1; ; page++) {
-        const items = await fetchCollectionType<
-          { slug: string; updatedAt?: string }[]
-        >(col.name, {
-          locale,
-          pagination: { page, pageSize: PAGE_SIZE },
-        }).catch(() => [] as { slug: string; updatedAt?: string }[]);
+      const items = await fetchAllSlugs(col.name, locale);
 
-        for (const item of items) {
-          if (!item.slug) continue;
-          const path =
-            locale === 'da' ? col.daPath(item.slug) : col.enPath(item.slug);
-          entries.push({ loc: abs(path), lastmod: item.updatedAt });
-        }
-
-        if (items.length < PAGE_SIZE) break;
+      for (const item of items) {
+        if (!item.slug) continue;
+        const path =
+          locale === 'da' ? col.daPath(item.slug) : col.enPath(item.slug);
+        entries.push({ loc: abs(path), lastmod: item.updatedAt });
       }
     }
   }
