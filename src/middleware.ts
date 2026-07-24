@@ -15,6 +15,14 @@ const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 const BOT_USER_AGENT_PATTERN =
   /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegrambot|discordbot|slackbot|pinterestbot|ia_archiver|bingpreview/i;
 
+// Machine-readable endpoints (RSS, sitemap, robots) — these have no locale
+// cookie/redirect semantics of their own, but a browser opening one directly
+// still sends `Accept: text/html`, so they'd otherwise be caught by the
+// text/html check below and get 302'd to a locale-switched URL (e.g. bare
+// /feed → /en/feed) that has nothing to do with the visitor's actual intent.
+const NON_LOCALE_ROUTE_PATTERN =
+  /^\/(feed|en\/feed|rss\/[^/]+|sitemap\.xml|robots\.txt)$/;
+
 /**
  * True if this request was triggered by navigating from another page on this
  * site (an in-site link, e.g. LangSwitch), as opposed to a fresh top-level
@@ -77,6 +85,7 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
   const isPageRequest =
     !context.isPrerendered &&
     !context.url.pathname.startsWith('/api/') &&
+    !NON_LOCALE_ROUTE_PATTERN.test(context.url.pathname) &&
     (context.request.headers.get('accept') ?? '').includes('text/html');
   const isBot =
     isPageRequest &&
