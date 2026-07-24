@@ -78,19 +78,28 @@ export async function GET(context: APIContext) {
     entries.push({ loc: abs(en), alternates });
   }
 
+  const PAGE_SIZE = 100;
   for (const col of STRAPI_COLLECTIONS) {
     for (const locale of ['da', 'en'] as const) {
-      const items = await fetchCollectionType<
-        { slug: string; updatedAt?: string }[]
-      >(col.name, { locale, pagination: { pageSize: 100 } }).catch(
-        () => [] as { slug: string; updatedAt?: string }[]
-      );
+      // Loop until a short page comes back — a fixed single-page fetch silently
+      // dropped everything past the first 100 entries once a collection grew
+      // past that (articles alone are 300+ posts post-migration).
+      for (let page = 1; ; page++) {
+        const items = await fetchCollectionType<
+          { slug: string; updatedAt?: string }[]
+        >(col.name, {
+          locale,
+          pagination: { page, pageSize: PAGE_SIZE },
+        }).catch(() => [] as { slug: string; updatedAt?: string }[]);
 
-      for (const item of items) {
-        if (!item.slug) continue;
-        const path =
-          locale === 'da' ? col.daPath(item.slug) : col.enPath(item.slug);
-        entries.push({ loc: abs(path), lastmod: item.updatedAt });
+        for (const item of items) {
+          if (!item.slug) continue;
+          const path =
+            locale === 'da' ? col.daPath(item.slug) : col.enPath(item.slug);
+          entries.push({ loc: abs(path), lastmod: item.updatedAt });
+        }
+
+        if (items.length < PAGE_SIZE) break;
       }
     }
   }

@@ -28,6 +28,18 @@ if (!page) {
   if (article) return Astro.redirect(`/en/news/${slug}`, 301);
 }
 
+// No English article either — check the Danish side before giving up. Some
+// posts never got an English translation, and legacy/search-indexed links to
+// the /en/ prefixed slug shouldn't dead-end just because of that.
+if (!page) {
+  const [daArticle] = await fetchCollectionType<any[]>('articles', {
+    locale: 'da',
+    filters: { slug: { $eq: slug } },
+    fields: ['slug'],
+  }).catch(() => [] as any[]);
+  if (daArticle) return Astro.redirect(`/nyheder/${slug}`, 302);
+}
+
 if (!page) {
   Astro.response.status = 404;
 }
