@@ -16,6 +16,10 @@
   --surface-border: #152214; /* borders */
   --surface-muted: #8aa898; /* secondary text */
 
+  /* ── Light surface palette (white-background sections, e.g. match stats) ── */
+  --surface-card-light: #f8f9fa; /* light card/panel background */
+  --surface-card-light-border: #e5e7eb; /* light card/panel border */
+
   /* ── Typography ─────────────────────────────────────────────── */
   --font-display: 'ABC Camera Plain', Helvetica, Arial, sans-serif;
   --font-body: 'ABC Camera Plain', Helvetica, Arial, sans-serif;

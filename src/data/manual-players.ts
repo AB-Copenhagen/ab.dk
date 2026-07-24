@@ -42,25 +42,6 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
     },
   },
   {
-    id: -3,
-    name: 'Saliou Diop',
-    position: 'forward',
-    shirtNumber: 29,
-    birthDate: '2005-12-05',
-    height: 187,
-    countryName: { da: 'Senegal', en: 'Senegal' },
-    nickname: 'Saliou',
-    formerClubs: 'Stade Brestois, Brest B',
-    bio: {
-      da: 'Saliou er en stærk, teknisk spiller og en kynisk afslutter.',
-      en: 'Saliou is a powerful, technical player and a clinical finisher.',
-    },
-    quote: {
-      da: 'Ingen smerte, ingen vinding',
-      en: 'No pain, no gain',
-    },
-  },
-  {
     id: -4,
     name: 'Steven Bala',
     position: 'forward',

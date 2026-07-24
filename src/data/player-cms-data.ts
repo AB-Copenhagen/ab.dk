@@ -298,6 +298,20 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
 
   // ── Attackers ─────────────────────────────────────────────────────────────
 
+  1676711: {
+    // #29 Saliou Diop
+    nickname: 'Saliou',
+    formerClubs: 'Stade Brestois, Brest B',
+    bio: {
+      da: 'Saliou er en stærk, teknisk spiller og en kynisk afslutter.',
+      en: 'Saliou is a powerful, technical player and a clinical finisher.',
+    },
+    quote: {
+      da: 'Ingen smerte, ingen vinding',
+      en: 'No pain, no gain',
+    },
+  },
+
   1614159: {
     // #7 Noah Engell
     name: 'Noah Engell',

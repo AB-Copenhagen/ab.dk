@@ -258,11 +258,11 @@ const matchSchema = {
                 <div class="space-y-6">
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Momentum</h3>
-                    <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB;padding:1.25rem">
+                    <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
                       <SiWidget
                         locale="en"
                         widget="MatchMomentum"
-                        params={{ eventId, card: 'true', transparent: 'false', width: '100%' }}
+                        params={{ eventId, card: 'false', transparent: 'true', width: '100%' }}
                         minHeight={360}
                         label="Momentum"
                       />
@@ -270,11 +270,11 @@ const matchSchema = {
                   </div>
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Incidents</h3>
-                    <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB;padding:1.25rem">
+                    <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
                       <SiWidget
                         locale="en"
                         widget="IncidentListOpta"
-                        params={{ eventId, header: 'false', card: 'false', initialCollapse: 'false', transparent: 'true', width: '100%', enableBackgroundColor: 'true' }}
+                        params={{ eventId, header: 'false', card: 'false', initialCollapse: 'false', transparent: 'true', width: '100%' }}
                         minHeight={320}
                         label="Incidents"
                       />
@@ -282,11 +282,11 @@ const matchSchema = {
                   </div>
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">Match statistics</h3>
-                    <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB;padding:1.25rem">
+                    <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
                       <SiWidget
                         locale="en"
                         widget="LivePostMatchStatsOpta"
-                        params={{ eventId, header: 'false', transparent: 'true', width: '100%', enableBackgroundColor: 'true' }}
+                        params={{ eventId, header: 'false', card: 'false', transparent: 'true', width: '100%' }}
                         minHeight={360}
                         label="Match statistics"
                       />
@@ -294,11 +294,11 @@ const matchSchema = {
                   </div>
                   <div>
                     <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">xG — Expected goals</h3>
-                    <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB;padding:1.25rem">
+                    <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
                       <SiWidget
                         locale="en"
                         widget="TwoTeamsXGoalsPitch"
-                        params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, dotSize: 32.5, header: 'true', showHeader: 'false', nopadding: 'true', card: 'true', transparent: 'false', width: '100%' }}
+                        params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, dotSize: 32.5, header: 'true', showHeader: 'false', nopadding: 'true', card: 'false', transparent: 'true', width: '100%' }}
                         minHeight={480}
                         label="xG pitch"
                       />
@@ -312,7 +312,7 @@ const matchSchema = {
                 <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
                   Highlights
                 </h2>
-                <div class="overflow-hidden" style="background:#F8F9FA;border:1px solid #E5E7EB;padding:1.25rem">
+                <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
                   <SiWidget
                     locale="en"
                     widget="SPDKMatchVideo"
