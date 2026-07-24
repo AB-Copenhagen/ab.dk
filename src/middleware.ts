@@ -21,7 +21,7 @@ const BOT_USER_AGENT_PATTERN =
 // text/html check below and get 302'd to a locale-switched URL (e.g. bare
 // /feed → /en/feed) that has nothing to do with the visitor's actual intent.
 const NON_LOCALE_ROUTE_PATTERN =
-  /^\/(feed|en\/feed|rss\/[^/]+|sitemap\.xml|robots\.txt)$/;
+  /^\/(feed|en\/feed|rss\/[^/]+|sitemap\.xml|robots\.txt|(en\/)?wp-json\/.*)$/;
 
 /**
  * True if this request was triggered by navigating from another page on this

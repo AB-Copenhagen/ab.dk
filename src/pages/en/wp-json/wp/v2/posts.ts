@@ -7,8 +7,8 @@ export const prerender = false;
 export async function GET(context: APIContext) {
   return buildWpPostsResponse(
     context,
-    'da',
-    (slug) => `/nyheder/${slug}`,
-    '/wp-json/wp/v2/posts'
+    'en',
+    (slug) => `/en/news/${slug}`,
+    '/en/wp-json/wp/v2/posts'
   );
 }
