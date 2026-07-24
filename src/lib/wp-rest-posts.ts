@@ -15,7 +15,7 @@ interface StrapiArticle {
   slug: string;
   content?: unknown;
   categories?: { name: string }[];
-  image?: { url: string };
+  image?: { url: string; width?: number; height?: number };
   originalPublishedAt?: string;
   publishedAt?: string;
   updatedAt?: string;
@@ -23,6 +23,44 @@ interface StrapiArticle {
 }
 
 const MAX_PER_PAGE = 100;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Strapi Cloud rate-limits bursts of requests, so a single fetch can
+// transiently fail (same issue sitemap.xml.ts's fetchPageWithRetry works
+// around) — without a retry, a rate-limited request here silently returns
+// an empty post list with a 200 status instead of a temporary error.
+async function fetchArticlesWithRetry(
+  locale: 'da' | 'en',
+  page: number,
+  pageSize: number,
+  attempts = 3
+) {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await fetchCollectionTypeWithMeta<StrapiArticle[]>('articles', {
+        locale,
+        sort: ['originalPublishedAt:desc'],
+        populate: ['image', 'categories'],
+        pagination: { page, pageSize },
+        status: 'published',
+      });
+    } catch {
+      if (attempt === attempts) {
+        return {
+          data: [] as StrapiArticle[],
+          pagination: { page, pageSize, pageCount: 0, total: 0 },
+        };
+      }
+      await sleep(300 * attempt);
+    }
+  }
+  // Unreachable — the loop above always returns, but TS needs a fallback.
+  return {
+    data: [] as StrapiArticle[],
+    pagination: { page, pageSize, pageCount: 0, total: 0 },
+  };
+}
 
 /**
  * WordPress REST API v2 posts-list compatibility shim
@@ -54,20 +92,12 @@ export async function buildWpPostsResponse(
     MAX_PER_PAGE
   );
   const page = Math.max(parseInt(params.get('page') ?? '1', 10) || 1, 1);
-  const embed = params.has('_embed');
 
-  const { data: articles, pagination } = await fetchCollectionTypeWithMeta<
-    StrapiArticle[]
-  >('articles', {
+  const { data: articles, pagination } = await fetchArticlesWithRetry(
     locale,
-    sort: ['originalPublishedAt:desc'],
-    populate: ['image', 'categories'],
-    pagination: { page, pageSize: perPage },
-    status: 'published',
-  }).catch(() => ({
-    data: [] as StrapiArticle[],
-    pagination: { page, pageSize: perPage, pageCount: 0, total: 0 },
-  }));
+    page,
+    perPage
+  );
 
   const posts = articles.map((article) => {
     const link = `${site}${articlePath(article.slug)}`;
@@ -110,6 +140,12 @@ export async function buildWpPostsResponse(
       },
       author: 1,
       featured_media: absoluteImageUrl ? article.id : 0,
+      // Non-standard, but always present regardless of `_embed` — the real
+      // WP REST API only returns the featured image via `_embed`/a separate
+      // `/media/{id}` call, which is easy for a consumer to miss entirely.
+      // This is the simplest possible way to guarantee an image URL shows up
+      // in the plain JSON without requiring that extra knowledge.
+      featured_image_url: absoluteImageUrl,
       categories: [],
       tags: [],
       format: 'standard',
@@ -120,10 +156,10 @@ export async function buildWpPostsResponse(
           { href: `${site}${apiBasePath.replace(/\/posts$/, '/types/post')}` },
         ],
       },
-    };
-
-    if (embed) {
-      post._embedded = {
+      // Always included (not gated behind `_embed`, unlike real WP) for the
+      // same reason as featured_image_url above — but this shape matches
+      // standard WP `_embed=1` output for clients that do know to look here.
+      _embedded: {
         author: [{ id: 1, name: 'Akademisk Boldklub' }],
         'wp:featuredmedia': absoluteImageUrl
           ? [
@@ -132,11 +168,22 @@ export async function buildWpPostsResponse(
                 source_url: absoluteImageUrl,
                 media_type: 'image',
                 alt_text: decodeHtml(article.title),
+                media_details: {
+                  width: article.image?.width,
+                  height: article.image?.height,
+                  sizes: {
+                    full: {
+                      source_url: absoluteImageUrl,
+                      width: article.image?.width,
+                      height: article.image?.height,
+                    },
+                  },
+                },
               },
             ]
           : [],
-      };
-    }
+      },
+    };
 
     return post;
   });
