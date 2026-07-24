@@ -69,6 +69,39 @@ export const legacyRedirects = {
   '/author/[...path]': to('/nyheder'),
   '/tag/[...path]': toTemp('/nyheder'),
   '/spiller': toTemp('/hold'),
+  // Nested legacy WP paths (old taxonomy/category hierarchy) — /nyheder still
+  // resolves its own single-segment /:slug just fine (verified against real
+  // Strapi content, not just local dev, after an earlier false alarm caused
+  // by local dev having no STRAPI_URL/STRAPI_API_TOKEN configured — every
+  // article fetch was silently failing and falling through to [slug].astro's
+  // own not-found redirect, which looks identical to a routing conflict but
+  // isn't one). This only catches the 2+-segment paths /nyheder/:slug can't
+  // match anyway, e.g. the old /nyheder/mit-ab-historierne/* posts.
+  //
+  // A wildcard (`[...path]`) source CAN break the build, though — confirmed
+  // for real via an actual `npm run build` failure, not a dev-server fluke:
+  // pointing one at a statically prerendered destination (om/stadion,
+  // om/ledelse, faellesskab, and partnere all are) crashes with
+  // "getStaticPaths() function is required for dynamic routes", thrown
+  // against the *destination* page. Exact-match sources (no wildcard) don't
+  // have this problem — /gladsaxe-stadion and /kontrolrapport below already
+  // redirect to the static /om/stadion just fine.
+  '/nyheder/[...path]': toTemp('/nyheder'),
+  '/kategori/[...path]': toTemp('/nyheder'), // Danish WP category-base variant of /category
+  '/produkt-kategori/[...path]': toTemp('/products'),
+  '/2-division/organisation': toTemp('/om/ledelse'), // exact match, static destination is fine here
+  '/fanzone/[...path]': toTemp('/kampdag'),
+  '/match/[...path]': toTemp('/kampe'), // old WP team-name-slug match pages, no ID mapping possible
+  '/ab-tv': toTemp('/abtv'),
+  // These would ideally land on /partnere, /faellesskab, and /om/ledelse
+  // respectively, but all three are statically prerendered — see the note
+  // above. Homepage is a safe, non-misleading fallback instead.
+  '/partnere/[...path]': toTemp('/'),
+  '/klubfaellesskabet/[...path]': toTemp('/'),
+  '/nordicbet-liga/organisation/[...path]': toTemp('/'),
+  // "Klubben" (the club) WP section — no clear 1:1 new-site destination for
+  // its FAQ/admin/wall-of-fame sub-pages either, same homepage fallback.
+  '/klubben/[...path]': toTemp('/'),
 
   // ── English ─────────────────────────────────────────────────────────────
   '/en/history': to('/en/about/history'),
@@ -116,4 +149,9 @@ export const legacyRedirects = {
   '/en/author/[...path]': to('/en/news'),
   '/en/whats-new/[...page]': to('/en/news'),
   '/en/tag/[...path]': toTemp('/en/news'),
+  '/en/news/[...path]': toTemp('/en/news'),
+  // Would ideally be /en/partners, but that page is statically prerendered —
+  // see the Danish section's note on wildcard sources + static destinations.
+  '/en/partners/[...path]': toTemp('/en'),
+  '/en/history-of-our-products': toTemp('/en/products'),
 };
