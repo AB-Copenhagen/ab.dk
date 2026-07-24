@@ -2,13 +2,22 @@
 // Keys are under players/ in the ab-media bucket.
 
 function toSlug(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '') // strip diacritics
-    .toLowerCase()
-    .replace(/'/g, '') // apostrophes (O'Vonte → ovonte)
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+  return (
+    name
+      // Danish æ/ø/å aren't decomposable via NFD (they're distinct letters, not
+      // letter+diacritic like é/ü/ñ), so without this they fall through to the
+      // catch-all strip below and vanish entirely — "Søren Ilsøe" became
+      // "s-ren-ils-e" instead of "soren-ilsoe".
+      .replace(/æ/gi, 'ae')
+      .replace(/ø/gi, 'oe')
+      .replace(/å/gi, 'aa')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '') // strip diacritics
+      .toLowerCase()
+      .replace(/'/g, '') // apostrophes (O'Vonte → ovonte)
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+  );
 }
 
 // Explicit overrides for names that differ between SI API and the WP site,
