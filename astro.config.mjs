@@ -72,6 +72,10 @@ export default defineConfig({
           find: '@/components/widgets/SiWidget',
           replacement: src('components/widgets/SiWidget.tsx'),
         },
+        {
+          find: '@/components/islands/VideoPlayer',
+          replacement: src('components/islands/VideoPlayer.tsx'),
+        },
         { find: '@/lib/config/ab', replacement: src('lib/config/ab.ts') },
         { find: '@/lib/i18n', replacement: src('lib/i18n.ts') },
         { find: '@/lib/mailgun', replacement: src('lib/mailgun.ts') },

@@ -23,3 +23,10 @@ export const abConfig = {
 
 /** Start date of the current season — update when a new season kicks off. */
 export const CURRENT_SEASON_START = '2026-07-24';
+
+export const streamConfig = {
+  url: optionalEnv(
+    'STREAM_URL',
+    'https://datum-norsk.cloud/instance/abtest/media/cmaf/file/default.m3u8'
+  ),
+} as const;

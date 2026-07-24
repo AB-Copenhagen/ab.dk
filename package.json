@@ -23,6 +23,7 @@
     "@strapi/blocks-react-renderer": "^1.0.2",
     "@strapi/client": "^1.6.0",
     "@tailwindcss/vite": "^4.3.2",
+    "@vidstack/react": "^1.15.6",
     "astro": "^7.0.4",
     "date-fns": "^4.1.0",
     "fuzzy-search": "^3.2.1",
