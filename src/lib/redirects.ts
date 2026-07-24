@@ -1,23 +1,32 @@
 /**
  * Legacy WordPress -> new-site redirects (see redirect-plan.md for the full audit).
  *
- * TEMPORARY 302s (not 301/308) — deliberate, while the mappings below are still
- * being validated post-launch. A 302 tells search engines "this moved for now,
- * don't transfer ranking signals yet," which keeps this reversible if a mapping
- * turns out wrong. Once the full set has been live and confirmed correct for a
- * while, flip `TEMPORARY_STATUS` to 301 to actually pass on SEO equity — that's
- * the whole point of doing this migration in the first place.
+ * PERMANENT 308s — the mappings below were validated post-launch (every
+ * destination confirmed to resolve to a real page) and are now stable, so this
+ * passes on SEO equity to the new URLs. 308 (not 301) preserves the request
+ * method, which matters for the WooCommerce-era POST destinations like
+ * `/kasse` and `/cart` -> `https://shop.ab.dk`.
  *
  * The old bare-post-slug wildcard (`/:slug` -> `/nyheder/:slug`) from the plan is
  * deliberately NOT here: it's the same route shape as [slug].astro itself (both
  * single dynamic segments), so Astro can't prioritize one over the other — that
  * fallback is instead handled inside [slug].astro/en/[slug].astro when no CMS
  * page matches.
+ *
+ * Two entries stay TEMPORARY (302) instead: the "⚠" page-vs-post cases from
+ * redirect-plan.md, where it's unconfirmed a matching Strapi article exists at
+ * all. They land on the generic listing page either way, so nothing 404s, but
+ * a 302 avoids telling search engines this mapping is final until that's checked.
  */
 
+const PERMANENT_STATUS = 308;
 const TEMPORARY_STATUS = 302;
 
-const to = (destination: string) => ({ status: TEMPORARY_STATUS, destination });
+const to = (destination: string) => ({ status: PERMANENT_STATUS, destination });
+const toTemp = (destination: string) => ({
+  status: TEMPORARY_STATUS,
+  destination,
+});
 
 export const legacyRedirects = {
   // ── Danish ──────────────────────────────────────────────────────────────
@@ -54,7 +63,7 @@ export const legacyRedirects = {
   '/thank-you': to('/'),
   '/delete-profile': to('/konto/profil'),
   '/ab-squad-stories-frederik-lindgaard': to('/abtv'),
-  '/imponerende-generalproeve-broendby-if-besejret-med-3-1': to('/nyheder'),
+  '/imponerende-generalproeve-broendby-if-besejret-med-3-1': toTemp('/nyheder'),
   '/elementor-334': to('/'),
   '/category/[...path]': to('/nyheder'),
   '/author/[...path]': to('/nyheder'),
@@ -99,7 +108,7 @@ export const legacyRedirects = {
   '/en/ab-newsletter': to('/en'),
   '/en/delete-profile': to('/en/account/profile'),
   '/en/ab-squad-stories-frederik-lindgaard': to('/en/abtv'),
-  '/en/impressive-dress-rehearsal-broendby-if-beaten-3-1': to('/en/news'),
+  '/en/impressive-dress-rehearsal-broendby-if-beaten-3-1': toTemp('/en/news'),
   '/en/welcome-to-ab-gladsaxe': to('/en'),
   '/en/category/[...path]': to('/en/news'),
   '/en/author/[...path]': to('/en/news'),
