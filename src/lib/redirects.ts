@@ -67,6 +67,8 @@ export const legacyRedirects = {
   '/elementor-334': to('/'),
   '/category/[...path]': to('/nyheder'),
   '/author/[...path]': to('/nyheder'),
+  '/tag/[...path]': toTemp('/nyheder'),
+  '/spiller': toTemp('/hold'),
 
   // ── English ─────────────────────────────────────────────────────────────
   '/en/history': to('/en/about/history'),
@@ -113,4 +115,5 @@ export const legacyRedirects = {
   '/en/category/[...path]': to('/en/news'),
   '/en/author/[...path]': to('/en/news'),
   '/en/whats-new/[...page]': to('/en/news'),
+  '/en/tag/[...path]': toTemp('/en/news'),
 };
