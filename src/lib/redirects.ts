@@ -94,10 +94,16 @@ export const legacyRedirects = {
   '/fanzone/[...path]': toTemp('/kampdag'),
   '/match/[...path]': toTemp('/kampe'), // old WP team-name-slug match pages, no ID mapping possible
   '/ab-tv': toTemp('/abtv'),
-  // These would ideally land on /partnere, /faellesskab, and /om/ledelse
-  // respectively, but all three are statically prerendered — see the note
-  // above. Homepage is a safe, non-misleading fallback instead.
-  '/partnere/[...path]': toTemp('/'),
+  // These would ideally land on /faellesskab and /om/ledelse respectively,
+  // but both are statically prerendered — see the note above. Homepage is a
+  // safe, non-misleading fallback instead.
+  //
+  // (No equivalent entry for old /partnere/* sub-paths — unlike faellesskab
+  // and om/ledelse, /partnere has its own `[slug].astro` dynamic route, which
+  // already 302s an unknown slug back to /partnere. A wildcard redirect here
+  // would hit the exact same self-redirect bug as /nyheder above: `[...path]`
+  // also matches zero extra segments, so it swallowed bare /partnere itself
+  // and sent it to the homepage instead of rendering the partners page.)
   '/klubfaellesskabet/[...path]': toTemp('/'),
   '/nordicbet-liga/organisation/[...path]': toTemp('/'),
   // "Klubben" (the club) WP section — no clear 1:1 new-site destination for
@@ -150,8 +156,9 @@ export const legacyRedirects = {
   '/en/author/[...path]': to('/en/news'),
   '/en/whats-new/[...page]': to('/en/news'),
   '/en/tag/[...path]': toTemp('/en/news'),
-  // Would ideally be /en/partners, but that page is statically prerendered —
-  // see the Danish section's note on wildcard sources + static destinations.
-  '/en/partners/[...path]': toTemp('/en'),
+  // No wildcard entry for old /en/partners/* sub-paths — see the Danish
+  // section's note: /en/partners has its own `[slug].astro` dynamic route,
+  // and a wildcard redirect here would swallow bare /en/partners itself via
+  // the same self-redirect bug documented above for /nyheder.
   '/en/history-of-our-products': toTemp('/en/products'),
 };
