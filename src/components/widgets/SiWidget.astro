@@ -1,9 +1,10 @@
 ---
 import type { Locale } from '@/lib/i18n';
+import { siConfig } from '@/lib/config/ab';
 
 interface Props {
   widget: string;
-  params: Record<string, string | number | undefined>;
+  params: Record<string, string | number | boolean | undefined>;
   minHeight?: number;
   label?: string;
   locale?: Locale;
@@ -22,17 +23,29 @@ const t = {
   },
 }[locale];
 
-// Build query string — skip undefined values and never inject width (handled by CSS)
+// SI's per-widget preview endpoint — confirmed to render the correct match data
+// in isolation, unlike embedding several <si-lb-widget> custom elements together
+// directly on one page (widgets.si-ab.com), which mixed up data across widgets
+// even with the correct event-id and token on each. Same access token used for
+// our REST API calls (si/client.ts) doubles as the public widget token.
+let widgetToken = '';
+try {
+  widgetToken = siConfig.accessToken;
+} catch {
+  /* SI_ACCESS_TOKEN not configured — widget stays empty */
+}
+
 const qs = new URLSearchParams();
-qs.set('nopadding', 'true');
-qs.set('transparent', 'true');
+qs.set('widgetId', widget);
 for (const [key, val] of Object.entries(params)) {
   if (val !== undefined && val !== null && String(val) !== '') {
     qs.set(key, String(val));
   }
 }
+qs.set('language', locale);
+if (widgetToken) qs.set('accessToken', widgetToken);
 
-const widgetUrl = `https://dash.si-ab.com/widgets/${widget}?${qs.toString()}`;
+const widgetUrl = `https://api.si-ab.com/news-feed/widget-preview?${qs.toString()}`;
 const uid = `siw-${Math.random().toString(36).slice(2, 9)}`;
 ---
 

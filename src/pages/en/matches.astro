@@ -27,11 +27,16 @@ try {
   });
 } catch { /* SI API unavailable */ }
 const filter = (Astro.url.searchParams.get('filter') ?? 'upcoming') as MatchListFilter;
+// Classify by the SI API's live statusType, not just the clock — a match still
+// in progress must stay in the upcoming/all list (with a live badge) instead
+// of jumping to Past the instant kickoff time passes.
+const isDone = (e: (typeof events)[number]) =>
+  e.statusType === 'finished' || e.statusType === 'cancelled';
 const upcoming = events
-  .filter((e) => new Date(e.startDate) >= now)
+  .filter((e) => !isDone(e))
   .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 const finished = events
-  .filter((e) => new Date(e.startDate) < now)
+  .filter(isDone)
   .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
 
 const displayEvents =
