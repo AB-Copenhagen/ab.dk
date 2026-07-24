@@ -1,12 +1,11 @@
 /**
  * Legacy WordPress -> new-site redirects (see redirect-plan.md for the full audit).
  *
- * TEMPORARY 302s (not 301/308) — deliberate, while the mappings below are still
- * being validated post-launch. A 302 tells search engines "this moved for now,
- * don't transfer ranking signals yet," which keeps this reversible if a mapping
- * turns out wrong. Once the full set has been live and confirmed correct for a
- * while, flip `TEMPORARY_STATUS` to 301 to actually pass on SEO equity — that's
- * the whole point of doing this migration in the first place.
+ * PERMANENT 308s — the mappings below were validated post-launch (every
+ * destination confirmed to resolve to a real page) and are now stable, so this
+ * passes on SEO equity to the new URLs. 308 (not 301) preserves the request
+ * method, which matters for the WooCommerce-era POST destinations like
+ * `/kasse` and `/cart` -> `https://shop.ab.dk`.
  *
  * The old bare-post-slug wildcard (`/:slug` -> `/nyheder/:slug`) from the plan is
  * deliberately NOT here: it's the same route shape as [slug].astro itself (both
@@ -15,9 +14,9 @@
  * page matches.
  */
 
-const TEMPORARY_STATUS = 302;
+const PERMANENT_STATUS = 308;
 
-const to = (destination: string) => ({ status: TEMPORARY_STATUS, destination });
+const to = (destination: string) => ({ status: PERMANENT_STATUS, destination });
 
 export const legacyRedirects = {
   // ── Danish ──────────────────────────────────────────────────────────────
