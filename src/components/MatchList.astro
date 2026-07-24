@@ -156,6 +156,8 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
         const dateKey = event.startDate.slice(0, 10);
         const isFirst = !seenDates.has(dateKey);
         if (isFirst) seenDates.add(dateKey);
+        const isLive = event.statusType === 'inprogress';
+        const liveScore = isLive ? formatEventScore(event.score) : null;
 
         return (
           <div
@@ -166,7 +168,14 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               <span class={`text-xs font-medium shrink-0 ${isABHome ? 'text-white/80' : 'text-[#555]'}`}>
                 <span {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{fmtGridDate(event.startDate)}</span> · <span {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtTime(event.startDate)}</span>
               </span>
-              <span class={`text-xs truncate text-right ${isABHome ? 'text-ab-neon font-bold' : 'text-[#999]'}`}>{isABHome ? (locale === 'en' ? 'HOME' : 'HJEMME') : venue}</span>
+              {isLive ? (
+                <span class="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-ab-green shrink-0">
+                  <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+                  Live
+                </span>
+              ) : (
+                <span class={`text-xs truncate text-right ${isABHome ? 'text-ab-neon font-bold' : 'text-[#999]'}`}>{isABHome ? (locale === 'en' ? 'HOME' : 'HJEMME') : venue}</span>
+              )}
             </div>
 
             <div class="flex items-center justify-center gap-3 px-4 pt-5 pb-5">
@@ -182,7 +191,11 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
                 />
                 <span class="text-[0.7rem] font-bold text-[#111] text-center leading-tight line-clamp-2">{homeName}</span>
               </div>
-              <span class="text-[0.65rem] font-black text-[#BBB] shrink-0 px-1">VS</span>
+              {liveScore ? (
+                <span class="text-lg font-black tabular-nums text-ab-green shrink-0 px-1" style="letter-spacing:-0.02em">{liveScore}</span>
+              ) : (
+                <span class="text-[0.65rem] font-black text-[#BBB] shrink-0 px-1">VS</span>
+              )}
               <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
                 <img
                   src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)}
