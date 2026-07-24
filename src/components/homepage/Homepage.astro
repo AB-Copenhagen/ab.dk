@@ -14,7 +14,6 @@ import { decodeHtml } from '@/lib/utils';
 import { fetchCollectionProducts } from '@/lib/shopify';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 import Img from '@/components/Img.astro';
-import matchesHeaderBg from '@/assets/images/matches-header-bg.png';
 import joinTeamAbBg from '@/assets/images/join-team-ab-bg.png';
 import bannerDownloadApp from '@/assets/images/banner-download-app.png';
 import bannerWatchLive from '@/assets/images/banner-watch-live.png';
@@ -190,13 +189,10 @@ const heroSlides = [
     ctaVariant: 'btn-beige',
   },
   {
-    type: 'image' as const,
-    img: matchesHeaderBg,
-    alt: translate(locale, 'heroMatchesAlt'),
-    headline: translate(locale, 'heroMatchesHeadline'),
-    subtitle: translate(locale, 'heroMatchesSubtitle'),
-    ctaLabel: translate(locale, 'heroMatchesCta'),
-    ctaUrl: localPath('/kampe'),
+    type: 'video' as const,
+    video: locale === 'da' ? '/videos/hero-tickets-da.mp4' : '/videos/hero-tickets-en.mp4',
+    ctaLabel: translate(locale, 'buyTickets'),
+    ctaUrl: 'https://billet.ab.dk/',
     ctaVariant: 'btn-beige',
   },
   {
