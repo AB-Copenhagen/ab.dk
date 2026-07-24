@@ -2,7 +2,12 @@ import type { APIContext, MiddlewareNext } from 'astro';
 import { defineMiddleware } from 'astro:middleware';
 
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
-import { descope } from '@/lib/descope-server';
+import {
+  REFRESH_COOKIE_MAX_AGE,
+  SESSION_COOKIE_MAX_AGE,
+  descope,
+  sessionCookieOptions,
+} from '@/lib/descope-server';
 import { type Locale, switchLocalePath } from '@/lib/i18n';
 import { PREVIEW_COOKIE, runWithPreview } from '@/lib/preview-context';
 
@@ -146,12 +151,13 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
 
   if (isGated) {
     const loginUrl = locale === 'en' ? '/en/account' : '/konto';
-    // Clear the DS cookie whenever we bounce back to login — the login page only checks
-    // cookie *presence* to decide whether to skip straight to the profile page, so a stale
-    // or invalid cookie left in place here would otherwise create a redirect loop between
-    // the two.
+    // Clear the DS/DSR cookies whenever we bounce back to login — the login page only
+    // checks cookie *presence* to decide whether to skip straight to the profile page, so
+    // stale or invalid cookies left in place here would otherwise create a redirect loop
+    // between the two.
     const redirectToLogin = () => {
       context.cookies.delete('DS', { path: '/' });
+      context.cookies.delete('DSR', { path: '/' });
       return context.redirect(
         `${loginUrl}?redirect=${encodeURIComponent(context.url.pathname)}`
       );
@@ -160,13 +166,20 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
     const sessionToken =
       context.cookies.get('DS')?.value ??
       context.request.headers.get('authorization')?.replace('Bearer ', '');
+    const refreshToken = context.cookies.get('DSR')?.value;
 
     if (!sessionToken || !descope) {
       return redirectToLogin();
     }
 
     try {
-      const authInfo = await descope.validateSession(sessionToken);
+      // The session JWT is short-lived by design — validateAndRefreshSession
+      // transparently mints a new one from the refresh token once it expires,
+      // instead of forcing a fresh login on every visit past that window.
+      const authInfo = await descope.validateAndRefreshSession(
+        sessionToken,
+        refreshToken
+      );
       const claims = authInfo.token;
       context.locals.user = {
         userId: String(claims.sub ?? ''),
@@ -175,8 +188,23 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
         picture:
           typeof claims.picture === 'string' ? claims.picture : undefined,
       };
+
+      if (authInfo.jwt !== sessionToken) {
+        context.cookies.set(
+          'DS',
+          authInfo.jwt,
+          sessionCookieOptions(SESSION_COOKIE_MAX_AGE)
+        );
+      }
+      if (authInfo.refreshJwt && authInfo.refreshJwt !== refreshToken) {
+        context.cookies.set(
+          'DSR',
+          authInfo.refreshJwt,
+          sessionCookieOptions(REFRESH_COOKIE_MAX_AGE)
+        );
+      }
     } catch {
-      // Invalid or expired session — force re-authentication.
+      // Invalid or expired session with no usable refresh token — force re-authentication.
       return redirectToLogin();
     }
   }
