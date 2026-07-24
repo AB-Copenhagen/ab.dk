@@ -17,26 +17,31 @@ const coreRouter = factories.createCoreRouter(
   'api::match-content.match-content'
 );
 
-// createCoreRouter's `.routes` is typed as `Route[] | (() => Route[])` even
-// though this factory always returns a plain array at runtime — handle both
-// shapes rather than assuming.
-const coreRoutes =
-  typeof coreRouter.routes === 'function'
-    ? coreRouter.routes()
-    : coreRouter.routes;
+const CUSTOM_ROUTE = {
+  method: 'GET',
+  path: '/match-contents/matches',
+  handler: 'match-content.matches',
+  config: {
+    auth: false,
+  },
+};
 
 export default {
   type: coreRouter.type,
   prefix: coreRouter.prefix,
-  routes: [
-    {
-      method: 'GET',
-      path: '/match-contents/matches',
-      handler: 'match-content.matches',
-      config: {
-        auth: false,
-      },
-    },
-    ...coreRoutes,
-  ],
+  // `routes` MUST stay lazy, same as createCoreRouter's own `routes` getter —
+  // it reads the content-type registry (`strapi.contentType(uid)`), which
+  // isn't populated yet at module-load time. Eagerly spreading
+  // `coreRouter.routes` here at the top level broke production boot entirely
+  // ("Cannot read properties of undefined (reading 'kind')" from
+  // isSingleType, called with an undefined content type) — this getter
+  // defers that same access to whenever Strapi actually asks for routes,
+  // exactly like the original single-line `createCoreRouter(...)` export did.
+  get routes() {
+    const coreRoutes =
+      typeof coreRouter.routes === 'function'
+        ? coreRouter.routes()
+        : coreRouter.routes;
+    return [CUSTOM_ROUTE, ...coreRoutes];
+  },
 };
