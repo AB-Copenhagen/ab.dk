@@ -367,22 +367,6 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
                   </div>
                 </div>
               </section>
-
-              <section>
-                <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Video</p>
-                <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
-                  Højdepunkter
-                </h2>
-                <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
-                  <SiWidget
-                    locale="da"
-                    widget="SPDKMatchVideo"
-                    params={{ eventId, width: '100%', card: 'false', transparent: 'true' }}
-                    minHeight={400}
-                    label="Kampvideo"
-                  />
-                </div>
-              </section>
             <TeamForm
               homeId={event.homeId}
               homeName={homeName}
