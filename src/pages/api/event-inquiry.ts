@@ -1,11 +1,15 @@
 import type { APIRoute } from 'astro';
 
+import { rejectIfBot } from '@/lib/bot-check';
 import { sendMail } from '@/lib/mailgun';
 import { escapeHtml } from '@/lib/utils';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
+  const botResponse = await rejectIfBot();
+  if (botResponse) return botResponse;
+
   const json = await request.json().catch(() => null);
 
   if (!json) {

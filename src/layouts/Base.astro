@@ -193,6 +193,23 @@ const statisticsConsented = Astro.isPrerendered
     <Footer locale={locale} />
     <CookieConsentBanner locale={locale} />
     <script>
+      import { initBotId } from 'botid/client/core';
+
+      // Registers a fetch/XHR interceptor for these path+method pairs so
+      // botid/server's checkBotId() has something to verify — invisible,
+      // no CAPTCHA shown to real visitors. Only covers routes reached via
+      // fetch() (not native <form action> submits), which matches how
+      // every form on this site already submits.
+      initBotId({
+        protect: [
+          { path: '/api/contact', method: 'POST' },
+          { path: '/api/delete-profile', method: 'POST' },
+          { path: '/api/event-inquiry', method: 'POST' },
+          { path: '/api/subscribe', method: 'POST' },
+        ],
+      });
+    </script>
+    <script>
       import { onConsentChange } from '@/lib/consent-gate-client';
 
       onConsentChange('functional', () => {
