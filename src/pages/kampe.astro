@@ -7,7 +7,9 @@ import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import Img from '@/components/Img.astro';
 import matchesHeaderBg from '@/assets/images/matches-header-bg.png';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const locale = 'da';
 

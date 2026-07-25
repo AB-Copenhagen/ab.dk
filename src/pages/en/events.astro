@@ -5,8 +5,10 @@ import { fetchABEvents } from '@/lib/si/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import { fmtDate, dtAttrs, DATE_LONG_YEAR_OPTS, TIME_OPTS } from '@/lib/dateFormat';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const now = new Date();
 const toDate = new Date(now);
