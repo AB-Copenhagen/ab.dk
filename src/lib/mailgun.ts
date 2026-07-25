@@ -9,7 +9,7 @@
 function mailgunEnv() {
   const apiKey = process.env.MAILGUN_API_KEY ?? '';
   const domain = process.env.MAILGUN_DOMAIN ?? '';
-  const from = process.env.MAILGUN_FROM ?? `AB 1889 <no-reply@${domain}>`;
+  const from = process.env.MAILGUN_FROM || `AB 1889 <no-reply@${domain}>`;
   return { apiKey, domain, from };
 }
 
