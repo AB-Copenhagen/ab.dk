@@ -33,6 +33,10 @@ function formatEventScore(score: unknown): string {
   return '–';
 }
 
+function matchHref(locale: Locale, eventId: number): string {
+  return locale === 'en' ? `/en/match/${eventId}` : `/kamp/${eventId}`;
+}
+
 function eventVenue(event: SIEvent): string {
   const props = event.properties as
     | { venueName?: string; venue?: string }
@@ -77,9 +81,14 @@ function eventVenue(event: SIEvent): string {
         return (
           <div
             class:list={[
-              'grid items-center px-6 py-3 gap-2 grid-cols-[2fr_1.75fr_90px_1.75fr_1.5fr] border-t border-[#EBEBEB]',
+              'relative grid items-center px-6 py-3 gap-2 grid-cols-[2fr_1.75fr_90px_1.75fr_1.5fr] border-t border-[#EBEBEB] hover:brightness-95 transition-[filter]',
               i % 2 === 0 ? 'widget-row-even' : 'widget-row-odd',
             ]}>
+            <a
+              href={matchHref(locale, event.eventId)}
+              class="absolute inset-0"
+              aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${event.homeName} vs ${event.awayName}`}
+            />
             <span class="widget-td font-black"><span {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{dateStr}</span> – <span {...dtAttrs(event.startDate, 'en-US', TIME_12H_OPTS)}>{timeStr}</span></span>
             <span class="widget-td font-normal flex items-center gap-2 justify-end">
               {event.homeName}
