@@ -5,15 +5,10 @@ import Img from '@/components/Img.astro';
 
 interface Props {
   locale?: string;
-  globalData?: any;
 }
 
-const { locale = 'da', globalData } = Astro.props;
-const d = globalData;
+const { locale = 'da' } = Astro.props;
 const year = new Date().getFullYear();
-
-const resourceLinks = d?.footer?.policy_links as
-  { text: string; URL: string }[] | undefined;
 
 const footerHeadingClass =
   'font-black text-base text-white tracking-[-0.02em] mb-5';
@@ -163,37 +158,22 @@ const partners = (
         <!-- Resources -->
         <div>
           <p class={footerHeadingClass}>{locale === 'da' ? 'Ressourcer' : 'Resources'}</p>
-          {resourceLinks?.length ? (
-            <ul class="flex flex-col">
-              {resourceLinks.map((link) => (
-                <li>
-                  <a href={link.URL} class={footerLinkClass}>{link.text}</a>
-                </li>
-              ))}
+          <ul class="flex flex-col">
+            {([
+              { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/brand', external: false },
+              { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/privatlivspolitik', external: false },
+              { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/returpolitik', external: false },
+            ] as {label:string; href:string; external:boolean}[]).map((item) => (
               <li>
-                <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
-                  {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
-                </button>
+                <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
               </li>
-            </ul>
-          ) : (
-            <ul class="flex flex-col">
-              {([
-                { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/brand', external: false },
-                { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/privatlivspolitik', external: false },
-                { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/returpolitik', external: false },
-              ] as {label:string; href:string; external:boolean}[]).map((item) => (
-                <li>
-                  <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
-                </li>
-              ))}
-              <li>
-                <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
-                  {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
-                </button>
-              </li>
-            </ul>
-          )}
+            ))}
+            <li>
+              <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
+                {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
+              </button>
+            </li>
+          </ul>
         </div>
         </div>
       </div>
@@ -212,7 +192,7 @@ const partners = (
   <!-- Neon green copyright strip -->
   <div class="bg-ab-neon flex items-center justify-center px-8 py-4">
     <p class="text-xs text-rich-black text-center tracking-[-0.01em]">
-      {d?.footer?.copyright ?? `© ${year} AB Gladsaxe. All rights reserved.`}
+      {`© ${year} AB Gladsaxe. All rights reserved.`}
     </p>
   </div>
 </footer>
