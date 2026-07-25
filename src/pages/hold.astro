@@ -6,7 +6,9 @@ import type { SIPlayer } from '@/lib/si/client';
 import { getSquadPlayers } from '@/lib/si/squad';
 import { COACHING_STAFF } from '@/data/coaching-staff';
 import Img from '@/components/Img.astro';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const locale = 'da' as const;
 

@@ -1,6 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const SECTIONS = [
   { id: 'kom-hertil',      label: 'Kom hertil' },
