@@ -112,8 +112,19 @@ const matchSchema = {
 >
 
   <!-- Hero -->
-  <div style="background:#2A2A2A">
-    <div class="max-w-5xl mx-auto px-5 md:px-12 pt-8 pb-10">
+  <div class="relative overflow-hidden" style="background:#2A2A2A">
+    {cmsMatch?.bannerImage && (
+      <div class="absolute inset-0">
+        <img
+          src={strapiMediaUrl(cmsMatch.bannerImage.url)}
+          alt=""
+          aria-hidden="true"
+          class="w-full h-full object-cover opacity-35"
+        />
+        <div class="absolute inset-0" style="background:rgba(42,42,42,0.75)" />
+      </div>
+    )}
+    <div class="relative z-10 max-w-5xl mx-auto px-5 md:px-12 pt-8 pb-10">
 
       <!-- Back link -->
       <a
@@ -335,23 +346,6 @@ const matchSchema = {
             </>
           )}
 
-          {socialEmbeds.length > 0 && (
-            <section>
-              <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Social</p>
-              <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
-                Fra sociale medier
-              </h2>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 items-start">
-                {socialEmbeds.map((embed) => (
-                  <div class="flex flex-col gap-3">
-                    <div set:html={embed.embedCode} />
-                    {embed.caption && <p class="text-sm text-[#6B7280]">{embed.caption}</p>}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
           {isHome && (
             <section class="relative overflow-hidden rounded-[4px]" style="min-height:280px;background:var(--surface-ground)">
               <Img
@@ -454,6 +448,20 @@ const matchSchema = {
               </a>
             </div>
           ))}
+
+          {socialEmbeds.length > 0 && (
+            <div class="space-y-4">
+              <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">Social</p>
+              <div class="space-y-6">
+                {socialEmbeds.map((embed) => (
+                  <div class="flex flex-col gap-3">
+                    <div set:html={embed.embedCode} />
+                    {embed.caption && <p class="text-sm text-[#6B7280]">{embed.caption}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {otherArticles.length > 0 && (
             <div class="space-y-4">
