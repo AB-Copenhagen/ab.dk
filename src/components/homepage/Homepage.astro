@@ -721,26 +721,28 @@ const heroSlides = [
             <tbody>
               {recentResults.map((event: any) => {
                 const isHome = event.homeId === 9805;
+                const rowLabel = `${locale === 'en' ? 'View match' : 'Se kamp'}: ${event.homeName} vs ${event.awayName}`;
                 return (
-                  <tr class="result-row relative odd:bg-gray-50 border-b border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer">
-                    <td class="relative py-3 text-xs text-gray-400 tabular-nums" {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}>
-                      <a
-                        href={matchHref(event.eventId)}
-                        class="absolute inset-0"
-                        aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${event.homeName} vs ${event.awayName}`}
-                      />
-                      {fmtDate(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}
+                  <tr class="result-row odd:bg-gray-50 border-b border-gray-100 hover:bg-gray-100 transition-colors">
+                    <td class="p-0 text-xs text-gray-400 tabular-nums" {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}>
+                      <a href={matchHref(event.eventId)} aria-label={rowLabel} class="block py-3">
+                        {fmtDate(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}
+                      </a>
                     </td>
-                    <td
-                      class={`py-3 text-sm font-bold ${isHome ? 'text-ab-green' : 'text-[#111]'}`}>
-                      {event.homeName}
+                    <td class={`p-0 text-sm font-bold ${isHome ? 'text-ab-green' : 'text-[#111]'}`}>
+                      <a href={matchHref(event.eventId)} aria-label={rowLabel} tabindex="-1" class="block py-3">
+                        {event.homeName}
+                      </a>
                     </td>
-                    <td class="py-3 text-sm font-black text-center text-ab-gold tabular-nums tracking-[0.04em]">
-                      {formatEventScore(event.score) ?? '–'}
+                    <td class="p-0 text-sm font-black text-center text-ab-gold tabular-nums tracking-[0.04em]">
+                      <a href={matchHref(event.eventId)} aria-label={rowLabel} tabindex="-1" class="block py-3">
+                        {formatEventScore(event.score) ?? '–'}
+                      </a>
                     </td>
-                    <td
-                      class={`py-3 text-sm font-bold text-right ${!isHome ? 'text-ab-green' : 'text-[#111]'}`}>
-                      {event.awayName}
+                    <td class={`p-0 text-sm font-bold text-right ${!isHome ? 'text-ab-green' : 'text-[#111]'}`}>
+                      <a href={matchHref(event.eventId)} aria-label={rowLabel} tabindex="-1" class="block py-3">
+                        {event.awayName}
+                      </a>
                     </td>
                   </tr>
                 );
