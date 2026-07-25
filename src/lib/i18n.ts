@@ -28,6 +28,7 @@ const daToEn: Record<string, string> = {
   '/events': '/events',
   '/privatlivspolitik': '/privacy-policy',
   '/returpolitik': '/refund-and-returns-policy',
+  '/slet-profil': '/delete-profile',
 };
 
 const enToDa: Record<string, string> = Object.fromEntries(
