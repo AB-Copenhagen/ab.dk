@@ -23,25 +23,6 @@ export interface ManualPlayer {
 
 export const MANUAL_PLAYERS: ManualPlayer[] = [
   {
-    id: -1,
-    name: 'Mikkel Clement',
-    position: 'midfielder',
-    shirtNumber: 21,
-    birthDate: '2004-05-05',
-    height: 188,
-    countryName: { da: 'Danmark', en: 'Denmark' },
-    nickname: 'Clemme',
-    formerClubs: 'VSK Aarhus, Odder IGF',
-    bio: {
-      da: 'Jeg kan godt lide at spille golf og følger med i sporten. Ud over det så bruger jeg meget tid med familie og venner.',
-      en: 'I enjoy playing golf and keeping up with the sport. Outside of that, I spend most of my free time with family and friends.',
-    },
-    quote: {
-      da: 'Aldrig mist troen',
-      en: 'Never lose faith',
-    },
-  },
-  {
     id: -4,
     name: 'Steven Bala',
     position: 'forward',

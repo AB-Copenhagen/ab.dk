@@ -125,6 +125,9 @@ const matchTimeStr = nextMatch
 function articlePath(slug: string) {
   return locale === 'en' ? `/en/news/${slug}` : `/nyheder/${slug}`;
 }
+function matchHref(eventId: number) {
+  return locale === 'en' ? `/en/match/${eventId}` : `/kamp/${eventId}`;
+}
 const enSlugs: Record<string, string> = {
   '/kampe': '/matches',
   '/hold': '/squad',
@@ -719,8 +722,13 @@ const heroSlides = [
               {recentResults.map((event: any) => {
                 const isHome = event.homeId === 9805;
                 return (
-                  <tr class="result-row odd:bg-gray-50 border-b border-gray-100">
-                    <td class="py-3 text-xs text-gray-400 tabular-nums" {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}>
+                  <tr class="result-row relative odd:bg-gray-50 border-b border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer">
+                    <td class="relative py-3 text-xs text-gray-400 tabular-nums" {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}>
+                      <a
+                        href={matchHref(event.eventId)}
+                        class="absolute inset-0"
+                        aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${event.homeName} vs ${event.awayName}`}
+                      />
                       {fmtDate(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}
                     </td>
                     <td

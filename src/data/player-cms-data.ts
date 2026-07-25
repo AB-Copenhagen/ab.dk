@@ -239,6 +239,20 @@ export const PLAYER_CMS_DATA: Record<number, StaticPlayerEntry> = {
     },
   },
 
+  1666064: {
+    // #21 Mikkel Clement
+    nickname: 'Clemme',
+    formerClubs: 'VSK Aarhus, Odder IGF',
+    bio: {
+      da: 'Jeg kan godt lide at spille golf og følger med i sporten. Ud over det så bruger jeg meget tid med familie og venner.',
+      en: 'I enjoy playing golf and keeping up with the sport. Outside of that, I spend most of my free time with family and friends.',
+    },
+    quote: {
+      da: 'Aldrig mist troen',
+      en: 'Never lose faith',
+    },
+  },
+
   1614170: {
     // #22 Marco Vesterholm
     formerClubs: 'Skive IK, Virginia Tech, Elon Phoenix, Randers FC U19',
