@@ -314,6 +314,8 @@ export async function fetchPartners(): Promise<StrapiPartner[]> {
 // ── Media helpers ─────────────────────────────────────────────────────────────
 
 const WASABI_HOST_RE = /^https?:\/\/[^/]*wasabisys\.com\//;
+// Strapi Cloud's built-in media CDN — e.g. https://supportive-miracle-581511a57f.media.strapiapp.com/foo.jpg
+const STRAPI_CDN_RE = /^https?:\/\/([a-z0-9-]+\.media\.strapiapp\.com)\/(.+)$/i;
 
 export function strapiMediaUrl(url: string | null | undefined): string {
   if (!url) return '';
@@ -321,6 +323,12 @@ export function strapiMediaUrl(url: string | null | undefined): string {
   if (WASABI_HOST_RE.test(url)) {
     const key = url.replace(WASABI_HOST_RE, '');
     return `/api/media/${key}`;
+  }
+  // Route Strapi Cloud's CDN through our own proxy so the ab.dk domain never
+  // exposes the underlying strapiapp.com hostname to visitors.
+  const cdnMatch = url.match(STRAPI_CDN_RE);
+  if (cdnMatch) {
+    return `/api/media/cdn/${cdnMatch[1]}/${cdnMatch[2]}`;
   }
   if (url.startsWith('http')) return url;
   return `${STRAPI_URL}${url}`;
