@@ -3,9 +3,11 @@ import sharp from 'sharp';
 
 export const prerender = false;
 
-// Only ever proxy Strapi Cloud's own media CDN — the key encodes the upstream
-// host, so without this check the route would be an open proxy for any URL.
-const ALLOWED_HOST_RE = /^[a-z0-9-]+\.media\.strapiapp\.com$/i;
+// Fixed upstream host for Strapi Cloud's media CDN — never taken from the
+// request, so this route can't be turned into an open proxy for other URLs.
+const STRAPI_MEDIA_HOST =
+  import.meta.env.STRAPI_MEDIA_HOST ||
+  'supportive-miracle-581511a57f.media.strapiapp.com';
 
 export const GET: APIRoute = async ({ params, request }) => {
   const key = params.key;
@@ -13,13 +15,12 @@ export const GET: APIRoute = async ({ params, request }) => {
     return new Response('Not found', { status: 404 });
   }
 
-  const [host, ...pathParts] = key.split('/');
-  if (!ALLOWED_HOST_RE.test(host) || pathParts.length === 0) {
-    return new Response('Not found', { status: 404 });
-  }
+  const pathParts = key.split('/');
 
   try {
-    const upstream = await fetch(`https://${host}/${pathParts.join('/')}`);
+    const upstream = await fetch(
+      `https://${STRAPI_MEDIA_HOST}/${pathParts.join('/')}`
+    );
     if (!upstream.ok || !upstream.body) {
       return new Response('Not found', { status: 404 });
     }
