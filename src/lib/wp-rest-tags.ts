@@ -1,6 +1,9 @@
 import type { APIContext } from 'astro';
 
-import { fetchCollectionTypeWithMeta } from '@/lib/strapi/client';
+import {
+  fetchCollectionType,
+  fetchCollectionTypeWithMeta,
+} from '@/lib/strapi/client';
 import { decodeHtml } from '@/lib/utils';
 
 interface StrapiCategory {
@@ -32,6 +35,56 @@ function slugifyCategoryName(name: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+function mapCategoryToWpTag(
+  category: StrapiCategory,
+  opts: { site: string; apiBasePath: string; newsListingPath: string }
+): Record<string, unknown> {
+  const { site, apiBasePath, newsListingPath } = opts;
+  const name = decodeHtml(category.name);
+  return {
+    id: category.id,
+    count: category.articles?.length ?? 0,
+    description: '',
+    link: `${site}${newsListingPath}`,
+    name,
+    slug: slugifyCategoryName(name),
+    taxonomy: 'post_tag',
+    meta: [],
+    _links: {
+      self: [{ href: `${site}${apiBasePath}/${category.id}` }],
+      collection: [{ href: `${site}${apiBasePath}` }],
+    },
+  };
+}
+
+/** Fetch a single category by its Strapi id — used by the `/tags/{id}` shim. */
+async function fetchCategoryById(
+  locale: 'da' | 'en',
+  id: number
+): Promise<StrapiCategory | null> {
+  const categories = await fetchCollectionType<StrapiCategory[]>('categories', {
+    locale,
+    filters: { id: { $eq: id } },
+    populate: { articles: { fields: ['id'] } },
+  }).catch(() => []);
+  return categories[0] ?? null;
+}
+
+/** WordPress REST API's standard "no such term" error shape and status. */
+function wpTagNotFoundResponse(): Response {
+  return new Response(
+    JSON.stringify({
+      code: 'rest_term_invalid',
+      message: 'Term does not exist.',
+      data: { status: 404 },
+    }),
+    {
+      status: 404,
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+    }
+  );
 }
 
 /**
@@ -70,23 +123,9 @@ export async function buildWpTagsResponse(
     pagination: { page, pageSize: perPage, pageCount: 0, total: 0 },
   }));
 
-  const tags = categories.map((category) => {
-    const name = decodeHtml(category.name);
-    return {
-      id: category.id,
-      count: category.articles?.length ?? 0,
-      description: '',
-      link: `${site}${newsListingPath}`,
-      name,
-      slug: slugifyCategoryName(name),
-      taxonomy: 'post_tag',
-      meta: [],
-      _links: {
-        self: [{ href: `${site}${apiBasePath}/${category.id}` }],
-        collection: [{ href: `${site}${apiBasePath}` }],
-      },
-    };
-  });
+  const tags = categories.map((category) =>
+    mapCategoryToWpTag(category, { site, apiBasePath, newsListingPath })
+  );
 
   return new Response(JSON.stringify(tags), {
     headers: {
@@ -94,5 +133,38 @@ export async function buildWpTagsResponse(
       'X-WP-Total': String(pagination.total),
       'X-WP-TotalPages': String(pagination.pageCount),
     },
+  });
+}
+
+/**
+ * WordPress REST API v2 single-tag compatibility shim for `/wp-json/wp/v2/tags/{id}`
+ * — `{id}` is always a Strapi category id, since that's the only id
+ * buildWpTagsResponse above ever hands out.
+ */
+export async function buildWpTagResponse(
+  context: APIContext,
+  locale: 'da' | 'en',
+  apiBasePath: string,
+  newsListingPath: string
+): Promise<Response> {
+  const site = (context.site?.toString() ?? context.url.origin).replace(
+    /\/$/,
+    ''
+  );
+  const idParam = context.params.id;
+  const id = idParam ? parseInt(idParam, 10) : NaN;
+  if (!Number.isInteger(id) || id <= 0) return wpTagNotFoundResponse();
+
+  const category = await fetchCategoryById(locale, id);
+  if (!category) return wpTagNotFoundResponse();
+
+  const tag = mapCategoryToWpTag(category, {
+    site,
+    apiBasePath,
+    newsListingPath,
+  });
+
+  return new Response(JSON.stringify(tag), {
+    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
   });
 }
