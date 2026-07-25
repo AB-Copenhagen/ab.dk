@@ -37,9 +37,16 @@ export default ({ env }) => {
         },
         schema: env('DATABASE_SCHEMA', 'public'),
       },
+      // Raised from the previous default of 10 — Strapi now connects through
+      // Supabase's Supavisor pooler (not a direct Postgres connection), which
+      // multiplexes many app-level connections over a small number of real
+      // backend ones. That makes it safe to give Strapi itself more headroom
+      // for bursts (e.g. a client resolving many /wp-json/wp/v2/posts/{id}
+      // lookups concurrently instead of batching via `include=`) without
+      // risking Postgres's own connection limit.
       pool: {
         min: env.int('DATABASE_POOL_MIN', 2),
-        max: env.int('DATABASE_POOL_MAX', 10),
+        max: env.int('DATABASE_POOL_MAX', 20),
       },
     },
     sqlite: {
