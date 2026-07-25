@@ -67,6 +67,10 @@ export async function GET(context: APIContext) {
   });
 
   return new Response(body, {
-    headers: { 'Content-Type': 'application/rss+xml; charset=UTF-8' },
+    headers: {
+      'Content-Type': 'application/rss+xml; charset=UTF-8',
+      'Cache-Control':
+        'public, max-age=0, s-maxage=300, stale-while-revalidate=1800',
+    },
   });
 }

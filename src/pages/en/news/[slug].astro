@@ -5,7 +5,9 @@ import FixturesWidget from '@/components/FixturesWidget.astro';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate, decodeHtml } from '@/lib/utils';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const { slug } = Astro.params;
 const locale = 'en';

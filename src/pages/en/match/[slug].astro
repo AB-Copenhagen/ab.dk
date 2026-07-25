@@ -10,8 +10,10 @@ import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import Img from '@/components/Img.astro';
 import { decodeHtml } from '@/lib/utils';
 import { fmtDate, dtAttrs, DATE_LONG_YEAR_OPTS, TIME_OPTS } from '@/lib/dateFormat';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const { slug } = Astro.params;
 const eventId = slug ? parseInt(slug.split('-')[0], 10) : NaN;

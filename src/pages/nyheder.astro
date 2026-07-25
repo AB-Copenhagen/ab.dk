@@ -3,7 +3,9 @@ import Base from '@/layouts/Base.astro';
 import Pager from '@/components/Pager.astro';
 import { fetchCollectionType, fetchCollectionTypeWithMeta, strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate, decodeHtml } from '@/lib/utils';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const locale = 'da';
 // Page 1 carries the hero (1 item) + a full 12-item grid = 13 fetched.

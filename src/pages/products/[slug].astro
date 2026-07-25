@@ -1,8 +1,10 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const { slug } = Astro.params;
 

@@ -1,7 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const { slug } = Astro.params;
 const staff = COACHING_STAFF.find(s => s.slug === slug);

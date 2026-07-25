@@ -171,7 +171,17 @@ export async function GET(context: APIContext) {
   }
 
   return new Response(buildSitemapXml(entries), {
-    headers: { 'Content-Type': 'application/xml; charset=UTF-8' },
+    headers: {
+      'Content-Type': 'application/xml; charset=UTF-8',
+      // This handler paginates through every Strapi collection plus the SI
+      // events/players APIs on every hit — by far the most expensive route
+      // in the site to leave uncached. Crawlers re-fetch it often; letting
+      // Vercel's CDN serve repeat hits for an hour (falling back to a stale
+      // copy for another 6 while it refreshes) cuts that to roughly one
+      // real fetch per hour instead of one per crawl.
+      'Cache-Control':
+        'public, max-age=0, s-maxage=3600, stale-while-revalidate=21600',
+    },
   });
 }
 

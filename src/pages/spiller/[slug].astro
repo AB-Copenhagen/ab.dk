@@ -10,8 +10,10 @@ import type { StrapiPlayer } from '@/lib/strapi/client';
 import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
 import { resolveShirtNumber, resolveName, resolvePosition } from '@/data/player-cms-data';
 import { findManualPlayer } from '@/data/manual-players';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 // Slug format: {playerId}-{name}  e.g. "987654-mikkel-hansen"
 const { slug } = Astro.params;

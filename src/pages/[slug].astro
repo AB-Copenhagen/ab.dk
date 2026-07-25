@@ -4,22 +4,33 @@ import NotFound from '@/components/NotFound.astro';
 import { fetchCollectionType } from '@/lib/strapi/client';
 import { strapiMediaUrl } from '@/lib/strapi/client';
 import { translate } from '@/lib/i18n';
+import { isPlausibleContentSlug } from '@/lib/utils';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const { slug } = Astro.params;
 const locale = 'da';
 
-const results = await fetchCollectionType<any[]>('pages', {
-  locale,
-  filters: { slug: { $eq: slug } },
-}).catch(() => [] as any[]);
+// This route owns every unmatched single-segment path, so it's the first
+// thing scanner/bot traffic (/wp-admin, /.env, /xmlrpc.php, …) hits — none of
+// that is a real Strapi slug, and every distinct bogus path is a cache miss,
+// so skip straight to 404 instead of spending up to 3 live Strapi lookups on it.
+const plausibleSlug = isPlausibleContentSlug(slug);
+
+const results = plausibleSlug
+  ? await fetchCollectionType<any[]>('pages', {
+      locale,
+      filters: { slug: { $eq: slug } },
+    }).catch(() => [] as any[])
+  : [];
 
 const page = results[0];
 
 // Legacy WordPress posts used flat permalinks (/{slug}/); the new site nests
 // them under /nyheder/{slug}. Checked here (not a static redirect-plan entry)
 // because this route already owns the bare /:slug pattern.
-if (!page) {
+if (!page && plausibleSlug) {
   const [article] = await fetchCollectionType<any[]>('articles', {
     locale,
     filters: { slug: { $eq: slug } },
@@ -31,7 +42,7 @@ if (!page) {
 // No Danish article either — check the English side before giving up. Some
 // posts only ever got an English translation, and legacy/search-indexed links
 // to the bare (Danish-routed) slug shouldn't dead-end just because of that.
-if (!page) {
+if (!page && plausibleSlug) {
   const [enArticle] = await fetchCollectionType<any[]>('articles', {
     locale: 'en',
     filters: { slug: { $eq: slug } },
