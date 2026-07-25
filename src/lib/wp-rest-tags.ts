@@ -1,0 +1,98 @@
+import type { APIContext } from 'astro';
+
+import { fetchCollectionTypeWithMeta } from '@/lib/strapi/client';
+import { decodeHtml } from '@/lib/utils';
+
+interface StrapiCategory {
+  id: number;
+  name: string;
+  articles?: { id: number }[];
+}
+
+const MAX_PER_PAGE = 100;
+
+// WP tag slugs are plain ASCII — Danish names only ever add æ/ø/å beyond
+// that, so a direct substitution table is all that's needed (no generic
+// diacritic-stripping normalization required).
+const DANISH_CHAR_MAP: Record<string, string> = {
+  æ: 'ae',
+  ø: 'oe',
+  å: 'aa',
+  Æ: 'ae',
+  Ø: 'oe',
+  Å: 'aa',
+};
+
+function slugifyCategoryName(name: string): string {
+  const ascii = name
+    .split('')
+    .map((ch) => DANISH_CHAR_MAP[ch] ?? ch)
+    .join('');
+  return ascii
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * WordPress REST API v2 tags-list compatibility shim for `/wp-json/wp/v2/tags`
+ * — Strapi has no separate tags taxonomy, only `categories`, so those are
+ * reshaped into WP tag objects (the closest real data Strapi has, rather than
+ * proxying the old WP site live or returning an always-empty list).
+ */
+export async function buildWpTagsResponse(
+  context: APIContext,
+  locale: 'da' | 'en',
+  apiBasePath: string,
+  newsListingPath: string
+): Promise<Response> {
+  const site = (context.site?.toString() ?? context.url.origin).replace(
+    /\/$/,
+    ''
+  );
+  const params = context.url.searchParams;
+
+  const perPage = Math.min(
+    Math.max(parseInt(params.get('per_page') ?? '10', 10) || 10, 1),
+    MAX_PER_PAGE
+  );
+  const page = Math.max(parseInt(params.get('page') ?? '1', 10) || 1, 1);
+
+  const { data: categories, pagination } = await fetchCollectionTypeWithMeta<
+    StrapiCategory[]
+  >('categories', {
+    locale,
+    sort: ['name:asc'],
+    pagination: { page, pageSize: perPage },
+    populate: { articles: { fields: ['id'] } },
+  }).catch(() => ({
+    data: [] as StrapiCategory[],
+    pagination: { page, pageSize: perPage, pageCount: 0, total: 0 },
+  }));
+
+  const tags = categories.map((category) => {
+    const name = decodeHtml(category.name);
+    return {
+      id: category.id,
+      count: category.articles?.length ?? 0,
+      description: '',
+      link: `${site}${newsListingPath}`,
+      name,
+      slug: slugifyCategoryName(name),
+      taxonomy: 'post_tag',
+      meta: [],
+      _links: {
+        self: [{ href: `${site}${apiBasePath}/${category.id}` }],
+        collection: [{ href: `${site}${apiBasePath}` }],
+      },
+    };
+  });
+
+  return new Response(JSON.stringify(tags), {
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'X-WP-Total': String(pagination.total),
+      'X-WP-TotalPages': String(pagination.pageCount),
+    },
+  });
+}
