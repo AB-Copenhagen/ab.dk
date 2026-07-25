@@ -1,8 +1,17 @@
-const MAILGUN_API_KEY = import.meta.env.MAILGUN_API_KEY ?? '';
-const MAILGUN_DOMAIN = import.meta.env.MAILGUN_DOMAIN ?? '';
-const MAILGUN_FROM =
-  import.meta.env.MAILGUN_FROM ?? `AB 1889 <no-reply@${MAILGUN_DOMAIN}>`;
-const MAILGUN_API_BASE = `https://api.eu.mailgun.net/v3/${MAILGUN_DOMAIN}`;
+// Read via `process.env` (not `import.meta.env`) so these are resolved live at
+// request time. `import.meta.env.X` gets statically inlined by Vite at build
+// time — if MAILGUN_API_KEY/MAILGUN_DOMAIN aren't exposed to the *build* step
+// (e.g. marked as a Vercel "Sensitive" env var, which is runtime-only by
+// design), Vite bakes in an empty string and dead-code-eliminates everything
+// past the config check below, permanently, until the next rebuild.
+// `process.env` isn't touched by that static analysis, so a value change
+// takes effect without redeploying.
+function mailgunEnv() {
+  const apiKey = process.env.MAILGUN_API_KEY ?? '';
+  const domain = process.env.MAILGUN_DOMAIN ?? '';
+  const from = process.env.MAILGUN_FROM ?? `AB 1889 <no-reply@${domain}>`;
+  return { apiKey, domain, from };
+}
 
 interface SendParams {
   to: string;
@@ -13,14 +22,15 @@ interface SendParams {
 }
 
 export async function sendMail(params: SendParams): Promise<void> {
-  if (!MAILGUN_API_KEY || !MAILGUN_DOMAIN) {
+  const { apiKey, domain, from } = mailgunEnv();
+  if (!apiKey || !domain) {
     throw new Error(
       'Mailgun not configured — MAILGUN_API_KEY and MAILGUN_DOMAIN required'
     );
   }
 
   const body = new URLSearchParams({
-    from: MAILGUN_FROM,
+    from,
     to: params.to,
     subject: params.subject,
     ...(params.text ? { text: params.text } : {}),
@@ -28,10 +38,10 @@ export async function sendMail(params: SendParams): Promise<void> {
     ...(params.replyTo ? { 'h:Reply-To': params.replyTo } : {}),
   });
 
-  const res = await fetch(`${MAILGUN_API_BASE}/messages`, {
+  const res = await fetch(`https://api.eu.mailgun.net/v3/${domain}/messages`, {
     method: 'POST',
     headers: {
-      Authorization: `Basic ${btoa(`api:${MAILGUN_API_KEY}`)}`,
+      Authorization: `Basic ${btoa(`api:${apiKey}`)}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body,
@@ -47,7 +57,8 @@ export async function addToMailingList(
   listAddress: string,
   member: { address: string; name?: string }
 ): Promise<void> {
-  if (!MAILGUN_API_KEY) throw new Error('MAILGUN_API_KEY not configured');
+  const { apiKey } = mailgunEnv();
+  if (!apiKey) throw new Error('MAILGUN_API_KEY not configured');
 
   const body = new URLSearchParams({
     address: member.address,
@@ -61,7 +72,7 @@ export async function addToMailingList(
     {
       method: 'POST',
       headers: {
-        Authorization: `Basic ${btoa(`api:${MAILGUN_API_KEY}`)}`,
+        Authorization: `Basic ${btoa(`api:${apiKey}`)}`,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body,
