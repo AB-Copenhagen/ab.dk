@@ -36,7 +36,7 @@ export async function fetchCollectionType<T = unknown[]>(
   options?: QueryParams,
 ): Promise<T> {
   const preview = isPreviewEnabled();
-  const fetcher = async () => {
+  const doFetch = async () => {
     const { data } = await createClient()
       .collection(collectionName)
       .find({ ...options, status: preview ? 'draft' : 'published' } as never);
@@ -45,7 +45,19 @@ export async function fetchCollectionType<T = unknown[]>(
   // Draft content must never be written to the shared cache — it isn't keyed on
   // draft/published status, so caching here would either leak drafts to public
   // visitors or serve stale published data back to the previewing editor.
-  if (preview) return fetcher();
+  if (preview) return doFetch();
+  // Must resolve to `null` (never throw) on failure — `CacheManager.getWithFallback`
+  // only falls back to the last-known-good cached copy when the fetcher returns
+  // `null`; a thrown error would otherwise skip the fallback and bubble up as an
+  // empty result straight to the page.
+  const fetcher = async () => {
+    try {
+      return await doFetch();
+    } catch (err) {
+      console.error(`[strapi] fetchCollectionType(${collectionName}) failed:`, err);
+      return null;
+    }
+  };
   const key = await cacheKey(collectionName, options);
   const result = await cache.getWithFallback<T>(key, fetcher, { tags: [collectionName] });
   return result ?? ([] as unknown as T);
@@ -70,13 +82,21 @@ export async function fetchCollectionTypeWithMeta<T = unknown[]>(
     pageCount: 0,
     total: 0,
   };
-  const fetcher = async () => {
+  const doFetch = async () => {
     const res = await createClient()
       .collection(collectionName)
       .find({ ...options, status: preview ? 'draft' : 'published' } as never);
     return { data: res.data as T, pagination: (res.meta as { pagination: StrapiPagination })?.pagination };
   };
-  if (preview) return fetcher();
+  if (preview) return doFetch();
+  const fetcher = async () => {
+    try {
+      return await doFetch();
+    } catch (err) {
+      console.error(`[strapi] fetchCollectionTypeWithMeta(${collectionName}) failed:`, err);
+      return null;
+    }
+  };
   const key = (await cacheKey(collectionName, options)) + '-meta';
   const result = await cache.getWithFallback(key, fetcher, { tags: [collectionName] });
   return result ?? { data: [] as unknown as T, pagination: emptyPagination };
@@ -94,7 +114,7 @@ export async function fetchSingleType<T = unknown>(
   options?: QueryParams,
 ): Promise<T> {
   const preview = isPreviewEnabled();
-  const fetcher = async () => {
+  const doFetch = async () => {
     try {
       const { data } = await createClient()
         .single(singleTypeName)
@@ -107,7 +127,15 @@ export async function fetchSingleType<T = unknown>(
       throw err;
     }
   };
-  if (preview) return fetcher();
+  if (preview) return doFetch();
+  const fetcher = async () => {
+    try {
+      return await doFetch();
+    } catch (err) {
+      console.error(`[strapi] fetchSingleType(${singleTypeName}) failed:`, err);
+      return null;
+    }
+  };
   const key = await cacheKey(singleTypeName, options);
   const result = await cache.getWithFallback<T>(key, fetcher, { tags: [singleTypeName] });
   return (result === (SINGLE_TYPE_NOT_FOUND as unknown as T) ? null : result) as T;
@@ -119,13 +147,21 @@ export async function fetchDocument<T = unknown>(
   options?: QueryParams,
 ): Promise<T> {
   const preview = isPreviewEnabled();
-  const fetcher = async () => {
+  const doFetch = async () => {
     const { data } = await createClient()
       .collection(collectionName)
       .findOne(documentId, { ...options, status: preview ? 'draft' : 'published' } as never);
     return data as T;
   };
-  if (preview) return fetcher();
+  if (preview) return doFetch();
+  const fetcher = async () => {
+    try {
+      return await doFetch();
+    } catch (err) {
+      console.error(`[strapi] fetchDocument(${collectionName}/${documentId}) failed:`, err);
+      return null;
+    }
+  };
   const key = `strapi-${collectionName}-doc-${documentId}-${JSON.stringify(options ?? {})}`;
   const result = await cache.getWithFallback<T>(key, fetcher, { tags: [collectionName] });
   return result as T;
