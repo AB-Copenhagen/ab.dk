@@ -4,7 +4,6 @@ import Footer from '@/components/Footer.astro';
 import CookieConsentBanner from '@/components/CookieConsentBanner.astro';
 import '@/styles/global.css';
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
-import { fetchSingleType } from '@/lib/strapi/client';
 import { switchLocalePath } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import { CONSENT_COOKIE_NAME, parseConsent, hasConsent } from '@/lib/consent';
@@ -103,16 +102,6 @@ const structuredDataList = [
   ...(structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : []),
 ];
 
-let globalData: any = null;
-try {
-  globalData = await fetchSingleType('global', {
-    locale,
-    populate: { footer: { populate: '*' } },
-  });
-} catch {
-  // CMS unavailable — render with fallbacks
-}
-
 // The Vivenu ticket-embed script sets its own cookies once loaded, so it's gated behind
 // functional consent. Server-render it only for returning visitors who already consented —
 // first-time visitors (and prerendered pages, which have no per-request cookies to read)
@@ -201,7 +190,7 @@ const statisticsConsented = Astro.isPrerendered
     <main>
       <slot />
     </main>
-    <Footer locale={locale} globalData={globalData} />
+    <Footer locale={locale} />
     <CookieConsentBanner locale={locale} />
     <script>
       import { onConsentChange } from '@/lib/consent-gate-client';
