@@ -148,7 +148,8 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
     '/en/play',
   ];
   const isGated = GATED_PATHS.some(
-    (p) => context.url.pathname === p || context.url.pathname.startsWith(`${p}/`)
+    (p) =>
+      context.url.pathname === p || context.url.pathname.startsWith(`${p}/`)
   );
 
   if (isGated) {
