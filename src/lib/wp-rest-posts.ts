@@ -88,7 +88,10 @@ export function wpNotFoundResponse(): Response {
       message: 'Invalid post ID.',
       data: { status: 404 },
     }),
-    { status: 404, headers: { 'Content-Type': 'application/json; charset=UTF-8' } }
+    {
+      status: 404,
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+    }
   );
 }
 
@@ -226,14 +229,11 @@ export async function buildWpPostsResponse(
     .map((raw) => parseInt(raw.trim(), 10))
     .filter((n) => Number.isInteger(n));
 
-  const { data: articles, pagination } = await fetchArticlesWithRetry(
-    locale,
-    {
-      page,
-      pageSize: perPage,
-      ...(includeIds.length > 0 ? { filters: { id: { $in: includeIds } } } : {}),
-    }
-  );
+  const { data: articles, pagination } = await fetchArticlesWithRetry(locale, {
+    page,
+    pageSize: perPage,
+    ...(includeIds.length > 0 ? { filters: { id: { $in: includeIds } } } : {}),
+  });
 
   const posts = articles.map((article) =>
     mapArticleToWpPost(article, { site, apiBasePath, articlePath })

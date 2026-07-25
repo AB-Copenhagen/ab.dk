@@ -58,16 +58,17 @@ export async function buildWpTagsResponse(
   );
   const page = Math.max(parseInt(params.get('page') ?? '1', 10) || 1, 1);
 
-  const { data: categories, pagination } =
-    await fetchCollectionTypeWithMeta<StrapiCategory[]>('categories', {
-      locale,
-      sort: ['name:asc'],
-      pagination: { page, pageSize: perPage },
-      populate: { articles: { fields: ['id'] } },
-    }).catch(() => ({
-      data: [] as StrapiCategory[],
-      pagination: { page, pageSize: perPage, pageCount: 0, total: 0 },
-    }));
+  const { data: categories, pagination } = await fetchCollectionTypeWithMeta<
+    StrapiCategory[]
+  >('categories', {
+    locale,
+    sort: ['name:asc'],
+    pagination: { page, pageSize: perPage },
+    populate: { articles: { fields: ['id'] } },
+  }).catch(() => ({
+    data: [] as StrapiCategory[],
+    pagination: { page, pageSize: perPage, pageCount: 0, total: 0 },
+  }));
 
   const tags = categories.map((category) => {
     const name = decodeHtml(category.name);
