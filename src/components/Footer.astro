@@ -163,6 +163,7 @@ const partners = (
               { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/brand', external: false },
               { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/privatlivspolitik', external: false },
               { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/returpolitik', external: false },
+              { label: locale === 'da' ? 'Slet din profil' : 'Delete Your Profile', href: locale === 'en' ? '/en/delete-profile' : '/slet-profil', external: false },
             ] as {label:string; href:string; external:boolean}[]).map((item) => (
               <li>
                 <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>

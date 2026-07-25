@@ -1,0 +1,127 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+---
+
+<Base
+  locale="en"
+  title="Delete Your Profile | Akademisk Boldklub (AB 1889)"
+  description="How to request deletion of your MyAB profile and personal data held by Akademisk Boldklub (AB 1889)."
+  ogTitle="Delete Your AB Profile"
+  ogDescription="Request deletion of your MyAB profile and personal data."
+>
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-4xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
+      <h1 class="font-black text-white leading-none text-[clamp(2.5rem,7vw,5rem)] tracking-[-0.04em]">Delete Your Profile</h1>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <section class="bg-white py-[clamp(56px,8vw,96px)]">
+    <div class="max-w-4xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20">
+
+        <!-- Left: instructions -->
+        <div>
+          <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">How it works</span>
+          </div>
+          <div class="flex flex-col gap-4 text-[0.95rem] leading-[1.8] text-[#333]">
+            <p>
+              Under GDPR, you have the right to have your MyAB profile and the personal data we hold about you deleted. Fill in the form on this page, or email us directly at
+              <a href="mailto:info@ab.dk" class="text-ab-green font-black no-underline hover:opacity-70">info@ab.dk</a>,
+              and we'll delete your profile as soon as possible.
+            </p>
+            <p>
+              To help us find and delete the correct data, please use the same email address that's linked to your MyAB account.
+            </p>
+            <p>
+              We'll confirm receipt of your request by email and delete your profile within a reasonable time afterwards, unless we're legally required to retain certain information for longer.
+            </p>
+            <p>
+              You can read more about what data we process, and for how long, in our
+              <a href="/en/privacy-policy" class="text-ab-green font-black no-underline hover:opacity-70">privacy policy →</a>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: deletion request form -->
+        <div>
+          <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Request deletion</span>
+          </div>
+          <form id="delete-form" class="flex flex-col gap-4" novalidate>
+            <div class="flex flex-col gap-1.5">
+              <label for="df-name" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Name</label>
+              <input id="df-name" name="name" type="text" required autocomplete="name"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="Your name" />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="df-email" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Email on your MyAB profile</label>
+              <input id="df-email" name="email" type="email" required autocomplete="email"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="your@email.com" />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="df-reason" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Reason (optional)</label>
+              <textarea id="df-reason" name="reason" rows="4"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors resize-none" placeholder="Feel free to tell us why (optional)"></textarea>
+            </div>
+            <div id="df-status" class="hidden text-[0.85rem] font-medium px-4 py-3"></div>
+            <button type="submit" id="df-submit"
+              class="self-start inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-green text-white px-7 py-3.5 transition-opacity hover:opacity-80 disabled:opacity-50">
+              Send request
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<script>
+  const form = document.getElementById('delete-form') as HTMLFormElement | null;
+  const statusEl = document.getElementById('df-status');
+  const submitBtn = document.getElementById('df-submit') as HTMLButtonElement | null;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !submitBtn || !statusEl) return;
+
+    const data = {
+      name: (form.elements.namedItem('name') as HTMLInputElement).value.trim(),
+      email: (form.elements.namedItem('email') as HTMLInputElement).value.trim(),
+      reason: (form.elements.namedItem('reason') as HTMLTextAreaElement).value.trim(),
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    statusEl.className = 'hidden text-[0.85rem] font-medium px-4 py-3';
+
+    try {
+      const res = await fetch('/api/delete-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (json.success) {
+        statusEl.textContent = "Thanks — we've received your request and will follow up by email.";
+        statusEl.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#F0FAF4] text-ab-green border border-ab-green/20';
+        form.reset();
+      } else {
+        throw new Error(json.error || 'Error');
+      }
+    } catch {
+      statusEl.textContent = 'Something went wrong — please email info@ab.dk directly.';
+      statusEl.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#FFF0F0] text-red-600 border border-red-200';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send request';
+    }
+  });
+</script>

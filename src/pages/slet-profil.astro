@@ -1,0 +1,125 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+---
+
+<Base
+  locale="da"
+  title="Slet din profil | AB 1889"
+  description="Sådan anmoder du om sletning af din MyAB-profil og persondata hos Akademisk Boldklub (AB 1889)."
+>
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-4xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB 1889</span>
+      <h1 class="font-black text-white leading-none text-[clamp(2.5rem,7vw,5rem)] tracking-[-0.04em]">Slet din profil</h1>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <section class="bg-white py-[clamp(56px,8vw,96px)]">
+    <div class="max-w-4xl mx-auto px-8 lg:px-20">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20">
+
+        <!-- Left: instructions -->
+        <div>
+          <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Sådan gør du</span>
+          </div>
+          <div class="flex flex-col gap-4 text-[0.95rem] leading-[1.8] text-[#333]">
+            <p>
+              Du har efter GDPR ret til at få slettet din MyAB-profil og de persondata, vi har registreret om dig. Udfyld formularen her på siden, eller skriv direkte til
+              <a href="mailto:info@ab.dk" class="text-ab-green font-black no-underline hover:opacity-70">info@ab.dk</a>,
+              så sletter vi din profil hurtigst muligt.
+            </p>
+            <p>
+              For at kunne finde og slette de rigtige oplysninger, bedes du bruge den samme e-mailadresse, som er tilknyttet din MyAB-konto.
+            </p>
+            <p>
+              Vi bekræfter modtagelsen af din anmodning pr. e-mail og sletter din profil inden for rimelig tid herefter, medmindre vi er retligt forpligtet til at opbevare visse oplysninger længere.
+            </p>
+            <p>
+              Du kan læse mere om, hvilke data vi behandler, og hvor længe, i vores
+              <a href="/privatlivspolitik" class="text-ab-green font-black no-underline hover:opacity-70">privatlivspolitik →</a>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: deletion request form -->
+        <div>
+          <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Anmod om sletning</span>
+          </div>
+          <form id="delete-form" class="flex flex-col gap-4" novalidate>
+            <div class="flex flex-col gap-1.5">
+              <label for="df-name" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Navn</label>
+              <input id="df-name" name="name" type="text" required autocomplete="name"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="Dit navn" />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="df-email" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">E-mail på din MyAB-profil</label>
+              <input id="df-email" name="email" type="email" required autocomplete="email"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="din@email.dk" />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="df-reason" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Begrundelse (valgfrit)</label>
+              <textarea id="df-reason" name="reason" rows="4"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors resize-none" placeholder="Fortæl os gerne hvorfor (valgfrit)"></textarea>
+            </div>
+            <div id="df-status" class="hidden text-[0.85rem] font-medium px-4 py-3"></div>
+            <button type="submit" id="df-submit"
+              class="self-start inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-green text-white px-7 py-3.5 transition-opacity hover:opacity-80 disabled:opacity-50">
+              Send anmodning
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<script>
+  const form = document.getElementById('delete-form') as HTMLFormElement | null;
+  const statusEl = document.getElementById('df-status');
+  const submitBtn = document.getElementById('df-submit') as HTMLButtonElement | null;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !submitBtn || !statusEl) return;
+
+    const data = {
+      name: (form.elements.namedItem('name') as HTMLInputElement).value.trim(),
+      email: (form.elements.namedItem('email') as HTMLInputElement).value.trim(),
+      reason: (form.elements.namedItem('reason') as HTMLTextAreaElement).value.trim(),
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sender…';
+    statusEl.className = 'hidden text-[0.85rem] font-medium px-4 py-3';
+
+    try {
+      const res = await fetch('/api/delete-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (json.success) {
+        statusEl.textContent = 'Tak — vi har modtaget din anmodning og vender tilbage pr. e-mail.';
+        statusEl.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#F0FAF4] text-ab-green border border-ab-green/20';
+        form.reset();
+      } else {
+        throw new Error(json.error || 'Error');
+      }
+    } catch {
+      statusEl.textContent = 'Noget gik galt — skriv venligst direkte til info@ab.dk.';
+      statusEl.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#FFF0F0] text-red-600 border border-red-200';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send anmodning';
+    }
+  });
+</script>
