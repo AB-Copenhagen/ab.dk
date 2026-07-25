@@ -30,7 +30,13 @@ async function siEventsRequest(
   params: Record<string, string>
 ): Promise<SIEvent[] | null> {
   const accessToken = process.env.SI_ACCESS_TOKEN;
-  if (!accessToken) return null;
+  if (!accessToken) {
+    console.warn(
+      "[match-picker] SI_ACCESS_TOKEN is not set — the match picker will show no options. " +
+        "Set it in this environment's variables (same value used by the Astro app)."
+    );
+    return null;
+  }
 
   const url = new URL(`${SI_API_BASE_URL}/events-v2`);
   url.searchParams.set('access_token', accessToken);
@@ -38,8 +44,19 @@ async function siEventsRequest(
     url.searchParams.set(key, value);
   }
 
-  const res = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
-  if (!res.ok) return null;
+  let res: Response;
+  try {
+    res = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
+  } catch (err) {
+    console.warn('[match-picker] SI API request threw', err);
+    return null;
+  }
+  if (!res.ok) {
+    console.warn(
+      `[match-picker] SI API request failed: ${res.status} ${res.statusText}`
+    );
+    return null;
+  }
 
   const data = (await res.json()) as { events?: SIEvent[] };
   return data.events ?? [];
