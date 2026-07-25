@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { breadcrumbSchema } from '@/lib/structured-data';
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
 
@@ -41,6 +42,14 @@ const staffSchema = {
   memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
   url: `https://ab.dk/en/staff/${slug}`,
 };
+
+const staffBreadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: 'https://ab.dk/en' },
+  { name: 'Leadership', url: 'https://ab.dk/en/about/leadership' },
+  { name: staff.name, url: `https://ab.dk/en/staff/${slug}` },
+]);
+
+const staffStructuredData = [staffSchema, staffBreadcrumbs];
 ---
 
 <Base
@@ -49,7 +58,7 @@ const staffSchema = {
   description={staffDescription}
   ogImage={ogCardImageUrl}
   ogType="profile"
-  structuredData={staffSchema}
+  structuredData={staffStructuredData}
 >
   <!-- ── Hero ───────────────────────────────────────────────────────── -->
   <div class="relative w-full overflow-hidden"

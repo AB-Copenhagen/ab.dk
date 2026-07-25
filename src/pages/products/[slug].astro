@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { breadcrumbSchema } from '@/lib/structured-data';
 
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
@@ -57,6 +58,14 @@ const productSchema = {
         }
       : undefined,
 };
+
+const productBreadcrumbs = breadcrumbSchema([
+  { name: 'Forside', url: 'https://ab.dk' },
+  { name: 'Shop', url: 'https://ab.dk/products' },
+  { name, url: `https://ab.dk/products/${slug}` },
+]);
+
+const productStructuredData = [productSchema, productBreadcrumbs];
 ---
 
 <Base
@@ -64,7 +73,7 @@ const productSchema = {
   title={`${name} | AB 1889`}
   description={productDescription}
   ogImage={imageUrl ?? undefined}
-  structuredData={productSchema}
+  structuredData={productStructuredData}
 >
   <div style="background:var(--ab-white)">
     <div class="border-b border-gray-200">

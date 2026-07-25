@@ -11,6 +11,11 @@ import Img from '@/components/Img.astro';
 import { decodeHtml } from '@/lib/utils';
 import { fmtDate, dtAttrs, DATE_LONG_YEAR_OPTS, TIME_OPTS } from '@/lib/dateFormat';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import {
+  breadcrumbSchema,
+  estimatedMatchEndDate,
+  youTubeVideoSchema,
+} from '@/lib/structured-data';
 
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
@@ -86,23 +91,64 @@ const ogImageParams = new URLSearchParams({
 });
 const ogCardImageUrl = `/api/og/match.png?${ogImageParams.toString()}`;
 
+const matchImageUrl = new URL(
+  cmsMatch?.bannerImage ? strapiMediaUrl(cmsMatch.bannerImage.url) : ogCardImageUrl,
+  Astro.site
+).href;
+
 const matchSchema = {
   '@context': 'https://schema.org',
   '@type': 'SportsEvent',
   name: `${homeName} vs ${awayName}`,
+  description: matchDescription,
+  image: [matchImageUrl],
   startDate,
+  endDate: estimatedMatchEndDate(startDate),
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-  location: { '@type': 'Place', name: venueName },
+  location: {
+    '@type': 'Place',
+    name: venueName,
+    // Only known for home fixtures — the away side's stadium address isn't
+    // data we hold anywhere in this codebase.
+    ...(isHome
+      ? {
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'Gladsaxevej 202',
+            addressLocality: 'Søborg',
+            postalCode: '2860',
+            addressCountry: 'DK',
+          },
+        }
+      : {}),
+  },
   homeTeam: { '@type': 'SportsTeam', name: homeName },
   awayTeam: { '@type': 'SportsTeam', name: awayName },
   competitor: [
     { '@type': 'SportsTeam', name: homeName },
     { '@type': 'SportsTeam', name: awayName },
   ],
-  organizer: { '@type': 'SportsOrganization', name: tournamentName },
+  organizer: {
+    '@type': 'SportsOrganization',
+    name: tournamentName,
+    url: 'https://ab.dk',
+  },
   url: `https://ab.dk/kamp/${eventId}`,
 };
+
+const matchBreadcrumbs = breadcrumbSchema([
+  { name: 'Forside', url: 'https://ab.dk' },
+  { name: 'Kampe', url: 'https://ab.dk/kampe' },
+  { name: `${homeName} vs ${awayName}`, url: `https://ab.dk/kamp/${eventId}` },
+]);
+
+const matchVideoSchemas = socialEmbeds
+  .filter((embed) => embed.platform === 'youtube')
+  .map((embed) => youTubeVideoSchema(embed, startDate))
+  .filter((schema): schema is NonNullable<typeof schema> => schema !== null);
+
+const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas];
 ---
 
 <Base
@@ -110,7 +156,7 @@ const matchSchema = {
   title={pageTitle}
   description={matchDescription}
   ogImage={ogCardImageUrl}
-  structuredData={matchSchema}
+  structuredData={matchStructuredData}
 >
 
   <!-- Hero -->

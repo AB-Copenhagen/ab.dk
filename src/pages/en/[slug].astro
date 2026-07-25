@@ -6,6 +6,7 @@ import { strapiMediaUrl } from '@/lib/strapi/client';
 import { translate } from '@/lib/i18n';
 import { isPlausibleContentSlug } from '@/lib/utils';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { breadcrumbSchema } from '@/lib/structured-data';
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
 
@@ -59,9 +60,16 @@ if (!page) {
 const title = page ? (page.seo?.metaTitle ?? page.title ?? 'Akademisk Boldklub') : `404 | ${translate(locale, 'notFoundHeading')}`;
 const description = page ? (page.seo?.metaDescription ?? page.description ?? '') : translate(locale, 'notFoundBody');
 const blocks: any[] = page?.dynamic_zone ?? [];
+
+const pageStructuredData = page
+  ? breadcrumbSchema([
+      { name: 'Home', url: 'https://ab.dk/en' },
+      { name: page.title ?? title, url: `https://ab.dk/en/${slug}` },
+    ])
+  : undefined;
 ---
 
-<Base locale="en" title={`${title} | Akademisk Boldklub`} description={description}>
+<Base locale="en" title={`${title} | Akademisk Boldklub`} description={description} structuredData={pageStructuredData}>
   {!page ? (
     <NotFound locale={locale} />
   ) : blocks.length === 0 ? (

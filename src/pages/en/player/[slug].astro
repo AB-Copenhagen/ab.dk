@@ -11,6 +11,7 @@ import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
 import { resolveShirtNumber, resolveName, resolvePosition } from '@/data/player-cms-data';
 import { findManualPlayer } from '@/data/manual-players';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { breadcrumbSchema } from '@/lib/structured-data';
 
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
@@ -123,6 +124,14 @@ const personSchema = {
   memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
   url: `https://ab.dk/en/player/${slug}`,
 };
+
+const playerBreadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: 'https://ab.dk/en' },
+  { name: 'Squad', url: 'https://ab.dk/en/squad' },
+  { name: displayName, url: `https://ab.dk/en/player/${slug}` },
+]);
+
+const playerStructuredData = [personSchema, playerBreadcrumbs];
 ---
 
 <Base
@@ -131,7 +140,7 @@ const personSchema = {
   description={playerDescription}
   ogImage={ogCardImageUrl}
   ogType="profile"
-  structuredData={personSchema}
+  structuredData={playerStructuredData}
 >
   <!-- ── Hero ───────────────────────────────────────────────────────── -->
   <div class="relative w-full overflow-hidden"

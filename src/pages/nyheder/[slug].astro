@@ -6,6 +6,7 @@ import StandingsWidget from '@/components/StandingsWidget.astro';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate, decodeHtml } from '@/lib/utils';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { breadcrumbSchema } from '@/lib/structured-data';
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
 
@@ -104,6 +105,14 @@ const articleSchema = {
   },
   mainEntityOfPage: { '@type': 'WebPage', '@id': `https://ab.dk/nyheder/${article.slug}` },
 };
+
+const articleBreadcrumbs = breadcrumbSchema([
+  { name: 'Forside', url: 'https://ab.dk' },
+  { name: 'Nyheder', url: 'https://ab.dk/nyheder' },
+  { name: decodeHtml(article.title), url: `https://ab.dk/nyheder/${article.slug}` },
+]);
+
+const articleStructuredData = [articleSchema, articleBreadcrumbs];
 ---
 
 <Base
@@ -112,7 +121,7 @@ const articleSchema = {
   description={articleDescription}
   ogImage={ogCardImageUrl}
   ogType="article"
-  structuredData={articleSchema}
+  structuredData={articleStructuredData}
   alternateLocalePath={alternateLocalePath}
 >
   <article class="text-[#111]">
