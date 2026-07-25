@@ -1,6 +1,7 @@
 import type { APIContext } from 'astro';
 
 import { blocksToHtml } from '@/lib/blocks-to-html';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 import {
   fetchCollectionTypeWithMeta,
   strapiMediaUrl,
@@ -207,13 +208,17 @@ export async function buildWpPostsResponse(
     mapArticleToWpPost(article, { site, apiBasePath, articlePath })
   );
 
-  return new Response(JSON.stringify(posts), {
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'X-WP-Total': String(pagination.total),
-      'X-WP-TotalPages': String(pagination.pageCount),
-    },
+  const headers = new Headers({
+    'Content-Type': 'application/json; charset=UTF-8',
+    'X-WP-Total': String(pagination.total),
+    'X-WP-TotalPages': String(pagination.pageCount),
   });
+  // A feed-polling consumer of this shim re-requests the same handful of
+  // recent/`include`d ids constantly — letting the CDN absorb repeat hits
+  // cuts that load off Strapi entirely instead of round-tripping every time.
+  setCdnCacheHeaders(headers);
+
+  return new Response(JSON.stringify(posts), { headers });
 }
 
 /**
@@ -240,7 +245,13 @@ export async function buildWpPostResponse(
 
   const post = mapArticleToWpPost(article, { site, apiBasePath, articlePath });
 
-  return new Response(JSON.stringify(post), {
-    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+  const headers = new Headers({
+    'Content-Type': 'application/json; charset=UTF-8',
   });
+  // Same reasoning as buildWpPostsResponse — a single post is requested by
+  // id repeatedly rather than once, so letting the CDN serve repeats avoids
+  // hitting Strapi (and its connection pool) for the same id over and over.
+  setCdnCacheHeaders(headers);
+
+  return new Response(JSON.stringify(post), { headers });
 }
