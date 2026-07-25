@@ -31,6 +31,29 @@ async function cacheKey(name: string, options?: QueryParams): Promise<string> {
   return `strapi-${name}-${hash}`;
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Retries transient Strapi failures (503s under load, the client's own 10s
+ * request timeout aborting) with a short backoff — Strapi Cloud bursts of
+ * concurrent requests routinely 503 for a moment and then recover, so most
+ * failures here succeed on the 2nd or 3rd attempt rather than ever reaching
+ * the cache fallback. A 404 (genuinely missing document/slug/id) is not
+ * retried — that's a real answer, not a transient failure.
+ */
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const isNotFound = err instanceof Error && err.name === 'HTTPNotFoundError';
+      if (isNotFound || attempt === attempts) throw err;
+      await sleep(300 * attempt);
+    }
+  }
+  throw new Error('unreachable');
+}
+
 export async function fetchCollectionType<T = unknown[]>(
   collectionName: string,
   options?: QueryParams,
@@ -45,14 +68,14 @@ export async function fetchCollectionType<T = unknown[]>(
   // Draft content must never be written to the shared cache — it isn't keyed on
   // draft/published status, so caching here would either leak drafts to public
   // visitors or serve stale published data back to the previewing editor.
-  if (preview) return doFetch();
+  if (preview) return withRetry(doFetch);
   // Must resolve to `null` (never throw) on failure — `CacheManager.getWithFallback`
   // only falls back to the last-known-good cached copy when the fetcher returns
   // `null`; a thrown error would otherwise skip the fallback and bubble up as an
   // empty result straight to the page.
   const fetcher = async () => {
     try {
-      return await doFetch();
+      return await withRetry(doFetch);
     } catch (err) {
       console.error(`[strapi] fetchCollectionType(${collectionName}) failed:`, err);
       return null;
@@ -88,10 +111,10 @@ export async function fetchCollectionTypeWithMeta<T = unknown[]>(
       .find({ ...options, status: preview ? 'draft' : 'published' } as never);
     return { data: res.data as T, pagination: (res.meta as { pagination: StrapiPagination })?.pagination };
   };
-  if (preview) return doFetch();
+  if (preview) return withRetry(doFetch);
   const fetcher = async () => {
     try {
-      return await doFetch();
+      return await withRetry(doFetch);
     } catch (err) {
       console.error(`[strapi] fetchCollectionTypeWithMeta(${collectionName}) failed:`, err);
       return null;
@@ -127,10 +150,10 @@ export async function fetchSingleType<T = unknown>(
       throw err;
     }
   };
-  if (preview) return doFetch();
+  if (preview) return withRetry(doFetch);
   const fetcher = async () => {
     try {
-      return await doFetch();
+      return await withRetry(doFetch);
     } catch (err) {
       console.error(`[strapi] fetchSingleType(${singleTypeName}) failed:`, err);
       return null;
@@ -153,10 +176,10 @@ export async function fetchDocument<T = unknown>(
       .findOne(documentId, { ...options, status: preview ? 'draft' : 'published' } as never);
     return data as T;
   };
-  if (preview) return doFetch();
+  if (preview) return withRetry(doFetch);
   const fetcher = async () => {
     try {
-      return await doFetch();
+      return await withRetry(doFetch);
     } catch (err) {
       console.error(`[strapi] fetchDocument(${collectionName}/${documentId}) failed:`, err);
       return null;

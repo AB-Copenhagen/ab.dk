@@ -61,31 +61,6 @@ const STRAPI_COLLECTIONS: {
 
 type SlugItem = { slug: string; updatedAt?: string };
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// Strapi Cloud rate-limits bursts of requests, so a single fetched page can transiently
-// fail mid-pagination — retry a few times before accepting we've hit the end.
-async function fetchPageWithRetry(
-  collectionName: string,
-  locale: 'da' | 'en',
-  page: number,
-  pageSize: number,
-  attempts = 3
-) {
-  for (let attempt = 1; attempt <= attempts; attempt++) {
-    try {
-      return await fetchCollectionTypeWithMeta<SlugItem[]>(collectionName, {
-        locale,
-        pagination: { page, pageSize },
-      });
-    } catch {
-      if (attempt === attempts) return null;
-      await sleep(300 * attempt);
-    }
-  }
-  return null;
-}
-
 // Strapi caps pageSize at 100 per request, so collections larger than that (e.g. articles)
 // need every page fetched — otherwise the sitemap silently truncates after the first 100.
 async function fetchAllSlugs(
@@ -98,13 +73,14 @@ async function fetchAllSlugs(
   let pageCount = 1;
 
   do {
-    const result = await fetchPageWithRetry(
+    const result = await fetchCollectionTypeWithMeta<SlugItem[]>(
       collectionName,
-      locale,
-      page,
-      pageSize
+      {
+        locale,
+        pagination: { page, pageSize },
+      }
     );
-    if (!result) break;
+    if (result.data.length === 0) break;
     items.push(...result.data);
     pageCount = result.pagination.pageCount;
     page++;

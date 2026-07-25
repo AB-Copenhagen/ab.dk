@@ -1,6 +1,7 @@
 import type { APIContext } from 'astro';
 
 import { blocksToHtml } from '@/lib/blocks-to-html';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 import {
   fetchCollectionTypeWithMeta,
   strapiMediaUrl,
@@ -24,59 +25,22 @@ export interface StrapiArticle {
 
 const MAX_PER_PAGE = 100;
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// Strapi Cloud rate-limits bursts of requests, so a single fetch can
-// transiently fail (same issue sitemap.xml.ts's fetchPageWithRetry works
-// around) — without a retry, a rate-limited request here silently returns
-// an empty post list with a 200 status instead of a temporary error.
-async function fetchArticlesWithRetry(
-  locale: 'da' | 'en',
-  options: {
-    page: number;
-    pageSize: number;
-    filters?: Record<string, unknown>;
-  },
-  attempts = 3
-) {
-  const { page, pageSize, filters } = options;
-  for (let attempt = 1; attempt <= attempts; attempt++) {
-    try {
-      return await fetchCollectionTypeWithMeta<StrapiArticle[]>('articles', {
-        locale,
-        sort: ['originalPublishedAt:desc'],
-        populate: ['image', 'categories'],
-        pagination: { page, pageSize },
-        status: 'published',
-        ...(filters ? { filters } : {}),
-      });
-    } catch {
-      if (attempt === attempts) {
-        return {
-          data: [] as StrapiArticle[],
-          pagination: { page, pageSize, pageCount: 0, total: 0 },
-        };
-      }
-      await sleep(300 * attempt);
-    }
-  }
-  // Unreachable — the loop above always returns, but TS needs a fallback.
-  return {
-    data: [] as StrapiArticle[],
-    pagination: { page, pageSize, pageCount: 0, total: 0 },
-  };
-}
-
 /** Fetch a single article by its Strapi id — used for the `/posts/{id}` and `/media/{id}` shims. */
 export async function fetchArticleById(
   locale: 'da' | 'en',
   id: number
 ): Promise<StrapiArticle | null> {
-  const { data } = await fetchArticlesWithRetry(locale, {
-    page: 1,
-    pageSize: 1,
-    filters: { id: { $eq: id } },
-  });
+  const { data } = await fetchCollectionTypeWithMeta<StrapiArticle[]>(
+    'articles',
+    {
+      locale,
+      sort: ['originalPublishedAt:desc'],
+      populate: ['image', 'categories'],
+      pagination: { page: 1, pageSize: 1 },
+      status: 'published',
+      filters: { id: { $eq: id } },
+    }
+  );
   return data[0] ?? null;
 }
 
@@ -229,9 +193,14 @@ export async function buildWpPostsResponse(
     .map((raw) => parseInt(raw.trim(), 10))
     .filter((n) => Number.isInteger(n));
 
-  const { data: articles, pagination } = await fetchArticlesWithRetry(locale, {
-    page,
-    pageSize: perPage,
+  const { data: articles, pagination } = await fetchCollectionTypeWithMeta<
+    StrapiArticle[]
+  >('articles', {
+    locale,
+    sort: ['originalPublishedAt:desc'],
+    populate: ['image', 'categories'],
+    pagination: { page, pageSize: perPage },
+    status: 'published',
     ...(includeIds.length > 0 ? { filters: { id: { $in: includeIds } } } : {}),
   });
 
@@ -239,13 +208,17 @@ export async function buildWpPostsResponse(
     mapArticleToWpPost(article, { site, apiBasePath, articlePath })
   );
 
-  return new Response(JSON.stringify(posts), {
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'X-WP-Total': String(pagination.total),
-      'X-WP-TotalPages': String(pagination.pageCount),
-    },
+  const headers = new Headers({
+    'Content-Type': 'application/json; charset=UTF-8',
+    'X-WP-Total': String(pagination.total),
+    'X-WP-TotalPages': String(pagination.pageCount),
   });
+  // A feed-polling consumer of this shim re-requests the same handful of
+  // recent/`include`d ids constantly — letting the CDN absorb repeat hits
+  // cuts that load off Strapi entirely instead of round-tripping every time.
+  setCdnCacheHeaders(headers);
+
+  return new Response(JSON.stringify(posts), { headers });
 }
 
 /**
@@ -272,7 +245,13 @@ export async function buildWpPostResponse(
 
   const post = mapArticleToWpPost(article, { site, apiBasePath, articlePath });
 
-  return new Response(JSON.stringify(post), {
-    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+  const headers = new Headers({
+    'Content-Type': 'application/json; charset=UTF-8',
   });
+  // Same reasoning as buildWpPostsResponse — a single post is requested by
+  // id repeatedly rather than once, so letting the CDN serve repeats avoids
+  // hitting Strapi (and its connection pool) for the same id over and over.
+  setCdnCacheHeaders(headers);
+
+  return new Response(JSON.stringify(post), { headers });
 }
