@@ -38,10 +38,11 @@ export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
   'noah-maale',
 ]);
 
-// Shirt numbers with no photo yet — either still waiting on the new jersey
-// photo shoot, or a newly added player whose photo hasn't been supplied.
-// Hides just the photo (card keeps showing name, position, and number)
-// until it's uploaded.
+// Shirt numbers to hide the photo for — either no photo exists anywhere yet
+// (14, 17: not on Wasabi, and SI's own player photo CDN only has a generic
+// ~2KB placeholder, unchanged since 2024), or SI does have a real photo (3,
+// 4, 10) but it's from the old kit/season, so it's withheld until a current
+// one is shot. Card keeps showing name, position, and number regardless.
 export const PENDING_PHOTO_SHIRT_NUMBERS = new Set<number>([3, 4, 10, 14, 17]);
 
 export function getPlayerPhotoKey(
@@ -54,12 +55,25 @@ export function getPlayerPhotoKey(
 }
 
 // Returns the proxy URL for a player photo, or null if name is empty.
-// The file may not exist in Wasabi — callers should handle 404 with a fallback.
+// The file may not exist in Wasabi — callers should handle 404 with a fallback
+// (see getSIPlayerPhotoUrl).
 export function getPlayerPhotoUrl(
   name: string | null | undefined
 ): string | null {
   const key = getPlayerPhotoKey(name);
   return key ? `/api/media/${key}` : null;
+}
+
+// SI's own player-photo CDN — same host/path shape as the incident-list and
+// momentum widgets use for player headshots, keyed by SI player id rather
+// than name. Confirmed to hold real (recently shot) photos for several
+// players we don't have our own Wasabi upload for yet — used as a fallback
+// when the Wasabi photo 404s, rather than hiding the card photo outright.
+export function getSIPlayerPhotoUrl(
+  siPlayerId: number,
+  teamId: number
+): string {
+  return `https://driu3sl4x7vty.cloudfront.net/spdk/current/262x292/${teamId}/${siPlayerId}.png`;
 }
 
 // CSS `object-position` per photo, keyed by the Wasabi filename slug (not the

@@ -34,5 +34,16 @@ export async function getSquadPlayers(locale: Locale): Promise<SIPlayer[]> {
     /* SI unavailable */
   }
 
-  return [...players, ...manualPlayersAsSIPlayers()];
+  // Guards against a manual entry lingering after SI syncs the same player for
+  // real (as happened with Mikkel Clement, then Gabriel Noga/Steven Bala) —
+  // a name match here means SI now has its own record, so the manual one is
+  // dropped rather than shown as a duplicate card.
+  const siNameSlugs = new Set(
+    players.filter((p) => p.name).map((p) => slugifyName(p.name as string))
+  );
+  const manualPlayers = manualPlayersAsSIPlayers().filter(
+    (p) => !p.name || !siNameSlugs.has(slugifyName(p.name))
+  );
+
+  return [...players, ...manualPlayers];
 }

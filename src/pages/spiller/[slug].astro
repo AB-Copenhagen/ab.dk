@@ -7,9 +7,14 @@ import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonSt
 import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
 import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
 import type { StrapiPlayer } from '@/lib/strapi/client';
-import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
+import {
+  getPlayerPhotoUrl,
+  getSIPlayerPhotoUrl,
+  PENDING_PHOTO_SHIRT_NUMBERS,
+} from '@/lib/si/player-photos';
 import { resolveShirtNumber, resolveName, resolvePosition } from '@/data/player-cms-data';
 import { findManualPlayer } from '@/data/manual-players';
+import { abConfig } from '@/lib/config/ab';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { breadcrumbSchema } from '@/lib/structured-data';
 
@@ -79,7 +84,15 @@ const { name, countryName, birthDate, height } = player;
 const position = resolvePosition(playerId, player.position) ?? player.position;
 // Photo/slug lookups stay keyed on the raw SI name (may be ASCII-mangled,
 // e.g. "Soeren Ilsoee") — only the rendered text uses the corrected name.
-const photoUrl = getPlayerPhotoUrl(name);
+const photoPending =
+  shirtNumber != null && PENDING_PHOTO_SHIRT_NUMBERS.has(Number(shirtNumber));
+const photoUrl = photoPending ? null : getPlayerPhotoUrl(name);
+// SI's own photo CDN as a fallback when the Wasabi photo above 404s (real
+// SI ids only — manual players have synthetic negative ids with no SI photo).
+const siPhotoFallbackUrl =
+  !photoPending && !manualPlayer && playerId > 0
+    ? getSIPlayerPhotoUrl(playerId, abConfig.teamId)
+    : null;
 const displayName = resolveName(playerId, name) ?? name;
 
 const posLabels: Record<string, string> = {
@@ -164,10 +177,11 @@ const playerStructuredData = [personSchema, playerBreadcrumbs];
       <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
         <img
           src={photoUrl}
+          data-si-fallback={siPhotoFallbackUrl}
           alt={displayName}
           loading="eager"
           class="h-full w-auto max-w-none"
-          onerror="this.style.display='none'"
+          onerror="const f=this.dataset.siFallback; if (f && this.src !== f) { this.src = f; } else { this.style.display='none'; }"
         />
       </div>
     )}
