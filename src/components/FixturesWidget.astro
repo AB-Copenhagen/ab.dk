@@ -1,5 +1,5 @@
 ---
-import { fetchABEvents } from '@/lib/si/client';
+import { fetchABEvents, formatEventScore } from '@/lib/si/client';
 import { fmtDate, dtAttrs, DATE_TIME_SHORT_OPTS } from '@/lib/dateFormat';
 
 interface Props {
@@ -45,6 +45,7 @@ function formatDate(dateStr: string) {
       const isLive = event.statusType === 'inprogress';
       const home = isABHome ? 'AB' : (opponent ?? '—');
       const away = isABHome ? (opponent ?? '—') : 'AB';
+      const scoreStr = formatEventScore(event.score);
       return (
         <div class="py-3 px-4 transition-colors"
              style={`border-bottom:1px solid ${divider};`}
@@ -60,12 +61,12 @@ function formatDate(dateStr: string) {
               {home}
             </span>
 
-            {(isFinished || isLive) && event.score ? (
+            {(isFinished || isLive) && scoreStr ? (
               <span class="font-bold tabular-nums px-2 py-0.5 shrink-0"
                     style={`font-size:0.9rem; ${isLive
                       ? 'color:var(--ab-neon);background:color-mix(in srgb, var(--ab-neon) 8%, transparent)'
                       : 'color:var(--ab-gold);background:color-mix(in srgb, var(--ab-gold) 8%, transparent)'}`}>
-                {event.score}
+                {scoreStr}
               </span>
             ) : (
               <span class="text-sm shrink-0 font-medium" style={`color:${dateColor}`}>vs</span>
