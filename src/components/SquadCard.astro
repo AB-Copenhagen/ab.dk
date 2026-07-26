@@ -2,10 +2,12 @@
 import {
   getPlayerPhotoUrl,
   getPlayerPhotoPosition,
+  getSIPlayerPhotoUrl,
   PENDING_PHOTO_SHIRT_NUMBERS,
 } from '@/lib/si/player-photos';
 import { getPersonCardSizing } from '@/lib/person-card-sizing';
 import { resolveName, getPlayerSlug, slugify } from '@/data/player-cms-data';
+import { abConfig } from '@/lib/config/ab';
 
 interface Props {
   player: {
@@ -32,6 +34,13 @@ const number = player.shirtNumber ?? player.jerseyNumber;
 const photoPending =
   number != null && PENDING_PHOTO_SHIRT_NUMBERS.has(Number(number));
 const photoUrl = photoPending ? null : getPlayerPhotoUrl(player.name);
+// SI's own photo CDN as a fallback when the Wasabi photo above 404s (e.g. a
+// player who doesn't have a club-shot photo uploaded yet, but SI already has
+// a real one) — swapped in client-side via onerror below.
+const siPhotoFallbackUrl =
+  !photoPending && player.id != null
+    ? getSIPlayerPhotoUrl(player.id, abConfig.teamId)
+    : null;
 const photoPosition = getPlayerPhotoPosition(player.name);
 const displayName =
   (player.id != null ? resolveName(player.id, player.name) : null) ??
@@ -96,11 +105,12 @@ const playerHref =
       photoUrl ? (
         <img
           src={photoUrl}
+          data-si-fallback={siPhotoFallbackUrl}
           alt={displayName}
           loading="lazy"
           class="absolute inset-0 w-full h-full object-cover"
           style={`object-position: ${photoPosition};`}
-          onerror="this.style.opacity='0'"
+          onerror="const f=this.dataset.siFallback; if (f && this.src !== f) { this.src = f; } else { this.style.opacity='0'; }"
         />
       ) : null
     }

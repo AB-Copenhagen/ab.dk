@@ -1,6 +1,6 @@
 ---
 import { fetchCollectionType } from '@/lib/strapi/client';
-import { fetchABEvents, formatEventScore, getTeamLogoSrc } from '@/lib/si/client';
+import { fetchABEvents, getTeamLogoSrc } from '@/lib/si/client';
 import { getSquadPlayers } from '@/lib/si/squad';
 import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
 import { strapiMediaUrl } from '@/lib/strapi/client';
@@ -28,7 +28,6 @@ import {
   dtAttrs,
   DATE_WEEKDAY_MONTH_DAY_OPTS,
   TIME_24H_OPTS,
-  DATE_SHORT_OPTS,
 } from '@/lib/dateFormat';
 
 interface Props {
@@ -90,16 +89,10 @@ const sortedPlayers = [...players].sort(
 const upcomingEvents = events
   .filter((e: any) => new Date(e.startDate) >= now)
   .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-const pastEvents = events
-  .filter((e: any) => new Date(e.startDate) < now)
-  .sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
 
 const nextMatch = upcomingEvents.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
 );
-const recentResults = pastEvents
-  .filter((e: any) => e.statusType === 'finished')
-  .slice(0, 5);
 
 const abHome = nextMatch ? nextMatch.homeId === abConfig.teamId : false;
 const opponent = nextMatch
@@ -616,9 +609,10 @@ const heroSlides = [
       <!-- Next match card -->
       {
         nextMatch && opponent && (
-          <div
+          <a
+            href={matchHref(nextMatch.eventId)}
             id="next-match"
-            class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col">
+            class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col no-underline transition-all duration-200 hover:brightness-110 hover:shadow-[0_4px_20px_rgba(0,0,0,0.15)]">
             <h2
               class="font-black text-white leading-[0.86] tracking-[-0.04em] mb-6"
               style="font-size:clamp(1.75rem,3vw,2.1875rem)">
@@ -668,7 +662,7 @@ const heroSlides = [
                 </span>
               </div>
             </div>
-          </div>
+          </a>
         )
       }
     </div>
@@ -681,79 +675,6 @@ const heroSlides = [
     </div>
   </div>
 </section>
-
-<!-- ── Recent Results ──────────────────────────────────── -->
-{
-  recentResults.length > 0 && (
-    <section
-      id="recent-results"
-      class="bg-white border-t border-gray-100">
-      <div class="content-container py-8 nd:py-10">
-        <div class="flex items-center gap-3 mb-5">
-          <p class="text-xs font-black uppercase text-gray-400 tracking-[0.22em]">
-            {translate(locale, 'recentResults')}
-          </p>
-          <div class="flex-1 h-px bg-gray-200" />
-          <a
-            href={localPath('/kampe')}
-            class="text-xs font-bold text-ab-green">
-            {translate(locale, 'seeAllArrow')}
-          </a>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b-2 border-gray-100">
-                <th class="text-left pb-2 text-xs font-black uppercase text-gray-400 tracking-[0.14em] w-[220px]">
-                  {translate(locale, 'date')}
-                </th>
-                <th class="text-left pb-2 text-xs font-black uppercase text-gray-400 tracking-[0.14em]">
-                  {translate(locale, 'homeTeam')}
-                </th>
-                <th class="text-center pb-2 text-xs font-black uppercase text-gray-400 tracking-[0.14em] w-20">
-                  {translate(locale, 'score')}
-                </th>
-                <th class="text-right pb-2 text-xs font-black uppercase text-gray-400 tracking-[0.14em]">
-                  {translate(locale, 'awayTeam')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentResults.map((event: any) => {
-                const isHome = event.homeId === 9805;
-                const rowLabel = `${locale === 'en' ? 'View match' : 'Se kamp'}: ${event.homeName} vs ${event.awayName}`;
-                return (
-                  <tr class="result-row odd:bg-gray-50 border-b border-gray-100 hover:bg-gray-100 transition-colors">
-                    <td class="p-0 text-xs text-gray-400 tabular-nums" {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}>
-                      <a href={matchHref(event.eventId)} aria-label={rowLabel} class="block py-3">
-                        {fmtDate(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_SHORT_OPTS)}
-                      </a>
-                    </td>
-                    <td class={`p-0 text-sm font-bold ${isHome ? 'text-ab-green' : 'text-[#111]'}`}>
-                      <a href={matchHref(event.eventId)} aria-label={rowLabel} tabindex="-1" class="block py-3">
-                        {event.homeName}
-                      </a>
-                    </td>
-                    <td class="p-0 text-sm font-black text-center text-ab-gold tabular-nums tracking-[0.04em]">
-                      <a href={matchHref(event.eventId)} aria-label={rowLabel} tabindex="-1" class="block py-3">
-                        {formatEventScore(event.score) ?? '–'}
-                      </a>
-                    </td>
-                    <td class={`p-0 text-sm font-bold text-right ${!isHome ? 'text-ab-green' : 'text-[#111]'}`}>
-                      <a href={matchHref(event.eventId)} aria-label={rowLabel} tabindex="-1" class="block py-3">
-                        {event.awayName}
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  )
-}
 
 <!-- ── Join Team AB ──────────────────────────────────────── -->
 <a
