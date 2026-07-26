@@ -18,7 +18,7 @@ export const GET: APIRoute = async ({ url }) => {
     filters: {
       $or: [{ title: { $containsi: q } }, { description: { $containsi: q } }],
     },
-    populate: ['image', 'categories'],
+    populate: { image: { fields: ['url'] }, categories: { fields: ['name'] } },
     pagination: { pageSize: 8 },
   }).catch(() => [] as any[]);
 

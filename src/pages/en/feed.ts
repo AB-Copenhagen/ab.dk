@@ -25,13 +25,22 @@ export async function GET(context: APIContext) {
     ''
   );
 
-  const articles = await fetchCollectionType<StrapiArticle[]>('articles', {
-    locale: 'en',
-    sort: ['originalPublishedAt:desc'],
-    populate: ['image', 'categories'],
-    pagination: { pageSize: 50 },
-    status: 'published',
-  }).catch(() => [] as StrapiArticle[]);
+  // RSS readers poll on their own schedule (typically 15-60 min), so this
+  // can tolerate a longer cache window than the 5-minute default in exchange
+  // for hitting Strapi's heaviest query far less often.
+  const articles = await fetchCollectionType<StrapiArticle[]>(
+    'articles',
+    {
+      locale: 'en',
+      sort: ['originalPublishedAt:desc'],
+      populate: {
+        image: { fields: ['url'] },
+        categories: { fields: ['name'] },
+      },
+      pagination: { pageSize: 20 },
+    },
+    { ttl: 900 }
+  ).catch(() => [] as StrapiArticle[]);
 
   const body = buildWpRssFeed({
     title: 'Akademisk Boldklub – AB 1889',
@@ -70,7 +79,7 @@ export async function GET(context: APIContext) {
     headers: {
       'Content-Type': 'application/rss+xml; charset=UTF-8',
       'Cache-Control':
-        'public, max-age=0, s-maxage=300, stale-while-revalidate=1800',
+        'public, max-age=0, s-maxage=900, stale-while-revalidate=1800',
     },
   });
 }

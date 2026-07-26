@@ -62,7 +62,7 @@ const [articles, events, players, shopifyProducts] = await Promise.all([
   fetchCollectionType<any[]>('articles', {
     locale,
     sort: ['originalPublishedAt:desc'],
-    populate: ['image'],
+    populate: { image: { fields: ['url'] } },
     pagination: { pageSize: 4 },
   }).catch(() => [] as any[]),
   fetchABEvents({
