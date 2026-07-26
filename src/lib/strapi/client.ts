@@ -57,6 +57,7 @@ async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
 export async function fetchCollectionType<T = unknown[]>(
   collectionName: string,
   options?: QueryParams,
+  cacheOptions?: { ttl?: number },
 ): Promise<T> {
   const preview = isPreviewEnabled();
   const doFetch = async () => {
@@ -82,7 +83,10 @@ export async function fetchCollectionType<T = unknown[]>(
     }
   };
   const key = await cacheKey(collectionName, options);
-  const result = await cache.getWithFallback<T>(key, fetcher, { tags: [collectionName] });
+  const result = await cache.getWithFallback<T>(key, fetcher, {
+    tags: [collectionName],
+    ttl: cacheOptions?.ttl,
+  });
   return result ?? ([] as unknown as T);
 }
 
@@ -97,6 +101,7 @@ export interface StrapiPagination {
 export async function fetchCollectionTypeWithMeta<T = unknown[]>(
   collectionName: string,
   options?: QueryParams,
+  cacheOptions?: { ttl?: number },
 ): Promise<{ data: T; pagination: StrapiPagination }> {
   const preview = isPreviewEnabled();
   const emptyPagination: StrapiPagination = {
@@ -121,7 +126,10 @@ export async function fetchCollectionTypeWithMeta<T = unknown[]>(
     }
   };
   const key = (await cacheKey(collectionName, options)) + '-meta';
-  const result = await cache.getWithFallback(key, fetcher, { tags: [collectionName] });
+  const result = await cache.getWithFallback(key, fetcher, {
+    tags: [collectionName],
+    ttl: cacheOptions?.ttl,
+  });
   return result ?? { data: [] as unknown as T, pagination: emptyPagination };
 }
 
@@ -317,7 +325,7 @@ export async function fetchMatchContent(
     const articles = await fetchCollectionType<StrapiMatchArticle[]>('articles', {
       filters: { documentId: { $in: documentIds } },
       locale,
-      populate: ['image'],
+      populate: { image: { fields: ['url', 'alternativeText'] } },
       status: 'published',
     }).catch(() => []);
     for (const article of articles) articlesByDocumentId.set(article.documentId, article);

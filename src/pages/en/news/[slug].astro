@@ -14,21 +14,48 @@ const { slug } = Astro.params;
 const locale = 'en';
 const STRAPI_URL = import.meta.env.STRAPI_URL ?? 'http://localhost:1337';
 
-// `allArticles` (for the prev/next/related rail below) doesn't depend on the
-// article lookup at all, so it's fetched in parallel rather than after —
-// halves the Strapi round trips this page waits on.
-const [results, allArticles] = await Promise.all([
+// The prev/next/related rail below doesn't depend on the article lookup at
+// all, so everything is fetched in parallel rather than after — halves the
+// Strapi round trips this page waits on.
+const [results, allArticleSlugs, relatedCandidates] = await Promise.all([
   fetchCollectionType<any[]>('articles', {
     locale,
     filters: { slug: { $eq: slug } },
-    populate: { image: true, categories: true, localizations: { fields: ['slug'] } },
+    populate: {
+      image: { fields: ['url'] },
+      categories: { fields: ['name'] },
+      localizations: { fields: ['slug'] },
+    },
   }).catch(() => [] as any[]),
-  fetchCollectionType<any[]>('articles', {
-    locale,
-    sort: ['originalPublishedAt:desc'],
-    populate: ['image', 'categories'],
-    pagination: { pageSize: 50 },
-  }).catch(() => [] as any[]),
+  // Only `.slug` is ever read from this list — it exists purely to find this
+  // article's position among recent articles for prev/next navigation, so it
+  // skips populate and content entirely rather than fetching 20 full articles.
+  // A newly-published article landing in prev/next a few minutes late is
+  // low-impact, so this tolerates a longer cache window than the default.
+  fetchCollectionType<{ slug: string }[]>(
+    'articles',
+    {
+      locale,
+      sort: ['originalPublishedAt:desc'],
+      fields: ['slug'],
+      pagination: { pageSize: 20 },
+    },
+    { ttl: 900 },
+  ).catch(() => [] as { slug: string }[]),
+  // Separate small, fully-populated fetch for the "related articles" rail.
+  // 4 (not 3) covers the case where the current article is itself among the
+  // most recent 3, which the filter below then excludes.
+  fetchCollectionType<any[]>(
+    'articles',
+    {
+      locale,
+      sort: ['originalPublishedAt:desc'],
+      fields: ['title', 'slug'],
+      populate: { image: { fields: ['url'] }, categories: { fields: ['name'] } },
+      pagination: { pageSize: 4 },
+    },
+    { ttl: 900 },
+  ).catch(() => [] as any[]),
 ]);
 
 const article = results[0];
@@ -59,10 +86,10 @@ if (!daTranslationSlug && article.originalPublishedAt) {
 // Falls back to the DA listing page when neither match is found.
 const alternateLocalePath = daTranslationSlug ? `/nyheder/${daTranslationSlug}` : undefined;
 
-const idx = allArticles.findIndex((a: any) => a.slug === slug);
-const prevArticle = idx < allArticles.length - 1 ? allArticles[idx + 1] : null;
-const nextArticle = idx > 0 ? allArticles[idx - 1] : null;
-const related = allArticles.filter((a: any) => a.slug !== slug).slice(0, 3);
+const idx = allArticleSlugs.findIndex((a) => a.slug === slug);
+const prevArticle = idx < allArticleSlugs.length - 1 ? allArticleSlugs[idx + 1] : null;
+const nextArticle = idx > 0 ? allArticleSlugs[idx - 1] : null;
+const related = relatedCandidates.filter((a: any) => a.slug !== slug).slice(0, 3);
 
 function formatDate(str: string) {
   try {

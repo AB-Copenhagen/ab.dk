@@ -35,7 +35,10 @@ export async function fetchArticleById(
     {
       locale,
       sort: ['originalPublishedAt:desc'],
-      populate: ['image', 'categories'],
+      populate: {
+        image: { fields: ['url', 'width', 'height'] },
+        categories: { fields: ['name'] },
+      },
       pagination: { page: 1, pageSize: 1 },
       status: 'published',
       filters: { id: { $eq: id } },
@@ -198,7 +201,10 @@ export async function buildWpPostsResponse(
   >('articles', {
     locale,
     sort: ['originalPublishedAt:desc'],
-    populate: ['image', 'categories'],
+    populate: {
+      image: { fields: ['url', 'width', 'height'] },
+      categories: { fields: ['name'] },
+    },
     pagination: { page, pageSize: perPage },
     status: 'published',
     ...(includeIds.length > 0 ? { filters: { id: { $in: includeIds } } } : {}),

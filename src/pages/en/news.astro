@@ -50,7 +50,7 @@ const [rawCategories, { data: pageArticles, pagination }] = await Promise.all([
   fetchCollectionTypeWithMeta<any[]>('articles', {
     locale,
     sort: ['originalPublishedAt:desc'],
-    populate: ['image'],
+    populate: { image: { fields: ['url'] } },
     filters: categoryFilter,
     pagination: { start, limit },
   }).catch(() => ({ data: [] as any[], pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } })),
