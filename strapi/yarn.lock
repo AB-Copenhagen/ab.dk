@@ -14818,6 +14818,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "strapi@workspace:."
   dependencies:
+    "@aws-sdk/client-s3": "npm:3.1023.0"
     "@sensinum/strapi-plugin-mcp": "npm:^1.1.0"
     "@strapi/plugin-cloud": "npm:5.51.0"
     "@strapi/plugin-seo": "npm:^2.0.4"

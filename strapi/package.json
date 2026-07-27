@@ -21,6 +21,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1023.0",
     "@sensinum/strapi-plugin-mcp": "^1.1.0",
     "@strapi/plugin-cloud": "5.51.0",
     "@strapi/plugin-seo": "^2.0.4",
