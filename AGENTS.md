@@ -83,3 +83,40 @@ Until entries are added, pages show:
 | `gallery`         | Action photos — first image shown full-width, next 3 in grid | —                                |
 
 > Restart Strapi after the first deploy so it picks up the new content type.
+
+## Managing partners (Strapi)
+
+The **Partner** content type (`api::partner.partner`) is localized (da/en). Non-localized
+fields (logo, url, category, sortOrder, slug) are shared across locales automatically —
+only `description`, `howLong`, and `highlights` need separate DA/EN text.
+
+**Important:** Strapi requires a separate row per locale for a partner to appear in that
+locale's page/listing at all — this applies even to non-localized fields. When creating a
+new partner, after saving the first locale, use Strapi admin's **"Fill in from another
+locale"** action (top of the entry editor) to create the other locale's row before
+publishing both. Skipping this means the partner is simply invisible on the other
+language's site, not just missing a translation.
+
+The footer logo strip (`Footer.astro`) always reads the `da` row regardless of page
+language, since none of the fields it shows (logo, name, url, sizing) vary by locale — a
+missing `en` row never affects the footer.
+
+| Field                    | Localized | Description                                           |
+| ------------------------ | :-------: | ----------------------------------------------------- |
+| `name`                   |    no     | Company name                                          |
+| `slug`                   |    no     | Auto-generated from `name`; used in the page URL      |
+| `logo`                   |    no     | Logo image                                            |
+| `url`                    |    no     | Website link                                          |
+| `category`               |    no     | Tier: `supreme` / `premium` / `local-hero` / `ab1889` |
+| `logoWidth`/`logoHeight` |    no     | Display size in px (footer + listing card)            |
+| `sortOrder`              |    no     | Ascending display order within a tier                 |
+| `description`            |    yes    | Detail-page bio paragraph                             |
+| `howLong`                |    yes    | "Varighed" / "How long" text on the detail page       |
+| `highlights`             |    yes    | "Højdepunkter" / "Highlights" text on the detail page |
+| `keyContacts`            |    no     | Repeatable: name, role, email, phone                  |
+
+A one-off script (`scripts/seed-partners.mjs`) migrated the partners previously
+hardcoded in `src/data/partners.ts` into Strapi. New partners going forward are entered
+directly in Strapi admin — `src/data/partners.ts` now only holds `PartnerTier`/`TIER_LABELS`.
+
+> Restart Strapi after the first deploy so it picks up the new content type.

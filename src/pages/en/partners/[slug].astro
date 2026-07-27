@@ -1,16 +1,17 @@
 ---
 import Base from '@/layouts/Base.astro';
 import Img from '@/components/Img.astro';
-import { findPartner, TIER_LABELS } from '@/data/partners';
+import { TIER_LABELS } from '@/data/partners';
+import { fetchPartnerBySlug, strapiMediaUrl } from '@/lib/strapi/client';
 
 const { slug } = Astro.params;
-const partner = findPartner(slug ?? '');
+const partner = await fetchPartnerBySlug(slug ?? '', 'en');
 
 if (!partner) return Astro.redirect('/en/partners', 302);
 
-const tierLabel = TIER_LABELS[partner.tier].en;
+const tierLabel = TIER_LABELS[partner.category].en;
 const backHref = '/en/partners';
-const ogCardImageUrl = `/api/og/partner.png?logo=${encodeURIComponent(partner.logo)}`;
+const ogCardImageUrl = `/api/og/partner.png?slug=${encodeURIComponent(partner.slug)}&locale=en`;
 ---
 
 <Base
@@ -41,7 +42,7 @@ const ogCardImageUrl = `/api/og/partner.png?logo=${encodeURIComponent(partner.lo
       <div class="border border-gray-100 w-full overflow-hidden">
         <div class="flex items-center justify-center bg-[#F8F8F8] px-12 py-14">
           <Img
-            src={partner.logo}
+            src={strapiMediaUrl(partner.logo?.url)}
             alt={partner.name}
             class="max-h-36 max-w-[360px] w-full object-contain"
             loading="eager"
@@ -54,9 +55,9 @@ const ogCardImageUrl = `/api/og/partner.png?logo=${encodeURIComponent(partner.lo
         {partner.description ?? 'Partner profile coming soon.'}
       </p>
 
-      {partner.website && (
+      {partner.url && (
         <a
-          href={partner.website}
+          href={partner.url}
           target="_blank"
           rel="noreferrer noopener"
           aria-label={`Visit ${partner.name} website`}
@@ -73,7 +74,26 @@ const ogCardImageUrl = `/api/og/partner.png?logo=${encodeURIComponent(partner.lo
         </div>
         <div class="px-5 py-[18px] border-r border-gray-100">
           <p class="font-black text-[0.58rem] uppercase tracking-[0.12em] text-[#BBB] mb-1.5">Key contacts</p>
-          <p class="font-black text-[0.82rem] text-[#333] leading-snug">—</p>
+          {partner.keyContacts && partner.keyContacts.length > 0 ? (
+            <div class="flex flex-col gap-1.5">
+              {partner.keyContacts.map((contact) => (
+                <p class="font-black text-[0.82rem] text-[#333] leading-snug">
+                  {contact.name}
+                  {contact.role && <span class="text-[#999] font-normal"> — {contact.role}</span>}
+                  {contact.email && (
+                    <>
+                      {' '}
+                      <a href={`mailto:${contact.email}`} class="text-ab-green hover:underline">
+                        {contact.email}
+                      </a>
+                    </>
+                  )}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p class="font-black text-[0.82rem] text-[#333] leading-snug">—</p>
+          )}
         </div>
         <div class="px-5 py-[18px]">
           <p class="font-black text-[0.58rem] uppercase tracking-[0.12em] text-[#BBB] mb-1.5">Highlights</p>

@@ -359,23 +359,59 @@ export interface StrapiPartnerLogo {
   height: number;
 }
 
+export interface StrapiPartnerContact {
+  name: string;
+  role?: string;
+  email?: string;
+  phone?: string;
+}
+
 export interface StrapiPartner {
+  slug: string;
   name: string;
   logo: StrapiPartnerLogo;
   url?: string;
   logoWidth: number;
   logoHeight: number;
   sortOrder: number;
-  category: 'main' | 'kit' | 'media' | 'other';
+  category: 'supreme' | 'premium' | 'local-hero' | 'ab1889';
+  description?: string;
+  howLong?: string;
+  highlights?: string;
+  keyContacts?: StrapiPartnerContact[];
 }
 
-/** Fetch all published partners ordered by sortOrder. Returns [] on error. */
-export async function fetchPartners(): Promise<StrapiPartner[]> {
+/**
+ * Fetch all published partners ordered by sortOrder.
+ *
+ * Defaults to the canonical `da` locale regardless of the page's own locale —
+ * consumers that only render locale-agnostic fields (logo, name, url, sizing —
+ * e.g. the footer logo strip) should not risk a partner vanishing just
+ * because its `en` locale row hasn't been created yet in Strapi. Callers that
+ * need locale-accurate content (the partners listing/detail pages) should
+ * pass the page's own locale explicitly.
+ */
+export async function fetchPartners(locale = 'da'): Promise<StrapiPartner[]> {
   return fetchCollectionType<StrapiPartner[]>('partners', {
-    populate: ['logo'],
+    populate: ['logo', 'keyContacts'],
     sort: ['sortOrder:asc'],
     status: 'published',
+    locale,
   }).catch(() => []);
+}
+
+/** Fetch a single published partner by slug, resolved to `locale`. Returns null if not found. */
+export async function fetchPartnerBySlug(
+  slug: string,
+  locale = 'da',
+): Promise<StrapiPartner | null> {
+  const results = await fetchCollectionType<StrapiPartner[]>('partners', {
+    filters: { slug: { $eq: slug } },
+    populate: ['logo', 'keyContacts'],
+    status: 'published',
+    locale,
+  }).catch(() => []);
+  return results[0] ?? null;
 }
 
 // ── Media helpers ─────────────────────────────────────────────────────────────
@@ -384,12 +420,18 @@ const WASABI_HOST_RE = /^https?:\/\/[^/]*wasabisys\.com\//;
 // Strapi Cloud's built-in media CDN — e.g. https://supportive-miracle-581511a57f.media.strapiapp.com/foo.jpg
 const STRAPI_CDN_RE = /^https?:\/\/[a-z0-9-]+\.media\.strapiapp\.com\/(.+)$/i;
 
+/** Extracts the bucket object key from a private Wasabi URL (stripping the presigned query string), or null if `url` isn't a Wasabi URL. */
+export function wasabiObjectKey(url: string | null | undefined): string | null {
+  if (!url || !WASABI_HOST_RE.test(url)) return null;
+  return url.replace(WASABI_HOST_RE, '').split('?')[0];
+}
+
 export function strapiMediaUrl(url: string | null | undefined): string {
   if (!url) return '';
   // Route private Wasabi objects through the server-side proxy
-  if (WASABI_HOST_RE.test(url)) {
-    const key = url.replace(WASABI_HOST_RE, '');
-    return `/api/media/${key}`;
+  const wasabiKey = wasabiObjectKey(url);
+  if (wasabiKey) {
+    return `/api/media/${wasabiKey}`;
   }
   // Route Strapi Cloud's CDN through our own proxy so the ab.dk domain never
   // exposes the underlying strapiapp.com hostname to visitors.
