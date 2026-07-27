@@ -5,7 +5,13 @@ import type { Core } from '@strapi/strapi';
 // way to be granted access to them through the schema alone — `auth: false`
 // on the route only skips authentication, not this separate permission
 // check, so without this the route 401s for every request no matter what.
-const PUBLIC_ACTIONS = ['api::match-content.match-content.matches'];
+const PUBLIC_ACTIONS = [
+  'api::match-content.match-content.matches',
+  // Secret-gated inside the controller itself (CRON_SECRET bearer check) —
+  // public role access here just satisfies Strapi's permission engine so an
+  // unauthenticated request reaches that check at all.
+  'api::media.media.optimizeWebp',
+];
 
 async function ensurePublicPermissions(strapi: Core.Strapi) {
   const publicRole = await strapi.db
