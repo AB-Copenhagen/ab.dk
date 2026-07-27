@@ -1,12 +1,14 @@
 /**
- * Converts existing Wasabi-stored uploads (jpeg/png) to WebP, in place.
+ * Converts existing Wasabi-stored uploads (jpeg/png) to WebP, leaving the
+ * original object in place and repointing the upload.file record at the
+ * new one.
  *
  * Strapi's own `sizeOptimization`/`responsiveDimensions` (see config/plugins.ts)
  * only run at upload time and never change format — this is the separate,
  * scheduled backfill (and steady-state pass) that gets everything to WebP,
  * triggered on a cron via the `media.optimizeWebp` controller.
  */
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { Core } from '@strapi/strapi';
 import sharp from 'sharp';
 
@@ -42,7 +44,12 @@ async function streamToBuffer(body: unknown): Promise<Buffer> {
   return Buffer.concat(chunks);
 }
 
-/** Downloads `${ROOT_PATH}/${hash}${ext}`, re-encodes to WebP, uploads under the same hash, deletes the original. */
+/**
+ * Downloads `${ROOT_PATH}/${hash}${ext}`, re-encodes to WebP, uploads under the
+ * same hash. The original object is left in place — Wasabi storage is cheap
+ * enough that keeping it (as a de facto backup) beats the risk of deleting a
+ * production asset a conversion bug turns out to have mangled.
+ */
 async function convertObject(hash: string, ext: string) {
   const oldKey = `${ROOT_PATH}/${hash}${ext}`;
   const newKey = `${ROOT_PATH}/${hash}.webp`;
@@ -60,7 +67,6 @@ async function convertObject(hash: string, ext: string) {
       ACL: 'private',
     })
   );
-  await s3.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: oldKey }));
 
   return { url: wasabiUrl(newKey), size: Math.round(converted.length / 1024) };
 }
