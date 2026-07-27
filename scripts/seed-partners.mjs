@@ -190,18 +190,17 @@ async function uploadLogo(logoPath) {
   return uploaded.id;
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// `status=draft` (not `published`) — every document has a draft version, but
+// not necessarily a published one, so this is the only status filter
+// guaranteed to find a document regardless of whether an earlier run
+// created it but failed before publishing.
 async function findExistingDocumentId(name) {
   const res = await strapiJson(
-    `/api/partners?filters[name][$eq]=${encodeURIComponent(name)}&locale=da&status=published`
+    `/api/partners?filters[name][$eq]=${encodeURIComponent(name)}&locale=da&status=draft`
   );
   return res.data[0]?.documentId ?? null;
-}
-
-async function publish(documentId, locale) {
-  await strapiJson(
-    `/api/partners/${documentId}/actions/publish?locale=${locale}`,
-    { method: 'POST' }
-  );
 }
 
 async function seedOne(partner, sortOrder) {
@@ -223,33 +222,36 @@ async function seedOne(partner, sortOrder) {
 
   const existingId = await findExistingDocumentId(partner.name);
 
+  // `status=published` on the write itself both creates/updates AND publishes
+  // in one call — Strapi's public content-api (token-auth) routes don't expose
+  // the content-manager's /actions/publish endpoint (that's admin-session-only).
   let documentId;
   if (existingId) {
-    await strapiJson(`/api/partners/${existingId}?locale=da`, {
+    await strapiJson(`/api/partners/${existingId}?locale=da&status=published`, {
       method: 'PUT',
       body: JSON.stringify({ data }),
     });
     documentId = existingId;
     console.log(`  updated existing entry (${documentId})`);
   } else {
-    const created = await strapiJson('/api/partners?locale=da', {
-      method: 'POST',
-      body: JSON.stringify({ data }),
-    });
+    const created = await strapiJson(
+      '/api/partners?locale=da&status=published',
+      {
+        method: 'POST',
+        body: JSON.stringify({ data }),
+      }
+    );
     documentId = created.data.documentId;
     console.log(`  created new entry (${documentId})`);
   }
 
-  await publish(documentId, 'da');
-
   // Create/refresh the EN locale row so the partner shows up on the English
   // site too — non-localized fields (logo, url, category, etc.) carry over,
   // description/howLong/highlights are left for manual translation later.
-  await strapiJson(`/api/partners/${documentId}?locale=en`, {
+  await strapiJson(`/api/partners/${documentId}?locale=en&status=published`, {
     method: 'PUT',
     body: JSON.stringify({ data }),
   });
-  await publish(documentId, 'en');
   console.log('  synced en locale');
 }
 
@@ -263,6 +265,10 @@ for (const [index, partner] of PARTNERS.entries()) {
     failed++;
     console.error(`  FAILED: ${err.message}`);
   }
+  // Strapi Cloud's sandbox tier choked under back-to-back multipart uploads
+  // during an earlier run (503s from Dancontainer onward) — a short pause
+  // between partners keeps this from happening again.
+  await sleep(1000);
 }
 
 console.log(`\nDone. ${ok} seeded, ${failed} failed.`);
