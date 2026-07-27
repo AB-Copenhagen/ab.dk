@@ -1,10 +1,12 @@
 import type { APIContext } from 'astro';
 
 import { COACHING_STAFF } from '@/data/coaching-staff';
-import { PARTNERS } from '@/data/partners';
 import { getPlayerSlug } from '@/data/player-cms-data';
 import { fetchABEvents, fetchABPlayers } from '@/lib/si/client';
-import { fetchCollectionTypeWithMeta } from '@/lib/strapi/client';
+import {
+  fetchCollectionTypeWithMeta,
+  fetchPartners,
+} from '@/lib/strapi/client';
 import { escapeHtml } from '@/lib/utils';
 
 export const prerender = false;
@@ -136,13 +138,23 @@ export async function GET(context: APIContext) {
     entries.push({ loc: abs(`/en/player/${slug}`) });
   }
 
-  // Staff and partners — local static data, no fetch needed.
+  // Staff — local static data, no fetch needed.
   for (const staff of COACHING_STAFF) {
     entries.push({ loc: abs(`/stab/${staff.slug}`) });
     entries.push({ loc: abs(`/en/staff/${staff.slug}`) });
   }
-  for (const partner of PARTNERS) {
+
+  // Partners — each locale only links partners that actually have a row in
+  // that locale (Strapi i18n requires an explicit per-locale entry; listing
+  // a locale a partner hasn't been translated into yet would 302 for crawlers).
+  const [daPartners, enPartners] = await Promise.all([
+    fetchPartners('da'),
+    fetchPartners('en'),
+  ]);
+  for (const partner of daPartners) {
     entries.push({ loc: abs(`/partnere/${partner.slug}`) });
+  }
+  for (const partner of enPartners) {
     entries.push({ loc: abs(`/en/partners/${partner.slug}`) });
   }
 

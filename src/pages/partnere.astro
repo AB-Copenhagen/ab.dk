@@ -2,7 +2,13 @@
 import Base from '@/layouts/Base.astro';
 import Img from '@/components/Img.astro';
 import heroImage from '@/assets/images/IMG_7926.jpeg';
-import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } from '@/data/partners';
+import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
+
+const allPartners = await fetchPartners('da');
+const supremePartners = allPartners.filter((p) => p.category === 'supreme');
+const premiumPartners = allPartners.filter((p) => p.category === 'premium');
+const localHeroPartners = allPartners.filter((p) => p.category === 'local-hero');
+const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
 ---
 
 <Base
@@ -72,9 +78,10 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
             <div class="flex items-center justify-center px-6 py-10 flex-1">
               <Img
-                src={p.logo}
+                src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class:list={['object-contain object-center', p.logoSize ?? 'max-h-16 max-w-full']}
+                class="object-contain object-center max-w-full"
+                style={`width:${p.logoWidth}px;height:${p.logoHeight}px`}
                 loading="lazy"
               />
             </div>
@@ -107,9 +114,10 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
             <div class="flex items-center justify-center px-6 py-10 flex-1">
               <Img
-                src={p.logo}
+                src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class:list={['object-contain object-center', p.logoSize ?? 'max-h-16 max-w-full']}
+                class="object-contain object-center max-w-full"
+                style={`width:${p.logoWidth}px;height:${p.logoHeight}px`}
                 loading="lazy"
               />
             </div>
@@ -141,9 +149,10 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
             <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
               <Img
-                src={p.logo}
+                src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class="max-h-14 max-w-full object-contain"
+                class="max-w-full object-contain"
+                style={`width:${p.logoWidth}px;height:${p.logoHeight}px`}
                 loading="lazy"
               />
             </div>
@@ -177,9 +186,10 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
             <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
               <Img
-                src={p.logo}
+                src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class="max-h-14 max-w-full object-contain"
+                class="max-w-full object-contain"
+                style={`width:${p.logoWidth}px;height:${p.logoHeight}px`}
                 loading="lazy"
               />
             </div>
