@@ -414,6 +414,40 @@ export async function fetchPartnerBySlug(
   return results[0] ?? null;
 }
 
+// ── Hero slider ────────────────────────────────────────────────────────────────
+
+export interface StrapiHeroSlideMedia {
+  url: string;
+  width?: number;
+  height?: number;
+}
+
+export interface StrapiHeroSlide {
+  name: string;
+  slideType: 'image' | 'video';
+  sortOrder: number;
+  image?: StrapiHeroSlideMedia;
+  video?: StrapiHeroSlideMedia;
+  headline?: string;
+  subtitle?: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  ctaVariant: 'btn-beige' | 'btn-green' | 'btn-dark';
+  alt?: string;
+}
+
+/** Fetch all published hero slides ordered by sortOrder, resolved to `locale`. */
+export async function fetchHeroSlides(locale: string): Promise<StrapiHeroSlide[]> {
+  return fetchCollectionType<StrapiHeroSlide[]>('hero-slides', {
+    locale,
+    sort: ['sortOrder:asc'],
+    populate: {
+      image: { fields: ['url', 'width', 'height'] },
+      video: { fields: ['url'] },
+    },
+  }).catch(() => []);
+}
+
 // ── Media helpers ─────────────────────────────────────────────────────────────
 
 const WASABI_HOST_RE = /^https?:\/\/[^/]*wasabisys\.com\//;

@@ -120,3 +120,36 @@ hardcoded in `src/data/partners.ts` into Strapi. New partners going forward are 
 directly in Strapi admin — `src/data/partners.ts` now only holds `PartnerTier`/`TIER_LABELS`.
 
 > Restart Strapi after the first deploy so it picks up the new content type.
+
+## Managing the homepage hero slider (Strapi)
+
+The **Hero Slide** content type (`api::hero-slide.hero-slide`) drives the homepage hero
+slider. `image` is shared across locales (same photo for da/en, like Partner `logo`);
+`video` is localized since the da/en clips have different narration/text baked in.
+
+| Field        | Localized | Description                                                      |
+| ------------ | :-------: | ---------------------------------------------------------------- |
+| `name`       |    no     | Admin-only label — not shown on the site                         |
+| `slideType`  |    no     | `image` or `video` — picks which fields render                   |
+| `sortOrder`  |    no     | Ascending slide order                                            |
+| `image`      |    no     | Used when `slideType = image`                                    |
+| `video`      |    yes    | Used when `slideType = video` — upload separate da/en clips      |
+| `headline`   |    yes    | Image slides only                                                |
+| `subtitle`   |    yes    | Image slides only, optional                                      |
+| `ctaLabel`   |    yes    | Button text                                                      |
+| `ctaUrl`     |    yes    | Full URL/path — internal links differ by locale (e.g. `/en/...`) |
+| `ctaVariant` |    no     | `btn-beige` / `btn-green` / `btn-dark`                           |
+| `alt`        |    yes    | Image slide alt text                                             |
+
+Whether a CTA opens in a new tab is derived automatically from `ctaUrl` (external `http(s)`
+links open in a new tab; internal paths don't) — there's no separate field for it.
+
+If the `hero-slides` collection has no published entries (e.g. before seeding, or Strapi
+unreachable), the homepage falls back to a hardcoded set of slides in `Homepage.astro`
+rather than showing a blank hero section.
+
+A one-off script (`scripts/seed-hero-slides.mjs`) migrated the 4 slides previously
+hardcoded in `Homepage.astro` into Strapi. New slides going forward are entered directly
+in Strapi admin.
+
+> Restart Strapi after the first deploy so it picks up the new content type.
