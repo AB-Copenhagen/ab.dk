@@ -55,6 +55,16 @@ export function isPlausibleContentSlug(
   return !KNOWN_SCANNER_SLUGS.has(slug);
 }
 
+/** Lowercase, hyphenated ASCII slug (diacritics stripped) — for anchor IDs, not routing. */
+export function slugify(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 /** Escape HTML special characters before interpolating untrusted input into an HTML string. */
 export function escapeHtml(str: string): string {
   return str
