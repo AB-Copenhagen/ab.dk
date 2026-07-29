@@ -174,27 +174,34 @@ const { closeLabel } = Astro.props;
   const lbBio = document.getElementById('bio-lb-bio') as HTMLElement;
   const lbClose = document.getElementById('bio-lb-close') as HTMLButtonElement;
 
+  function openFor(card: HTMLElement) {
+    const { name = '', role = '', photo = '', bio = '', initials = '', photoPos = 'object-center' } = card.dataset;
+
+    lbName.textContent = name;
+    lbRole.textContent = role;
+    lbRole.style.display = role ? 'block' : 'none';
+    lbBio.textContent = bio;
+
+    if (photo) {
+      lbImg.src = photo;
+      lbImg.style.objectPosition = photoPos.replace('object-', '');
+      lbImg.style.display = 'block';
+      lbInitials.style.display = 'none';
+    } else {
+      lbImg.style.display = 'none';
+      lbInitials.textContent = initials;
+      lbInitials.style.display = 'flex';
+    }
+
+    lb.showModal();
+  }
+
   document.querySelectorAll<HTMLButtonElement>('.person-card').forEach(card => {
     card.addEventListener('click', () => {
-      const { name = '', role = '', photo = '', bio = '', initials = '', photoPos = 'object-center' } = card.dataset;
-
-      lbName.textContent = name;
-      lbRole.textContent = role;
-      lbRole.style.display = role ? 'block' : 'none';
-      lbBio.textContent = bio;
-
-      if (photo) {
-        lbImg.src = photo;
-        lbImg.style.objectPosition = photoPos.replace('object-', '');
-        lbImg.style.display = 'block';
-        lbInitials.style.display = 'none';
-      } else {
-        lbImg.style.display = 'none';
-        lbInitials.textContent = initials;
-        lbInitials.style.display = 'flex';
-      }
-
-      lb.showModal();
+      // Makes the currently open person shareable/bookmarkable — replaceState
+      // (not pushState) so closing the lightbox doesn't require an extra back-tap.
+      if (card.id) history.replaceState(null, '', `#${card.id}`);
+      openFor(card);
     });
   });
 
@@ -202,4 +209,15 @@ const { closeLabel } = Astro.props;
   lbBackdrop.addEventListener('click', e => {
     if (e.target === lbBackdrop) lb.close();
   });
+
+  // Deep-linking: `/en/about/leadership#board-brian-grieco` opens straight to
+  // that person's bio. Silently no-ops for anchors on bio-less cards (plain
+  // <div>, not a .person-card) — the browser's native anchor scroll still runs.
+  const hash = window.location.hash.slice(1);
+  if (hash) {
+    const target = document.getElementById(hash);
+    if (target?.classList.contains('person-card')) {
+      openFor(target);
+    }
+  }
 </script>
