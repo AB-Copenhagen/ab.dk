@@ -448,6 +448,47 @@ export async function fetchHeroSlides(locale: string): Promise<StrapiHeroSlide[]
   }).catch(() => []);
 }
 
+// ── Leadership ─────────────────────────────────────────────────────────────────
+
+export interface StrapiLeadershipMemberPhoto {
+  url: string;
+}
+
+export interface StrapiLeadershipMember {
+  name: string;
+  section: 'board' | 'exec' | 'sporting';
+  role: string;
+  photo?: StrapiLeadershipMemberPhoto;
+  photoPosition: 'object-center' | 'object-top';
+  bio?: string;
+  sortOrder: number;
+}
+
+/** Fetch all published leadership members (board/exec/sporting) ordered by sortOrder, resolved to `locale`. */
+export async function fetchLeadership(locale: string): Promise<StrapiLeadershipMember[]> {
+  return fetchCollectionType<StrapiLeadershipMember[]>('leadership-members', {
+    locale,
+    sort: ['sortOrder:asc'],
+    populate: { photo: { fields: ['url'] } },
+  }).catch(() => []);
+}
+
+export interface StrapiInvestor {
+  name: string;
+  since?: string;
+  stake?: string;
+  description?: string;
+  sortOrder: number;
+}
+
+/** Fetch all published investors ordered by sortOrder, resolved to `locale`. */
+export async function fetchInvestors(locale: string): Promise<StrapiInvestor[]> {
+  return fetchCollectionType<StrapiInvestor[]>('investors', {
+    locale,
+    sort: ['sortOrder:asc'],
+  }).catch(() => []);
+}
+
 // ── Media helpers ─────────────────────────────────────────────────────────────
 
 const WASABI_HOST_RE = /^https?:\/\/[^/]*wasabisys\.com\//;
