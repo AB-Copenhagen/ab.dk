@@ -4,7 +4,7 @@ import LeadershipPersonCard from '@/components/leadership/LeadershipPersonCard.a
 import BioLightbox from '@/components/leadership/BioLightbox.astro';
 import { fetchLeadership, fetchInvestors, strapiMediaUrl } from '@/lib/strapi/client';
 
-export const prerender = true;
+export const prerender = false;
 
 interface Person {
   name: string;
