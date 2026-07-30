@@ -22,7 +22,7 @@ const { slug } = Astro.params;
 const playerId = slug ? parseInt(slug, 10) : NaN;
 
 if (isNaN(playerId)) {
-  return Astro.redirect('/hold');
+  return Astro.redirect('/truppen');
 }
 
 const manualPlayer = findManualPlayer(playerId);
@@ -57,7 +57,7 @@ if (manualPlayer) {
   }
 
   if (!player) {
-    return Astro.redirect('/hold');
+    return Astro.redirect('/truppen');
   }
 
   const [squadPlayers, matchStats, fetchedCms] = await Promise.all([
@@ -73,7 +73,7 @@ if (manualPlayer) {
 }
 
 if (!player) {
-  return Astro.redirect('/hold');
+  return Astro.redirect('/truppen');
 }
 
 const { name, countryName, birthDate, height } = player;
@@ -142,7 +142,7 @@ const personSchema = {
 
 const playerBreadcrumbs = breadcrumbSchema([
   { name: 'Forside', url: 'https://ab.dk' },
-  { name: 'Holdet', url: 'https://ab.dk/hold' },
+  { name: 'Truppen', url: 'https://ab.dk/truppen' },
   { name: displayName, url: `https://ab.dk/spiller/${slug}` },
 ]);
 

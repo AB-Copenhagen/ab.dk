@@ -36,7 +36,10 @@ export const legacyRedirects = {
   // are now identical.
   '/sponsorer': to('/partnere'),
   '/bliv-sponsor': to('/partnere'),
-  '/truppen': to('/hold'),
+  // /hold was the page's own URL until it was renamed to /truppen (the more
+  // accurate Danish term for "squad") — this isn't a legacy WP redirect like
+  // its neighbors, but the same permanent-308 mechanism applies cleanly.
+  '/hold': to('/truppen'),
   '/kampprogram': to('/kampe'),
   '/resultater': to('/kampe'),
   '/stillingen': to('/kampe'),
@@ -68,7 +71,7 @@ export const legacyRedirects = {
   '/category/[...path]': to('/nyheder'),
   '/author/[...path]': to('/nyheder'),
   '/tag/[...path]': toTemp('/nyheder'),
-  '/spiller': toTemp('/hold'),
+  '/spiller': toTemp('/truppen'),
   // Nested legacy WP paths (old taxonomy/category hierarchy).
   //
   // IMPORTANT: a wildcard (`[...path]`) source must NEVER redirect to a

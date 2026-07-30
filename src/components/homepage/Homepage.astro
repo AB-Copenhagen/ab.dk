@@ -129,7 +129,7 @@ function matchHref(eventId: number) {
 }
 const enSlugs: Record<string, string> = {
   '/kampe': '/matches',
-  '/hold': '/squad',
+  '/truppen': '/squad',
   '/nyheder': '/news',
 };
 function localPath(daPath: string) {
@@ -993,7 +993,7 @@ const heroSlides: HeroSlide[] =
     <!-- See Full Squad link -->
     <div class="text-center mt-10">
       <a
-        href={localPath('/hold')}
+        href={localPath('/truppen')}
         class="text-sm font-bold underline underline-offset-4 text-ab-green">
         {translate(locale, 'seeFullSquad')}
       </a>

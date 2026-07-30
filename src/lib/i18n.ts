@@ -7,7 +7,7 @@ export function getLocale(url: URL): Locale {
 // DA slug → EN slug mapping (exact paths; prefix entries end with '/')
 const daToEn: Record<string, string> = {
   '/kampe': '/matches',
-  '/hold': '/squad',
+  '/truppen': '/squad',
   '/nyheder': '/news',
   '/nyheder/': '/news/',
   '/om/historik': '/about/history',
@@ -69,7 +69,7 @@ export function switchLocalePath(
 export const t: Record<Locale, Record<string, string>> = {
   da: {
     home: 'Forside',
-    squad: 'Holdet',
+    squad: 'Truppen',
     fixtures: 'Kampe',
     news: 'Nyheder',
     about: 'Om AB',
@@ -124,7 +124,7 @@ export const t: Record<Locale, Record<string, string>> = {
     playerNationality: 'Nationalitet',
     playerHeight: 'Højde',
     playerBirthDate: 'Fødselsdato',
-    playerBackToSquad: 'Holdet',
+    playerBackToSquad: 'Truppen',
     // Homepage
     abtvSubtitle: 'Live recaps & eksklusivt indhold',
     watchLive: 'Se\nLive',
@@ -177,7 +177,7 @@ export const t: Record<Locale, Record<string, string>> = {
     recap: 'Referat',
     score: 'Resultat',
     seeAllArrow: 'Se alle →',
-    seeFullSquad: 'Se hele holdet',
+    seeFullSquad: 'Se hele truppen',
     seeMoreNews: 'Se alle nyheder',
     shopAbStore: 'Shop AB Store',
     standingsTitle: 'Stillingen',
