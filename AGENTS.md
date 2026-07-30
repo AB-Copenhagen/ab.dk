@@ -59,28 +59,78 @@ strapi/             CMS (separate Yarn process)
 
 Copy `.env.example` → `.env.local`. See README for required variables.
 
-## Pending content — player profiles (Strapi)
+## Managing player overrides (Strapi)
 
-The player detail page layout is fully built and CMS-driven. The **Player** content
-type (`api::player.player`) exists in Strapi but no entries have been created yet.
+SI (the third-party sports data API) is the source for squad/player data, but it goes
+stale in ways only Strapi can fix now: wrong photos (old kit/season), stale shirt
+numbers/positions, or a player who should be hidden from the squad entirely. The
+**Player** content type (`api::player.player`) is where these overrides live, joined to
+SI by `siPlayerId` (also works for manual/not-yet-in-SI players — see
+`src/data/manual-players.ts` — via their synthetic negative ID).
 
-Until entries are added, pages show:
+**Precedence for every overridable field**: a real Strapi row → the legacy static
+fallback in `src/data/player-cms-data.ts` (`PLAYER_CMS_DATA`, being phased out) → the
+raw SI value. Nothing breaks for a player who doesn't have a Strapi row yet.
 
-- Player Bio → placeholder text ("Spillerprofil tilføjes snart")
-- Quote section → hidden
-- Photo gallery → hidden
-- Nickname / Former Clubs in metadata bar → hidden
+**To populate/override a player entry in Strapi admin → Content Manager → Player:**
 
-**To populate a player entry in Strapi admin → Content Manager → Player:**
+| Field                 | Description                                                                    | Example                          |
+| --------------------- | ------------------------------------------------------------------------------ | -------------------------------- |
+| `siPlayerId`          | SI API player ID (from `/spiller/{id}-{slug}` URL)                             | `658977`                         |
+| `nickname`            | Short name or nickname                                                         | `"Adri"`                         |
+| `formerClubs`         | Comma-separated previous clubs                                                 | `"FC Augsburg II, SGV Freiberg"` |
+| `bio` (da + en)       | 2–3 paragraph player biography                                                 | —                                |
+| `quote` (da + en)     | One memorable player quote, no surrounding quotes                              | —                                |
+| `gallery`             | Action photos — first image shown full-width, next 3 in grid                   | —                                |
+| `photo`               | Current headshot, overrides the automatic Wasabi/SI-CDN photo                  | —                                |
+| `photoPosition`       | CSS crop anchor for `photo`: `left-bottom` / `center-bottom` / `right-bottom`  | —                                |
+| `hidePhoto`           | Hide the photo entirely (e.g. no current photo exists yet)                     | `true`                           |
+| `hideFromSquad`       | Remove the player from the squad list/homepage entirely                        | `true` for a departed player     |
+| `displayNameOverride` | Corrects a truncated/ASCII-mangled SI name                                     | `"Søren Ilsøe"`                  |
+| `shirtNumberOverride` | Corrects a stale SI shirt number                                               | `3`                              |
+| `positionOverride`    | Corrects a stale/wrong SI position: `keeper`/`defender`/`midfielder`/`forward` | —                                |
 
-| Field             | Description                                                  | Example                          |
-| ----------------- | ------------------------------------------------------------ | -------------------------------- |
-| `siPlayerId`      | SI API player ID (from `/spiller/{id}-{slug}` URL)           | `658977`                         |
-| `nickname`        | Short name or nickname                                       | `"Adri"`                         |
-| `formerClubs`     | Comma-separated previous clubs                               | `"FC Augsburg II, SGV Freiberg"` |
-| `bio` (da + en)   | 2–3 paragraph player biography                               | —                                |
-| `quote` (da + en) | One memorable player quote, no surrounding quotes            | —                                |
-| `gallery`         | Action photos — first image shown full-width, next 3 in grid | —                                |
+A one-off script (`scripts/seed-player-overrides.mjs`) migrated the overrides previously
+hardcoded in `src/data/player-cms-data.ts` and `src/lib/si/player-photos.ts` into Strapi.
+New overrides going forward are entered directly in Strapi admin.
+
+> Restart Strapi after editing the schema (new fields included) so it picks up the change.
+
+## Managing staff (Strapi)
+
+The **Staff** content type (`api::staff.staff`, REST plural `staff-members`) is localized
+(da/en). Non-localized fields (`slug`, `photo`, `photoPosition`, `sortOrder`, `hidePhoto`,
+`hidden`) are shared across locales automatically — only `role`, `nationality`, and `bio`
+need separate DA/EN text.
+
+**Important:** Strapi requires a separate row per locale for a staffer to appear in that
+locale's page/listing at all — this applies even to non-localized fields. When creating a
+new staff member, after saving the first locale, use Strapi admin's **"Fill in from
+another locale"** action to create the other locale's row before publishing both.
+
+**Per-record fallback**: any staffer without a Strapi row (or one you haven't migrated
+yet) still renders from the hardcoded `COACHING_STAFF` array in
+`src/data/coaching-staff.ts` — unlike partners/hero-slides, this file is kept
+indefinitely as a permanent safety net, not trimmed after migration.
+
+| Field           | Localized | Description                                                          |
+| --------------- | :-------: | -------------------------------------------------------------------- |
+| `slug`          |    no     | URL segment, e.g. `/stab/{slug}` and `/en/staff/{slug}`              |
+| `name`          |    no     | Full name                                                            |
+| `role`          |    yes    | Job title, e.g. "Cheftræner" / "Head Coach"                          |
+| `nationality`   |    yes    | e.g. "Svensk, Finsk" / "Swedish, Finnish"                            |
+| `photo`         |    no     | Headshot — upload directly in Strapi Media Library                   |
+| `photoPosition` |    no     | CSS crop anchor: `left-bottom` / `center-bottom` / `right-bottom`    |
+| `hidePhoto`     |    no     | Hide the photo entirely (e.g. no current photo exists yet)           |
+| `hidden`        |    no     | Remove the staffer from the roster/detail page without deleting them |
+| `sortOrder`     |    no     | Ascending display order                                              |
+| `bio`           |    yes    | Detail-page biography                                                |
+
+A one-off script (`scripts/seed-staff-members.mjs`) migrated the roster previously
+hardcoded in `src/data/coaching-staff.ts` into Strapi, except `photo` — the existing
+photos are Wasabi proxy URLs, not local files, so editors re-upload each staffer's photo
+into Strapi's Media Library once, by hand. New staff going forward are entered directly
+in Strapi admin.
 
 > Restart Strapi after the first deploy so it picks up the new content type.
 

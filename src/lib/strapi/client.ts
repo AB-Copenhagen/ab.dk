@@ -1,6 +1,12 @@
 import { strapi } from '@strapi/client';
 import { cache } from '@/lib/strapi-revalidate';
 import { isPreviewEnabled } from '@/lib/preview-context';
+import {
+  getPlayerPhotoUrl,
+  getSIPlayerPhotoUrl,
+  getPlayerPhotoPosition,
+  getPhotoPositionForSlug,
+} from '@/lib/si/player-photos';
 
 const STRAPI_URL = (import.meta.env.STRAPI_URL ?? 'http://localhost:1337').replace(/\/$/, '');
 const STRAPI_TOKEN: string | undefined = import.meta.env.STRAPI_API_TOKEN;
@@ -207,6 +213,19 @@ export interface StrapiPlayerGalleryImage {
   height: number;
 }
 
+export type PlayerPhotoPosition = 'left-bottom' | 'center-bottom' | 'right-bottom';
+
+/** Maps the Strapi `photoPosition` enum to the CSS `object-position` value it represents. */
+const PHOTO_POSITION_CSS: Record<PlayerPhotoPosition, string> = {
+  'left-bottom': 'left bottom',
+  'center-bottom': 'center bottom',
+  'right-bottom': 'right bottom',
+};
+
+export interface StrapiMediaRef {
+  url: string;
+}
+
 export interface StrapiPlayer {
   siPlayerId: number;
   nickname?: string;
@@ -214,23 +233,35 @@ export interface StrapiPlayer {
   bio?: string;
   quote?: string;
   gallery?: StrapiPlayerGalleryImage[];
+  photo?: StrapiMediaRef;
+  photoPosition?: PlayerPhotoPosition;
+  hidePhoto?: boolean;
+  hideFromSquad?: boolean;
+  displayNameOverride?: string;
+  shirtNumberOverride?: number;
+  positionOverride?: 'keeper' | 'defender' | 'midfielder' | 'forward';
 }
 
-/** Fetch optional CMS content for a player by their SI player ID. Returns null if not found. */
+const PLAYER_PHOTO_POPULATE = {
+  photo: { fields: ['url'] },
+  gallery: { fields: ['url', 'alternativeText', 'width', 'height'] },
+};
+
+/** Fetch optional CMS content/overrides for a player by their SI player ID. Returns null if none exist anywhere. */
 export async function fetchPlayerCmsData(
   siPlayerId: number,
   locale = 'da',
 ): Promise<StrapiPlayer | null> {
   const results = await fetchCollectionType<StrapiPlayer[]>('players', {
     filters: { siPlayerId: { $eq: siPlayerId } },
-    populate: ['gallery'],
+    populate: PLAYER_PHOTO_POPULATE,
     locale,
   }).catch(() => []);
 
   if (results[0]) return results[0];
 
-  // Static fallback — used when Strapi is unreachable or the player collection
-  // hasn't been seeded yet.
+  // Static fallback — used when Strapi is unreachable or this player hasn't
+  // been entered into the players collection yet.
   const { PLAYER_CMS_DATA } = await import('@/data/player-cms-data');
   const entry = PLAYER_CMS_DATA[siPlayerId];
   if (!entry) return null;
@@ -242,6 +273,219 @@ export async function fetchPlayerCmsData(
     formerClubs: entry.formerClubs,
     bio: entry.bio?.[l],
     quote: entry.quote?.[l],
+    displayNameOverride: entry.name,
+    shirtNumberOverride: entry.shirtNumber,
+    positionOverride: entry.position,
+    // hidePhoto/hideFromSquad deliberately left unset (not `false`) here — a
+    // real Strapi row always has these as an explicit boolean (schema
+    // default), so `undefined` is how callers distinguish "no Strapi row
+    // exists yet" from "Strapi row exists and says false", letting them
+    // still consult a legacy static fallback (e.g. PENDING_PHOTO_SHIRT_NUMBERS)
+    // only in the former case.
+  };
+}
+
+/**
+ * Batch-fetch every player override row for `locale` in one request, keyed by
+ * SI player ID — used by the squad list so it doesn't issue one Strapi call
+ * per roster player. Includes `hideFromSquad: true` rows; filtering them out
+ * of the squad view is the caller's responsibility.
+ */
+export async function fetchAllPlayerOverrides(
+  locale: string,
+): Promise<Map<number, StrapiPlayer>> {
+  const rows = await fetchCollectionType<StrapiPlayer[]>('players', {
+    locale,
+    pagination: { pageSize: 200 },
+    populate: PLAYER_PHOTO_POPULATE,
+  }).catch(() => []);
+  return new Map(rows.map((row) => [row.siPlayerId, row]));
+}
+
+export interface ResolvedPlayerPhoto {
+  photoUrl: string | null;
+  photoFallbackUrl: string | null;
+  photoPosition: string;
+}
+
+/**
+ * The single photo-resolution cascade shared by the squad list and player
+ * detail pages: an explicit `hidePhoto` always wins (no photo, no fallback);
+ * otherwise a Strapi-uploaded `photo` is trusted as-is; otherwise fall back to
+ * the existing Wasabi-filename-guess system with SI's own CDN as an onerror
+ * target.
+ */
+export function resolvePlayerPhoto(params: {
+  hidePhoto: boolean;
+  strapiPhoto?: StrapiMediaRef | null;
+  strapiPhotoPosition?: PlayerPhotoPosition | null;
+  siName: string | null | undefined;
+  siPlayerId: number;
+  teamId: number;
+}): ResolvedPlayerPhoto {
+  if (params.hidePhoto) {
+    return { photoUrl: null, photoFallbackUrl: null, photoPosition: 'left bottom' };
+  }
+  if (params.strapiPhoto?.url) {
+    return {
+      photoUrl: strapiMediaUrl(params.strapiPhoto.url),
+      photoFallbackUrl: null,
+      photoPosition: PHOTO_POSITION_CSS[params.strapiPhotoPosition ?? 'left-bottom'],
+    };
+  }
+  return {
+    photoUrl: getPlayerPhotoUrl(params.siName),
+    photoFallbackUrl:
+      params.siPlayerId > 0 ? getSIPlayerPhotoUrl(params.siPlayerId, params.teamId) : null,
+    photoPosition: getPlayerPhotoPosition(params.siName),
+  };
+}
+
+// ── Staff roster ──────────────────────────────────────────────────────────────
+
+export interface StrapiStaffMember {
+  slug: string;
+  name: string;
+  role: string;
+  nationality?: string;
+  photo?: StrapiMediaRef;
+  photoPosition?: PlayerPhotoPosition;
+  hidePhoto?: boolean;
+  hidden?: boolean;
+  bio?: string;
+  sortOrder?: number;
+}
+
+/** A staff roster entry with photo/role/nationality already resolved to a single locale. */
+export interface StaffRosterEntry {
+  slug: string;
+  name: string;
+  role: string;
+  nationality: string | null;
+  photoUrl: string | null;
+  photoPosition: string;
+  bio: string | null;
+  sortOrder: number;
+}
+
+function resolveStaffPhoto(params: {
+  hidePhoto: boolean;
+  strapiPhoto?: StrapiMediaRef | null;
+  strapiPhotoPosition?: PlayerPhotoPosition | null;
+  fallbackPhotoUrl: string | null;
+  fallbackPhotoPosition: string;
+}): { photoUrl: string | null; photoPosition: string } {
+  if (params.hidePhoto) return { photoUrl: null, photoPosition: 'left bottom' };
+  if (params.strapiPhoto?.url) {
+    return {
+      photoUrl: strapiMediaUrl(params.strapiPhoto.url),
+      photoPosition: PHOTO_POSITION_CSS[params.strapiPhotoPosition ?? 'left-bottom'],
+    };
+  }
+  return { photoUrl: params.fallbackPhotoUrl, photoPosition: params.fallbackPhotoPosition };
+}
+
+async function staffFallbackEntries(
+  locale: string,
+  excludeSlugs: Set<string>,
+): Promise<StaffRosterEntry[]> {
+  const { COACHING_STAFF } = await import('@/data/coaching-staff');
+  const l = locale === 'en' ? 'en' : 'da';
+  return COACHING_STAFF.filter((staff) => !excludeSlugs.has(staff.slug)).map((staff, index) => ({
+    slug: staff.slug,
+    name: staff.name,
+    role: staff.role[l],
+    nationality: staff.nationality[l],
+    photoUrl: staff.photo,
+    photoPosition: getPhotoPositionForSlug(staff.slug),
+    bio: staff.bio?.[l] ?? null,
+    // Sorts after any Strapi-authored entry by default until re-ordered in admin.
+    sortOrder: 1000 + index * 10,
+  }));
+}
+
+/** Fetch the full staff roster for `locale`: Strapi rows merged with a per-record fallback to COACHING_STAFF for anyone not yet migrated. */
+export async function fetchStaffRoster(locale: string): Promise<StaffRosterEntry[]> {
+  const rows = await fetchCollectionType<StrapiStaffMember[]>('staff-members', {
+    locale,
+    sort: ['sortOrder:asc'],
+    populate: { photo: { fields: ['url'] } },
+  }).catch(() => []);
+
+  const visible = rows.filter((row) => !row.hidden);
+  const strapiEntries: StaffRosterEntry[] = visible.map((row) => {
+    const photo = resolveStaffPhoto({
+      hidePhoto: row.hidePhoto ?? false,
+      strapiPhoto: row.photo,
+      strapiPhotoPosition: row.photoPosition,
+      fallbackPhotoUrl: null,
+      fallbackPhotoPosition: 'left bottom',
+    });
+    return {
+      slug: row.slug,
+      name: row.name,
+      role: row.role,
+      nationality: row.nationality ?? null,
+      photoUrl: photo.photoUrl,
+      photoPosition: photo.photoPosition,
+      bio: row.bio ?? null,
+      sortOrder: row.sortOrder ?? 0,
+    };
+  });
+
+  const migratedSlugs = new Set(rows.map((row) => row.slug));
+  const fallbackEntries = await staffFallbackEntries(locale, migratedSlugs);
+
+  return [...strapiEntries, ...fallbackEntries].sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+/** Fetch a single staff member by slug, falling back to COACHING_STAFF if not yet in Strapi (or hidden there). Returns null if neither has them. */
+export async function fetchStaffMember(
+  slug: string,
+  locale: string,
+): Promise<StaffRosterEntry | null> {
+  const results = await fetchCollectionType<StrapiStaffMember[]>('staff-members', {
+    filters: { slug: { $eq: slug } },
+    locale,
+    populate: { photo: { fields: ['url'] } },
+  }).catch(() => []);
+
+  const row = results[0];
+  if (row && !row.hidden) {
+    const photo = resolveStaffPhoto({
+      hidePhoto: row.hidePhoto ?? false,
+      strapiPhoto: row.photo,
+      strapiPhotoPosition: row.photoPosition,
+      fallbackPhotoUrl: null,
+      fallbackPhotoPosition: 'left bottom',
+    });
+    return {
+      slug: row.slug,
+      name: row.name,
+      role: row.role,
+      nationality: row.nationality ?? null,
+      photoUrl: photo.photoUrl,
+      photoPosition: photo.photoPosition,
+      bio: row.bio ?? null,
+      sortOrder: row.sortOrder ?? 0,
+    };
+  }
+
+  // Not in Strapi (or explicitly hidden there) — fall back to the static roster.
+  const { COACHING_STAFF } = await import('@/data/coaching-staff');
+  const staff = COACHING_STAFF.find((s) => s.slug === slug);
+  if (!staff) return null;
+
+  const l = locale === 'en' ? 'en' : 'da';
+  return {
+    slug: staff.slug,
+    name: staff.name,
+    role: staff.role[l],
+    nationality: staff.nationality[l],
+    photoUrl: staff.photo,
+    photoPosition: getPhotoPositionForSlug(staff.slug),
+    bio: staff.bio?.[l] ?? null,
+    sortOrder: 0,
   };
 }
 

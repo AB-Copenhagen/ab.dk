@@ -5,14 +5,9 @@ import PlayerMetadataBar from '@/components/player/PlayerMetadataBar.astro';
 import PlayerSeasonStatsTable from '@/components/player/PlayerSeasonStatsTable.astro';
 import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
 import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
-import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
+import { fetchPlayerCmsData, resolvePlayerPhoto, strapiMediaUrl } from '@/lib/strapi/client';
 import type { StrapiPlayer } from '@/lib/strapi/client';
-import {
-  getPlayerPhotoUrl,
-  getSIPlayerPhotoUrl,
-  PENDING_PHOTO_SHIRT_NUMBERS,
-} from '@/lib/si/player-photos';
-import { resolveShirtNumber, resolveName, resolvePosition } from '@/data/player-cms-data';
+import { PENDING_PHOTO_SHIRT_NUMBERS } from '@/lib/si/player-photos';
 import { findManualPlayer } from '@/data/manual-players';
 import { abConfig } from '@/lib/config/ab';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
@@ -46,14 +41,14 @@ if (manualPlayer) {
     birthDate: manualPlayer.birthDate,
     height: manualPlayer.height,
   };
-  shirtNumber = manualPlayer.shirtNumber;
-  cmsPlayer = {
+  cmsPlayer = (await fetchPlayerCmsData(manualPlayer.id, 'da').catch(() => null)) ?? {
     siPlayerId: manualPlayer.id,
     nickname: manualPlayer.nickname,
     formerClubs: manualPlayer.formerClubs,
     bio: manualPlayer.bio?.da,
     quote: manualPlayer.quote?.da,
   };
+  shirtNumber = cmsPlayer?.shirtNumberOverride ?? manualPlayer.shirtNumber;
 } else {
   try {
     player = await fetchPlayerProfile(playerId, 'da');
@@ -71,7 +66,8 @@ if (manualPlayer) {
     fetchPlayerCmsData(playerId, 'da').catch(() => null),
   ]);
 
-  shirtNumber = resolveShirtNumber(playerId, squadPlayers.find(p => p.id === playerId)?.shirtNumber ?? null);
+  const siShirtNumber = squadPlayers.find(p => p.id === playerId)?.shirtNumber ?? null;
+  shirtNumber = fetchedCms?.shirtNumberOverride ?? siShirtNumber;
   seasonStats = aggregateSeasonStats(matchStats);
   cmsPlayer = fetchedCms;
 }
@@ -81,19 +77,24 @@ if (!player) {
 }
 
 const { name, countryName, birthDate, height } = player;
-const position = resolvePosition(playerId, player.position) ?? player.position;
-// Photo/slug lookups stay keyed on the raw SI name (may be ASCII-mangled,
-// e.g. "Soeren Ilsoee") — only the rendered text uses the corrected name.
-const photoPending =
-  shirtNumber != null && PENDING_PHOTO_SHIRT_NUMBERS.has(Number(shirtNumber));
-const photoUrl = photoPending ? null : getPlayerPhotoUrl(name);
-// SI's own photo CDN as a fallback when the Wasabi photo above 404s (real
-// SI ids only — manual players have synthetic negative ids with no SI photo).
-const siPhotoFallbackUrl =
-  !photoPending && !manualPlayer && playerId > 0
-    ? getSIPlayerPhotoUrl(playerId, abConfig.teamId)
-    : null;
-const displayName = resolveName(playerId, name) ?? name;
+const position = cmsPlayer?.positionOverride ?? player.position;
+const displayName = cmsPlayer?.displayNameOverride ?? name;
+// hidePhoto falls back to the legacy PENDING_PHOTO_SHIRT_NUMBERS set only when
+// there's no real Strapi row for this player yet (cmsPlayer.hidePhoto is
+// `undefined`, not `false`, in that case — see fetchPlayerCmsData).
+const hidePhoto =
+  cmsPlayer?.hidePhoto ??
+  (shirtNumber != null && PENDING_PHOTO_SHIRT_NUMBERS.has(Number(shirtNumber)));
+// Photo lookups stay keyed on the raw SI name (may be ASCII-mangled, e.g.
+// "Soeren Ilsoee") — only the rendered text uses the corrected name.
+const { photoUrl, photoFallbackUrl: siPhotoFallbackUrl } = resolvePlayerPhoto({
+  hidePhoto,
+  strapiPhoto: cmsPlayer?.photo,
+  strapiPhotoPosition: cmsPlayer?.photoPosition,
+  siName: name,
+  siPlayerId: playerId,
+  teamId: abConfig.teamId,
+});
 
 const posLabels: Record<string, string> = {
   keeper:     'Målmand',
