@@ -22,138 +22,6 @@ interface Investor {
   description: string;
 }
 
-// Used when the Strapi `leadership-members`/`investors` collections are empty
-// or unreachable (e.g. mid-rollout before seeding) so this page never goes blank.
-const FALLBACK_BOARD: Person[] = [
-  {
-    name: 'Brian Grieco',
-    role: 'Board Member',
-    photo: '/images/team/brian-grieco.jpg',
-    photoPos: 'object-center',
-    bio: 'Brian has been a board member since August 2024. Brian is a business-focused lawyer and a partner at a New York law firm, and focuses his legal practice on general corporate and commercial law, debtor and creditor rights, and commercial litigation. He began his legal career as a financial restructuring lawyer and has advised businesses his entire career on all types of legal matters, including with respect to business start up, capital raises, and corporate governance. Brian has also spent time with the US Securities and Exchange Commission and in various roles in the financial industry, on both the legal and business side.',
-  },
-  {
-    name: 'Jen Chang',
-    role: 'Board Member',
-    photo: '/images/team/jen-chang.jpg',
-    photoPos: 'object-center',
-    bio: 'Jen has been a board member since November 2022. Prior to AB, Jen worked for 12 years as a scout and in talent identification for various first- and second-tier European football teams. Previously, he also worked in the finance and media industries. He holds an M.Phil in International Relations from Queens\' College, University of Cambridge, an MSc in Industrial Relations from the London School of Economics, and a BA (Hons) in History from Queen Mary University of London.',
-  },
-  {
-    name: 'Zachary Smith',
-    role: 'Board Member',
-    photo: '/images/team/zac-smith.jpg',
-    photoPos: 'object-center',
-    bio: 'Zachary is an entrepreneur in the digital infrastructure and cloud computing industry. In 2014, he co-founded Packet, which became the leader in bare metal automation and was acquired by Equinix in 2020. In late 2024, Mr. Smith co-founded Datum, a startup on a mission to provide internet-scale capabilities to every builder, backed by Amplify, Encoded, and CRV.',
-  },
-  {
-    name: 'Ben Lyttleton',
-    role: 'Board Member',
-    photo: '/images/team/ben-lyttleton.jpg',
-    photoPos: 'object-center',
-    bio: 'Ben Lyttleton is an AB board member, best-selling author, and keynote speaker on the psychology of high performance. His book Twelve Yards: The Art and Psychology of the Perfect Penalty (2014) helped England win its first World Cup penalty shoot-out. His Football School series has sold over one million copies in the UK, and he created a football-based school curriculum used in over 100 countries.',
-  },
-  {
-    name: 'Harrison Oellrich',
-    role: 'Board Advisor',
-    photo: '/images/team/harrison-oellrich.jpg',
-    photoPos: 'object-center',
-    bio: 'Harrison has been a board observer since 2023. He formally retired as managing director of a pre-eminent risk management and financial services firm in 2010 after a 30+ year career there to concentrate on various non-profit and humanitarian projects. He also founded his own consultancy to leverage the knowledge and expertise of the risk management community for the benefit of the public, private, and non-profit sectors, and has been instrumental in founding and building out several non-profits that now serve in over 25 countries worldwide. He also serves as a deacon at several local congregations.',
-  },
-  {
-    name: 'Joseph Gordon',
-    role: 'Board Member',
-    photo: '/images/team/joseph-gordon.jpg',
-    photoPos: 'object-center',
-    bio: 'Joe has been a board member since November 2022. Joe Gordon is the founder of UpFor Consulting, a sales and growth focused consultancy group. UpFor works with both emerging and established companies to create, hone, and master their business development strategies and communications skills, build teams and company culture, and lead through growth and change. Previously, Joe spent 19 years in the legal services space, the last 13 of which included managing and leading the organization through exponential growth and eventual acquisition as its Global VP of Sales. Joe holds a BA from American University in Law and Society and an MS in Industrial and Organizational Psychology from Baruch College.',
-  },
-  {
-    name: 'Sofie Brandi Petersen',
-    role: 'Advisor',
-    photo: '/images/team/sofie-brandi-petersen.jpg',
-    photoPos: 'object-top',
-    bio: null,
-  },
-];
-
-const FALLBACK_EXEC: Person[] = [
-  {
-    name: 'Brian Grieco',
-    role: 'Chairman',
-    photo: '/images/team/brian-grieco.jpg',
-    photoPos: 'object-center',
-    bio: 'Brian serves AB A/S as its Chairman and operates as its General Counsel. In these roles, Brian oversees the management of the business, with a focus on the club’s governance and contractual relationships. Brian is also the club’s contact with various stakeholders, including the mother club and local governments. Brian also manages various aspects of the club’s financial operations and compliance.',
-  },
-  {
-    name: 'Henrik Bom',
-    role: 'President',
-    photo: '/images/team/henrik-bom.jpg',
-    photoPos: 'object-center',
-    bio: "Henrik Bom leads the club's business operations and long-term development. With more than 25 years of international leadership experience across Denmark and the United States, Henrik brings a strong commercial and operational background to one of Denmark's oldest football clubs. Under his leadership, AB is focused on creating exceptional experiences for fans while strengthening the club's role in the local community and expanding its international network.",
-  },
-  {
-    name: 'Cynthia Lee',
-    role: 'Marketing & Brand',
-    photo: '/images/team/cynthia-lee.jpg',
-    photoPos: 'object-center',
-    bio: 'Cynthia runs Marketing and Brand for the club. A specialist in integrated marketing, strategic partnerships, and brand storytelling, she has launched product campaigns and experiential activations across digital, social, television, live events, and branded entertainment. Passionate about innovation and collaboration, Cynthia creates marketing strategies that strengthen brands, drive engagement, and deliver measurable business impact. She has a BA from Miami University and an MA from The Ohio State University.',
-  },
-  {
-    name: 'Jen Chang',
-    role: 'Sporting Director',
-    photo: '/images/team/jen-chang.jpg',
-    photoPos: 'object-center',
-    bio: "Jen is currently the AB sporting director. Prior to AB, Jen worked for 12 years as a scout and in talent identification for various first- and second-tier European football teams. Previously, he also worked in the finance and media industries. He holds an M.Phil in International Relations from Queens' College, University of Cambridge, an MSc in Industrial Relations from the London School of Economics, and a BA (Hons) in History from Queen Mary University of London.",
-  },
-  { name: 'Simon Taylor', role: 'Partnerships', photo: '/images/team/simon-taylor.jpg', photoPos: 'object-center', bio: null },
-  {
-    name: 'Rasmus Granzow',
-    role: 'Hospitality & Event Manager',
-    photo: '/images/team/rasmus-granzow.jpg',
-    photoPos: 'object-center',
-    bio: "Working at AB since the beginning of 2025, Rasmus is AB's hospitality and events manager. He has a strong background in the hotel & service industry with over 12 years of experience. Passionate about creating memorable guest experiences, Rasmus specializes in delivering premium fan and VIP experiences, managing events, and developing hospitality concepts that enhance engagement and drive commercial growth. He has a Bachelor's degree in Innovation & Entrepreneurship, and enjoys developing new ideas, challenging the status quo, and creating innovative solutions that improve both the customer experience and business performance.",
-  },
-];
-
-const FALLBACK_SPORTING: Person[] = [
-  {
-    name: 'Fannar Berg Gunnólfsson',
-    role: 'Head Coach',
-    photo: '/images/team/fannar-berg-gunnolfsson.jpg',
-    photoPos: 'object-top',
-    bio: 'Gunnólfsson has experience from both senior and youth football in Iceland and Norway. Prior to AB, he was most recently head coach of Volde Turn and Idrottslag and assistant coach of Knattspyrnufélag ÍA.',
-  },
-  {
-    name: 'Joakim Sternas',
-    role: 'Goalkeeper Coach',
-    photo: '/images/team/joakim-sternas.png',
-    photoPos: 'object-top',
-    bio: 'Prior to AB, Sternas was head goalkeeper coach at Täby FK in the Swedish Ettan Norra for two years. He started his coaching career with Spånga IS FK.',
-  },
-  {
-    name: 'Konstantinos Ntolaptsis',
-    role: 'Strength & Conditioning',
-    photo: '/images/team/konstantinos-ntolaptsis.png',
-    photoPos: 'object-top',
-    bio: 'Ntolaptsis joined AB in July 2025. He holds a Master\'s in Exercise Science & Training from Julius-Maximilians University Würzburg and a Bachelor of Sport Science from Aristotle University of Thessaloniki.',
-  },
-];
-
-const FALLBACK_INVESTORS: Investor[] = [
-  {
-    name: 'Five Castles Football Group',
-    since: 'November 2022',
-    stake: 'Majority owner',
-    description: 'The American investor group that acquired 95% of AB in November 2022, with a vision to revamp commercial operations, modernise player recruitment and scouting, and establish a clear playing identity.',
-  },
-  {
-    name: 'Green Owls Football Holdings',
-    since: 'April 2025',
-    stake: '25% minority shareholder',
-    description: 'Green Owls became a minority shareholder in April 2025. The investment supports the club\'s mission by strengthening the squad, enhancing the fan experience, expanding sponsor partnerships, and deepening community outreach.',
-  },
-];
-
 const [cmsMembers, cmsInvestors] = await Promise.all([
   fetchLeadership('en'),
   fetchInvestors('en'),
@@ -169,19 +37,16 @@ function toPerson(m: Awaited<ReturnType<typeof fetchLeadership>>[number]): Perso
   };
 }
 
-const board = cmsMembers.length > 0 ? cmsMembers.filter(m => m.section === 'board').map(toPerson) : FALLBACK_BOARD;
-const exec = cmsMembers.length > 0 ? cmsMembers.filter(m => m.section === 'exec').map(toPerson) : FALLBACK_EXEC;
-const sporting = cmsMembers.length > 0 ? cmsMembers.filter(m => m.section === 'sporting').map(toPerson) : FALLBACK_SPORTING;
+const board = cmsMembers.filter(m => m.section === 'board').map(toPerson);
+const exec = cmsMembers.filter(m => m.section === 'exec').map(toPerson);
+const sporting = cmsMembers.filter(m => m.section === 'sporting').map(toPerson);
 
-const investors: Investor[] =
-  cmsInvestors.length > 0
-    ? cmsInvestors.map(i => ({
-        name: i.name,
-        since: i.since ?? '',
-        stake: i.stake ?? '',
-        description: i.description ?? '',
-      }))
-    : FALLBACK_INVESTORS;
+const investors: Investor[] = cmsInvestors.map(i => ({
+  name: i.name,
+  since: i.since ?? '',
+  stake: i.stake ?? '',
+  description: i.description ?? '',
+}));
 ---
 
 <Base
