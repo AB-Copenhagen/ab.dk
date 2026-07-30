@@ -40,7 +40,13 @@ const partners = (
         slug: p.slug,
       }))
     : FALLBACK_PARTNERS
-).map((p) => ({ ...p, href: partnerHref(p.slug, p.url) }));
+)
+  // This strip is a logo showcase, so a partner without a real logo yet (no
+  // logo uploaded, or still the "logo coming soon" placeholder seeded for
+  // every partner that didn't have one) doesn't belong here — unlike the full
+  // partners listing page, which shows every partner regardless.
+  .filter((p) => p.src && !p.src.toLowerCase().includes('placeholder'))
+  .map((p) => ({ ...p, href: partnerHref(p.slug, p.url) }));
 ---
 
 <!-- Sponsor row (white bg) -->
