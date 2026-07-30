@@ -1,13 +1,6 @@
 ---
-import {
-  getPlayerPhotoUrl,
-  getPlayerPhotoPosition,
-  getSIPlayerPhotoUrl,
-  PENDING_PHOTO_SHIRT_NUMBERS,
-} from '@/lib/si/player-photos';
 import { getPersonCardSizing } from '@/lib/person-card-sizing';
-import { resolveName, getPlayerSlug, slugify } from '@/data/player-cms-data';
-import { abConfig } from '@/lib/config/ab';
+import { getPlayerSlug, slugify } from '@/data/player-cms-data';
 
 interface Props {
   player: {
@@ -17,6 +10,9 @@ interface Props {
     shirtNumber?: number | null;
     jerseyNumber?: number | null;
     country?: { name: string } | null;
+    photoUrl?: string | null;
+    photoFallbackUrl?: string | null;
+    photoPosition?: string;
   };
   locale: 'da' | 'en';
   /** Omit to auto-derive from player.name */
@@ -26,25 +22,13 @@ interface Props {
 const { player, locale, href } = Astro.props;
 
 const number = player.shirtNumber ?? player.jerseyNumber;
-// Photo lookup stays keyed on the raw SI name (may be ASCII-mangled or
-// truncated, e.g. "Soeren Ilsoee" or "Milan Rasmussen") — Wasabi filenames
-// were uploaded against that raw name, not the corrected display name.
-// SI API responses aren't runtime-validated, so shirtNumber can arrive as a
-// numeric string for some players — coerce before the Set lookup.
-const photoPending =
-  number != null && PENDING_PHOTO_SHIRT_NUMBERS.has(Number(number));
-const photoUrl = photoPending ? null : getPlayerPhotoUrl(player.name);
-// SI's own photo CDN as a fallback when the Wasabi photo above 404s (e.g. a
-// player who doesn't have a club-shot photo uploaded yet, but SI already has
-// a real one) — swapped in client-side via onerror below.
-const siPhotoFallbackUrl =
-  !photoPending && player.id != null
-    ? getSIPlayerPhotoUrl(player.id, abConfig.teamId)
-    : null;
-const photoPosition = getPlayerPhotoPosition(player.name);
-const displayName =
-  (player.id != null ? resolveName(player.id, player.name) : null) ??
-  player.name;
+// Photo/name are already fully resolved (Strapi override → static override →
+// raw SI value) by the caller (getSquadPlayers) — this component just renders
+// whatever it's given.
+const photoUrl = player.photoUrl ?? null;
+const siPhotoFallbackUrl = player.photoFallbackUrl ?? null;
+const photoPosition = player.photoPosition ?? 'left bottom';
+const displayName = player.name;
 
 const positionLabels: Record<string, { da: string; en: string }> = {
   keeper: { da: 'Målmand', en: 'Goalkeeper' },

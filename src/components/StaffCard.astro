@@ -1,19 +1,18 @@
 ---
 import { getPersonCardSizing } from '@/lib/person-card-sizing';
-import type { StaffMember } from '@/data/coaching-staff';
 import { staffInitials } from '@/data/coaching-staff';
-import { getPhotoPositionForSlug } from '@/lib/si/player-photos';
+import type { StaffRosterEntry } from '@/lib/strapi/client';
 
 interface Props {
-  staff: StaffMember;
+  staff: StaffRosterEntry;
   locale: 'da' | 'en';
 }
 
 const { staff, locale } = Astro.props;
 
-const roleLabel = staff.role[locale];
+const roleLabel = staff.role;
 const initials = staffInitials(staff.name);
-const photoPosition = getPhotoPositionForSlug(staff.slug);
+const photoPosition = staff.photoPosition;
 
 const nameParts = staff.name.trim().split(' ');
 const firstName = nameParts[0];
@@ -38,14 +37,18 @@ const staffHref = locale === 'da' ? `/stab/${staff.slug}` : `/en/staff/${staff.s
 
   <!-- Photo: right 52%, full height of card frame -->
   <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[52%]">
-    <img
-      src={staff.photo}
-      alt={staff.name}
-      loading="lazy"
-      class="absolute inset-0 w-full h-full object-cover"
-      style={`object-position: ${photoPosition};`}
-      onerror="this.style.opacity='0'"
-    />
+    {
+      staff.photoUrl ? (
+        <img
+          src={staff.photoUrl}
+          alt={staff.name}
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+          style={`object-position: ${photoPosition};`}
+          onerror="this.style.opacity='0'"
+        />
+      ) : null
+    }
   </div>
 
   <!-- Text layer: left 52%, pinned to bottom 84% of frame. overflow-hidden is a safety net,

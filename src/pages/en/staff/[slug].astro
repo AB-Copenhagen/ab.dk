@@ -1,43 +1,39 @@
 ---
 import Base from '@/layouts/Base.astro';
-import { COACHING_STAFF, staffInitials } from '@/data/coaching-staff';
+import { staffInitials } from '@/data/coaching-staff';
+import { fetchStaffMember } from '@/lib/strapi/client';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { breadcrumbSchema } from '@/lib/structured-data';
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
 
 const { slug } = Astro.params;
-const staff = COACHING_STAFF.find(s => s.slug === slug);
+const staff = slug ? await fetchStaffMember(slug, 'en') : null;
 if (!staff) return Astro.redirect('/en/squad');
-
-// Try Strapi first, fall back to static data
-let bio: string | null = staff.bio?.en ?? null;
-try {
-  const { fetchCollectionType } = await import('@/lib/strapi/client');
-  const results = await fetchCollectionType<{ slug: string; bio?: string }[]>('staff-members', {
-    filters: { slug: { $eq: staff.slug } },
-    locale: 'en',
-  }).catch(() => []);
-  if (results[0]?.bio) bio = results[0].bio;
-} catch { /* Strapi unavailable */ }
 
 const initials = staffInitials(staff.name);
 const parts = staff.name.trim().split(' ');
 const firstName = parts[0];
 const lastName = parts.slice(1).join(' ');
 
-const staffDescription = bio
-  ? bio.slice(0, 160)
-  : `${staff.name}, ${staff.role.en} at Akademisk Boldklub (AB 1889).`;
-const absolutePhotoUrl = staff.photo.startsWith('http') ? staff.photo : `https://ab.dk${staff.photo}`;
-const ogCardImageUrl = `/api/og/player.png?photo=${encodeURIComponent(staff.photo)}`;
+const staffDescription = staff.bio
+  ? staff.bio.slice(0, 160)
+  : `${staff.name}, ${staff.role} at Akademisk Boldklub (AB 1889).`;
+const absolutePhotoUrl = staff.photoUrl
+  ? staff.photoUrl.startsWith('http')
+    ? staff.photoUrl
+    : `https://ab.dk${staff.photoUrl}`
+  : undefined;
+const ogCardImageUrl = staff.photoUrl
+  ? `/api/og/player.png?photo=${encodeURIComponent(staff.photoUrl)}`
+  : undefined;
 
 const staffSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: staff.name,
-  jobTitle: staff.role.en,
-  nationality: staff.nationality.en,
+  jobTitle: staff.role,
+  nationality: staff.nationality ?? undefined,
   image: absolutePhotoUrl,
   memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
   url: `https://ab.dk/en/staff/${slug}`,
@@ -74,14 +70,22 @@ const staffStructuredData = [staffSchema, staffBreadcrumbs];
          style="right:1%; top:50%; transform:translateY(-50%); z-index:1;
                 width:clamp(280px,29vw,500px); height:auto; opacity:0.45;" />
 
-    <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
-      <img src={staff.photo} alt={staff.name} loading="eager" class="h-full w-auto max-w-none" />
-    </div>
+    {staff.photoUrl && (
+      <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
+        <img
+          src={staff.photoUrl}
+          alt={staff.name}
+          loading="eager"
+          class="h-full w-auto max-w-none"
+          style={`object-position: ${staff.photoPosition};`}
+        />
+      </div>
+    )}
 
     <!-- Name overlay -->
     <div class="absolute inset-0 flex flex-col justify-end px-8 lg:px-16 pb-10 z-10 pointer-events-none">
       <p class="text-white/60 font-black text-sm tracking-widest mb-1" style="letter-spacing:0.12em;">
-        {staff.role.en.toUpperCase()}
+        {staff.role.toUpperCase()}
       </p>
       <h1 class="font-black text-white leading-none tracking-[-0.04em]" style="font-size:clamp(2.5rem,7vw,6rem); text-transform:none;">
         {firstName}<br />{lastName}
@@ -94,13 +98,17 @@ const staffStructuredData = [staffSchema, staffBreadcrumbs];
     <div class="max-w-7xl mx-auto px-5 md:px-12 flex flex-wrap items-center gap-x-8 gap-y-2 py-4">
       <div>
         <p class="text-xs font-bold tracking-[0.08em]" style="color:rgba(255,255,255,0.5);">ROLE</p>
-        <p class="font-black text-sm">{staff.role.en}</p>
+        <p class="font-black text-sm">{staff.role}</p>
       </div>
-      <div class="w-px h-8 bg-white/20 hidden sm:block"></div>
-      <div>
-        <p class="text-xs font-bold tracking-[0.08em]" style="color:rgba(255,255,255,0.5);">NATIONALITY</p>
-        <p class="font-black text-sm">{staff.nationality.en}</p>
-      </div>
+      {staff.nationality && (
+        <>
+          <div class="w-px h-8 bg-white/20 hidden sm:block"></div>
+          <div>
+            <p class="text-xs font-bold tracking-[0.08em]" style="color:rgba(255,255,255,0.5);">NATIONALITY</p>
+            <p class="font-black text-sm">{staff.nationality}</p>
+          </div>
+        </>
+      )}
     </div>
   </div>
 
@@ -110,9 +118,9 @@ const staffStructuredData = [staffSchema, staffBreadcrumbs];
       <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16 items-start">
         <div>
           <h2 class="font-black text-xl mb-4 text-[#111]">About the Coach</h2>
-          {bio ? (
+          {staff.bio ? (
             <div class="space-y-4">
-              {bio.split('\n\n').filter(Boolean).map(para => (
+              {staff.bio.split('\n\n').filter(Boolean).map(para => (
                 <p class="text-[#444] leading-[1.75] text-[0.9375rem]">{para}</p>
               ))}
             </div>
