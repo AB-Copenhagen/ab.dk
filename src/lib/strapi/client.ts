@@ -413,13 +413,20 @@ export async function fetchStaffRoster(locale: string): Promise<StaffRosterEntry
   }).catch(() => []);
 
   const visible = rows.filter((row) => !row.hidden);
+  // A migrated staffer's Strapi row exists for its own reasons (role/bio edits)
+  // but may not have a `photo` uploaded yet — fall back to their pre-existing
+  // Wasabi photo (keyed the same way COACHING_STAFF always has), not a blank
+  // photo, until someone uploads a real one in Strapi admin.
+  const { COACHING_STAFF } = await import('@/data/coaching-staff');
+  const legacyBySlug = new Map(COACHING_STAFF.map((staff) => [staff.slug, staff]));
   const strapiEntries: StaffRosterEntry[] = visible.map((row) => {
+    const legacy = legacyBySlug.get(row.slug);
     const photo = resolveStaffPhoto({
       hidePhoto: row.hidePhoto ?? false,
       strapiPhoto: row.photo,
       strapiPhotoPosition: row.photoPosition,
-      fallbackPhotoUrl: null,
-      fallbackPhotoPosition: 'left bottom',
+      fallbackPhotoUrl: legacy?.photo ?? null,
+      fallbackPhotoPosition: getPhotoPositionForSlug(row.slug),
     });
     return {
       slug: row.slug,
@@ -452,12 +459,16 @@ export async function fetchStaffMember(
 
   const row = results[0];
   if (row && !row.hidden) {
+    // Same rationale as fetchStaffRoster: fall back to the pre-existing Wasabi
+    // photo, not a blank one, until a real photo is uploaded in Strapi.
+    const { COACHING_STAFF } = await import('@/data/coaching-staff');
+    const legacy = COACHING_STAFF.find((staff) => staff.slug === row.slug);
     const photo = resolveStaffPhoto({
       hidePhoto: row.hidePhoto ?? false,
       strapiPhoto: row.photo,
       strapiPhotoPosition: row.photoPosition,
-      fallbackPhotoUrl: null,
-      fallbackPhotoPosition: 'left bottom',
+      fallbackPhotoUrl: legacy?.photo ?? null,
+      fallbackPhotoPosition: getPhotoPositionForSlug(row.slug),
     });
     return {
       slug: row.slug,

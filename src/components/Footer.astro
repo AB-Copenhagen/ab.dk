@@ -15,11 +15,11 @@ const footerItemClass = 'text-sm leading-6 tracking-[-0.01em] text-white/80';
 const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 transition-opacity no-underline`;
 
 const FALLBACK_PARTNERS = [
-  { name: 'Myriad360', src: '/images/sponsors/myriad360.png',   url: 'https://myriad360.com/',        logoWidth: 226, logoHeight: 50, slug: 'myriad360' },
-  { name: 'Datum',     src: '/images/sponsors/datum.png',       url: 'https://datum.net/',            logoWidth: 240, logoHeight: 80, slug: 'datum' },
-  { name: 'Lind Law',  src: '/images/sponsors/lind-law.png',    url: 'https://lindlaw.dk/',           logoWidth: 85,  logoHeight: 23, slug: 'lind' },
-  { name: 'Select',    src: '/images/sponsors/select-sport.png', url: 'https://dk.select-sport.com/', logoWidth: 200, logoHeight: 65, slug: 'select' },
-  { name: 'Unisport',  src: '/images/sponsors/unisport.png',    url: 'https://www.select-sport.com/', logoWidth: 160, logoHeight: 52, slug: 'unisport' },
+  { name: 'Myriad360', src: '/images/sponsors/myriad360.png',   url: 'https://myriad360.com/',        logoWidth: 226, logoHeight: 50, slug: 'myriad360', category: 'supreme' as const },
+  { name: 'Datum',     src: '/images/sponsors/datum.png',       url: 'https://datum.net/',            logoWidth: 240, logoHeight: 80, slug: 'datum',     category: 'supreme' as const },
+  { name: 'Lind Law',  src: '/images/sponsors/lind-law.png',    url: 'https://lindlaw.dk/',           logoWidth: 85,  logoHeight: 23, slug: 'lind',      category: 'premium' as const },
+  { name: 'Select',    src: '/images/sponsors/select-sport.png', url: 'https://dk.select-sport.com/', logoWidth: 200, logoHeight: 65, slug: 'select',    category: 'premium' as const },
+  { name: 'Unisport',  src: '/images/sponsors/unisport.png',    url: 'https://www.select-sport.com/', logoWidth: 160, logoHeight: 52, slug: 'unisport',  category: 'premium' as const },
 ];
 
 /** Resolve a sponsor's own internal partner page href, falling back to its external site. */
@@ -28,8 +28,13 @@ function partnerHref(slug: string | undefined, externalUrl: string): string {
   return locale === 'en' ? `/en/partners/${slug}` : `/partnere/${slug}`;
 }
 
+/** Returns up to `count` random items from `arr`, order shuffled. */
+function pickRandom<T>(arr: T[], count: number): T[] {
+  return [...arr].sort(() => Math.random() - 0.5).slice(0, count);
+}
+
 const strapiPartners = await fetchPartners();
-const partners = (
+const eligiblePartners = (
   strapiPartners.length > 0
     ? strapiPartners.map((p) => ({
         name: p.name,
@@ -38,9 +43,26 @@ const partners = (
         logoWidth: p.logoWidth,
         logoHeight: p.logoHeight,
         slug: p.slug,
+        category: p.category,
       }))
     : FALLBACK_PARTNERS
-).map((p) => ({ ...p, href: partnerHref(p.slug, p.url) }));
+)
+  // This strip is a logo showcase, so a partner without a real logo yet (no
+  // logo uploaded, or still the "logo coming soon" placeholder seeded for
+  // every partner that didn't have one) doesn't belong here — unlike the full
+  // partners listing page, which shows every partner regardless.
+  .filter((p) => p.src && !p.src.toLowerCase().includes('placeholder'));
+
+// Every supreme partner (top tier, small in number) plus a rotating random
+// sample of premium partners, so premium partners get even exposure over
+// time rather than the same few always being shown.
+const supremePartners = eligiblePartners.filter((p) => p.category === 'supreme');
+const premiumPartners = eligiblePartners.filter((p) => p.category === 'premium');
+
+const partners = [...supremePartners, ...pickRandom(premiumPartners, 3)].map((p) => ({
+  ...p,
+  href: partnerHref(p.slug, p.url),
+}));
 ---
 
 <!-- Sponsor row (white bg) -->
