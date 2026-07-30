@@ -63,6 +63,8 @@ export function isNavItemActive(
 export interface NavConfig {
   preHeader: { left: PreHeaderItem[] };
   primary: NavItem[];
+  /** Off-site live-stream link shown next to Shop/Search — English only, play.ab.dk has no Danish site. */
+  liveStream?: { label: string; href: string };
   login: string;
   myAccount: string;
   logout: string;
@@ -147,6 +149,7 @@ const en: NavConfig = {
     },
     { label: 'Shop', href: 'https://shop.ab.dk', external: true },
   ],
+  liveStream: { label: 'Live Match Stream', href: 'https://play.ab.dk' },
   login: 'MyAB login',
   myAccount: 'My MyAB account',
   logout: 'Log out',

@@ -250,6 +250,48 @@ export default function MobileMenu({
                 );
               })}
 
+              {nav.liveStream && (
+                <a
+                  href={nav.liveStream.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 py-3 text-sm font-black uppercase tracking-[0.06em] text-ab-neon"
+                  onClick={() => setOpen(false)}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M6 3l15 9-15 9V3Z"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  {nav.liveStream.label}
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M3 9L9 3M9 3H4M9 3V8"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+              )}
+
               <div className="mt-4 h-px bg-[#152214]" />
 
               {/* ── Social icons + lang switch ── */}
