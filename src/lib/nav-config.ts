@@ -149,7 +149,7 @@ const en: NavConfig = {
     },
     { label: 'Shop', href: 'https://shop.ab.dk', external: true },
   ],
-  liveStream: { label: 'Live Match Stream', href: 'https://play.ab.dk' },
+  liveStream: { label: 'Match Stream', href: 'https://play.ab.dk' },
   login: 'MyAB login',
   myAccount: 'My MyAB account',
   logout: 'Log out',
