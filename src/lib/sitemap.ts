@@ -21,7 +21,7 @@ export const SITEMAP_STORAGE_KEY = 'sitemap/sitemap.xml';
 const STATIC_ROUTES: [string, string][] = [
   ['/', '/en'],
   ['/kampe', '/en/matches'],
-  ['/hold', '/en/squad'],
+  ['/truppen', '/en/squad'],
   ['/nyheder', '/en/news'],
   ['/om/historik', '/en/about/history'],
   ['/om/stadion', '/en/about/stadium'],

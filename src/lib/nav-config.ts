@@ -78,7 +78,7 @@ const da: NavConfig = {
     ],
   },
   primary: [
-    { label: 'Hold', href: '/hold' },
+    { label: 'Truppen', href: '/truppen' },
     { label: 'Kampe', href: '/kampe' },
     { label: 'Nyheder', href: '/nyheder' },
     {
