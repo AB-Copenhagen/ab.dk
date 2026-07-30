@@ -1,4 +1,0 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "crons": [{ "path": "/api/media/optimize-webp", "schedule": "0 4 * * *" }]
-}
