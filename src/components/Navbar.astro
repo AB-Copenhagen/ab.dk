@@ -197,24 +197,26 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
   <div
     class="nav-main relative flex items-center px-8 lg:px-12">
     <!-- Logo -->
-    <div class="flex flex-1 items-center justify-start min-w-0">
-      <a
-        href={enPrefix + '/'}
-        aria-label={translate(locale, 'logoHome')}
-        class="shrink-0 hover:[filter:sepia(45%)_saturate(1.4)_brightness(0.9)] transition-all">
-        <img
-          src="/images/ab-logo.svg"
-          alt="AB 1889"
-          width="100"
-          height="64"
-          class="nav-logo"
-        />
-      </a>
-    </div>
+    <a
+      href={enPrefix + '/'}
+      aria-label={translate(locale, 'logoHome')}
+      class="shrink-0 hover:[filter:sepia(45%)_saturate(1.4)_brightness(0.9)] transition-all">
+      <img
+        src="/images/ab-logo.svg"
+        alt="AB 1889"
+        width="100"
+        height="64"
+        class="nav-logo"
+      />
+    </a>
 
-    <!-- Desktop nav links (viewport-centered via balanced side columns) -->
+    <!-- Desktop nav links: true flex sibling (not viewport-absolute), so it
+         centers within the actual space left between the logo and the
+         right-side buttons — never collides with them, and doesn't look
+         stranded near the logo when the right side is narrower (e.g. no
+         Match Stream button on the Danish nav). -->
     <nav
-      class="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8 xl:gap-12">
+      class="hidden lg:flex flex-1 items-center justify-center gap-8 xl:gap-12">
       {
         centeredNavItems.map((item) => {
           const isActive = isNavItemActive(currentPath, item, enPrefix);
@@ -256,8 +258,8 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
       }
     </nav>
 
-    <!-- Right: Shop + Search + Mobile -->
-    <div class="flex flex-1 items-center justify-end gap-3 min-w-0 shrink-0">
+    <!-- Right: Shop + Stream + Mobile -->
+    <div class="flex items-center gap-3 ml-auto min-w-0 shrink-0">
       {shopNavItem && (
         <a
           href={shopNavItem.href}
@@ -320,32 +322,6 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
           </svg>
         </a>
       )}
-      <button
-        id="search-open-btn"
-        class="hidden lg:flex items-center gap-2 font-black text-sm bg-[rgba(15,148,118,0.5)] text-white border-none rounded-[22px] px-5 py-[10px] cursor-pointer tracking-[-0.03em] hover:bg-[rgba(15,148,118,0.8)] transition-colors"
-        aria-label={translate(locale, 'search')}>
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          aria-hidden="true">
-          <circle
-            cx="6"
-            cy="6"
-            r="4.5"
-            stroke="currentColor"
-            stroke-width="1.4"
-          ></circle>
-          <path
-            d="M10 10l2.5 2.5"
-            stroke="currentColor"
-            stroke-width="1.4"
-            stroke-linecap="round"
-          ></path>
-        </svg>
-        {translate(locale, 'search')}
-      </button>
       <button
         type="button"
         id="mobile-menu-open-btn"
