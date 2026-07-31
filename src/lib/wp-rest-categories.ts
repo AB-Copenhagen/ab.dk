@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro';
 
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 import {
   fetchCollectionType,
   fetchCollectionTypeWithMeta,
@@ -131,13 +132,16 @@ export async function buildWpCategoriesResponse(
     mapCategoryToWpCategory(category, { site, apiBasePath, newsListingPath })
   );
 
-  return new Response(JSON.stringify(wpCategories), {
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'X-WP-Total': String(pagination.total),
-      'X-WP-TotalPages': String(pagination.pageCount),
-    },
+  const headers = new Headers({
+    'Content-Type': 'application/json; charset=UTF-8',
+    'X-WP-Total': String(pagination.total),
+    'X-WP-TotalPages': String(pagination.pageCount),
   });
+  // Same reasoning as buildWpPostsResponse — repeat/bot GETs with the same
+  // query params should hit the CDN, not Strapi, on every poll.
+  setCdnCacheHeaders(headers);
+
+  return new Response(JSON.stringify(wpCategories), { headers });
 }
 
 /**
@@ -168,7 +172,10 @@ export async function buildWpCategoryResponse(
     newsListingPath,
   });
 
-  return new Response(JSON.stringify(wpCategory), {
-    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+  const headers = new Headers({
+    'Content-Type': 'application/json; charset=UTF-8',
   });
+  setCdnCacheHeaders(headers);
+
+  return new Response(JSON.stringify(wpCategory), { headers });
 }
