@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 import { decodeHtml } from '@/lib/utils';
 
@@ -30,7 +31,11 @@ export const GET: APIRoute = async ({ url }) => {
     imageUrl: a.image?.url ? strapiMediaUrl(a.image.url) : null,
   }));
 
-  return new Response(JSON.stringify(shaped), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const headers = new Headers({ 'Content-Type': 'application/json' });
+  // Repeated searches for the same term (common queries, a user retyping,
+  // or bot fuzzing) hit the CDN instead of re-running the $containsi scan
+  // against Strapi/Postgres every time.
+  setCdnCacheHeaders(headers);
+
+  return new Response(JSON.stringify(shaped), { headers });
 };
