@@ -46,17 +46,20 @@ function formatDate(dateStr: string) {
       const home = isABHome ? 'AB' : (opponent ?? '—');
       const away = isABHome ? (opponent ?? '—') : 'AB';
       const scoreStr = formatEventScore(event.score);
+      const matchHref = locale === 'da' ? `/kamp/${event.eventId}` : `/en/match/${event.eventId}`;
+      const matchLabel = locale === 'da' ? `Se kamp: AB mod ${opponent}` : `View match: AB vs ${opponent}`;
       return (
-        <div class="py-3 px-4 transition-colors"
+        <div class="relative py-3 px-4 transition-colors"
              style={`border-bottom:1px solid ${divider};`}
              onmouseenter={`this.style.background='${hoverBg}'`}
              onmouseleave={`this.style.background='transparent'`}>
+          <a href={matchHref} class="absolute inset-0 z-0" aria-label={matchLabel} />
 
           <!-- Date row -->
-          <p class="text-xs mb-1" style={`color:${dateColor}`} {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_TIME_SHORT_OPTS)}>{formatDate(event.startDate)}</p>
+          <p class="relative z-10 pointer-events-none text-xs mb-1" style={`color:${dateColor}`} {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_TIME_SHORT_OPTS)}>{formatDate(event.startDate)}</p>
 
           <!-- Teams row -->
-          <div class="flex items-center gap-2">
+          <div class="relative z-10 pointer-events-none flex items-center gap-2">
             <span class="text-sm font-medium flex-1 text-right" style={`color:${nameColor};`}>
               {home}
             </span>
