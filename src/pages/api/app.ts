@@ -7,7 +7,7 @@ const PLAY_STORE_URL =
   'https://play.google.com/store/apps/details?id=dk.ab.club&hl=en_US&pli=1';
 
 /**
- * Single smart link for the MyAB QR code (see /api/qr/app.png) — one URL that
+ * Single smart link for the MyAB QR code (see /api/qr/app.svg) — one URL that
  * resolves to the right store per device, so the printed/shared code never
  * needs to change. Falls back to the MyAB page itself for desktop scans/clicks,
  * where neither store link applies.
