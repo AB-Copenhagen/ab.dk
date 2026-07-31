@@ -401,6 +401,18 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
 <style>
   /* ── Scroll-shrink ─────────────────────────────────────── */
 
+  /* The header's own height changes as it shrinks (sticky, so it's a normal-
+     flow element). Without this, Chrome's scroll anchoring "helpfully"
+     picks an anchor further down the page and yanks scrollY to compensate
+     for the header's height change — visible as a sudden jump/snap every
+     time the shrink threshold is crossed while scrolling. Scoping
+     overflow-anchor: none to the header itself isn't enough (the browser
+     just anchors to something else on the page instead) — it has to be
+     disabled on the scrolling root to stop the compensation outright. */
+  :global(html) {
+    overflow-anchor: none;
+  }
+
   /* Suppress all nav transitions during the initial paint */
   header.nav-no-transition .nav-utility,
   header.nav-no-transition .nav-main,
@@ -408,18 +420,18 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
     transition: none !important;
   }
 
-  /* Utility bar slides up. Overflow stays visible at rest so the "My
-     account" dropdown (absolutely positioned inside this bar) isn't
-     clipped by the 45px box — it only needs to hide content once the
-     bar is actually collapsing to zero height on scroll. */
+  /* Utility bar shrinks to a compact strip rather than collapsing to zero —
+     keeps the social/login/language links reachable while scrolled, and a
+     smaller height delta means a smaller scroll-anchoring jump below (the
+     header's own height change was making the browser yank the scroll
+     position to compensate — see overflow-anchor: none on the header). */
   .nav-utility {
     height: 45px;
     overflow: visible;
     transition: height 0.34s cubic-bezier(0.4, 0, 0.2, 1);
   }
   header.nav-scrolled .nav-utility {
-    height: 0;
-    overflow: hidden;
+    height: 32px;
   }
 
   /* Main nav morphs via padding — content breathes, not just the box */
