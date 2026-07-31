@@ -21,7 +21,14 @@ export interface ManualPlayer {
   quote?: { da: string; en: string };
 }
 
-export const MANUAL_PLAYERS: ManualPlayer[] = [];
+export const MANUAL_PLAYERS: ManualPlayer[] = [
+  {
+    id: -1,
+    name: 'Aidan Liu',
+    position: 'defender',
+    shirtNumber: 24,
+  },
+];
 
 export function findManualPlayer(id: number): ManualPlayer | undefined {
   return MANUAL_PLAYERS.find((p) => p.id === id);
