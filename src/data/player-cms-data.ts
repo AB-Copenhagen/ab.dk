@@ -80,6 +80,20 @@ export function getPlayerSlug(
   return `${siPlayerId}-${slugify(name)}`;
 }
 
+/**
+ * Resolves a legacy player URL that only ever encoded the name, with no
+ * leading SI id (e.g. the pre-2026-07-05 `/en/spiller/michael-stone`, since
+ * renamed to `/en/player/{id}-michael-stone`) — matches by slugified name
+ * against the given roster so a still-indexed old URL can redirect straight
+ * to the real player instead of bouncing to the squad listing.
+ */
+export function findPlayerIdByNameSlug(
+  players: { id: number; name: string }[],
+  nameSlug: string
+): number | null {
+  return players.find((p) => slugify(p.name) === nameSlug)?.id ?? null;
+}
+
 // All 29 entries previously here are now live in Strapi (migrated via
 // scripts/seed-player-overrides.mjs on 2026-07-30) — left empty as the
 // fallback tier for any player not yet given a Strapi row.

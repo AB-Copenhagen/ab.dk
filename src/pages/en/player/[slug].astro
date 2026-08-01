@@ -8,7 +8,8 @@ import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
 import { fetchPlayerCmsData, resolvePlayerPhoto, strapiMediaUrl } from '@/lib/strapi/client';
 import type { StrapiPlayer } from '@/lib/strapi/client';
 import { PENDING_PHOTO_SHIRT_NUMBERS } from '@/lib/si/player-photos';
-import { findManualPlayer } from '@/data/manual-players';
+import { findManualPlayer, manualPlayersAsSIPlayers } from '@/data/manual-players';
+import { findPlayerIdByNameSlug, getPlayerSlug } from '@/data/player-cms-data';
 import { abConfig } from '@/lib/config/ab';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { breadcrumbSchema } from '@/lib/structured-data';
@@ -21,6 +22,19 @@ const { slug } = Astro.params;
 const playerId = slug ? parseInt(slug, 10) : NaN;
 
 if (isNaN(playerId)) {
+  // Legacy pre-2026-07-05 URLs encoded only the player's name, with no
+  // leading SI id (e.g. /en/spiller/michael-stone, redirected here by
+  // redirects.ts) — resolve by name against the current roster so a
+  // still-indexed old URL lands on the real player, not the squad listing.
+  const roster = slug
+    ? [...(await fetchABPlayers('en').catch(() => [])), ...manualPlayersAsSIPlayers()]
+    : [];
+  const resolvedId = slug ? findPlayerIdByNameSlug(roster, slug) : null;
+  if (resolvedId != null) {
+    const resolvedName = roster.find((p) => p.id === resolvedId)?.name ?? null;
+    const canonicalSlug = getPlayerSlug(resolvedId, resolvedName);
+    return Astro.redirect(`/en/player/${canonicalSlug}`, 308);
+  }
   return Astro.redirect('/en/squad');
 }
 
