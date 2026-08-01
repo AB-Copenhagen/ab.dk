@@ -39,11 +39,13 @@ export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
 ]);
 
 // Shirt numbers to hide the photo for — either no photo exists anywhere yet
-// (14, 17: not on Wasabi, and SI's own player photo CDN only has a generic
+// (14, 17, 24: not on Wasabi, and SI's own player photo CDN only has a generic
 // ~2KB placeholder, unchanged since 2024), or SI does have a real photo (3,
 // 4, 10) but it's from the old kit/season, so it's withheld until a current
 // one is shot. Card keeps showing name, position, and number regardless.
-export const PENDING_PHOTO_SHIRT_NUMBERS = new Set<number>([3, 4, 10, 14, 17]);
+export const PENDING_PHOTO_SHIRT_NUMBERS = new Set<number>([
+  3, 4, 10, 14, 17, 24,
+]);
 
 export function getPlayerPhotoKey(
   name: string | null | undefined
