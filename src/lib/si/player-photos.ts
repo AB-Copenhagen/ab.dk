@@ -14,7 +14,7 @@ function toSlug(name: string): string {
       .normalize('NFD')
       .replace(/[̀-ͯ]/g, '') // strip diacritics
       .toLowerCase()
-      .replace(/'/g, '') // apostrophes (O'Vonte → ovonte)
+      .replace(/['’‘ʼ]/g, '') // apostrophes, straight or curly (O'Vonte → ovonte)
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
   );

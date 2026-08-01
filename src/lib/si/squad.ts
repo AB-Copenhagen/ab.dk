@@ -33,7 +33,7 @@ function slugifyName(name: string): string {
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
-    .replace(/'/g, '')
+    .replace(/['’‘ʼ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 }
