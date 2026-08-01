@@ -1,6 +1,7 @@
 import { strapi } from '@strapi/client';
 import { cache } from '@/lib/strapi-revalidate';
 import { isPreviewEnabled } from '@/lib/preview-context';
+import { normalizeApostrophes } from '@/lib/utils';
 import {
   getPlayerPhotoUrl,
   getSIPlayerPhotoUrl,
@@ -258,7 +259,15 @@ export async function fetchPlayerCmsData(
     locale,
   }).catch(() => []);
 
-  if (results[0]) return results[0];
+  if (results[0]) {
+    const row = results[0];
+    return {
+      ...row,
+      displayNameOverride: row.displayNameOverride
+        ? normalizeApostrophes(row.displayNameOverride)
+        : row.displayNameOverride,
+    };
+  }
 
   // Static fallback — used when Strapi is unreachable or this player hasn't
   // been entered into the players collection yet.
@@ -273,7 +282,9 @@ export async function fetchPlayerCmsData(
     formerClubs: entry.formerClubs,
     bio: entry.bio?.[l],
     quote: entry.quote?.[l],
-    displayNameOverride: entry.name,
+    displayNameOverride: entry.name
+      ? normalizeApostrophes(entry.name)
+      : entry.name,
     shirtNumberOverride: entry.shirtNumber,
     positionOverride: entry.position,
     // hidePhoto/hideFromSquad deliberately left unset (not `false`) here — a
@@ -299,7 +310,14 @@ export async function fetchAllPlayerOverrides(
     pagination: { pageSize: 200 },
     populate: PLAYER_PHOTO_POPULATE,
   }).catch(() => []);
-  return new Map(rows.map((row) => [row.siPlayerId, row]));
+  return new Map(
+    rows.map((row) => [
+      row.siPlayerId,
+      row.displayNameOverride
+        ? { ...row, displayNameOverride: normalizeApostrophes(row.displayNameOverride) }
+        : row,
+    ])
+  );
 }
 
 export interface ResolvedPlayerPhoto {

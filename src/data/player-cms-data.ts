@@ -2,6 +2,7 @@
 // whose SI ID has no row yet in Strapi's `player` content type (see
 // AGENTS.md's "Managing player overrides" section). Keyed by SI player ID.
 import type { PlayerPosition } from '@/lib/si/client';
+import { normalizeApostrophes } from '@/lib/utils';
 
 export interface StaticPlayerEntry {
   nickname?: string;
@@ -35,7 +36,8 @@ export function resolveName(
   siPlayerId: number,
   apiName: string | null
 ): string | null {
-  return PLAYER_CMS_DATA[siPlayerId]?.name ?? apiName;
+  const override = PLAYER_CMS_DATA[siPlayerId]?.name;
+  return (override ? normalizeApostrophes(override) : override) ?? apiName;
 }
 
 /** Prefers a manual position override over the (possibly stale) SI API value. */
@@ -61,7 +63,7 @@ export function slugify(name: string): string {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
-    .replace(/'/g, '')
+    .replace(/['’‘ʼ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 }

@@ -9,6 +9,7 @@
 import { CacheManager, FileCacheDriver } from '@datum-cloud/strapi-revalidate';
 
 import { abConfig, siConfig } from '../config/ab';
+import { normalizeApostrophes } from '../utils';
 
 // /tmp is writable on Vercel serverless; project dir is not.
 const CACHE_DIR = '/tmp/si-cache';
@@ -290,7 +291,14 @@ export async function fetchABPlayers(
   locale: Locale = 'da'
 ): Promise<SIPlayer[]> {
   if (!abConfig.teamId) return [];
-  return siFetch<SIPlayer[]>('/players', { teamId: abConfig.teamId, locale });
+  const players = await siFetch<SIPlayer[]>('/players', {
+    teamId: abConfig.teamId,
+    locale,
+  });
+  return players.map((p) => ({
+    ...p,
+    name: p.name ? normalizeApostrophes(p.name) : p.name,
+  }));
 }
 
 export interface SIPlayerMatchStat {
@@ -357,7 +365,13 @@ export async function fetchPlayerProfile(
   playerId: number,
   locale: Locale = 'da'
 ): Promise<SIPlayerProfile> {
-  return siFetch<SIPlayerProfile>(`/players/${playerId}/profile`, { locale });
+  const profile = await siFetch<SIPlayerProfile>(
+    `/players/${playerId}/profile`,
+    { locale }
+  );
+  return profile.name
+    ? { ...profile, name: normalizeApostrophes(profile.name) }
+    : profile;
 }
 
 // ── Team form ─────────────────────────────────────────────────────────────────
