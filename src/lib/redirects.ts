@@ -60,6 +60,17 @@ export const legacyRedirects = {
   '/myab/info': to('/myab'),
   '/myab/register': to('/myab'),
   '/myab/profile': to('/konto/profil'),
+  // Danish MyAB subpages never got redirects when the EN ones did (see the
+  // English section below) — same old WP/MyAB auth+content subpages,
+  // superseded by Descope + this page.
+  '/myab/game-highlights': to('/myab'),
+  '/myab/memberships': to('/myab'),
+  '/myab/benefits': to('/myab'),
+  '/myab/password': to('/myab'),
+  '/myab/login': to('/myab'),
+  '/myab/eksklusivt-indhold': to('/myab'),
+  '/myab/tickets': to('/myab'),
+  '/myab/competitions': to('/myab'),
   '/watch': to('/abtv'),
   '/sizzle': to('/abtv'),
   '/kontrolrapport': to('/om/stadion'),
@@ -98,6 +109,14 @@ export const legacyRedirects = {
   // redirect to the static /om/stadion just fine.
   '/kategori/[...path]': toTemp('/nyheder'), // Danish WP category-base variant of /category
   '/produkt-kategori/[...path]': toTemp('/products'),
+  // Old WooCommerce shop pages (individual products, size/colour attribute
+  // archives) — by far the largest single bucket in the Search Console 404
+  // export. No 1:1 mapping to the current `products` Strapi collection (or
+  // to Shopify handles on shop.ab.dk), so these land on the listing instead.
+  '/produkt/[...path]': toTemp('/products'),
+  '/product/[...path]': toTemp('/products'),
+  '/stoerrelse/[...path]': toTemp('/products'),
+  '/color/[...path]': toTemp('/products'),
   '/2-division/organisation': toTemp('/om/ledelse'), // exact match, static destination is fine here
   '/fanzone/[...path]': toTemp('/kampdag'),
   '/match/[...path]': toTemp('/kampe'), // old WP team-name-slug match pages, no ID mapping possible
@@ -163,6 +182,7 @@ export const legacyRedirects = {
   '/en/myab/game-highlights': to('/en/myab'),
   '/en/myab/password-reset': to('/en/myab'),
   '/en/myab/member-live-stream': to('/en/myab'),
+  '/en/myab/benefits': to('/en/myab'),
   '/en/myab/profile': to('/en/account/profile'),
   '/en/my-account': to('/en/account/profile'),
   '/en/auth-login': to('/en/account'),
@@ -182,6 +202,15 @@ export const legacyRedirects = {
   '/en/author/[...path]': to('/en/news'),
   '/en/whats-new/[...page]': to('/en/news'),
   '/en/tag/[...path]': toTemp('/en/news'),
+  // Old WooCommerce shop pages — see the Danish section's note above; same
+  // treatment. Both the singular-product and size-attribute WP paths used
+  // the Danish words ("produkt", "stoerrelse") even under /en/, while the
+  // colour attribute used the English word without the /en/ prefix — no
+  // typo, that's genuinely how the old site's URLs were structured.
+  '/en/produkt/[...path]': toTemp('/en/products'),
+  '/en/stoerrelse/[...path]': toTemp('/en/products'),
+  '/en/farve/[...path]': toTemp('/en/products'),
+  '/en/product-category/[...path]': toTemp('/en/products'),
   // No wildcard entry for old /en/partners/* sub-paths — see the Danish
   // section's note: /en/partners has its own `[slug].astro` dynamic route,
   // and a wildcard redirect here would swallow bare /en/partners itself via
