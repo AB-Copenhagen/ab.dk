@@ -36,6 +36,11 @@ export const legacyRedirects = {
   // are now identical.
   '/sponsorer': to('/partnere'),
   '/bliv-sponsor': to('/partnere'),
+  // Old WP individual sponsor detail pages (singular, distinct from the
+  // /sponsorer listing above) — partnere/[slug].astro already 302s an
+  // unmatched slug back to /partnere itself, so a churned/renamed sponsor
+  // falls back gracefully same as a still-current one lands on its real page.
+  '/sponsor/[slug]': to('/partnere/[slug]'),
   // /hold was the page's own URL until it was renamed to /truppen (the more
   // accurate Danish term for "squad") — this isn't a legacy WP redirect like
   // its neighbors, but the same permanent-308 mechanism applies cleanly.
@@ -137,6 +142,7 @@ export const legacyRedirects = {
   '/en/contact-us': to('/en/contact'),
   '/en/sponsors': to('/en/partners'),
   '/en/become-a-sponsor': to('/en/partners'),
+  '/en/sponsor/[slug]': to('/en/partners/[slug]'),
   '/en/the-troops': to('/en/squad'),
   '/en/whats-new': to('/en/news'),
   '/en/match-day': to('/en/matchday'),
