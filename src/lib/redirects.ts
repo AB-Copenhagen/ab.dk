@@ -114,6 +114,24 @@ export const legacyRedirects = {
   '/klubben/[...path]': toTemp('/'),
 
   // ── English ─────────────────────────────────────────────────────────────
+  // English pages briefly mirrored the Danish path segments (/en/hold,
+  // /en/kamp/[id], /en/spiller/[slug], etc.) before the 2026-07-05
+  // "SEO-optimised English slugs" rename gave every EN page its own English
+  // slug. Google had already indexed the pre-rename URLs, so these need
+  // redirects same as any other renamed page — the dynamic ones forward
+  // their captured segment to preserve the id/slug (a real match/player,
+  // unlike the WP-era `/match/[...path]` and `/spiller` entries below, which
+  // have no 1:1 mapping to fall back on).
+  '/en/hold': to('/en/squad'),
+  '/en/kampe': to('/en/matches'),
+  '/en/nyheder': to('/en/news'),
+  '/en/kamp/[slug]': to('/en/match/[slug]'),
+  '/en/spiller/[slug]': to('/en/player/[slug]'),
+  '/en/stab/[slug]': to('/en/staff/[slug]'),
+  '/en/om/historik': to('/en/about/history'),
+  '/en/om/stadion': to('/en/about/stadium'),
+  '/en/konto': to('/en/account'),
+  '/en/konto/profil': to('/en/account/profile'),
   '/en/history': to('/en/about/history'),
   '/en/gladsaxe-stadium': to('/en/about/stadium'),
   '/en/contact-us': to('/en/contact'),
