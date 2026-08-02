@@ -23,7 +23,12 @@ const fallback = new VercelRuntimeCacheDriver({ namespace: 'strapi-fallback' });
 export const cache = new CacheManager({
   primary,
   fallback,
-  defaultTtl: 60 * 5, // 5 minutes
+  // Long TTL is safe because the Strapi webhook below invalidates tags
+  // instantly on publish — this only matters as a fallback if a webhook
+  // delivery is ever missed. Runtime Cache Writes were the largest metered
+  // line item on the Vercel bill under the previous 5-minute TTL, since every
+  // SSR page request re-triggers a primary+fallback write on each miss.
+  defaultTtl: 60 * 60 * 24, // 24 hours
 });
 
 // strapi-revalidate's default tag mapping derives a tag from the webhook
