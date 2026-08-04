@@ -1,5 +1,6 @@
 import {
   CacheManager,
+  MemoryCacheDriver,
   createWebhookHandler,
   revalidateConfigSchema,
 } from '@datum-cloud/strapi-revalidate';
@@ -18,7 +19,14 @@ const STRAPI_WEBHOOK_SECRET =
 // previous /tmp file cache, which was private to a single instance and reset
 // on every cold start/deploy, so the TTL below barely ever paid off in practice.
 const primary = new VercelRuntimeCacheDriver({ namespace: 'strapi' });
-const fallback = new VercelRuntimeCacheDriver({ namespace: 'strapi-fallback' });
+// CacheManager mirrors every primary write to this fallback unconditionally
+// (see its docs) — it's meant as free insurance for a `file`-backed primary,
+// so pointing it at Runtime Cache too was silently doubling every metered
+// write. In-memory is a fine fallback here: Fluid Compute reuses instances
+// across concurrent requests, so it still protects against a Strapi outage
+// for the life of a warm instance — it just won't survive a cold start,
+// unlike the Runtime Cache-backed fallback it replaces.
+const fallback = new MemoryCacheDriver();
 
 export const cache = new CacheManager({
   primary,
