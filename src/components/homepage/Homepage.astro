@@ -5,7 +5,7 @@ import {
   fetchStaffRoster,
   strapiMediaUrl,
 } from '@/lib/strapi/client';
-import { fetchABEvents, getTeamLogoSrc } from '@/lib/si/client';
+import { fetchABEvents, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
 import { getSquadPlayers } from '@/lib/si/squad';
 import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
 import SquadCard from '@/components/SquadCard.astro';
@@ -73,6 +73,7 @@ const [articles, events, players, staffRoster, shopifyProducts, cmsHeroSlides] =
       limit: 200,
       fromDate: seasonFrom.toISOString().slice(0, 10),
       toDate: seasonTo.toISOString().slice(0, 10),
+      allCompetitions: true,
     }).catch(() => [] as any[]),
     getSquadPlayers(locale),
     fetchStaffRoster(locale),
@@ -99,6 +100,7 @@ const upcomingEvents = events
 const nextMatch = upcomingEvents.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
 );
+const nextMatchIsCup = nextMatch ? isCupMatch(nextMatch) : false;
 
 const abHome = nextMatch ? nextMatch.homeId === abConfig.teamId : false;
 const opponent = nextMatch
@@ -666,11 +668,18 @@ const heroSlides: HeroSlide[] =
             href={matchHref(nextMatch.eventId)}
             id="next-match"
             class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col no-underline transition-all duration-200 hover:brightness-110 hover:shadow-[0_4px_20px_rgba(0,0,0,0.15)]">
-            <h2
-              class="font-black text-white leading-[0.86] tracking-[-0.04em] mb-6"
-              style="font-size:clamp(1.75rem,3vw,2.1875rem)">
-              {translate(locale, 'nextMatch')}
-            </h2>
+            <div class="flex items-center gap-2 mb-6">
+              <h2
+                class="font-black text-white leading-[0.86] tracking-[-0.04em]"
+                style="font-size:clamp(1.75rem,3vw,2.1875rem)">
+                {translate(locale, 'nextMatch')}
+              </h2>
+              {nextMatchIsCup && nextMatch && (
+                <span class="inline-flex items-center leading-none font-black uppercase tracking-[0.06em] text-[0.65rem] text-ab-green bg-ab-beige rounded-full px-2.5 py-1 shrink-0">
+                  {cupTournamentLabel(nextMatch, locale)}
+                </span>
+              )}
+            </div>
             <div class="flex items-center justify-between gap-4 flex-1">
               <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
                 <Img
