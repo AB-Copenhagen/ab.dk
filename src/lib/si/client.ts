@@ -102,7 +102,9 @@ export function cupTournamentLabel(
   event: Pick<SIEvent, 'tournamentName'>,
   locale: Locale
 ): string {
-  const sponsor = (event.tournamentName ?? '').replace(/\s*pokalen\s*$/i, '').trim();
+  const sponsor = (event.tournamentName ?? '')
+    .replace(/\s*pokalen\s*$/i, '')
+    .trim();
   const suffix = locale === 'da' ? 'Pokal' : 'Cup';
   return sponsor ? `${sponsor} ${suffix}` : suffix;
 }
@@ -227,7 +229,7 @@ export async function fetchABEvents(
   const data = await siFetch<{ events: SIEvent[] }>('/events-v2', {
     teamId: abConfig.teamId,
     tournamentId: abConfig.tournamentId ?? undefined,
-    seasonId: allCompetitions ? undefined : abConfig.seasonId ?? undefined,
+    seasonId: allCompetitions ? undefined : (abConfig.seasonId ?? undefined),
     sportId: 1,
     limit: 100,
     locale: params.locale ?? 'da',
