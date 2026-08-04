@@ -1,6 +1,6 @@
 ---
 import { localePath, translate, type Locale } from '@/lib/i18n';
-import { getTeamLogoSrc, type SIEvent } from '@/lib/si/client';
+import { getTeamLogoSrc, isCupMatch, cupTournamentLabel, type SIEvent } from '@/lib/si/client';
 import { fmtDate, dtAttrs, GRID_DATE_OPTS, TIME_12H_OPTS } from '@/lib/dateFormat';
 
 interface Props {
@@ -77,6 +77,7 @@ function eventVenue(event: SIEvent): string {
           event.statusType === 'finished'
             ? formatEventScore(event.score)
             : '–';
+        const isCup = isCupMatch(event);
 
         return (
           <div
@@ -89,7 +90,16 @@ function eventVenue(event: SIEvent): string {
               class="absolute inset-0"
               aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${event.homeName} vs ${event.awayName}`}
             />
-            <span class="widget-td font-black"><span {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{dateStr}</span> – <span {...dtAttrs(event.startDate, 'en-US', TIME_12H_OPTS)}>{timeStr}</span></span>
+            <span class="widget-td font-black flex items-center gap-1.5">
+              <span>
+                <span {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{dateStr}</span> – <span {...dtAttrs(event.startDate, 'en-US', TIME_12H_OPTS)}>{timeStr}</span>
+              </span>
+              {isCup && (
+                <span class="inline-flex items-center leading-none text-[0.6rem] font-black uppercase tracking-[0.06em] text-ab-green bg-ab-beige rounded-full px-1.5 py-1 shrink-0">
+                  {cupTournamentLabel(event, locale)}
+                </span>
+              )}
+            </span>
             <span class="widget-td font-normal flex items-center gap-2 justify-end">
               {event.homeName}
               <img
