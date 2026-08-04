@@ -84,6 +84,29 @@ export function formatEventScore(
   return `${h}-${a}`;
 }
 
+/**
+ * True for Danish Cup fixtures. SI has no stable tournament ID for the cup —
+ * it changes every season with the title sponsor (DBU Pokalen, Oddset
+ * Pokalen, Betano Pokalen, …) — but "Pokalen" is always in the name.
+ */
+export function isCupMatch(event: Pick<SIEvent, 'tournamentName'>): boolean {
+  return /pokalen/i.test(event.tournamentName ?? '');
+}
+
+/**
+ * Cup fixtures are branded by their title sponsor each season ("Betano
+ * Pokalen", "Oddset Pokalen", …) — derive a "<Sponsor> Cup"/"<Sponsor> Pokal"
+ * label from that instead of a generic "Cup match" tag.
+ */
+export function cupTournamentLabel(
+  event: Pick<SIEvent, 'tournamentName'>,
+  locale: Locale
+): string {
+  const sponsor = (event.tournamentName ?? '').replace(/\s*pokalen\s*$/i, '').trim();
+  const suffix = locale === 'da' ? 'Pokal' : 'Cup';
+  return sponsor ? `${sponsor} ${suffix}` : suffix;
+}
+
 const TEAM_LOGO_CDN =
   (import.meta.env.SI_TEAM_LOGO_BASE_URL as string | undefined)?.replace(
     /\/$/,
@@ -186,21 +209,29 @@ export interface FetchEventsParams {
   status?: EventStatus;
   limit?: number;
   locale?: Locale;
+  /**
+   * Include every competition AB plays (league + cup) instead of scoping to
+   * the league season. Only safe to set when fromDate/toDate bound the query —
+   * SI's `seasonId` filter is what excludes the cup, and dropping it with no
+   * date range falls through to the API's unbounded default (events back to 1999).
+   */
+  allCompetitions?: boolean;
 }
 
 /** Fetch AB's fixtures and results for the current season. */
 export async function fetchABEvents(
   params: FetchEventsParams = {}
 ): Promise<SIEvent[]> {
+  const { allCompetitions, ...rest } = params;
   // API returns { events: SIEvent[] }
   const data = await siFetch<{ events: SIEvent[] }>('/events-v2', {
     teamId: abConfig.teamId,
     tournamentId: abConfig.tournamentId ?? undefined,
-    seasonId: abConfig.seasonId ?? undefined,
+    seasonId: allCompetitions ? undefined : abConfig.seasonId ?? undefined,
     sportId: 1,
     limit: 100,
     locale: params.locale ?? 'da',
-    ...params,
+    ...rest,
   });
   return data.events ?? [];
 }
