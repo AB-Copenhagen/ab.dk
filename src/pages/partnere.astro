@@ -76,12 +76,13 @@ const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
           <a
             href={`/partnere/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-6 py-10 flex-1">
+            <div class="flex items-center justify-center px-6 py-10 h-40 overflow-hidden">
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class="object-contain object-center max-w-full"
-                style={`width:${p.logoWidth}px;height:${p.logoHeight}px`}
+                width={p.logoWidth}
+                height={p.logoHeight}
+                class="object-contain object-center h-40 w-auto max-w-full"
                 loading="lazy"
               />
             </div>
@@ -112,12 +113,13 @@ const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
           <a
             href={`/partnere/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-6 py-10 flex-1">
+            <div class="flex items-center justify-center px-6 py-10 h-40 overflow-hidden">
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class="object-contain object-center max-w-full"
-                style={`width:${p.logoWidth}px;height:${p.logoHeight}px`}
+                width={p.logoWidth}
+                height={p.logoHeight}
+                class="object-contain object-center h-40 w-auto max-w-full"
                 loading="lazy"
               />
             </div>
@@ -147,12 +149,13 @@ const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
           <a
             href={`/partnere/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
+            <div class="flex items-center justify-center px-5 py-7 h-24 overflow-hidden">
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class="max-w-full object-contain"
-                style={`width:${p.logoWidth}px;height:${p.logoHeight}px`}
+                width={p.logoWidth}
+                height={p.logoHeight}
+                class="h-24 w-auto max-w-full object-contain"
                 loading="lazy"
               />
             </div>
@@ -184,12 +187,13 @@ const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
           <a
             href={`/partnere/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
+            <div class="flex items-center justify-center px-5 py-7 h-24 overflow-hidden">
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class="max-w-full object-contain"
-                style={`width:${p.logoWidth}px;height:${p.logoHeight}px`}
+                width={p.logoWidth}
+                height={p.logoHeight}
+                class="h-24 w-auto max-w-full object-contain"
                 loading="lazy"
               />
             </div>

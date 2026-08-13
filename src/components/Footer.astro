@@ -79,15 +79,14 @@ const partners = [...supremePartners, ...pickRandom(premiumPartners, 3)].map((p)
               target={isInternal ? undefined : '_blank'}
               rel={isInternal ? undefined : 'noreferrer'}
               aria-label={name}
-              class={`shrink-0 ${isLoneLastItem ? 'col-span-2 md:col-span-1' : ''}`}
+              class={`shrink-0 flex items-center justify-center h-14 ${isLoneLastItem ? 'col-span-2 md:col-span-1' : ''}`}
             >
               <Img
                 src={src}
                 alt={name}
                 width={logoWidth}
                 height={logoHeight}
-                class="sponsor-logo object-contain object-center"
-                style={`width:${logoWidth}px;height:${logoHeight}px`}
+                class="sponsor-logo object-contain object-center h-14 w-auto max-w-[160px]"
               />
             </a>
           );
