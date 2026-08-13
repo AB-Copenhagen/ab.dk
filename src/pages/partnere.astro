@@ -5,15 +5,26 @@ import heroImage from '@/assets/images/IMG_7926.jpeg';
 import { fetchPartners, strapiMediaUrl, type StrapiPartner } from '@/lib/strapi/client';
 import { clampLogoSize } from '@/lib/partner-logo-size';
 
-/** Attaches a `logoSize` clamped to this section's ceiling to each partner. */
+/**
+ * Attaches a `logoSize` clamped to this section's ceiling to each partner.
+ * `scale` inflates both the partner's curated size and the ceiling together,
+ * so it grows every logo in the section uniformly (e.g. 1.25 = 25% bigger)
+ * without changing which entries count as outliers relative to their peers.
+ */
 function withLogoSize(
   partners: StrapiPartner[],
   maxWidth: number,
-  maxHeight: number
+  maxHeight: number,
+  scale = 1
 ) {
   return partners.map((p) => ({
     ...p,
-    logoSize: clampLogoSize(p.logoWidth, p.logoHeight, maxWidth, maxHeight),
+    logoSize: clampLogoSize(
+      (p.logoWidth ?? 0) * scale,
+      (p.logoHeight ?? 0) * scale,
+      maxWidth * scale,
+      maxHeight * scale
+    ),
   }));
 }
 
@@ -21,7 +32,8 @@ const allPartners = await fetchPartners('da');
 const supremePartners = withLogoSize(
   allPartners.filter((p) => p.category === 'supreme'),
   280,
-  200
+  200,
+  1.25
 );
 const premiumPartners = withLogoSize(
   allPartners.filter((p) => p.category === 'premium'),
