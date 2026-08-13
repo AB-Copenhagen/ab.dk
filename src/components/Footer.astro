@@ -1,6 +1,7 @@
 ---
 import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
 import Img from '@/components/Img.astro';
+import { clampLogoSize } from '@/lib/partner-logo-size';
 
 interface Props {
   locale?: string;
@@ -59,10 +60,24 @@ const eligiblePartners = (
 const supremePartners = eligiblePartners.filter((p) => p.category === 'supreme');
 const premiumPartners = eligiblePartners.filter((p) => p.category === 'premium');
 
-const partners = [...supremePartners, ...pickRandom(premiumPartners, 3)].map((p) => ({
-  ...p,
-  href: partnerHref(p.slug, p.url),
-}));
+// Supreme partners get a slightly bigger ceiling than premium — they pay
+// more, and this mirrors the original hardcoded sizing (Datum/Myriad360
+// bigger than Lind/Select/Unisport) while still capping any one outlier
+// (e.g. a Strapi entry authored at a mismatched size) from dominating the row.
+function logoCeiling(category: string): { maxWidth: number; maxHeight: number } {
+  return category === 'supreme'
+    ? { maxWidth: 260, maxHeight: 90 }
+    : { maxWidth: 200, maxHeight: 65 };
+}
+
+const partners = [...supremePartners, ...pickRandom(premiumPartners, 3)].map((p) => {
+  const { maxWidth, maxHeight } = logoCeiling(p.category);
+  return {
+    ...p,
+    href: partnerHref(p.slug, p.url),
+    logoSize: clampLogoSize(p.logoWidth, p.logoHeight, maxWidth, maxHeight),
+  };
+});
 ---
 
 <!-- Sponsor row (white bg) -->
@@ -70,7 +85,7 @@ const partners = [...supremePartners, ...pickRandom(premiumPartners, 3)].map((p)
   <div class="max-w-7xl mx-auto px-8">
     <div class="grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-10 md:flex md:flex-nowrap md:justify-between md:gap-8">
       {
-        partners.map(({ src, name, href, logoWidth, logoHeight }, index) => {
+        partners.map(({ src, name, href, logoSize }, index) => {
           const isInternal = href.startsWith('/');
           const isLoneLastItem = index === partners.length - 1 && partners.length % 2 === 1;
           return (
@@ -79,14 +94,15 @@ const partners = [...supremePartners, ...pickRandom(premiumPartners, 3)].map((p)
               target={isInternal ? undefined : '_blank'}
               rel={isInternal ? undefined : 'noreferrer'}
               aria-label={name}
-              class={`shrink-0 flex items-center justify-center h-14 ${isLoneLastItem ? 'col-span-2 md:col-span-1' : ''}`}
+              class={`shrink-0 ${isLoneLastItem ? 'col-span-2 md:col-span-1' : ''}`}
             >
               <Img
                 src={src}
                 alt={name}
-                width={logoWidth}
-                height={logoHeight}
-                class="sponsor-logo object-contain object-center h-14 w-auto max-w-[160px]"
+                width={logoSize.width}
+                height={logoSize.height}
+                style={`width:${logoSize.width}px;height:${logoSize.height}px`}
+                class="sponsor-logo object-contain object-center max-w-full"
               />
             </a>
           );

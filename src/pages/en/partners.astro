@@ -2,13 +2,42 @@
 import Base from '@/layouts/Base.astro';
 import Img from '@/components/Img.astro';
 import heroImage from '@/assets/images/IMG_7926.jpeg';
-import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
+import { fetchPartners, strapiMediaUrl, type StrapiPartner } from '@/lib/strapi/client';
+import { clampLogoSize } from '@/lib/partner-logo-size';
+
+/** Attaches a `logoSize` clamped to this section's ceiling to each partner. */
+function withLogoSize(
+  partners: StrapiPartner[],
+  maxWidth: number,
+  maxHeight: number
+) {
+  return partners.map((p) => ({
+    ...p,
+    logoSize: clampLogoSize(p.logoWidth, p.logoHeight, maxWidth, maxHeight),
+  }));
+}
 
 const allPartners = await fetchPartners('en');
-const supremePartners = allPartners.filter((p) => p.category === 'supreme');
-const premiumPartners = allPartners.filter((p) => p.category === 'premium');
-const localHeroPartners = allPartners.filter((p) => p.category === 'local-hero');
-const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
+const supremePartners = withLogoSize(
+  allPartners.filter((p) => p.category === 'supreme'),
+  280,
+  200
+);
+const premiumPartners = withLogoSize(
+  allPartners.filter((p) => p.category === 'premium'),
+  200,
+  90
+);
+const localHeroPartners = withLogoSize(
+  allPartners.filter((p) => p.category === 'local-hero'),
+  200,
+  60
+);
+const ab1889Partners = withLogoSize(
+  allPartners.filter((p) => p.category === 'ab1889'),
+  200,
+  60
+);
 ---
 
 <Base
@@ -82,9 +111,10 @@ const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                width={p.logoWidth}
-                height={p.logoHeight}
-                class="object-contain object-center h-64 w-auto max-w-[280px]"
+                width={p.logoSize.width}
+                height={p.logoSize.height}
+                style={`width:${p.logoSize.width}px;height:${p.logoSize.height}px`}
+                class="object-contain object-center max-w-full"
                 loading="lazy"
               />
             </div>
@@ -118,9 +148,10 @@ const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                width={p.logoWidth}
-                height={p.logoHeight}
-                class="object-contain object-center h-40 w-auto max-w-[160px]"
+                width={p.logoSize.width}
+                height={p.logoSize.height}
+                style={`width:${p.logoSize.width}px;height:${p.logoSize.height}px`}
+                class="object-contain object-center max-w-full"
                 loading="lazy"
               />
             </div>
@@ -154,9 +185,10 @@ const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                width={p.logoWidth}
-                height={p.logoHeight}
-                class="h-24 w-auto max-w-[180px] object-contain"
+                width={p.logoSize.width}
+                height={p.logoSize.height}
+                style={`width:${p.logoSize.width}px;height:${p.logoSize.height}px`}
+                class="max-w-full object-contain"
                 loading="lazy"
               />
             </div>
@@ -190,9 +222,10 @@ const ab1889Partners = allPartners.filter((p) => p.category === 'ab1889');
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                width={p.logoWidth}
-                height={p.logoHeight}
-                class="h-24 w-auto max-w-[180px] object-contain"
+                width={p.logoSize.width}
+                height={p.logoSize.height}
+                style={`width:${p.logoSize.width}px;height:${p.logoSize.height}px`}
+                class="max-w-full object-contain"
                 loading="lazy"
               />
             </div>
