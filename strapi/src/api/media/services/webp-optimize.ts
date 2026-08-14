@@ -6,7 +6,8 @@
  * Strapi's own `sizeOptimization`/`responsiveDimensions` (see config/plugins.ts)
  * only run at upload time and never change format — this is the separate,
  * scheduled backfill (and steady-state pass) that gets everything to WebP,
- * triggered on a cron via the `media.optimizeWebp` controller.
+ * run daily by config/cron-tasks.ts (also reachable on demand via the
+ * `media.optimizeWebp` controller for manual/testing use).
  */
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { Core } from '@strapi/strapi';
