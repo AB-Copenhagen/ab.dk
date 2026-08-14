@@ -1,23 +1,25 @@
 ---
 import { getPersonCardSizing } from '@/lib/person-card-sizing';
-import type { StaffMember } from '@/data/coaching-staff';
 import { staffInitials } from '@/data/coaching-staff';
-import { getPhotoPositionForSlug } from '@/lib/si/player-photos';
+import type { StaffRosterEntry } from '@/lib/strapi/client';
 
 interface Props {
-  staff: StaffMember;
+  staff: StaffRosterEntry;
   locale: 'da' | 'en';
 }
 
 const { staff, locale } = Astro.props;
 
-const roleLabel = staff.role[locale];
+const roleLabel = staff.role;
 const initials = staffInitials(staff.name);
-const photoPosition = getPhotoPositionForSlug(staff.slug);
+const photoPosition = staff.photoPosition;
 
+// Surname gets its own line, alone — every other part shares the line above it.
+// Same rationale as SquadCard.astro: a long surname is far more likely to fit
+// whole when it isn't sharing its line with a first/middle name.
 const nameParts = staff.name.trim().split(' ');
-const firstName = nameParts[0];
-const lastName = nameParts.slice(1).join(' ');
+const firstLine = nameParts.slice(0, -1).join(' ');
+const surname = nameParts[nameParts.length - 1];
 
 // Same overflow risk as SquadCard: a long name or a wrapping two-word role (e.g.
 // "Head Coach") can push the initials past the bottom of the card.
@@ -38,25 +40,30 @@ const staffHref = locale === 'da' ? `/stab/${staff.slug}` : `/en/staff/${staff.s
 
   <!-- Photo: right 52%, full height of card frame -->
   <div class="absolute top-0 bottom-0 right-0 overflow-hidden rounded-r-xl w-[52%]">
-    <img
-      src={staff.photo}
-      alt={staff.name}
-      loading="lazy"
-      class="absolute inset-0 w-full h-full object-cover"
-      style={`object-position: ${photoPosition};`}
-      onerror="this.style.opacity='0'"
-    />
+    {
+      staff.photoUrl ? (
+        <img
+          src={staff.photoUrl}
+          alt={staff.name}
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+          style={`object-position: ${photoPosition};`}
+          onerror="this.style.opacity='0'"
+        />
+      ) : null
+    }
   </div>
 
-  <!-- Text layer: left 52%, pinned to bottom 84% of frame. overflow-hidden is a safety net,
-       see SquadCard.astro for the full rationale. -->
+  <!-- Text layer: left 52%, pinned to bottom 84% of frame. No overflow clipping on the name —
+       an exceptionally long surname is allowed to bleed rightward over the photo rather than
+       being clipped invisibly or force-broken mid-word — same as SquadCard.astro. -->
   <div
-    class="absolute inset-x-0 bottom-0 flex flex-col justify-between overflow-hidden p-4 md:p-5 z-10 h-[84.1%] w-[52%]">
+    class="absolute inset-x-0 bottom-0 flex flex-col justify-between p-4 md:p-5 z-10 h-[84.1%] w-[52%]">
     <div>
       <p
         class="font-black leading-tight text-ab-green"
-        style={`font-size:${nameFontClamp}; letter-spacing:-0.025em; text-wrap:balance; overflow-wrap:anywhere;`}>
-        {firstName}<br />{lastName}
+        style={`font-size:${nameFontClamp}; letter-spacing:-0.025em;`}>
+        {firstLine ? (<>{firstLine}<br /><span class="whitespace-nowrap">{surname}</span></>) : <span class="whitespace-nowrap">{surname}</span>}
       </p>
       <p
         class="mt-1 font-medium"

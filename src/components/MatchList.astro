@@ -1,10 +1,10 @@
 ---
 import { abConfig } from '@/lib/config/ab';
 import { translate, type Locale } from '@/lib/i18n';
-import { getTeamLogoSrc, formatEventScore, type SIEvent } from '@/lib/si/client';
+import { getTeamLogoSrc, formatEventScore, isCupMatch, cupTournamentLabel, type SIEvent } from '@/lib/si/client';
 import { fmtDate, dtAttrs, TIME_OPTS, GRID_DATE_OPTS } from '@/lib/dateFormat';
 
-export type MatchListFilter = 'upcoming' | 'home' | 'away' | 'results';
+export type MatchListFilter = 'upcoming' | 'home' | 'away' | 'cup' | 'results';
 
 interface Props {
   locale: Locale;
@@ -30,6 +30,7 @@ function emptyMessage(f: MatchListFilter): string {
   switch (f) {
     case 'home':    return translate(locale, 'noHomeFixtures');
     case 'away':    return translate(locale, 'noAwayFixtures');
+    case 'cup':     return translate(locale, 'noCupFixtures');
     case 'results': return translate(locale, 'noResultsFound');
     case 'upcoming':return translate(locale, 'noUpcomingFixtures');
     default: {
@@ -69,6 +70,7 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
         const awayName = isABHome ? event.awayName : 'AB';
         const venue = eventVenue(event, isABHome);
         const round = eventRound(event);
+        const isCup = isCupMatch(event);
         const dateKey = event.startDate.slice(0, 10);
         const isFirst = !seenDates.has(dateKey);
         if (isFirst) seenDates.add(dateKey);
@@ -86,7 +88,13 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               <span class={`text-xs font-bold tracking-[0.04em] ${isABHome ? 'text-ab-neon' : 'text-[#888]'}`}>
                 {isABHome ? translate(locale, 'homeMatch') : translate(locale, 'awayMatch')}
               </span>
-              <span class={`text-xs ${isABHome ? 'text-white/60' : 'text-[#999]'}`}>{translate(locale, 'secondDivision')}</span>
+              {isCup ? (
+                <span class="inline-flex items-center leading-none text-[0.65rem] font-black uppercase tracking-[0.05em] text-ab-green bg-ab-beige rounded-full px-2 py-1 shrink-0">
+                  {cupTournamentLabel(event, locale)}
+                </span>
+              ) : (
+                <span class={`text-xs ${isABHome ? 'text-white/60' : 'text-[#999]'}`}>{translate(locale, 'secondDivision')}</span>
+              )}
             </div>
             <div class="match-card-body">
               <div class="match-card-date">
@@ -153,6 +161,7 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
         const homeName = isABHome ? 'AB' : event.homeName;
         const awayName = isABHome ? event.awayName : 'AB';
         const venue = eventVenue(event, isABHome);
+        const isCup = isCupMatch(event);
         const dateKey = event.startDate.slice(0, 10);
         const isFirst = !seenDates.has(dateKey);
         if (isFirst) seenDates.add(dateKey);
@@ -165,8 +174,15 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
             class={`scroll-mt-24 bg-white rounded-[4px] overflow-hidden transition-all duration-150 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] flex flex-col border ${isABHome ? 'border-ab-green/30 border-t-[3px] border-t-ab-neon' : 'border-gray-200 hover:border-gray-300'}`}>
 
             <div class={`px-4 py-1.5 flex items-center justify-between border-b shrink-0 gap-2 ${isABHome ? 'bg-ab-green border-ab-green' : 'bg-[#F0F4F0] border-gray-200'}`}>
-              <span class={`text-xs font-medium shrink-0 ${isABHome ? 'text-white/80' : 'text-[#555]'}`}>
-                <span {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{fmtGridDate(event.startDate)}</span> · <span {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtTime(event.startDate)}</span>
+              <span class="flex items-center gap-1.5 min-w-0 shrink">
+                {isCup && (
+                  <span class="inline-flex items-center leading-none text-[0.6rem] font-black uppercase tracking-[0.05em] text-ab-green bg-ab-beige rounded-full px-1.5 py-1 shrink-0">
+                    {cupTournamentLabel(event, locale)}
+                  </span>
+                )}
+                <span class={`text-xs font-medium shrink-0 ${isABHome ? 'text-white/80' : 'text-[#555]'}`}>
+                  <span {...dtAttrs(event.startDate, dateLocale, GRID_DATE_OPTS)}>{fmtGridDate(event.startDate)}</span> · <span {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtTime(event.startDate)}</span>
+                </span>
               </span>
               {isLive ? (
                 <span class="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-ab-green shrink-0">

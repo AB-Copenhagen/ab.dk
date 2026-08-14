@@ -12,6 +12,22 @@ export function decodeHtml(str: string | null | undefined): string {
     .replace(/&apos;/g, "'");
 }
 
+// SI and Strapi disagree on apostrophe style — SI's raw API sometimes emits a
+// curly apostrophe (either literal U+2019 or an HTML entity form) while other
+// records use a straight one, so the same player's name renders inconsistently
+// and slugifies to two different URLs depending on which source answered last
+// (e.g. "O'Vonte Mullings" vs "O’Vonte Mullings"). Canonicalize to straight `'`
+// as soon as a name enters the system, so every downstream consumer — display,
+// slugify, JSON-LD — sees one consistent value.
+export function normalizeApostrophes(str: string): string {
+  return str
+    .replace(
+      /&rsquo;|&#8217;|&#x2019;|&lsquo;|&#8216;|&#x2018;|&apos;|&#39;|&#x27;/gi,
+      "'"
+    )
+    .replace(/[‘’ʼ]/g, "'");
+}
+
 export const truncate = (text: string | null | undefined, length: number) => {
   if (!text) return '';
   return text.length > length ? `${text.substring(0, length)}...` : text;
@@ -53,6 +69,16 @@ export function isPlausibleContentSlug(
 ): slug is string {
   if (!slug || !SLUG_FORMAT_RE.test(slug)) return false;
   return !KNOWN_SCANNER_SLUGS.has(slug);
+}
+
+/** Lowercase, hyphenated ASCII slug (diacritics stripped) — for anchor IDs, not routing. */
+export function slugify(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 /** Escape HTML special characters before interpolating untrusted input into an HTML string. */

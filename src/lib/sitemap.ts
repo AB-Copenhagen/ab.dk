@@ -1,9 +1,9 @@
-import { COACHING_STAFF } from '@/data/coaching-staff';
 import { getPlayerSlug } from '@/data/player-cms-data';
 import { fetchABEvents, fetchABPlayers } from '@/lib/si/client';
 import {
   fetchCollectionTypeWithMeta,
   fetchPartners,
+  fetchStaffRoster,
 } from '@/lib/strapi/client';
 import { escapeHtml } from '@/lib/utils';
 
@@ -21,7 +21,7 @@ export const SITEMAP_STORAGE_KEY = 'sitemap/sitemap.xml';
 const STATIC_ROUTES: [string, string][] = [
   ['/', '/en'],
   ['/kampe', '/en/matches'],
-  ['/hold', '/en/squad'],
+  ['/truppen', '/en/squad'],
   ['/nyheder', '/en/news'],
   ['/om/historik', '/en/about/history'],
   ['/om/stadion', '/en/about/stadium'],
@@ -135,8 +135,10 @@ export async function buildSitemapEntries(
     entries.push({ loc: abs(`/en/player/${slug}`) });
   }
 
-  // Staff — local static data, no fetch needed.
-  for (const staff of COACHING_STAFF) {
+  // Staff — Strapi-driven roster (falls back to static COACHING_STAFF entries
+  // internally for anyone not yet migrated); locale doesn't affect the slug.
+  const staffRoster = await fetchStaffRoster('da');
+  for (const staff of staffRoster) {
     entries.push({ loc: abs(`/stab/${staff.slug}`) });
     entries.push({ loc: abs(`/en/staff/${staff.slug}`) });
   }

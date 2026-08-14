@@ -7,8 +7,29 @@
  */
 const SI_API_BASE_URL = process.env.SI_API_BASE_URL || 'https://ss2.tjekscores.dk';
 const AB_TEAM_ID = Number(process.env.AB_TEAM_ID || '9805');
-const AB_TOURNAMENT_ID = process.env.AB_TOURNAMENT_ID ? Number(process.env.AB_TOURNAMENT_ID) : 85;
-const AB_SEASON_ID = process.env.AB_SEASON_ID ? Number(process.env.AB_SEASON_ID) : 36245;
+
+interface Competition {
+  tournamentId: number;
+  seasonId: number;
+  stageId?: number;
+}
+
+// AB's league campaign — 1.Division.
+const LEAGUE_COMPETITION: Competition = {
+  tournamentId: process.env.AB_TOURNAMENT_ID ? Number(process.env.AB_TOURNAMENT_ID) : 85,
+  seasonId: process.env.AB_SEASON_ID ? Number(process.env.AB_SEASON_ID) : 36245,
+};
+
+// AB's cup campaign — Betano Pokalen.
+const CUP_COMPETITION: Competition = {
+  tournamentId: process.env.AB_CUP_TOURNAMENT_ID
+    ? Number(process.env.AB_CUP_TOURNAMENT_ID)
+    : 242,
+  seasonId: process.env.AB_CUP_SEASON_ID ? Number(process.env.AB_CUP_SEASON_ID) : 40838,
+  stageId: process.env.AB_CUP_STAGE_ID ? Number(process.env.AB_CUP_STAGE_ID) : 939515,
+};
+
+const COMPETITIONS: Competition[] = [LEAGUE_COMPETITION, CUP_COMPETITION];
 
 export interface MatchOption {
   id: number;
@@ -45,16 +66,33 @@ async function siEventsRequest(
   return data.events ?? [];
 }
 
-/** List AB's current-season fixtures/results as `{ id, label }` picker options, newest first. */
+/** List AB's current-season fixtures/results (league + cup) as `{ id, label }` picker options, newest first. */
 export async function listCurrentSeasonMatches(): Promise<MatchOption[]> {
-  const events = await siEventsRequest({
-    teamId: String(AB_TEAM_ID),
-    tournamentId: String(AB_TOURNAMENT_ID),
-    seasonId: String(AB_SEASON_ID),
-    sportId: '1',
-    limit: '100',
-  });
-  if (!events) return [];
+  const eventsByCompetition = await Promise.all(
+    COMPETITIONS.map((competition) => {
+      const params: Record<string, string> = {
+        teamId: String(AB_TEAM_ID),
+        tournamentId: String(competition.tournamentId),
+        seasonId: String(competition.seasonId),
+        sportId: '1',
+        limit: '100',
+      };
+      if (competition.stageId !== undefined) {
+        params.stageId = String(competition.stageId);
+      }
+      return siEventsRequest(params);
+    })
+  );
+
+  const seen = new Set<number>();
+  const events = eventsByCompetition
+    .filter((events): events is SIEvent[] => events !== null)
+    .flat()
+    .filter((event) => {
+      if (seen.has(event.eventId)) return false;
+      seen.add(event.eventId);
+      return true;
+    });
 
   return events
     .slice()

@@ -2,9 +2,8 @@
 import Base from '@/layouts/Base.astro';
 import SquadCard from '@/components/SquadCard.astro';
 import StaffCard from '@/components/StaffCard.astro';
-import type { SIPlayer } from '@/lib/si/client';
-import { getSquadPlayers } from '@/lib/si/squad';
-import { COACHING_STAFF } from '@/data/coaching-staff';
+import { getSquadPlayers, type SquadPlayer } from '@/lib/si/squad';
+import { fetchStaffRoster } from '@/lib/strapi/client';
 import Img from '@/components/Img.astro';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
@@ -27,7 +26,10 @@ const GROUP_ORDER: PositionKey[] = [
 ];
 
 
-const players: SIPlayer[] = await getSquadPlayers(locale);
+const [players, staffRoster] = await Promise.all([
+  getSquadPlayers(locale),
+  fetchStaffRoster(locale),
+]);
 
 players.sort((a, b) => {
   const ai = GROUP_ORDER.indexOf(a.position as PositionKey);
@@ -36,7 +38,7 @@ players.sort((a, b) => {
   return (a.shirtNumber ?? 99) - (b.shirtNumber ?? 99);
 });
 
-const groups = new Map<PositionKey, SIPlayer[]>();
+const groups = new Map<PositionKey, SquadPlayer[]>();
 for (const p of players) {
   const key = p.position as PositionKey;
   if (!groups.has(key)) groups.set(key, []);
@@ -46,13 +48,13 @@ for (const p of players) {
 
 <Base
   locale="da"
-  title="Holdet | Akademisk Boldklub">
+  title="Truppen | Akademisk Boldklub">
   <div class="bg-white">
     <!-- Squad banner (image with embedded title) -->
     <div class="w-full">
       <Img
         src="/images/squad-banner.png"
-        alt="AB 1889 Holdet"
+        alt="AB 1889 Truppen"
         class="w-full h-auto block"
         loading="eager"
       />
@@ -62,7 +64,7 @@ for (const p of players) {
       {
         players.length === 0 ? (
           <p class="text-center py-24 text-sm text-gray-400">
-            Holdoplysninger er ikke tilgængelige i øjeblikket.
+            Oplysninger om truppen er ikke tilgængelige i øjeblikket.
           </p>
         ) : (
           GROUP_ORDER.map((key) => {
@@ -96,7 +98,7 @@ for (const p of players) {
           Trænerstab
         </h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-7">
-          {COACHING_STAFF.map((staff) => <StaffCard staff={staff} locale="da" />)}
+          {staffRoster.map((staff) => <StaffCard staff={staff} locale="da" />)}
         </div>
       </section>
     </div>

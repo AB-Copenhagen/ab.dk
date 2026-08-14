@@ -4,6 +4,7 @@ import Pager from '@/components/Pager.astro';
 import { fetchCollectionType, fetchCollectionTypeWithMeta, strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate, decodeHtml } from '@/lib/utils';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { translate } from '@/lib/i18n';
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
 
@@ -114,46 +115,62 @@ const [featured, ...rest] = !activeCategory && page === 1 ? pageArticles : [null
   {categories.length > 0 && (
     <div class="bg-white border-b border-gray-100">
       <div class="max-w-7xl mx-auto px-5 md:px-12 py-5">
-        <!-- Mobile: dropdown (pill row wraps to 2-3 rows on narrow screens otherwise) -->
-        <div class="relative sm:hidden">
-          <select
-            class="category-select w-full appearance-none border border-gray-200 rounded-full pl-4 pr-10 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-gray-600 bg-white"
-            aria-label="Filter by category"
-          >
-            <option value="/en/news" selected={!activeCategory}>All</option>
-            {categories.map((c: any) => (
-              <option value={`/en/news?category=${c.documentId}`} selected={activeCategory === c.documentId}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="m6 9 6 6 6-6"/>
-          </svg>
-        </div>
+        <div class="flex items-center gap-3">
+          <!-- Mobile/tablet: dropdown (pill row only fits comfortably at lg+, wraps awkwardly below it) -->
+          <div class="relative flex-1 lg:hidden">
+            <select
+              class="category-select w-full appearance-none border border-gray-200 rounded-full pl-4 pr-10 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-gray-600 bg-white"
+              aria-label="Filter by category"
+            >
+              <option value="/en/news" selected={!activeCategory}>All</option>
+              {categories.map((c: any) => (
+                <option value={`/en/news?category=${c.documentId}`} selected={activeCategory === c.documentId}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
 
-        <!-- Desktop/tablet: pill row -->
-        <div class="hidden sm:flex flex-wrap gap-2">
-          <a
-            href="/en/news"
-            class:list={[
-              'px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline transition-colors',
-              !activeCategory ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
-            ]}
-          >
-            All
-          </a>
-          {categories.map((c: any) => (
+          <!-- Desktop: pill row -->
+          <div class="hidden lg:flex flex-1 flex-wrap gap-2">
             <a
-              href={`/en/news?category=${c.documentId}`}
+              href="/en/news"
               class:list={[
                 'px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline transition-colors',
-                activeCategory === c.documentId ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
+                !activeCategory ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
               ]}
             >
-              {c.name}
+              All
             </a>
-          ))}
+            {categories.map((c: any) => (
+              <a
+                href={`/en/news?category=${c.documentId}`}
+                class:list={[
+                  'px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] no-underline transition-colors',
+                  activeCategory === c.documentId ? 'bg-ab-green text-white' : 'border border-gray-200 text-gray-500 hover:border-ab-green hover:text-ab-green',
+                ]}
+              >
+                {c.name}
+              </a>
+            ))}
+          </div>
+
+          <!-- Search: solid fill so it reads as a distinct action, not another category chip -->
+          <button
+            type="button"
+            id="search-open-btn"
+            class="shrink-0 flex items-center gap-1.5 px-4 py-2.5 lg:py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] bg-[#111] text-white hover:bg-ab-green transition-colors cursor-pointer"
+            aria-label={translate(locale, 'search')}
+          >
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"></circle>
+              <path d="M10 10l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+            </svg>
+            <span class="hidden sm:inline">{translate(locale, 'search')}</span>
+          </button>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import MatchList, { type MatchListFilter } from '@/components/MatchList.astro';
 import StandingsWidget from '@/components/StandingsWidget.astro';
-import { fetchABEvents } from '@/lib/si/client';
+import { fetchABEvents, isCupMatch } from '@/lib/si/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import Img from '@/components/Img.astro';
@@ -27,6 +27,7 @@ try {
     limit: 200,
     fromDate: seasonFrom.toISOString().slice(0, 10),
     toDate: seasonTo.toISOString().slice(0, 10),
+    allCompetitions: true,
   });
 } catch { /* SI API unavailable */ }
 const filter = (Astro.url.searchParams.get('filter') ?? 'upcoming') as MatchListFilter;
@@ -45,6 +46,7 @@ const finished = events
 const displayEvents =
   filter === 'home'    ? upcoming.filter((e) => e.homeId === abConfig.teamId) :
   filter === 'away'    ? upcoming.filter((e) => e.homeId !== abConfig.teamId) :
+  filter === 'cup'     ? upcoming.filter(isCupMatch) :
   filter === 'results' ? finished :
   upcoming;
 
@@ -84,6 +86,7 @@ for (const event of upcoming) {
           { label: 'Alle',      value: 'upcoming', href: '/kampe' },
           { label: 'Hjemme',   value: 'home',     href: '/kampe?filter=home' },
           { label: 'Ude',      value: 'away',     href: '/kampe?filter=away' },
+          { label: 'Pokal',    value: 'cup',      href: '/kampe?filter=cup' },
           { label: 'Tidligere', value: 'results', href: '/kampe?filter=results' },
         ].map(tab => (
           <a

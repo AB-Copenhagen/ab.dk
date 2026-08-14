@@ -1,12 +1,15 @@
 ---
-import { fetchCollectionType } from '@/lib/strapi/client';
-import { fetchABEvents, getTeamLogoSrc } from '@/lib/si/client';
+import {
+  fetchCollectionType,
+  fetchHeroSlides,
+  fetchStaffRoster,
+  strapiMediaUrl,
+} from '@/lib/strapi/client';
+import { fetchABEvents, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
 import { getSquadPlayers } from '@/lib/si/squad';
 import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
-import { strapiMediaUrl } from '@/lib/strapi/client';
 import SquadCard from '@/components/SquadCard.astro';
 import StaffCard from '@/components/StaffCard.astro';
-import { COACHING_STAFF } from '@/data/coaching-staff';
 import MatchScheduleList from '@/components/MatchScheduleList.astro';
 import MiniCalendar from '@/components/MiniCalendar.astro';
 import { translate } from '@/lib/i18n';
@@ -14,7 +17,6 @@ import { decodeHtml } from '@/lib/utils';
 import { fetchCollectionProducts } from '@/lib/shopify';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 import Img from '@/components/Img.astro';
-import matchesHeaderBg from '@/assets/images/matches-header-bg.png';
 import joinTeamAbBg from '@/assets/images/join-team-ab-bg.png';
 import bannerDownloadApp from '@/assets/images/banner-download-app.png';
 import bannerWatchLive from '@/assets/images/banner-watch-live.png';
@@ -29,6 +31,7 @@ import {
   DATE_WEEKDAY_MONTH_DAY_OPTS,
   TIME_24H_OPTS,
 } from '@/lib/dateFormat';
+import type { ImageMetadata } from 'astro';
 
 interface Props {
   locale: 'da' | 'en';
@@ -57,24 +60,28 @@ const seasonFrom = new Date(CURRENT_SEASON_START);
 const seasonTo = new Date(now);
 seasonTo.setMonth(seasonTo.getMonth() + 3);
 
-const [articles, events, players, shopifyProducts] = await Promise.all([
-  fetchCollectionType<any[]>('articles', {
-    locale,
-    sort: ['originalPublishedAt:desc'],
-    populate: { image: { fields: ['url'] } },
-    pagination: { pageSize: 4 },
-  }).catch(() => [] as any[]),
-  fetchABEvents({
-    locale,
-    limit: 200,
-    fromDate: seasonFrom.toISOString().slice(0, 10),
-    toDate: seasonTo.toISOString().slice(0, 10),
-  }).catch(() => [] as any[]),
-  getSquadPlayers(locale),
-  fetchCollectionProducts('311129374820', 3).catch(
-    () => [] as Awaited<ReturnType<typeof fetchCollectionProducts>>
-  ),
-]);
+const [articles, events, players, staffRoster, shopifyProducts, cmsHeroSlides] =
+  await Promise.all([
+    fetchCollectionType<any[]>('articles', {
+      locale,
+      sort: ['originalPublishedAt:desc'],
+      populate: { image: { fields: ['url'] } },
+      pagination: { pageSize: 4 },
+    }).catch(() => [] as any[]),
+    fetchABEvents({
+      locale,
+      limit: 200,
+      fromDate: seasonFrom.toISOString().slice(0, 10),
+      toDate: seasonTo.toISOString().slice(0, 10),
+      allCompetitions: true,
+    }).catch(() => [] as any[]),
+    getSquadPlayers(locale),
+    fetchStaffRoster(locale),
+    fetchCollectionProducts('311129374820', 3).catch(
+      () => [] as Awaited<ReturnType<typeof fetchCollectionProducts>>
+    ),
+    fetchHeroSlides(locale),
+  ]);
 
 const positionOrder: Record<string, number> = {
   keeper: 0,
@@ -93,6 +100,7 @@ const upcomingEvents = events
 const nextMatch = upcomingEvents.find(
   (e: any) => e.statusType === 'notstarted' || e.statusType === 'inprogress'
 );
+const nextMatchIsCup = nextMatch ? isCupMatch(nextMatch) : false;
 
 const abHome = nextMatch ? nextMatch.homeId === abConfig.teamId : false;
 const opponent = nextMatch
@@ -123,7 +131,7 @@ function matchHref(eventId: number) {
 }
 const enSlugs: Record<string, string> = {
   '/kampe': '/matches',
-  '/hold': '/squad',
+  '/truppen': '/squad',
   '/nyheder': '/news',
 };
 function localPath(daPath: string) {
@@ -165,9 +173,26 @@ const products = shopifyProducts.length > 0
     }))
   : staticProducts;
 
-const heroSlides = [
+interface HeroSlide {
+  type: 'image' | 'video';
+  img?: ImageMetadata | string;
+  imgWidth?: number;
+  imgHeight?: number;
+  video?: string;
+  alt?: string;
+  headline?: string;
+  subtitle?: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  ctaVariant: string;
+}
+
+// Used when the Strapi `hero-slides` collection is empty or unreachable (e.g.
+// mid-rollout before seeding) so the most prominent part of the homepage
+// never goes blank.
+const FALLBACK_HERO_SLIDES: HeroSlide[] = [
   {
-    type: 'image' as const,
+    type: 'image',
     img: heroAbReturnsImg,
     alt: translate(locale, 'heroDivisionAlt'),
     headline: translate(locale, 'heroDivisionHeadline'),
@@ -179,24 +204,21 @@ const heroSlides = [
         : '/nyheder/ab-vender-tilbage-til-betinia-liga',
   },
   {
-    type: 'video' as const,
+    type: 'video',
     video: locale === 'da' ? '/videos/hero-merch-da.mp4' : '/videos/hero-merch-en.mp4',
     ctaLabel: translate(locale, 'heroShopNow'),
     ctaUrl: 'https://shop.ab.dk',
     ctaVariant: 'btn-beige',
   },
   {
-    type: 'image' as const,
-    img: matchesHeaderBg,
-    alt: translate(locale, 'heroMatchesAlt'),
-    headline: translate(locale, 'heroMatchesHeadline'),
-    subtitle: translate(locale, 'heroMatchesSubtitle'),
-    ctaLabel: translate(locale, 'heroMatchesCta'),
-    ctaUrl: localPath('/kampe'),
+    type: 'video',
+    video: locale === 'da' ? '/videos/hero-tickets-da.mp4' : '/videos/hero-tickets-en.mp4',
+    ctaLabel: translate(locale, 'buyTickets'),
+    ctaUrl: 'https://billet.ab.dk/',
     ctaVariant: 'btn-beige',
   },
   {
-    type: 'image' as const,
+    type: 'image',
     img: joinTeamAbBg,
     alt: translate(locale, 'heroJoinAlt'),
     headline: translate(locale, 'heroJoinHeadline'),
@@ -206,6 +228,29 @@ const heroSlides = [
     ctaVariant: 'btn-beige',
   },
 ];
+
+// CMS media is fetched via strapiMediaUrl() (proxy — webp conversion, hostname
+// hiding) for images, but video renders from the raw presigned Wasabi URL
+// instead: the /api/media proxy doesn't forward Range requests, which Safari/iOS
+// require for <video> playback and scrubbing. Wasabi's presigned URL supports
+// Range natively and is re-signed on every request (5-minute Strapi cache TTL
+// vs. the 7-day signed-URL expiry), so staleness isn't a concern.
+const heroSlides: HeroSlide[] =
+  cmsHeroSlides.length > 0
+    ? cmsHeroSlides.map((slide) => ({
+        type: slide.slideType,
+        img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
+        imgWidth: slide.image?.width,
+        imgHeight: slide.image?.height,
+        video: slide.video?.url,
+        alt: slide.alt,
+        headline: slide.headline,
+        subtitle: slide.subtitle,
+        ctaLabel: slide.ctaLabel,
+        ctaUrl: slide.ctaUrl,
+        ctaVariant: slide.ctaVariant,
+      }))
+    : FALLBACK_HERO_SLIDES;
 ---
 
 <style>
@@ -240,8 +285,10 @@ const heroSlides = [
             />
           ) : (
             <Img
-              src={slide.img}
-              alt={slide.alt}
+              src={slide.img ?? ''}
+              alt={slide.alt ?? ''}
+              width={slide.imgWidth}
+              height={slide.imgHeight}
               loading={i === 0 ? 'eager' : 'lazy'}
               fetchpriority={i === 0 ? 'high' : undefined}
               draggable="false"
@@ -252,7 +299,11 @@ const heroSlides = [
           )}
           {slide.type === 'video' ? (
             <div class="absolute inset-0 z-10 flex flex-col items-center justify-end pb-28 px-6 text-center">
-              <a href={slide.ctaUrl} target="_blank" rel="noopener noreferrer" class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+              <a
+                href={slide.ctaUrl}
+                target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
                 {slide.ctaLabel}
               </a>
             </div>
@@ -268,7 +319,11 @@ const heroSlides = [
                     {slide.subtitle}
                   </p>
                 )}
-                <a href={slide.ctaUrl} class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                <a
+                  href={slide.ctaUrl}
+                  target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                  rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
                   {slide.ctaLabel}
                 </a>
               </div>
@@ -613,11 +668,18 @@ const heroSlides = [
             href={matchHref(nextMatch.eventId)}
             id="next-match"
             class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col no-underline transition-all duration-200 hover:brightness-110 hover:shadow-[0_4px_20px_rgba(0,0,0,0.15)]">
-            <h2
-              class="font-black text-white leading-[0.86] tracking-[-0.04em] mb-6"
-              style="font-size:clamp(1.75rem,3vw,2.1875rem)">
-              {translate(locale, 'nextMatch')}
-            </h2>
+            <div class="flex items-center gap-2 mb-6">
+              <h2
+                class="font-black text-white leading-[0.86] tracking-[-0.04em]"
+                style="font-size:clamp(1.75rem,3vw,2.1875rem)">
+                {translate(locale, 'nextMatch')}
+              </h2>
+              {nextMatchIsCup && nextMatch && (
+                <span class="inline-flex items-center leading-none font-black uppercase tracking-[0.06em] text-[0.65rem] text-ab-green bg-ab-beige rounded-full px-2.5 py-1 shrink-0">
+                  {cupTournamentLabel(nextMatch, locale)}
+                </span>
+              )}
+            </div>
             <div class="flex items-center justify-between gap-4 flex-1">
               <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
                 <Img
@@ -925,7 +987,7 @@ const heroSlides = [
               locale={locale}
             />
           ))}
-          {COACHING_STAFF.map((staff) => (
+          {staffRoster.map((staff) => (
             <div class="squad-card" data-position="coach">
               <StaffCard
                 staff={staff}
@@ -940,7 +1002,7 @@ const heroSlides = [
     <!-- See Full Squad link -->
     <div class="text-center mt-10">
       <a
-        href={localPath('/hold')}
+        href={localPath('/truppen')}
         class="text-sm font-bold underline underline-offset-4 text-ab-green">
         {translate(locale, 'seeFullSquad')}
       </a>

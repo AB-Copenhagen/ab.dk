@@ -36,7 +36,15 @@ export const legacyRedirects = {
   // are now identical.
   '/sponsorer': to('/partnere'),
   '/bliv-sponsor': to('/partnere'),
-  '/truppen': to('/hold'),
+  // Old WP individual sponsor detail pages (singular, distinct from the
+  // /sponsorer listing above) — partnere/[slug].astro already 302s an
+  // unmatched slug back to /partnere itself, so a churned/renamed sponsor
+  // falls back gracefully same as a still-current one lands on its real page.
+  '/sponsor/[slug]': to('/partnere/[slug]'),
+  // /hold was the page's own URL until it was renamed to /truppen (the more
+  // accurate Danish term for "squad") — this isn't a legacy WP redirect like
+  // its neighbors, but the same permanent-308 mechanism applies cleanly.
+  '/hold': to('/truppen'),
   '/kampprogram': to('/kampe'),
   '/resultater': to('/kampe'),
   '/stillingen': to('/kampe'),
@@ -52,6 +60,17 @@ export const legacyRedirects = {
   '/myab/info': to('/myab'),
   '/myab/register': to('/myab'),
   '/myab/profile': to('/konto/profil'),
+  // Danish MyAB subpages never got redirects when the EN ones did (see the
+  // English section below) — same old WP/MyAB auth+content subpages,
+  // superseded by Descope + this page.
+  '/myab/game-highlights': to('/myab'),
+  '/myab/memberships': to('/myab'),
+  '/myab/benefits': to('/myab'),
+  '/myab/password': to('/myab'),
+  '/myab/login': to('/myab'),
+  '/myab/eksklusivt-indhold': to('/myab'),
+  '/myab/tickets': to('/myab'),
+  '/myab/competitions': to('/myab'),
   '/watch': to('/abtv'),
   '/sizzle': to('/abtv'),
   '/kontrolrapport': to('/om/stadion'),
@@ -68,7 +87,7 @@ export const legacyRedirects = {
   '/category/[...path]': to('/nyheder'),
   '/author/[...path]': to('/nyheder'),
   '/tag/[...path]': toTemp('/nyheder'),
-  '/spiller': toTemp('/hold'),
+  '/spiller': toTemp('/truppen'),
   // Nested legacy WP paths (old taxonomy/category hierarchy).
   //
   // IMPORTANT: a wildcard (`[...path]`) source must NEVER redirect to a
@@ -90,6 +109,14 @@ export const legacyRedirects = {
   // redirect to the static /om/stadion just fine.
   '/kategori/[...path]': toTemp('/nyheder'), // Danish WP category-base variant of /category
   '/produkt-kategori/[...path]': toTemp('/products'),
+  // Old WooCommerce shop pages (individual products, size/colour attribute
+  // archives) — by far the largest single bucket in the Search Console 404
+  // export. No 1:1 mapping to the current `products` Strapi collection (or
+  // to Shopify handles on shop.ab.dk), so these land on the listing instead.
+  '/produkt/[...path]': toTemp('/products'),
+  '/product/[...path]': toTemp('/products'),
+  '/stoerrelse/[...path]': toTemp('/products'),
+  '/color/[...path]': toTemp('/products'),
   '/2-division/organisation': toTemp('/om/ledelse'), // exact match, static destination is fine here
   '/fanzone/[...path]': toTemp('/kampdag'),
   '/match/[...path]': toTemp('/kampe'), // old WP team-name-slug match pages, no ID mapping possible
@@ -111,11 +138,30 @@ export const legacyRedirects = {
   '/klubben/[...path]': toTemp('/'),
 
   // ── English ─────────────────────────────────────────────────────────────
+  // English pages briefly mirrored the Danish path segments (/en/hold,
+  // /en/kamp/[id], /en/spiller/[slug], etc.) before the 2026-07-05
+  // "SEO-optimised English slugs" rename gave every EN page its own English
+  // slug. Google had already indexed the pre-rename URLs, so these need
+  // redirects same as any other renamed page — the dynamic ones forward
+  // their captured segment to preserve the id/slug (a real match/player,
+  // unlike the WP-era `/match/[...path]` and `/spiller` entries below, which
+  // have no 1:1 mapping to fall back on).
+  '/en/hold': to('/en/squad'),
+  '/en/kampe': to('/en/matches'),
+  '/en/nyheder': to('/en/news'),
+  '/en/kamp/[slug]': to('/en/match/[slug]'),
+  '/en/spiller/[slug]': to('/en/player/[slug]'),
+  '/en/stab/[slug]': to('/en/staff/[slug]'),
+  '/en/om/historik': to('/en/about/history'),
+  '/en/om/stadion': to('/en/about/stadium'),
+  '/en/konto': to('/en/account'),
+  '/en/konto/profil': to('/en/account/profile'),
   '/en/history': to('/en/about/history'),
   '/en/gladsaxe-stadium': to('/en/about/stadium'),
   '/en/contact-us': to('/en/contact'),
   '/en/sponsors': to('/en/partners'),
   '/en/become-a-sponsor': to('/en/partners'),
+  '/en/sponsor/[slug]': to('/en/partners/[slug]'),
   '/en/the-troops': to('/en/squad'),
   '/en/whats-new': to('/en/news'),
   '/en/match-day': to('/en/matchday'),
@@ -136,6 +182,7 @@ export const legacyRedirects = {
   '/en/myab/game-highlights': to('/en/myab'),
   '/en/myab/password-reset': to('/en/myab'),
   '/en/myab/member-live-stream': to('/en/myab'),
+  '/en/myab/benefits': to('/en/myab'),
   '/en/myab/profile': to('/en/account/profile'),
   '/en/my-account': to('/en/account/profile'),
   '/en/auth-login': to('/en/account'),
@@ -155,6 +202,15 @@ export const legacyRedirects = {
   '/en/author/[...path]': to('/en/news'),
   '/en/whats-new/[...page]': to('/en/news'),
   '/en/tag/[...path]': toTemp('/en/news'),
+  // Old WooCommerce shop pages — see the Danish section's note above; same
+  // treatment. Both the singular-product and size-attribute WP paths used
+  // the Danish words ("produkt", "stoerrelse") even under /en/, while the
+  // colour attribute used the English word without the /en/ prefix — no
+  // typo, that's genuinely how the old site's URLs were structured.
+  '/en/produkt/[...path]': toTemp('/en/products'),
+  '/en/stoerrelse/[...path]': toTemp('/en/products'),
+  '/en/farve/[...path]': toTemp('/en/products'),
+  '/en/product-category/[...path]': toTemp('/en/products'),
   // No wildcard entry for old /en/partners/* sub-paths — see the Danish
   // section's note: /en/partners has its own `[slug].astro` dynamic route,
   // and a wildcard redirect here would swallow bare /en/partners itself via

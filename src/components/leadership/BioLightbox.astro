@@ -1,0 +1,223 @@
+---
+interface Props {
+  closeLabel: string;
+}
+
+const { closeLabel } = Astro.props;
+---
+
+<dialog id="bio-lb" aria-label="Person bio">
+  <div id="bio-lb-backdrop">
+    <div id="bio-lb-card">
+      <button id="bio-lb-close" aria-label={closeLabel}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
+      </button>
+      <div id="bio-lb-body">
+        <div id="bio-lb-photo-wrap">
+          <img id="bio-lb-img" alt="" />
+          <div id="bio-lb-initials" aria-hidden="true"></div>
+        </div>
+        <div id="bio-lb-text">
+          <span id="bio-lb-role"></span>
+          <h3 id="bio-lb-name"></h3>
+          <p id="bio-lb-bio"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Lightbox dialog — full-screen so we control centering */
+  #bio-lb {
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+  }
+  #bio-lb::backdrop {
+    background: rgba(0, 0, 0, 0.88);
+  }
+
+  /* Flex wrapper centers the card. overflow-y:auto + margin:auto on the card (rather than
+     align-items:center) keeps long bios scrollable — align-items:center alone clips content
+     that overflows above the fold with no way to scroll up to it. */
+  #bio-lb-backdrop {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 24px;
+    box-sizing: border-box;
+    cursor: default;
+  }
+
+  /* The white card */
+  #bio-lb-card {
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+    max-width: 620px;
+    width: 100%;
+    margin: auto 0;
+    cursor: default;
+  }
+
+  /* Close button — solid white so it stays visible over dark photos */
+  #bio-lb-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    border: none;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.15s;
+  }
+  #bio-lb-close:hover {
+    background: #eee;
+  }
+
+  /* Inner layout: photo left, text right */
+  #bio-lb-body {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 480px) {
+    #bio-lb-body {
+      grid-template-columns: 220px 1fr;
+    }
+  }
+
+  /* Photo block */
+  #bio-lb-photo-wrap {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--ab-green);
+    flex-shrink: 0;
+  }
+  #bio-lb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  #bio-lb-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: -0.04em;
+  }
+
+  /* Text block */
+  #bio-lb-text {
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: center;
+  }
+  #bio-lb-role {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ab-green);
+    display: block;
+    margin-bottom: 2px;
+  }
+  #bio-lb-name {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: #111;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.04em;
+  }
+  #bio-lb-bio {
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: #555;
+    margin: 0;
+  }
+</style>
+
+<script>
+  const lb = document.getElementById('bio-lb') as HTMLDialogElement;
+  const lbBackdrop = document.getElementById('bio-lb-backdrop') as HTMLElement;
+  const lbImg = document.getElementById('bio-lb-img') as HTMLImageElement;
+  const lbInitials = document.getElementById('bio-lb-initials') as HTMLElement;
+  const lbRole = document.getElementById('bio-lb-role') as HTMLElement;
+  const lbName = document.getElementById('bio-lb-name') as HTMLElement;
+  const lbBio = document.getElementById('bio-lb-bio') as HTMLElement;
+  const lbClose = document.getElementById('bio-lb-close') as HTMLButtonElement;
+
+  function openFor(card: HTMLElement) {
+    const { name = '', role = '', photo = '', bio = '', initials = '', photoPos = 'object-center' } = card.dataset;
+
+    lbName.textContent = name;
+    lbRole.textContent = role;
+    lbRole.style.display = role ? 'block' : 'none';
+    lbBio.textContent = bio;
+
+    if (photo) {
+      lbImg.src = photo;
+      lbImg.style.objectPosition = photoPos.replace('object-', '');
+      lbImg.style.display = 'block';
+      lbInitials.style.display = 'none';
+    } else {
+      lbImg.style.display = 'none';
+      lbInitials.textContent = initials;
+      lbInitials.style.display = 'flex';
+    }
+
+    lb.showModal();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.person-card').forEach(card => {
+    card.addEventListener('click', () => {
+      // Makes the currently open person shareable/bookmarkable — replaceState
+      // (not pushState) so closing the lightbox doesn't require an extra back-tap.
+      if (card.id) history.replaceState(null, '', `#${card.id}`);
+      openFor(card);
+    });
+  });
+
+  lbClose.addEventListener('click', () => lb.close());
+  lbBackdrop.addEventListener('click', e => {
+    if (e.target === lbBackdrop) lb.close();
+  });
+
+  // Deep-linking: `/en/about/leadership#board-brian-grieco` opens straight to
+  // that person's bio. Silently no-ops for anchors on bio-less cards (plain
+  // <div>, not a .person-card) — the browser's native anchor scroll still runs.
+  const hash = window.location.hash.slice(1);
+  if (hash) {
+    const target = document.getElementById(hash);
+    if (target?.classList.contains('person-card')) {
+      openFor(target);
+    }
+  }
+</script>

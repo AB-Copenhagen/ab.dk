@@ -1,5 +1,6 @@
 import {
   CacheManager,
+  MemoryCacheDriver,
   createWebhookHandler,
   revalidateConfigSchema,
 } from '@datum-cloud/strapi-revalidate';
@@ -18,13 +19,48 @@ const STRAPI_WEBHOOK_SECRET =
 // previous /tmp file cache, which was private to a single instance and reset
 // on every cold start/deploy, so the TTL below barely ever paid off in practice.
 const primary = new VercelRuntimeCacheDriver({ namespace: 'strapi' });
-const fallback = new VercelRuntimeCacheDriver({ namespace: 'strapi-fallback' });
+// CacheManager mirrors every primary write to this fallback unconditionally
+// (see its docs) — it's meant as free insurance for a `file`-backed primary,
+// so pointing it at Runtime Cache too was silently doubling every metered
+// write. In-memory is a fine fallback here: Fluid Compute reuses instances
+// across concurrent requests, so it still protects against a Strapi outage
+// for the life of a warm instance — it just won't survive a cold start,
+// unlike the Runtime Cache-backed fallback it replaces.
+const fallback = new MemoryCacheDriver();
 
 export const cache = new CacheManager({
   primary,
   fallback,
-  defaultTtl: 60 * 5, // 5 minutes
+  // Long TTL is safe because the Strapi webhook below invalidates tags
+  // instantly on publish — this only matters as a fallback if a webhook
+  // delivery is ever missed. Runtime Cache Writes were the largest metered
+  // line item on the Vercel bill under the previous 5-minute TTL, since every
+  // SSR page request re-triggers a primary+fallback write on each miss.
+  defaultTtl: 60 * 60 * 24, // 24 hours
 });
+
+// strapi-revalidate's default tag mapping derives a tag from the webhook
+// payload's `uid` by taking the *singular* segment (`api::partner.partner` →
+// `partner`), with only `article`/`author` special-cased to their plurals.
+// Every `fetchCollectionType()` call site in src/lib/strapi/client.ts tags its
+// cache entries with the *plural* REST path instead (`fetchCollectionType('partners', ...)`
+// tags `partners`), since that's the string callers actually pass in. Without
+// this override, a real webhook delivery would resolve to a tag Vercel Runtime
+// Cache never wrote (e.g. `partner` instead of `partners`) and silently
+// invalidate nothing — the cache would still only ever refresh via TTL expiry,
+// defeating the entire point of wiring up the webhook.
+const TAG_MAP: Record<string, string[]> = {
+  'api::category.category': ['categories'],
+  'api::page.page': ['pages'],
+  'api::product.product': ['products'],
+  'api::player.player': ['players'],
+  'api::match-content.match-content': ['match-contents'],
+  'api::partner.partner': ['partners'],
+  'api::hero-slide.hero-slide': ['hero-slides'],
+  'api::leadership-member.leadership-member': ['leadership-members'],
+  'api::investor.investor': ['investors'],
+  'api::staff.staff': ['staff-members'],
+};
 
 // Webhook handler — wired up but optional. Configure a Strapi webhook entry
 // pointing at /api/strapi-webhook to get instant cache invalidation on publish.
@@ -34,7 +70,7 @@ export const cache = new CacheManager({
 const config = revalidateConfigSchema.parse({
   url: STRAPI_URL,
   token: STRAPI_TOKEN,
-  webhook: { secret: STRAPI_WEBHOOK_SECRET },
+  webhook: { secret: STRAPI_WEBHOOK_SECRET, tagMap: TAG_MAP },
 });
 
 export const webhook = createWebhookHandler({ config, cache });
