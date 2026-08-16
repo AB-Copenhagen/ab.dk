@@ -110,12 +110,13 @@ const vivenuConsented = Astro.isPrerendered
   ? false
   : hasConsent(parseConsent(Astro.cookies.get(CONSENT_COOKIE_NAME)?.value), 'functional');
 
-// Google Tag Manager (fires the GA4 config tag internally) — gated behind statistics consent,
-// same SSR/client-injection split as Vivenu above.
+// Google Tag Manager (fires the GA4 config tag internally) — loads unconditionally on every
+// visit via Google's Consent Mode (see the inline script in <head> below) instead of gating the
+// script tag itself behind consent. A visitor who never opts in still registers as an
+// anonymized, cookieless "modeled" hit rather than being lost entirely, and is promoted to full
+// tracking the moment they grant statistics consent. Mirrors the setup used by other Danish
+// clubs (e.g. lyngby-boldklub.dk, via MonsterInsights + the Cookiez consent plugin).
 const GTM_ID = 'GTM-TGXD56HD';
-const statisticsConsented = Astro.isPrerendered
-  ? false
-  : hasConsent(parseConsent(Astro.cookies.get(CONSENT_COOKIE_NAME)?.value), 'statistics');
 ---
 
 <!doctype html>
@@ -177,13 +178,40 @@ const statisticsConsented = Astro.isPrerendered
     {vivenuConsented && (
       <script is:inline id="vivenu-embed-script" src="https://vivenu.com/web/deliver/js/v1/embed.js"></script>
     )}
-    {statisticsConsented && (
-      <script
-        is:inline
-        id="gtm-script"
-        set:html={`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`}
-      />
-    )}
+    {/* Google Consent Mode default — MUST run before the GTM snippet below. Reads any existing
+       consent cookie directly (works on prerendered pages too, unlike Astro.cookies) so a
+       returning, already-consented visitor is signaled as granted from the very first tag call
+       rather than briefly defaulting to denied. */}
+    <script is:inline id="gtm-consent-default" define:vars={{ consentCookieName: CONSENT_COOKIE_NAME }}>
+      (function () {
+        function readCookie(name) {
+          var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+          return match ? match[1] : undefined;
+        }
+        var raw = readCookie(consentCookieName);
+        var state = null;
+        if (raw) {
+          try {
+            state = JSON.parse(decodeURIComponent(raw));
+          } catch (e) {}
+        }
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function gtag() {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag('consent', 'default', {
+          analytics_storage: state && state.statistics ? 'granted' : 'denied',
+          ad_storage: state && state.marketing ? 'granted' : 'denied',
+          ad_user_data: state && state.marketing ? 'granted' : 'denied',
+          ad_personalization: state && state.marketing ? 'granted' : 'denied',
+        });
+      })();
+    </script>
+    <script
+      is:inline
+      id="gtm-script"
+      set:html={`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`}
+    />
   </head>
   <body class="min-h-screen bg-white text-[#111]">
     <Navbar locale={locale} alternateLocalePath={alternateLocalePath} />
@@ -220,17 +248,43 @@ const statisticsConsented = Astro.isPrerendered
         document.head.appendChild(script);
       });
 
-      onConsentChange('statistics', () => {
-        if (document.getElementById('gtm-script')) return;
-        const w = window as unknown as { dataLayer?: unknown[] };
+      // GTM/GA now load unconditionally on every page (see the consent-default script in
+      // <head>), signaling Google's Consent Mode instead of gating the script tag itself — a
+      // visitor who never opts in is still counted as an anonymized, cookieless "modeled" hit
+      // rather than lost entirely. These two just keep that signal in sync as the visitor's
+      // choice changes (including withdrawing consent later via the footer's cookie settings).
+      function updateGtagConsent(update: Record<string, 'granted' | 'denied'>) {
+        const w = window as unknown as { gtag?: (...args: unknown[]) => void; dataLayer?: unknown[] };
         w.dataLayer = w.dataLayer || [];
-        w.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
-        const script = document.createElement('script');
-        script.id = 'gtm-script';
-        script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-TGXD56HD';
-        document.head.appendChild(script);
-      });
+        if (typeof w.gtag !== 'function') {
+          w.gtag = function gtag() {
+            w.dataLayer!.push(arguments);
+          };
+        }
+        w.gtag('consent', 'update', update);
+      }
+
+      onConsentChange(
+        'statistics',
+        () => updateGtagConsent({ analytics_storage: 'granted' }),
+        () => updateGtagConsent({ analytics_storage: 'denied' })
+      );
+
+      onConsentChange(
+        'marketing',
+        () =>
+          updateGtagConsent({
+            ad_storage: 'granted',
+            ad_user_data: 'granted',
+            ad_personalization: 'granted',
+          }),
+        () =>
+          updateGtagConsent({
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+          })
+      );
     </script>
   </body>
 </html>
