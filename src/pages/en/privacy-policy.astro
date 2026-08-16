@@ -43,7 +43,7 @@ export const prerender = true;
           When you visit ab.dk, we may automatically collect technical information such as browser type, IP address, and device information, to the extent necessary to operate and secure the website. Legal basis: Article 6(1)(f) GDPR (legitimate interests in the secure and correct operation of the website).
         </p>
         <p>
-          If you consent to statistics cookies, we also use Google Analytics (via Google Tag Manager) to collect anonymized statistics about visits and site usage. Legal basis: Article 6(1)(a) GDPR (consent). See section 8 for details and how to manage your consent.
+          We use Google Analytics (via Google Tag Manager) to collect anonymized statistics about visits and site usage. The Google Tag Manager script loads on every visit, but respects your cookie choice via Google's "Consent Mode": until you consent to statistics cookies, Google only receives anonymous, cookieless signals that cannot be tied to you as a visitor, and no cookies are set on your device. Once you consent, full, cookie-based tracking is activated. Legal basis for the cookie-based tracking: Article 6(1)(a) GDPR (consent). See section 8 for details and how to manage your consent.
         </p>
 
         <h3>2.2 Contact Form and Event Enquiries</h3>
@@ -67,13 +67,13 @@ export const prerender = true;
         </p>
 
         <h2>3. Data Recipients and Third Parties</h2>
-        <p>We use the following processors and third-party services. Some are only loaded if you have consented to the relevant cookie category (see section 8):</p>
+        <p>We use the following processors and third-party services. Some are only loaded if you have consented to the relevant cookie category — Google Analytics, however, always loads, but uses Google's "Consent Mode" to only collect full, cookie-based statistics once you've consented (see section 8):</p>
         <ul>
           <li><strong>Mailgun</strong> (EU-operated) — sending email and newsletters</li>
           <li><strong>Descope</strong> — login and account authentication (MyAB)</li>
           <li><strong>Vivenu</strong> — ticket purchasing and booking (requires consent to functional cookies)</li>
           <li><strong>SI Sports</strong> (dash.si-ab.com) — displaying live match statistics (requires consent to functional cookies)</li>
-          <li><strong>Google Analytics / Google Tag Manager</strong> — anonymized website usage statistics (requires consent to statistics cookies)</li>
+          <li><strong>Google Analytics / Google Tag Manager</strong> — anonymized website usage statistics; the script loads on every visit, but only sets cookies and full tracking once you consent to statistics cookies (see sections 2.1 and 8)</li>
           <li><strong>YouTube / Google</strong> — embedded videos on ABTV (requires consent to marketing/media cookies)</li>
           <li><strong>Strapi/Wasabi</strong> — storage of editorial content and images on the website</li>
           <li><strong>Vercel</strong> — technical operation and hosting of the website</li>
