@@ -43,12 +43,12 @@ const premiumPartners = withLogoSize(
 const localHeroPartners = withLogoSize(
   allPartners.filter((p) => p.category === 'local-hero'),
   200,
-  60
+  100
 );
 const ab1889Partners = withLogoSize(
   allPartners.filter((p) => p.category === 'ab1889'),
   200,
-  60
+  100
 );
 ---
 
@@ -192,7 +192,7 @@ const ab1889Partners = withLogoSize(
           <a
             href={`/partnere/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-5 py-7 h-24 overflow-hidden">
+            <div class="flex items-center justify-center px-5 py-7 h-40 overflow-hidden">
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
@@ -231,7 +231,7 @@ const ab1889Partners = withLogoSize(
           <a
             href={`/partnere/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-5 py-7 h-24 overflow-hidden">
+            <div class="flex items-center justify-center px-5 py-7 h-40 overflow-hidden">
               <Img
                 src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
