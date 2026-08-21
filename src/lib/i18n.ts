@@ -15,6 +15,7 @@ const daToEn: Record<string, string> = {
   '/partnere': '/partners',
   '/partnere/': '/partners/',
   '/hospitality': '/hospitality',
+  '/kampdag': '/matchday',
   '/kamp/': '/match/',
   '/spiller/': '/player/',
   '/stab/': '/staff/',
