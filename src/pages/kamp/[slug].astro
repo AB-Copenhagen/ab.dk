@@ -180,6 +180,8 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
         ← Alle kampe
       </a>
 
+      {isUpcoming && <MatchCountdown startDate={startDate} locale="da" />}
+
       <!-- Competition / round label -->
       {tournamentName && (
         <div class="flex items-center gap-2 mb-6">
@@ -282,9 +284,9 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
       {!isFinished && ticketUrl && (
         <div class="flex justify-center mt-8">
           <a
-            class="vivenu-btn inline-flex items-center gap-2.5 px-9 py-4 rounded-[4px] font-black uppercase tracking-[0.12em] text-white transition-transform hover:scale-105"
+            class="vivenu-btn inline-flex items-center gap-2.5 px-9 py-4 rounded-[4px] font-black uppercase tracking-[0.12em] transition-transform hover:scale-105"
             href={`${ticketUrl}?useEmbed=true`}
-            style="background:var(--ab-green);font-size:0.9375rem;box-shadow:0 8px 24px rgba(0,0,0,0.35)"
+            style="background:#fff;color:var(--ab-gold);font-size:0.9375rem;box-shadow:0 8px 24px rgba(0,0,0,0.35)"
           >
             <svg width="18" height="18" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2" />
@@ -293,10 +295,6 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
             Køb billetter
           </a>
         </div>
-      )}
-
-      {isUpcoming && (
-        <MatchCountdown startDate={startDate} locale="da" />
       )}
 
     </div>
