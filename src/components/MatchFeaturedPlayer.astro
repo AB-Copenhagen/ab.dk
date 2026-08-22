@@ -3,11 +3,10 @@ import { getSquadPlayers } from '@/lib/si/squad';
 import { getPlayerSlug } from '@/data/player-cms-data';
 
 interface Props {
-  eventId: number;
   locale: 'da' | 'en';
 }
 
-const { eventId, locale } = Astro.props;
+const { locale } = Astro.props;
 
 const t = {
   da: { eyebrow: 'Spiller i truppen' },
@@ -15,9 +14,7 @@ const t = {
 }[locale];
 
 const squad = await getSquadPlayers(locale).catch(() => []);
-// Deterministic per match rather than random-per-request, so a given match
-// always features the same player instead of reshuffling on every load.
-const player = squad.length > 0 ? squad[eventId % squad.length] : null;
+const player = squad.length > 0 ? squad[Math.floor(Math.random() * squad.length)] : null;
 const href =
   player?.id != null
     ? locale === 'da'
