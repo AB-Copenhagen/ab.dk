@@ -244,10 +244,10 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
       <!-- Date, time, home/away badge -->
       <div
         class="flex flex-wrap items-center justify-center gap-3 mt-8 mx-auto w-fit px-5 py-3 rounded-2xl"
-        style="background:rgba(0,0,0,0.45);backdrop-filter:blur(6px)"
+        style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px)"
       >
         <!-- Calendar icon + date -->
-        <div class="inline-flex items-center gap-2 text-white/60" style="font-size:0.8125rem">
+        <div class="inline-flex items-center gap-2 text-white" style="font-size:0.8125rem">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
             <path d="M5 1v3M11 1v3M2 7h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
@@ -255,7 +255,7 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
           <span class="font-semibold capitalize" {...dtAttrs(startDate, 'da-DK', DATE_LONG_YEAR_OPTS)}>{matchDateDay}</span>
         </div>
         <!-- Clock icon + time -->
-        <div class="inline-flex items-center gap-2 text-white/60" style="font-size:0.8125rem">
+        <div class="inline-flex items-center gap-2 text-white" style="font-size:0.8125rem">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
             <path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -265,12 +265,12 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
         <!-- Home / Away badge -->
         <span
           class="inline-flex items-center px-3 py-1 font-black uppercase tracking-[0.14em] rounded-full"
-          style={`font-size:0.6rem;${isHome ? 'background:var(--ab-green);color:var(--ab-neon)' : 'background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55)'}`}
+          style={`font-size:0.6rem;${isHome ? 'background:var(--ab-green);color:var(--ab-neon)' : 'background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.92)'}`}
         >
           {isHome ? 'Hjemme' : 'Ude'}
         </span>
         <!-- Venue -->
-        <div class="inline-flex items-center gap-2 text-white/40" style="font-size:0.8125rem">
+        <div class="inline-flex items-center gap-2 text-white" style="font-size:0.8125rem">
           <svg width="12" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M8 1.5C5.515 1.5 3.5 3.515 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.485-2.015-4.5-4.5-4.5Z" stroke="currentColor" stroke-width="1.3"/>
             <circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.3"/>
