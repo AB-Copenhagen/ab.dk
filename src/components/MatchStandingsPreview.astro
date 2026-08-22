@@ -11,13 +11,12 @@ interface Props {
 const { locale, homeId, awayId, fullTableHref } = Astro.props;
 
 const t = {
-  da: { eyebrow: 'Stillingen', heading: 'Hvor holder de til i tabellen?', cta: 'Se hele stillingen' },
-  en: { eyebrow: 'Standings', heading: 'Where they sit in the table', cta: 'See full table' },
+  da: { heading: 'Stilling', cta: 'Se hele stillingen' },
+  en: { heading: 'Standings', cta: 'See full table' },
 }[locale];
 ---
 
 <section>
-  <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style="color:var(--ab-green)">{t.eyebrow}</p>
   <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
     {t.heading}
   </h2>
