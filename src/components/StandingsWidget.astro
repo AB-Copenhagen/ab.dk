@@ -6,9 +6,10 @@ import { fetchStandings, getTeamLogoSrc, type SIStandingRow } from '@/lib/si/cli
 interface Props {
   locale: Locale;
   showHeader?: boolean;
+  highlightTeamIds?: number[];
 }
 
-const { locale, showHeader = true } = Astro.props;
+const { locale, showHeader = true, highlightTeamIds = [] } = Astro.props;
 
 let rows: SIStandingRow[] = [];
 let error = '';
@@ -88,6 +89,7 @@ const headers =
                   class:list={[
                     'standings-row',
                     index % 2 === 0 ? 'widget-row-even' : 'widget-row-odd',
+                    highlightTeamIds.includes(row.teamId) && 'standings-row--highlight',
                   ]}
                 >
                   <td class="widget-td standings-td standings-td--pos">{row.rank}</td>
@@ -282,5 +284,10 @@ const headers =
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .standings-row--highlight {
+    background: color-mix(in srgb, var(--ab-green) 6%, transparent);
+    box-shadow: inset 3px 0 0 0 var(--ab-green);
   }
 </style>

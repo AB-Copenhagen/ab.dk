@@ -1,0 +1,81 @@
+---
+interface Props {
+  startDate: string;
+  locale: 'da' | 'en';
+}
+
+const { startDate, locale } = Astro.props;
+
+const t = {
+  da: { label: 'Kick-off om', started: 'Kampen er i gang' },
+  en: { label: 'Kick-off in', started: 'Match underway' },
+}[locale];
+---
+
+<div
+  class="flex flex-wrap items-center justify-center gap-4 mb-6"
+  data-match-countdown
+  data-countdown-iso={startDate}
+  data-label-started={t.started}
+>
+  <div
+    class="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+    style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px)"
+  >
+    <span class="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-white">{t.label}</span>
+    <span class="countdown-value font-black tabular-nums text-ab-neon" style="font-size:0.9375rem" data-countdown-value>—</span>
+  </div>
+</div>
+
+<script>
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  function tick(el: HTMLElement): boolean {
+    const iso = el.dataset.countdownIso;
+    const valueEl = el.querySelector<HTMLElement>('[data-countdown-value]');
+    if (!iso || !valueEl) return false;
+
+    const diff = new Date(iso).getTime() - Date.now();
+    if (diff <= 0) {
+      valueEl.textContent = el.dataset.labelStarted ?? '';
+      return false;
+    }
+
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    valueEl.textContent =
+      days > 0 ? `${days}d ${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    return true;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-match-countdown]').forEach((el) => {
+    if (!tick(el)) return;
+    const interval = setInterval(() => {
+      if (!tick(el)) clearInterval(interval);
+    }, 1000);
+  });
+</script>
+
+<style>
+  .countdown-value {
+    animation: countdown-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes countdown-glow {
+    0%,
+    100% {
+      text-shadow: 0 0 6px color-mix(in srgb, var(--ab-neon) 55%, transparent);
+    }
+    50% {
+      text-shadow: 0 0 14px color-mix(in srgb, var(--ab-neon) 90%, transparent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .countdown-value {
+      animation: none;
+    }
+  }
+</style>

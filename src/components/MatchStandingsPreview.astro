@@ -1,0 +1,34 @@
+---
+import StandingsWidget from '@/components/StandingsWidget.astro';
+
+interface Props {
+  locale: 'da' | 'en';
+  homeId: number;
+  awayId: number;
+  fullTableHref: string;
+}
+
+const { locale, homeId, awayId, fullTableHref } = Astro.props;
+
+const t = {
+  da: { eyebrow: 'Stillingen', heading: 'Hvor holder de til i tabellen?', cta: 'Se hele stillingen' },
+  en: { eyebrow: 'Standings', heading: 'Where they sit in the table', cta: 'See full table' },
+}[locale];
+---
+
+<section>
+  <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style="color:var(--ab-green)">{t.eyebrow}</p>
+  <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
+    {t.heading}
+  </h2>
+  <div class="rounded-[4px] overflow-hidden" style="border:1px solid #E5E7EB">
+    <StandingsWidget locale={locale} showHeader={false} highlightTeamIds={[homeId, awayId]} />
+  </div>
+  <a
+    href={fullTableHref}
+    class="inline-block mt-4 text-xs font-black uppercase tracking-[0.1em]"
+    style="color:var(--ab-green)"
+  >
+    {t.cta} →
+  </a>
+</section>
