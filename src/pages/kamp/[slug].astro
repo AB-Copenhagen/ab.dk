@@ -296,14 +296,7 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
       )}
 
       {isUpcoming && (
-        <MatchCountdown
-          startDate={startDate}
-          locale="da"
-          eventId={eventId}
-          homeName={homeName}
-          awayName={awayName}
-          venueName={venueName}
-        />
+        <MatchCountdown startDate={startDate} locale="da" />
       )}
 
     </div>
