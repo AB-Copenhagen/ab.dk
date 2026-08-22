@@ -1,0 +1,60 @@
+---
+import { getSquadPlayers } from '@/lib/si/squad';
+import { getPlayerSlug } from '@/data/player-cms-data';
+
+interface Props {
+  eventId: number;
+  locale: 'da' | 'en';
+}
+
+const { eventId, locale } = Astro.props;
+
+const t = {
+  da: { eyebrow: 'Spiller i truppen' },
+  en: { eyebrow: 'Squad spotlight' },
+}[locale];
+
+const squad = await getSquadPlayers(locale).catch(() => []);
+// Deterministic per match rather than random-per-request, so a given match
+// always features the same player instead of reshuffling on every load.
+const player = squad.length > 0 ? squad[eventId % squad.length] : null;
+const href =
+  player?.id != null
+    ? locale === 'da'
+      ? `/spiller/${getPlayerSlug(player.id, player.name)}`
+      : `/en/player/${getPlayerSlug(player.id, player.name)}`
+    : null;
+---
+
+{
+  player && href && (
+    <div class="space-y-4">
+      <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">{t.eyebrow}</p>
+      <a
+        href={href}
+        class="flex items-center gap-4 group no-underline rounded-[4px] p-3 -m-3 transition-colors hover:bg-[#F8F9FA]"
+      >
+        <div class="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-[#F0F4F0] flex items-center justify-center">
+          {player.photoUrl ? (
+            <img
+              src={player.photoUrl}
+              alt=""
+              loading="lazy"
+              class="w-full h-full object-cover"
+              style={`object-position:${player.photoPosition}`}
+            />
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" stroke="var(--ab-green)" stroke-width="1.5" />
+              <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="var(--ab-green)" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          )}
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-bold text-[#111] leading-snug group-hover:underline">{player.name}</p>
+          {player.shirtNumber != null && <p class="text-xs text-[#888] mt-0.5">#{player.shirtNumber}</p>}
+        </div>
+      </a>
+    </div>
+  )
+}

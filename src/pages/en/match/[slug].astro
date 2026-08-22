@@ -7,6 +7,9 @@ import MatchHeroForm from '@/components/MatchHeroForm.astro';
 import MatchHeroPhoto from '@/components/MatchHeroPhoto.astro';
 import MatchHypeReel from '@/components/MatchHypeReel.astro';
 import MatchHighlightCard from '@/components/MatchHighlightCard.astro';
+import MatchFeaturedPlayer from '@/components/MatchFeaturedPlayer.astro';
+import MatchWatchPartyPromo from '@/components/MatchWatchPartyPromo.astro';
+import MatchAppPromo from '@/components/MatchAppPromo.astro';
 import MatchStandingsPreview from '@/components/MatchStandingsPreview.astro';
 import MatchdayGuideTeaser from '@/components/MatchdayGuideTeaser.astro';
 import AwayDayGuideTeaser from '@/components/AwayDayGuideTeaser.astro';
@@ -73,6 +76,7 @@ const postMatchArticle = cmsMatch?.postMatchArticle ?? null;
 const awayTravelArticle = cmsMatch?.awayTravelArticle ?? null;
 const otherArticles = [...(cmsMatch?.communityNewsArticles ?? []), ...(cmsMatch?.otherArticles ?? [])];
 const socialEmbeds = cmsMatch?.socialEmbeds ?? [];
+const hasFeaturedContent = Boolean(preMatchArticle) || Boolean(postMatchArticle) || socialEmbeds.length > 0;
 
 const billetFallback = billetMap
   ? (findTicketUrl(billetMap, awayName) ?? 'https://billet.ab.dk/')
@@ -465,6 +469,14 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
           ))}
 
           {!isUpcoming && <MatchHighlightCard eventId={eventId} locale="en" />}
+
+          {!hasFeaturedContent && (
+            <>
+              <MatchFeaturedPlayer eventId={eventId} locale="en" />
+              <MatchWatchPartyPromo locale="en" />
+              <MatchAppPromo locale="en" />
+            </>
+          )}
 
           {socialEmbeds.length > 0 && (
             <div class="space-y-4">

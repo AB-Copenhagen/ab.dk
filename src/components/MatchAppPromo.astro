@@ -1,0 +1,56 @@
+---
+interface Props {
+  locale: 'da' | 'en';
+}
+
+const { locale } = Astro.props;
+
+const t = {
+  da: {
+    eyebrow: 'MyAB App',
+    heading: 'Følg AB overalt',
+    body: 'Live opdateringer, billetter og mere — download MyAB-appen.',
+    google: 'Google Play',
+    apple: 'App Store',
+  },
+  en: {
+    eyebrow: 'MyAB App',
+    heading: 'Follow AB everywhere',
+    body: 'Live updates, tickets, and more — download the MyAB app.',
+    google: 'Google Play',
+    apple: 'App Store',
+  },
+}[locale];
+---
+
+<div class="border border-gray-200 rounded-[4px] p-5 space-y-3 bg-white">
+  <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">{t.eyebrow}</p>
+  <p class="text-sm font-bold text-[#111]">{t.heading}</p>
+  <p class="text-xs text-[#666] leading-relaxed">{t.body}</p>
+  <div class="flex items-center gap-4 pt-1">
+    <a
+      href="https://play.google.com/store/apps/details?id=dk.ab.club&hl=en_US&pli=1"
+      target="_blank"
+      rel="noreferrer noopener"
+      aria-label="Google Play"
+      class="inline-flex items-center gap-1.5 text-xs font-bold text-[#111] hover:text-ab-green transition-colors"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.344-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" />
+      </svg>
+      {t.google}
+    </a>
+    <a
+      href="https://apps.apple.com/id/app/myab/id6760774439"
+      target="_blank"
+      rel="noreferrer noopener"
+      aria-label="Apple App Store"
+      class="inline-flex items-center gap-1.5 text-xs font-bold text-[#111] hover:text-ab-green transition-colors"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.63 0 2.89.06 4.383 2.19-.116.074-2.618 1.524-2.618 4.66 0 3.71 3.256 5.02 3.29 5.03z" />
+      </svg>
+      {t.apple}
+    </a>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+---
+import Img from '@/components/Img.astro';
+
+interface Props {
+  locale: 'da' | 'en';
+}
+
+const { locale } = Astro.props;
+
+const t = {
+  da: {
+    eyebrow: 'Følg med sammen',
+    heading: 'Find en watch party',
+    body: 'AB holder watch parties verden over — fra København til New York. Se om der er en nær dig.',
+    cta: 'Se kalender',
+  },
+  en: {
+    eyebrow: 'Watch together',
+    heading: 'Find a watch party',
+    body: "AB hosts watch parties around the world — from Copenhagen to New York. See if there's one near you.",
+    cta: 'See calendar',
+  },
+}[locale];
+---
+
+<div class="relative rounded-[4px] overflow-hidden" style="min-height:180px">
+  <Img
+    src="/images/watch-party-1.jpg"
+    alt=""
+    aria-hidden="true"
+    class="absolute inset-0 w-full h-full object-cover"
+    loading="lazy"
+  />
+  <div class="absolute inset-0" style="background:linear-gradient(180deg, rgba(0,74,58,0.55) 0%, rgba(0,74,58,0.88) 100%)" />
+  <div class="relative z-10 flex h-full flex-col justify-end p-5">
+    <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-1" style="color:var(--ab-neon)">{t.eyebrow}</p>
+    <h3 class="font-black text-white mb-2" style="font-size:1.0625rem">{t.heading}</h3>
+    <p class="text-white/70 mb-4 leading-relaxed" style="font-size:0.8125rem">{t.body}</p>
+    <a
+      href="https://luma.com/abdk"
+      target="_blank"
+      rel="noopener"
+      class="inline-flex items-center gap-1.5 font-black uppercase tracking-[0.08em] text-white no-underline"
+      style="font-size:0.75rem"
+    >
+      {t.cta} →
+    </a>
+  </div>
+</div>
