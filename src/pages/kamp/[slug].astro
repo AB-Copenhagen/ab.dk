@@ -6,6 +6,7 @@ import MatchCountdown from '@/components/MatchCountdown.astro';
 import MatchHeroForm from '@/components/MatchHeroForm.astro';
 import MatchHeroPhoto from '@/components/MatchHeroPhoto.astro';
 import MatchHypeReel from '@/components/MatchHypeReel.astro';
+import MatchHighlightCard from '@/components/MatchHighlightCard.astro';
 import MatchStandingsPreview from '@/components/MatchStandingsPreview.astro';
 import MatchdayGuideTeaser from '@/components/MatchdayGuideTeaser.astro';
 import AwayDayGuideTeaser from '@/components/AwayDayGuideTeaser.astro';
@@ -432,45 +433,6 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
         <!-- Sidebar -->
         <aside class="space-y-5 lg:sticky lg:top-24">
 
-          <!-- Match info -->
-          <div class="border border-gray-200 rounded-[4px] p-5 space-y-4 bg-white">
-            <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">Kampinfo</p>
-            <div class="space-y-3 text-sm text-[#444]">
-              <div class="flex items-start gap-3">
-                <svg class="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#888" stroke-width="1.2"/>
-                  <path d="M5 1v3M11 1v3M2 7h12" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
-                </svg>
-                <div>
-                  <p class="font-bold text-[#111] capitalize" {...dtAttrs(startDate, 'da-DK', DATE_LONG_YEAR_OPTS)}>{matchDateDay}</p>
-                  <p class="text-[#888] mt-0.5" {...dtAttrs(startDate, 'da-DK', TIME_OPTS)}>{matchTime}</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <svg class="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M8 1.5C5.515 1.5 3.5 3.515 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.485-2.015-4.5-4.5-4.5Z" stroke="#888" stroke-width="1.2"/>
-                  <circle cx="8" cy="6" r="1.5" stroke="#888" stroke-width="1.2"/>
-                </svg>
-                <p class="text-[#444]">{venueName}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ticket CTA (home + upcoming/live only) -->
-          {!isFinished && ticketUrl && (
-            <a
-              class="vivenu-btn flex items-center justify-center gap-2.5 w-full py-4 text-sm font-black uppercase tracking-[0.1em] text-white rounded-[4px] transition-opacity hover:opacity-90"
-              href={`${ticketUrl}?useEmbed=true`}
-              style="background:var(--ab-green)"
-            >
-              <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/>
-                <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2"/>
-              </svg>
-              Køb billetter
-            </a>
-          )}
-
           <!-- Pre/Post match reports + related news -->
           {[
             { label: 'Optakt', article: preMatchArticle },
@@ -501,6 +463,8 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
               </a>
             </div>
           ))}
+
+          {!isUpcoming && <MatchHighlightCard eventId={eventId} locale="da" />}
 
           {socialEmbeds.length > 0 && (
             <div class="space-y-4">
