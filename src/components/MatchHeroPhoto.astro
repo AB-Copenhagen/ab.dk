@@ -12,27 +12,28 @@ const { bannerImageUrl } = Astro.props;
   <div class="hero-photo absolute inset-0">
     {
       bannerImageUrl ? (
-        <img src={bannerImageUrl} alt="" aria-hidden="true" class="w-full h-full object-cover opacity-75" />
+        <img src={bannerImageUrl} alt="" aria-hidden="true" class="w-full h-full object-cover opacity-90" />
       ) : (
         <Img
           src="/images/match-hero-default.jpg"
           alt=""
           aria-hidden="true"
-          class="w-full h-full object-cover opacity-75"
+          class="w-full h-full object-cover opacity-90"
         />
       )
     }
   </div>
   <div
     class="absolute inset-0"
-    style="background:linear-gradient(180deg, rgba(20,20,20,0.55) 0%, rgba(20,20,20,0.25) 45%, rgba(20,20,20,0.6) 100%)"
+    style="background:linear-gradient(180deg, rgba(15,15,15,0.4) 0%, rgba(15,15,15,0.08) 45%, rgba(15,15,15,0.45) 100%)"
   />
 </div>
 
 <style>
   .hero-photo {
     transform-origin: center;
-    animation: hero-ken-burns 20s ease-out forwards;
+    filter: saturate(1.25) contrast(1.08);
+    animation: hero-ken-burns 11s ease-in-out infinite alternate;
   }
 
   @keyframes hero-ken-burns {
@@ -40,7 +41,7 @@ const { bannerImageUrl } = Astro.props;
       transform: scale(1);
     }
     to {
-      transform: scale(1.12);
+      transform: scale(1.15);
     }
   }
 

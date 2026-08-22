@@ -27,7 +27,10 @@ const googleHref = googleCalendarUrl({ homeName, awayName, startDate, venueName 
   data-countdown-iso={startDate}
   data-label-started={t.started}
 >
-  <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full" style="background:rgba(255,255,255,0.08)">
+  <div
+    class="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+    style="background:rgba(0,0,0,0.45);backdrop-filter:blur(6px)"
+  >
     <span class="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-white/50">{t.label}</span>
     <span class="countdown-value font-black tabular-nums text-ab-neon" style="font-size:0.9375rem" data-countdown-value>—</span>
   </div>
