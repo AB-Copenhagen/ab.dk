@@ -3,10 +3,12 @@ import Base from '@/layouts/Base.astro';
 import SiWidget from '@/components/widgets/SiWidget.astro';
 import TeamForm from '@/components/TeamForm.astro';
 import MatchCountdown from '@/components/MatchCountdown.astro';
+import MatchHeroForm from '@/components/MatchHeroForm.astro';
 import MatchHypeReel from '@/components/MatchHypeReel.astro';
 import MatchStandingsPreview from '@/components/MatchStandingsPreview.astro';
 import MatchdayGuideTeaser from '@/components/MatchdayGuideTeaser.astro';
 import AwayDayGuideTeaser from '@/components/AwayDayGuideTeaser.astro';
+import Img from '@/components/Img.astro';
 import { fetchEvent, fetchTeamForm, formatEventScore, getTeamLogoSrc } from '@/lib/si/client';
 import type { SIEvent } from '@/lib/si/client';
 import { fetchMatchContent, strapiMediaUrl } from '@/lib/strapi/client';
@@ -166,17 +168,24 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
 
   <!-- Hero -->
   <div class="relative overflow-hidden" style="background:#2A2A2A">
-    {cmsMatch?.bannerImage && (
-      <div class="absolute inset-0">
+    <div class="absolute inset-0">
+      {cmsMatch?.bannerImage ? (
         <img
           src={strapiMediaUrl(cmsMatch.bannerImage.url)}
           alt=""
           aria-hidden="true"
           class="w-full h-full object-cover opacity-35"
         />
-        <div class="absolute inset-0" style="background:rgba(42,42,42,0.75)" />
-      </div>
-    )}
+      ) : (
+        <Img
+          src="/images/match-hero-default.jpg"
+          alt=""
+          aria-hidden="true"
+          class="w-full h-full object-cover opacity-35"
+        />
+      )}
+      <div class="absolute inset-0" style="background:rgba(42,42,42,0.75)" />
+    </div>
     <div class="relative z-10 max-w-5xl mx-auto px-5 md:px-12 pt-8 pb-10">
 
       <!-- Back link -->
@@ -209,6 +218,7 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
             />
           </div>
           <span class="font-black text-white text-center leading-tight" style="font-size:clamp(0.75rem,2vw,1rem);max-width:140px">{homeName}</span>
+          <MatchHeroForm form={homeForm} />
         </div>
 
         <!-- Centre: score or VS -->
@@ -242,6 +252,7 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
             />
           </div>
           <span class="font-black text-white text-center leading-tight" style="font-size:clamp(0.75rem,2vw,1rem);max-width:140px">{awayName}</span>
+          <MatchHeroForm form={awayForm} />
         </div>
 
       </div>

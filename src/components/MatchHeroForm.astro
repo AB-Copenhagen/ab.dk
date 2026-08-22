@@ -1,0 +1,29 @@
+---
+import type { TeamFormResult } from '@/lib/si/client';
+
+interface Props {
+  form: TeamFormResult[];
+}
+
+const { form } = Astro.props;
+
+const dotStyle = (o: 'W' | 'D' | 'L') => {
+  if (o === 'W') return 'background:var(--ab-neon)';
+  if (o === 'D') return 'background:rgba(255,255,255,0.4)';
+  return 'background:#E05252';
+};
+---
+
+{
+  form.length > 0 && (
+    <div class="flex items-center justify-center gap-1 mt-2" aria-hidden="true">
+      {form.map((r) => (
+        <span
+          class="w-1.5 h-1.5 rounded-full shrink-0"
+          style={dotStyle(r.outcome)}
+          title={`${r.opponentName} ${r.score}`}
+        />
+      ))}
+    </div>
+  )
+}
