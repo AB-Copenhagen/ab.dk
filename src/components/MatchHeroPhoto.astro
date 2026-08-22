@@ -1,0 +1,49 @@
+---
+import Img from '@/components/Img.astro';
+
+interface Props {
+  bannerImageUrl: string | null;
+}
+
+const { bannerImageUrl } = Astro.props;
+---
+
+<div class="absolute inset-0 overflow-hidden">
+  <div class="hero-photo absolute inset-0">
+    {
+      bannerImageUrl ? (
+        <img src={bannerImageUrl} alt="" aria-hidden="true" class="w-full h-full object-cover opacity-35" />
+      ) : (
+        <Img
+          src="/images/match-hero-default.jpg"
+          alt=""
+          aria-hidden="true"
+          class="w-full h-full object-cover opacity-35"
+        />
+      )
+    }
+  </div>
+  <div class="absolute inset-0" style="background:rgba(42,42,42,0.75)" />
+</div>
+
+<style>
+  .hero-photo {
+    transform-origin: center;
+    animation: hero-ken-burns 20s ease-out forwards;
+  }
+
+  @keyframes hero-ken-burns {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.12);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-photo {
+      animation: none;
+    }
+  }
+</style>

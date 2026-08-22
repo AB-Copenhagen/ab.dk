@@ -29,7 +29,7 @@ const googleHref = googleCalendarUrl({ homeName, awayName, startDate, venueName 
 >
   <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full" style="background:rgba(255,255,255,0.08)">
     <span class="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-white/50">{t.label}</span>
-    <span class="font-black tabular-nums text-ab-neon" style="font-size:0.9375rem" data-countdown-value>—</span>
+    <span class="countdown-value font-black tabular-nums text-ab-neon" style="font-size:0.9375rem" data-countdown-value>—</span>
   </div>
   <div class="flex items-center gap-3">
     <a
@@ -80,3 +80,25 @@ const googleHref = googleCalendarUrl({ homeName, awayName, startDate, venueName 
     }, 1000);
   });
 </script>
+
+<style>
+  .countdown-value {
+    animation: countdown-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes countdown-glow {
+    0%,
+    100% {
+      text-shadow: 0 0 6px color-mix(in srgb, var(--ab-neon) 55%, transparent);
+    }
+    50% {
+      text-shadow: 0 0 14px color-mix(in srgb, var(--ab-neon) 90%, transparent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .countdown-value {
+      animation: none;
+    }
+  }
+</style>
