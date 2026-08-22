@@ -9,7 +9,7 @@
   "attributes": {
     "role": {
       "type": "enumeration",
-      "enum": ["pre_match", "post_match", "community_news", "other"],
+      "enum": ["pre_match", "post_match", "community_news", "other", "away_travel"],
       "required": true
     },
     "article": {

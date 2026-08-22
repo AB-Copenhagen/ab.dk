@@ -535,7 +535,7 @@ export interface StrapiMatchArticle {
   image?: { url: string; alternativeText?: string };
 }
 
-type MatchArticleLinkRole = 'pre_match' | 'post_match' | 'community_news' | 'other';
+type MatchArticleLinkRole = 'pre_match' | 'post_match' | 'community_news' | 'other' | 'away_travel';
 
 interface RawStrapiMatchArticleLink {
   role: MatchArticleLinkRole;
@@ -558,6 +558,7 @@ export interface StrapiMatchContent {
   bannerImage?: { url: string; alternativeText?: string; width?: number; height?: number };
   preMatchArticle: StrapiMatchArticle | null;
   postMatchArticle: StrapiMatchArticle | null;
+  awayTravelArticle: StrapiMatchArticle | null;
   communityNewsArticles: StrapiMatchArticle[];
   otherArticles: StrapiMatchArticle[];
   socialEmbeds?: StrapiSocialEmbed[];
@@ -617,6 +618,7 @@ export async function fetchMatchContent(
     bannerImage: raw.bannerImage,
     preMatchArticle: resolveRole('pre_match')[0] ?? null,
     postMatchArticle: resolveRole('post_match')[0] ?? null,
+    awayTravelArticle: resolveRole('away_travel')[0] ?? null,
     communityNewsArticles: resolveRole('community_news'),
     otherArticles: resolveRole('other'),
     socialEmbeds: raw.socialEmbeds,

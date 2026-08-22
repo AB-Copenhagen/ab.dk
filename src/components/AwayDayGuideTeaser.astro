@@ -1,0 +1,72 @@
+---
+import { getTeamLogoSrc } from '@/lib/si/client';
+import type { StrapiMatchArticle } from '@/lib/strapi/client';
+import { decodeHtml } from '@/lib/utils';
+
+interface Props {
+  locale: 'da' | 'en';
+  awayId: number;
+  awayName: string;
+  awayTravelArticle: StrapiMatchArticle | null;
+  ticketUrl: string | null;
+}
+
+const { locale, awayId, awayName, awayTravelArticle, ticketUrl } = Astro.props;
+
+const t = {
+  da: {
+    eyebrow: 'Udebane',
+    genericHeading: `AB på udebane mod ${awayName}`,
+    genericBody: 'Følg med når AB tager på udebane. Sikr dig billet, og vær klar til kamp.',
+    genericCta: 'Køb billetter',
+    articleCta: 'Læs udeguiden',
+    newsBase: '/nyheder',
+  },
+  en: {
+    eyebrow: 'Away Day',
+    genericHeading: `AB away at ${awayName}`,
+    genericBody: 'Follow AB on the road. Grab a ticket and get ready for kick-off.',
+    genericCta: 'Buy tickets',
+    articleCta: 'Read the away guide',
+    newsBase: '/en/news',
+  },
+}[locale];
+
+const heading = awayTravelArticle ? decodeHtml(awayTravelArticle.title) : t.genericHeading;
+const body = awayTravelArticle?.description ?? t.genericBody;
+const ctaLabel = awayTravelArticle ? t.articleCta : t.genericCta;
+const ctaHref = awayTravelArticle ? `${t.newsBase}/${awayTravelArticle.slug}` : ticketUrl;
+---
+
+<section class="relative overflow-hidden rounded-[4px]" style="min-height:280px;background:var(--surface-ground)">
+  <img
+    src={getTeamLogoSrc(awayId)}
+    alt=""
+    aria-hidden="true"
+    class="absolute inset-0 w-full h-full object-contain opacity-10"
+    style="transform:scale(1.8)"
+    onerror="this.style.display='none'"
+  />
+  <div
+    class="absolute inset-0"
+    style="background:linear-gradient(135deg,color-mix(in srgb, var(--surface-ground) 72%, transparent) 30%,color-mix(in srgb, var(--surface-ground) 35%, transparent))"
+  />
+  <div class="relative z-10 flex flex-col items-center text-center px-8 py-14">
+    <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-4" style="color:var(--ab-neon)">{t.eyebrow}</p>
+    <h2 class="font-black text-white mb-4" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.02em">
+      {heading}
+    </h2>
+    <p class="text-white/60 max-w-md mb-8 leading-relaxed" style="font-size:0.9375rem">
+      {body}
+    </p>
+    {ctaHref && (
+      <a
+        href={ctaHref}
+        class="font-black uppercase no-underline px-8 py-3 rounded transition-opacity hover:opacity-90"
+        style="background:var(--ab-neon);color:var(--ab-green);font-size:0.8rem;letter-spacing:0.08em"
+      >
+        {ctaLabel}
+      </a>
+    )}
+  </div>
+</section>

@@ -2,12 +2,16 @@
 import Base from '@/layouts/Base.astro';
 import SiWidget from '@/components/widgets/SiWidget.astro';
 import TeamForm from '@/components/TeamForm.astro';
+import MatchCountdown from '@/components/MatchCountdown.astro';
+import MatchHypeReel from '@/components/MatchHypeReel.astro';
+import MatchStandingsPreview from '@/components/MatchStandingsPreview.astro';
+import MatchdayGuideTeaser from '@/components/MatchdayGuideTeaser.astro';
+import AwayDayGuideTeaser from '@/components/AwayDayGuideTeaser.astro';
 import { fetchEvent, fetchTeamForm, formatEventScore, getTeamLogoSrc } from '@/lib/si/client';
 import type { SIEvent } from '@/lib/si/client';
 import { fetchMatchContent, strapiMediaUrl } from '@/lib/strapi/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
-import Img from '@/components/Img.astro';
 import { decodeHtml } from '@/lib/utils';
 import { fmtDate, dtAttrs, DATE_LONG_YEAR_OPTS, TIME_OPTS } from '@/lib/dateFormat';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
@@ -64,6 +68,7 @@ const [cmsMatch, billetMap, homeForm, awayForm] = await Promise.all([
 const accentColor = cmsMatch?.accentColor ?? 'var(--ab-green)';
 const preMatchArticle = cmsMatch?.preMatchArticle ?? null;
 const postMatchArticle = cmsMatch?.postMatchArticle ?? null;
+const awayTravelArticle = cmsMatch?.awayTravelArticle ?? null;
 const otherArticles = [...(cmsMatch?.communityNewsArticles ?? []), ...(cmsMatch?.otherArticles ?? [])];
 const socialEmbeds = cmsMatch?.socialEmbeds ?? [];
 
@@ -277,6 +282,17 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
         </div>
       </div>
 
+      {isUpcoming && (
+        <MatchCountdown
+          startDate={startDate}
+          locale="da"
+          eventId={eventId}
+          homeName={homeName}
+          awayName={awayName}
+          venueName={venueName}
+        />
+      )}
+
     </div>
   </div>
 
@@ -291,15 +307,24 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
         <div class="space-y-14">
 
           {isUpcoming && (
-            <TeamForm
-              homeId={event.homeId}
-              homeName={homeName}
-              homeForm={homeForm}
-              awayId={event.awayId}
-              awayName={awayName}
-              awayForm={awayForm}
-              locale="da"
-            />
+            <>
+              <MatchHypeReel locale="da" />
+              <MatchStandingsPreview
+                locale="da"
+                homeId={event.homeId}
+                awayId={event.awayId}
+                fullTableHref="/kampe#stilling"
+              />
+              <TeamForm
+                homeId={event.homeId}
+                homeName={homeName}
+                homeForm={homeForm}
+                awayId={event.awayId}
+                awayName={awayName}
+                awayForm={awayForm}
+                locale="da"
+              />
+            </>
           )}
 
           {!isUpcoming && (
@@ -379,33 +404,16 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
             </>
           )}
 
-          {isHome && (
-            <section class="relative overflow-hidden rounded-[4px]" style="min-height:280px;background:var(--surface-ground)">
-              <Img
-                src="/images/about-stadium-seat.png"
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover object-center"
-                style="opacity:0.75"
-              />
-              <div class="absolute inset-0" style="background:linear-gradient(135deg,color-mix(in srgb, var(--surface-ground) 72%, transparent) 30%,color-mix(in srgb, var(--surface-ground) 35%, transparent))" />
-              <div class="relative z-10 flex flex-col items-center text-center px-8 py-14">
-                <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-4" style="color:var(--ab-neon)">Gladsaxe Stadion</p>
-                <h2 class="font-black text-white uppercase mb-4" style="font-size:clamp(1.75rem,4vw,2.75rem);letter-spacing:-0.02em">
-                  Kampdag Guide
-                </h2>
-                <p class="text-white/60 max-w-md mb-8 leading-relaxed" style="font-size:0.9375rem">
-                  Alt hvad du skal vide for at have den bedste oplevelse på Gladsaxe Stadion — transport, parkering og stadioninfo.
-                </p>
-                <a
-                  href="/kampdag"
-                  class="font-black uppercase no-underline px-8 py-3 rounded transition-opacity hover:opacity-90"
-                  style="background:var(--ab-neon);color:var(--ab-green);font-size:0.8rem;letter-spacing:0.08em"
-                >
-                  Se kampdag guide
-                </a>
-              </div>
-            </section>
+          {isHome ? (
+            <MatchdayGuideTeaser locale="da" />
+          ) : (
+            <AwayDayGuideTeaser
+              locale="da"
+              awayId={event.awayId}
+              awayName={awayName}
+              awayTravelArticle={awayTravelArticle}
+              ticketUrl={ticketUrl}
+            />
           )}
         </div>
 

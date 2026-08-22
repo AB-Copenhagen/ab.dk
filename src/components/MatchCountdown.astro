@@ -1,0 +1,82 @@
+---
+import { buildMatchIcs, icsDataUrl, googleCalendarUrl } from '@/lib/calendar';
+
+interface Props {
+  startDate: string;
+  locale: 'da' | 'en';
+  eventId: number;
+  homeName: string;
+  awayName: string;
+  venueName: string;
+}
+
+const { startDate, locale, eventId, homeName, awayName, venueName } = Astro.props;
+
+const t = {
+  da: { label: 'Kick-off om', ics: 'Tilføj til kalender', google: 'Google Kalender', started: 'Kampen er i gang' },
+  en: { label: 'Kick-off in', ics: 'Add to calendar', google: 'Google Calendar', started: 'Match underway' },
+}[locale];
+
+const icsHref = icsDataUrl(buildMatchIcs({ eventId, homeName, awayName, startDate, venueName }));
+const googleHref = googleCalendarUrl({ homeName, awayName, startDate, venueName });
+---
+
+<div
+  class="flex flex-wrap items-center justify-center gap-4 mt-6"
+  data-match-countdown
+  data-countdown-iso={startDate}
+  data-label-started={t.started}
+>
+  <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full" style="background:rgba(255,255,255,0.08)">
+    <span class="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-white/50">{t.label}</span>
+    <span class="font-black tabular-nums text-ab-neon" style="font-size:0.9375rem" data-countdown-value>—</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <a
+      href={icsHref}
+      download={`ab-${eventId}.ics`}
+      class="inline-flex items-center gap-1.5 text-xs font-bold text-white/60 hover:text-white transition-colors"
+    >
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+        <path d="M5 1v3M11 1v3M2 7h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+      </svg>
+      {t.ics}
+    </a>
+    <span class="text-white/20">·</span>
+    <a href={googleHref} target="_blank" rel="noopener" class="text-xs font-bold text-white/60 hover:text-white transition-colors">
+      {t.google}
+    </a>
+  </div>
+</div>
+
+<script>
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  function tick(el: HTMLElement): boolean {
+    const iso = el.dataset.countdownIso;
+    const valueEl = el.querySelector<HTMLElement>('[data-countdown-value]');
+    if (!iso || !valueEl) return false;
+
+    const diff = new Date(iso).getTime() - Date.now();
+    if (diff <= 0) {
+      valueEl.textContent = el.dataset.labelStarted ?? '';
+      return false;
+    }
+
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    valueEl.textContent =
+      days > 0 ? `${days}d ${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    return true;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-match-countdown]').forEach((el) => {
+    if (!tick(el)) return;
+    const interval = setInterval(() => {
+      if (!tick(el)) clearInterval(interval);
+    }, 1000);
+  });
+</script>
