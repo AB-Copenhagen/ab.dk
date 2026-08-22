@@ -5,18 +5,18 @@ import { decodeHtml } from '@/lib/utils';
 
 interface Props {
   locale: 'da' | 'en';
-  awayId: number;
-  awayName: string;
+  opponentId: number;
+  opponentName: string;
   awayTravelArticle: StrapiMatchArticle | null;
   ticketUrl: string | null;
 }
 
-const { locale, awayId, awayName, awayTravelArticle, ticketUrl } = Astro.props;
+const { locale, opponentId, opponentName, awayTravelArticle, ticketUrl } = Astro.props;
 
 const t = {
   da: {
     eyebrow: 'Udebane',
-    genericHeading: `AB på udebane mod ${awayName}`,
+    genericHeading: `AB på udebane mod ${opponentName}`,
     genericBody: 'Følg med når AB tager på udebane. Sikr dig billet, og vær klar til kamp.',
     genericCta: 'Køb billetter',
     articleCta: 'Læs udeguiden',
@@ -24,7 +24,7 @@ const t = {
   },
   en: {
     eyebrow: 'Away Day',
-    genericHeading: `AB away at ${awayName}`,
+    genericHeading: `AB away at ${opponentName}`,
     genericBody: 'Follow AB on the road. Grab a ticket and get ready for kick-off.',
     genericCta: 'Buy tickets',
     articleCta: 'Read the away guide',
@@ -40,7 +40,7 @@ const ctaHref = awayTravelArticle ? `${t.newsBase}/${awayTravelArticle.slug}` : 
 
 <section class="relative overflow-hidden rounded-[4px]" style="min-height:280px;background:var(--surface-ground)">
   <img
-    src={getTeamLogoSrc(awayId)}
+    src={getTeamLogoSrc(opponentId)}
     alt=""
     aria-hidden="true"
     class="absolute inset-0 w-full h-full object-contain opacity-10"
