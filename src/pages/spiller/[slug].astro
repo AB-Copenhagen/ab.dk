@@ -68,7 +68,9 @@ if (manualPlayer) {
     // fall through to redirect
   }
 
-  if (!player) {
+  // SI returns an empty (but truthy) profile for an id it doesn't recognize
+  // — e.g. a retired synthetic manual-player id — rather than 404ing.
+  if (!player?.name) {
     return Astro.redirect('/truppen');
   }
 
