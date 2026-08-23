@@ -8,7 +8,9 @@ interface Props {
 const { bannerImageUrl } = Astro.props;
 ---
 
-<div class="absolute inset-0 overflow-hidden">
+<!-- Photo + Ken Burns zoom is desktop-only: on small screens it's just a solid
+     background (set by the caller), which is cheaper and reads better on mobile. -->
+<div class="hidden md:block absolute inset-0 overflow-hidden">
   <div class="hero-photo absolute inset-0">
     {
       bannerImageUrl ? (
