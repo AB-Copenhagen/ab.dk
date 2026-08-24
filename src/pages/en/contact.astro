@@ -117,8 +117,11 @@ export const prerender = true;
             </div>
             <div class="flex flex-col gap-1.5">
               <label for="cf-subject" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Subject</label>
-              <input id="cf-subject" name="subject" type="text"
-                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="What is this about?" />
+              <select id="cf-subject" name="subject"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium bg-white focus:outline-none focus:border-ab-green transition-colors">
+                <option value="general">General inquiry</option>
+                <option value="partnerships">Partnerships</option>
+              </select>
             </div>
             <div class="flex flex-col gap-1.5">
               <label for="cf-message" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Message</label>
@@ -143,6 +146,13 @@ export const prerender = true;
   const form = document.getElementById('contact-form') as HTMLFormElement | null;
   const statusEl = document.getElementById('cf-status');
   const submitBtn = document.getElementById('cf-submit') as HTMLButtonElement | null;
+  const subjectSelect = document.getElementById('cf-subject') as HTMLSelectElement | null;
+
+  // Deep-links like /en/contact?topic=partnerships preselect the target topic.
+  const requestedTopic = new URLSearchParams(location.search).get('topic');
+  if (subjectSelect && requestedTopic && [...subjectSelect.options].some((o) => o.value === requestedTopic)) {
+    subjectSelect.value = requestedTopic;
+  }
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -151,8 +161,9 @@ export const prerender = true;
     const data = {
       name: (form.elements.namedItem('name') as HTMLInputElement).value.trim(),
       email: (form.elements.namedItem('email') as HTMLInputElement).value.trim(),
-      subject: (form.elements.namedItem('subject') as HTMLInputElement).value.trim(),
+      subject: (form.elements.namedItem('subject') as HTMLSelectElement).value.trim(),
       message: (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim(),
+      locale: 'en',
     };
 
     submitBtn.disabled = true;
