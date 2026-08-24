@@ -428,6 +428,9 @@ export async function fetchStaffRoster(locale: string): Promise<StaffRosterEntry
     locale,
     sort: ['sortOrder:asc'],
     populate: { photo: { fields: ['url'] } },
+    // See fetchPartners' comment — Strapi's default 25-item page silently
+    // drops anything past it once a "fetch everything" collection grows.
+    pagination: { pageSize: 100 },
   }).catch(() => []);
 
   const visible = rows.filter((row) => !row.hidden);
@@ -672,6 +675,11 @@ export async function fetchPartners(locale = 'da'): Promise<StrapiPartner[]> {
     sort: ['sortOrder:asc'],
     status: 'published',
     locale,
+    // Strapi defaults to a 25-item page when this is omitted — silently
+    // dropping every partner past #25. This bit the site once the roster
+    // grew to 27. 100 gives comfortable headroom over the current count
+    // without fetching an unbounded collection.
+    pagination: { pageSize: 100 },
   }).catch(() => []);
 }
 
@@ -720,6 +728,9 @@ export async function fetchHeroSlides(locale: string): Promise<StrapiHeroSlide[]
       image: { fields: ['url', 'width', 'height'] },
       video: { fields: ['url'] },
     },
+    // See fetchPartners' comment — Strapi's default 25-item page silently
+    // drops anything past it once a "fetch everything" collection grows.
+    pagination: { pageSize: 100 },
   }).catch(() => []);
 }
 
@@ -745,6 +756,9 @@ export async function fetchLeadership(locale: string): Promise<StrapiLeadershipM
     locale,
     sort: ['sortOrder:asc'],
     populate: { photo: { fields: ['url'] } },
+    // See fetchPartners' comment — Strapi's default 25-item page silently
+    // drops anything past it once a "fetch everything" collection grows.
+    pagination: { pageSize: 100 },
   }).catch(() => []);
 }
 
@@ -761,6 +775,9 @@ export async function fetchInvestors(locale: string): Promise<StrapiInvestor[]> 
   return fetchCollectionType<StrapiInvestor[]>('investors', {
     locale,
     sort: ['sortOrder:asc'],
+    // See fetchPartners' comment — Strapi's default 25-item page silently
+    // drops anything past it once a "fetch everything" collection grows.
+    pagination: { pageSize: 100 },
   }).catch(() => []);
 }
 
