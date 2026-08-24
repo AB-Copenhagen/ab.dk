@@ -46,10 +46,18 @@ export const POST: APIRoute = async ({ request }) => {
   // text), so it can route to a different inbox per target without depending
   // on page locale.
   const topic = subject === 'partnerships' ? 'partnerships' : 'general';
+  // Read via `process.env` (not `import.meta.env`) — see src/lib/mailgun.ts for
+  // why: Vercel's "Sensitive" env vars are runtime-only, and `import.meta.env.X`
+  // gets statically inlined at build time, which would permanently bake in an
+  // empty string here. No inbox address is hardcoded — this is a public repo,
+  // and the partnership manager's personal address shouldn't sit in source for
+  // scrapers to find; if PARTNERSHIP_EMAIL isn't configured, partnership
+  // inquiries fall back to the general inbox rather than going nowhere.
+  const generalInbox = process.env.CONTACT_EMAIL || 'info@ab.dk';
   const to =
     topic === 'partnerships'
-      ? (import.meta.env.PARTNERSHIP_EMAIL ?? 'staylor@ab.dk')
-      : (import.meta.env.CONTACT_EMAIL ?? 'info@ab.dk');
+      ? process.env.PARTNERSHIP_EMAIL || generalInbox
+      : generalInbox;
 
   // The form sends which page it was submitted from, so the notification
   // email — subject and field labels — matches the submitter's language
