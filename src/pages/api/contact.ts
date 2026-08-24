@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  const { name, email, subject, message } = json;
+  const { name, email, subject, message, locale } = json;
   if (!name?.trim() || !email?.trim() || !message?.trim()) {
     return new Response(
       JSON.stringify({ success: false, error: 'Missing required fields' }),
@@ -42,14 +42,35 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  const to = import.meta.env.CONTACT_EMAIL ?? 'info@ab.dk';
+  // `subject` carries a stable topic code from the form's dropdown (not free
+  // text), so it can route to a different inbox per target without depending
+  // on page locale.
+  const topic = subject === 'partnerships' ? 'partnerships' : 'general';
+  const to =
+    topic === 'partnerships'
+      ? (import.meta.env.PARTNERSHIP_EMAIL ?? 'staylor@ab.dk')
+      : (import.meta.env.CONTACT_EMAIL ?? 'info@ab.dk');
+
+  // The form sends which page it was submitted from, so the notification
+  // email — subject and field labels — matches the submitter's language
+  // instead of always being Danish.
+  const isEnglish = locale === 'en';
+  const subjectLabel = isEnglish
+    ? topic === 'partnerships'
+      ? 'Partnership inquiry'
+      : 'Contact form'
+    : topic === 'partnerships'
+      ? 'Partnerskabshenvendelse'
+      : 'Kontaktformular';
+  const nameLabel = isEnglish ? 'Name' : 'Navn';
+  const emailLabel = 'E-mail';
 
   try {
     await sendMail({
       to,
-      subject: subject?.trim() || `Kontaktformular: ${name.trim()}`,
-      text: `Navn: ${name.trim()}\nE-mail: ${email.trim()}\n\n${message.trim()}`,
-      html: `<p><strong>Navn:</strong> ${escapeHtml(name.trim())}</p><p><strong>E-mail:</strong> <a href="mailto:${escapeHtml(email.trim())}">${escapeHtml(email.trim())}</a></p><hr><p>${escapeHtml(message.trim()).replace(/\n/g, '<br>')}</p>`,
+      subject: `${subjectLabel}: ${name.trim()}`,
+      text: `${nameLabel}: ${name.trim()}\n${emailLabel}: ${email.trim()}\n\n${message.trim()}`,
+      html: `<p><strong>${nameLabel}:</strong> ${escapeHtml(name.trim())}</p><p><strong>${emailLabel}:</strong> <a href="mailto:${escapeHtml(email.trim())}">${escapeHtml(email.trim())}</a></p><hr><p>${escapeHtml(message.trim()).replace(/\n/g, '<br>')}</p>`,
       replyTo: email.trim(),
     });
     return new Response(JSON.stringify({ success: true }), {
