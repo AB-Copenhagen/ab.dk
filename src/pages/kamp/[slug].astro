@@ -13,7 +13,7 @@ import MatchAppPromo from '@/components/MatchAppPromo.astro';
 import MatchStandingsPreview from '@/components/MatchStandingsPreview.astro';
 import MatchdayGuideTeaser from '@/components/MatchdayGuideTeaser.astro';
 import AwayDayGuideTeaser from '@/components/AwayDayGuideTeaser.astro';
-import { fetchEvent, fetchTeamForm, formatEventScore, getTeamLogoSrc } from '@/lib/si/client';
+import { fetchEvent, fetchTeamForm, formatEventScore, getTeamLogoSrc, isCupMatch } from '@/lib/si/client';
 import type { SIEvent } from '@/lib/si/client';
 import { fetchMatchContent, strapiMediaUrl } from '@/lib/strapi/client';
 import { abConfig } from '@/lib/config/ab';
@@ -59,6 +59,10 @@ const isLive = statusType === 'inprogress';
 const isFinished = statusType === 'finished';
 const isUpcoming = !isLive && !isFinished;
 const isHome = event.homeId === abConfig.teamId;
+// Cup fixtures have no stable SI tournament ID (see isCupMatch's doc comment
+// in si/client.ts) — the xG widget needs one, so it's skipped for cup matches
+// instead of guessing with the league's ID.
+const isCup = isCupMatch(event);
 
 const matchDate = fmtDate(startDate, 'da-DK', { ...DATE_LONG_YEAR_OPTS, ...TIME_OPTS });
 const matchDateDay = fmtDate(startDate, 'da-DK', DATE_LONG_YEAR_OPTS);
@@ -395,18 +399,20 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
                       />
                     </div>
                   </div>
-                  <div>
-                    <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">xG — Forventede mål</h3>
-                    <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
-                      <SiWidget
-                        locale="da"
-                        widget="TwoTeamsXGoalsPitch"
-                        params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, dotSize: 32.5, header: 'true', showHeader: 'false', nopadding: 'true', card: 'false', transparent: 'true', width: '100%' }}
-                        minHeight={480}
-                        label="xG bane"
-                      />
+                  {!isCup && (
+                    <div>
+                      <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">xG — Forventede mål</h3>
+                      <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
+                        <SiWidget
+                          locale="da"
+                          widget="TwoTeamsXGoalsPitch"
+                          params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, dotSize: 32.5, header: 'true', showHeader: 'false', nopadding: 'true', card: 'false', transparent: 'true', width: '100%' }}
+                          minHeight={480}
+                          label="xG bane"
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </section>
             <TeamForm
