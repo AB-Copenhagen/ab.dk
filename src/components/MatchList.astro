@@ -84,7 +84,7 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
               class="absolute inset-0 z-0"
               aria-label={`${locale === 'en' ? 'View match' : 'Se kamp'}: ${homeName} vs ${awayName}`}
             />
-            <div class={`relative z-10 px-5 py-1.5 flex items-center justify-between border-b ${isABHome ? 'bg-ab-green border-ab-green' : 'bg-[#F0F4F0] border-gray-200'}`}>
+            <div class={`relative z-10 pointer-events-none px-5 py-1.5 flex items-center justify-between border-b ${isABHome ? 'bg-ab-green border-ab-green' : 'bg-[#F0F4F0] border-gray-200'}`}>
               <span class={`text-xs font-bold tracking-[0.04em] ${isABHome ? 'text-ab-neon' : 'text-[#888]'}`}>
                 {isABHome ? translate(locale, 'homeMatch') : translate(locale, 'awayMatch')}
               </span>
@@ -142,9 +142,9 @@ const viewLabel = locale === 'en' ? 'View match →' : 'Se kamp →';
                   <p class="match-teams-venue">{venue}</p>
                 </div>
               </div>
-              <div class="match-card-action relative z-10" />
+              <div class="match-card-action relative z-10 pointer-events-none" />
             </div>
-            <div class="relative z-10 px-5 py-2.5 flex items-center border-t border-[#F0F0F0]">
+            <div class="relative z-10 pointer-events-none px-5 py-2.5 flex items-center border-t border-[#F0F0F0]">
               <span class="ml-auto text-xs font-bold text-[#444] transition-colors group-hover:text-ab-green">{viewLabel}</span>
             </div>
           </div>
