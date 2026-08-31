@@ -630,113 +630,72 @@ const heroSlides: HeroSlide[] =
   }, { capture: true });
 </script>
 
-<!-- ── Player + Standings ────────────────────────────────── -->
+<!-- ── News — Inside the club ─────────────────────────────── -->
 <section
-  id="player-standings"
-  class="content-container py-8 md:py-10 bg-white">
-  <div
-    class="grid lg:grid-cols-[clamp(280px,28vw,460px)_1fr] gap-8 xl:gap-10 items-start">
-    <!-- Left: Player photo + next match + buy tickets -->
-    <div
-      id="player-featured"
-      class="flex flex-col">
-      <div class="relative overflow-hidden bg-rich-black">
-        <Img
-          src={playerFeaturedImg}
-          alt="AB 1889 Player"
-          loading="lazy"
-          widths={[400, 480, 640, 828]}
-          sizes="(min-width: 1024px) 30vw, 100vw"
-          class="w-full h-full object-cover object-top aspect-3/4"
-        />
-        <div
-          class="absolute inset-0 bg-linear-to-t from-black/55 to-transparent">
-        </div>
-        <div class="absolute left-4 top-4 flex items-start justify-between">
-          <a
-            class="vivenu-btn btn btn-md btn-green"
-            href="https://billet.ab.dk/?useEmbed=true">
-            {translate(locale, 'buyTickets')}
-          </a>
-        </div>
-      </div>
-
-      <!-- Next match card -->
-      {
-        nextMatch && opponent && (
-          <a
-            href={matchHref(nextMatch.eventId)}
-            id="next-match"
-            class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col no-underline transition-all duration-200 hover:brightness-110 hover:shadow-[0_4px_20px_rgba(0,0,0,0.15)]">
-            <div class="flex items-center gap-2 mb-6">
-              <h2
-                class="font-black text-white leading-[0.86] tracking-[-0.04em]"
-                style="font-size:clamp(1.75rem,3vw,2.1875rem)">
-                {translate(locale, 'nextMatch')}
-              </h2>
-              {nextMatchIsCup && nextMatch && (
-                <span class="inline-flex items-center leading-none font-black uppercase tracking-[0.06em] text-[0.65rem] text-ab-green bg-ab-beige rounded-full px-2.5 py-1 shrink-0">
-                  {cupTournamentLabel(nextMatch, locale)}
-                </span>
-              )}
-            </div>
-            <div class="flex items-center justify-between gap-4 flex-1">
-              <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
-                <Img
-                  src="/images/ab-logo-alt.png"
-                  alt="AB"
-                  width="81"
-                  height="81"
-                  class="size-[81px] object-contain"
-                />
-                <span class="text-sm font-normal text-white text-center tracking-[-0.02em]">
-                  AB
-                </span>
-              </div>
-              <div class="flex flex-col items-center text-center text-white flex-1 min-w-0">
-                {matchDateStr && nextMatch && (
-                  <p class="text-lg font-normal tracking-[-0.02em]" {...dtAttrs(nextMatch.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS)}>
-                    {matchDateStr}
-                  </p>
-                )}
-                {matchTimeStr && nextMatch && (
-                  <p class="text-lg font-black tracking-[-0.02em]" {...dtAttrs(nextMatch.startDate, matchTimeLocale, TIME_24H_OPTS)}>
-                    {matchTimeStr}
-                  </p>
-                )}
-              </div>
-              <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
-                {oppLogo ? (
-                  <img
-                    src={oppLogo}
-                    alt={opponent}
-                    width="81"
-                    height="81"
-                    class="size-[81px] object-contain"
-                  />
-                ) : (
-                  <div class="size-[81px] rounded-full flex items-center justify-center text-sm font-black bg-white/10 text-white">
-                    {opponent.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
-                <span class="text-sm font-normal text-center text-white tracking-[-0.02em] leading-tight">
-                  {opponent}
-                </span>
-              </div>
-            </div>
-          </a>
-        )
-      }
+  id="news"
+  class="bg-white">
+  <div class="content-container py-14 md:py-20">
+    <div class="text-center mb-10 md:mb-14">
+      <h2
+        class="font-black leading-none mb-4 text-[clamp(3.5rem,9vw,8rem)] tracking-tighter text-[#111] normal-case text-center">
+        {translate(locale, 'insideTheClub')}
+      </h2>
+      <p class="font-bold text-[#111] text-[clamp(0.95rem,1.5vw,1.1rem)]">
+        {translate(locale, 'newsSectionSubtitle')}
+      </p>
     </div>
 
-    <!-- Right: Standings -->
-    <div
-      id="standings"
-      class="overflow-hidden bg-white shadow-sm">
-      <StandingsWidget locale={locale} />
+    {
+      articles.length > 0 ? (
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
+          {articles.map((article: any) => (
+            <a
+              href={articlePath(article.slug)}
+              class="article-card group block">
+              <div class="overflow-hidden mb-4 aspect-3/2 bg-gray-300">
+                {article.image?.url ? (
+                  <img
+                    src={strapiMediaUrl(article.image.url)}
+                    alt={decodeHtml(article.title)}
+                    loading="lazy"
+                    class="article-img w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center font-black text-5xl text-ab-green/15">
+                    AB
+                  </div>
+                )}
+              </div>
+              <time class="block text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.16em]">
+                {formatArticleDate(article.originalPublishedAt ?? article.publishedAt)}
+              </time>
+              <h3 class="font-bold text-base leading-snug text-[#111] tracking-[-0.01em]">
+                {decodeHtml(article.title)}
+              </h3>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="text-center py-12 text-sm text-gray-400">
+          {translate(locale, 'noNewsYet')}
+        </p>
+      )
+    }
+
+    <div class="mt-12 text-center">
+      <a
+        href={localPath('/nyheder')}
+        class="text-sm font-bold underline underline-offset-4 text-ab-green">
+        {translate(locale, 'seeMoreNews')}
+      </a>
     </div>
   </div>
 </section>
+
+<script>
+  import { localizeDates } from '@/lib/dateFormat.client';
+  localizeDates();
+</script>
 
 <!-- ── Join Team AB ──────────────────────────────────────── -->
 <a
@@ -1044,69 +1003,110 @@ const heroSlides: HeroSlide[] =
   })();
 </script>
 
-<!-- ── News — Inside the club ─────────────────────────────── -->
+<!-- ── Player + Standings ────────────────────────────────── -->
 <section
-  id="news"
-  class="bg-white">
-  <div class="content-container py-14 md:py-20">
-    <div class="text-center mb-10 md:mb-14">
-      <h2
-        class="font-black leading-none mb-4 text-[clamp(3.5rem,9vw,8rem)] tracking-tighter text-[#111] normal-case text-center">
-        {translate(locale, 'insideTheClub')}
-      </h2>
-      <p class="font-bold text-[#111] text-[clamp(0.95rem,1.5vw,1.1rem)]">
-        {translate(locale, 'newsSectionSubtitle')}
-      </p>
-    </div>
+  id="player-standings"
+  class="content-container py-8 md:py-10 bg-white">
+  <div
+    class="grid lg:grid-cols-[clamp(280px,28vw,460px)_1fr] gap-8 xl:gap-10 items-start">
+    <!-- Left: Player photo + next match + buy tickets -->
+    <div
+      id="player-featured"
+      class="flex flex-col">
+      <div class="relative overflow-hidden bg-rich-black">
+        <Img
+          src={playerFeaturedImg}
+          alt="AB 1889 Player"
+          loading="lazy"
+          widths={[400, 480, 640, 828]}
+          sizes="(min-width: 1024px) 30vw, 100vw"
+          class="w-full h-full object-cover object-top aspect-3/4"
+        />
+        <div
+          class="absolute inset-0 bg-linear-to-t from-black/55 to-transparent">
+        </div>
+        <div class="absolute left-4 top-4 flex items-start justify-between">
+          <a
+            class="vivenu-btn btn btn-md btn-green"
+            href="https://billet.ab.dk/?useEmbed=true">
+            {translate(locale, 'buyTickets')}
+          </a>
+        </div>
+      </div>
 
-    {
-      articles.length > 0 ? (
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
-          {articles.map((article: any) => (
-            <a
-              href={articlePath(article.slug)}
-              class="article-card group block">
-              <div class="overflow-hidden mb-4 aspect-3/2 bg-gray-300">
-                {article.image?.url ? (
-                  <img
-                    src={strapiMediaUrl(article.image.url)}
-                    alt={decodeHtml(article.title)}
-                    loading="lazy"
-                    class="article-img w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                  />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center font-black text-5xl text-ab-green/15">
-                    AB
-                  </div>
+      <!-- Next match card -->
+      {
+        nextMatch && opponent && (
+          <a
+            href={matchHref(nextMatch.eventId)}
+            id="next-match"
+            class="bg-ab-green overflow-hidden min-h-[212px] px-6 py-5 flex flex-col no-underline transition-all duration-200 hover:brightness-110 hover:shadow-[0_4px_20px_rgba(0,0,0,0.15)]">
+            <div class="flex items-center gap-2 mb-6">
+              <h2
+                class="font-black text-white leading-[0.86] tracking-[-0.04em]"
+                style="font-size:clamp(1.75rem,3vw,2.1875rem)">
+                {translate(locale, 'nextMatch')}
+              </h2>
+              {nextMatchIsCup && nextMatch && (
+                <span class="inline-flex items-center leading-none font-black uppercase tracking-[0.06em] text-[0.65rem] text-ab-green bg-ab-beige rounded-full px-2.5 py-1 shrink-0">
+                  {cupTournamentLabel(nextMatch, locale)}
+                </span>
+              )}
+            </div>
+            <div class="flex items-center justify-between gap-4 flex-1">
+              <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
+                <Img
+                  src="/images/ab-logo-alt.png"
+                  alt="AB"
+                  width="81"
+                  height="81"
+                  class="size-[81px] object-contain"
+                />
+                <span class="text-sm font-normal text-white text-center tracking-[-0.02em]">
+                  AB
+                </span>
+              </div>
+              <div class="flex flex-col items-center text-center text-white flex-1 min-w-0">
+                {matchDateStr && nextMatch && (
+                  <p class="text-lg font-normal tracking-[-0.02em]" {...dtAttrs(nextMatch.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS)}>
+                    {matchDateStr}
+                  </p>
+                )}
+                {matchTimeStr && nextMatch && (
+                  <p class="text-lg font-black tracking-[-0.02em]" {...dtAttrs(nextMatch.startDate, matchTimeLocale, TIME_24H_OPTS)}>
+                    {matchTimeStr}
+                  </p>
                 )}
               </div>
-              <time class="block text-xs font-bold uppercase mb-2 text-ab-green tracking-[0.16em]">
-                {formatArticleDate(article.originalPublishedAt ?? article.publishedAt)}
-              </time>
-              <h3 class="font-bold text-base leading-snug text-[#111] tracking-[-0.01em]">
-                {decodeHtml(article.title)}
-              </h3>
-            </a>
-          ))}
-        </div>
-      ) : (
-        <p class="text-center py-12 text-sm text-gray-400">
-          {translate(locale, 'noNewsYet')}
-        </p>
-      )
-    }
+              <div class="flex flex-col items-center gap-2 shrink-0 w-[76px]">
+                {oppLogo ? (
+                  <img
+                    src={oppLogo}
+                    alt={opponent}
+                    width="81"
+                    height="81"
+                    class="size-[81px] object-contain"
+                  />
+                ) : (
+                  <div class="size-[81px] rounded-full flex items-center justify-center text-sm font-black bg-white/10 text-white">
+                    {opponent.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <span class="text-sm font-normal text-center text-white tracking-[-0.02em] leading-tight">
+                  {opponent}
+                </span>
+              </div>
+            </div>
+          </a>
+        )
+      }
+    </div>
 
-    <div class="mt-12 text-center">
-      <a
-        href={localPath('/nyheder')}
-        class="text-sm font-bold underline underline-offset-4 text-ab-green">
-        {translate(locale, 'seeMoreNews')}
-      </a>
+    <!-- Right: Standings -->
+    <div
+      id="standings"
+      class="overflow-hidden bg-white shadow-sm">
+      <StandingsWidget locale={locale} />
     </div>
   </div>
 </section>
-
-<script>
-  import { localizeDates } from '@/lib/dateFormat.client';
-  localizeDates();
-</script>
