@@ -21,7 +21,20 @@ export interface ManualPlayer {
   quote?: { da: string; en: string };
 }
 
-export const MANUAL_PLAYERS: ManualPlayer[] = [];
+export const MANUAL_PLAYERS: ManualPlayer[] = [
+  // NOTE: -1 is currently squatted by a stale, orphaned Strapi player override
+  // row (siPlayerId: -1, EN locale only, displayNameOverride "Aidan Liu")
+  // left behind when Aidan Liu synced to SI for real and was removed from
+  // this array — nobody deleted the Strapi row. Using -1 again silently
+  // pulls in that dead override (wrong name/shirt/position on EN only). Skip
+  // it until that row is cleaned up in Strapi; -2 is the next safe ID.
+  {
+    id: -2,
+    name: 'Jermain Fernandes',
+    position: 'forward',
+    shirtNumber: 77,
+  },
+];
 
 export function findManualPlayer(id: number): ManualPlayer | undefined {
   return MANUAL_PLAYERS.find((p) => p.id === id);
