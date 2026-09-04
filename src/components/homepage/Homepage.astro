@@ -178,7 +178,7 @@ const products = shopifyProducts.length > 0
   : staticProducts;
 
 interface HeroSlide {
-  type: 'image' | 'video';
+  type: 'image' | 'video' | 'matchup';
   img?: ImageMetadata | string;
   imgWidth?: number;
   imgHeight?: number;
@@ -192,6 +192,16 @@ interface HeroSlide {
   /** Image slides only — 'bottom' pins the CTA low (like video slides) instead of dead-center,
    *  for slides whose baked-in graphic already fills the center. Defaults to 'center'. */
   ctaPosition?: 'center' | 'bottom';
+  /** 'matchup' slides only — real next-match data (crests, date/time) rendered live
+   *  instead of a flat designer-exported image. See TEST_MATCHUP_SLIDE below. */
+  matchup?: {
+    opponent: string;
+    oppLogo: string | null;
+    isCup: boolean;
+    cupLabel: string | null;
+    dateStr: string | null;
+    timeStr: string | null;
+  };
 }
 
 // Used when the Strapi `hero-slides` collection is empty or unreachable (e.g.
@@ -278,7 +288,32 @@ const TEST_HERO_SLIDES: HeroSlide[] = [
   },
 ];
 
-const heroSlides: HeroSlide[] = TEST_HERO_SLIDES;
+// TEMP — preview-only, do not merge to main: 4th slide, a live-data proof of concept
+// for the same "next match" idea — real crests + real date/time pulled from SI (via
+// the nextMatch/opponent/oppLogo/matchDateStr/matchTimeStr already computed above for
+// the homepage's "Next match" card), instead of a designer-exported static graphic.
+// Compare this against the 3 static variants above on the preview URL.
+const TEST_MATCHUP_SLIDE: HeroSlide | null =
+  nextMatch && opponent
+    ? {
+        type: 'matchup',
+        ctaLabel: translate(locale, 'buyTickets'),
+        ctaUrl: 'https://billet.ab.dk/',
+        ctaVariant: 'btn-beige',
+        matchup: {
+          opponent,
+          oppLogo,
+          isCup: nextMatchIsCup,
+          cupLabel: nextMatchIsCup ? cupTournamentLabel(nextMatch, locale) : null,
+          dateStr: matchDateStr,
+          timeStr: matchTimeStr,
+        },
+      }
+    : null;
+
+const heroSlides: HeroSlide[] = TEST_MATCHUP_SLIDE
+  ? [...TEST_HERO_SLIDES, TEST_MATCHUP_SLIDE]
+  : TEST_HERO_SLIDES;
 void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEMP comment
 ---
 
@@ -312,6 +347,17 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
               draggable="false"
               class="hero-video w-full h-full max-w-[1680px] mx-auto object-cover object-center pointer-events-none"
             />
+          ) : slide.type === 'matchup' ? (
+            <Img
+              src="/images/match-hero-default.jpg"
+              alt=""
+              width={5463}
+              height={3642}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : undefined}
+              draggable="false"
+              class="w-full h-full object-cover object-center pointer-events-none"
+            />
           ) : (
             <Img
               src={slide.img ?? ''}
@@ -336,6 +382,67 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
                 {slide.ctaLabel}
               </a>
             </div>
+          ) : slide.type === 'matchup' && slide.matchup ? (
+            <>
+              <div
+                class="absolute inset-0"
+                style="background:linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.15) 45%, rgba(10,10,10,0.6) 100%)"
+              />
+              <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 md:gap-8 px-6 pb-20 text-center">
+                <div>
+                  <h1 class="font-black text-white leading-none text-[clamp(2.25rem,6vw,4.5rem)] tracking-[-0.04em]">
+                    {translate(locale, 'nextMatch')}
+                  </h1>
+                  <div class="flex items-center justify-center gap-4 mt-3">
+                    <span class="font-black text-white text-[clamp(1.25rem,3.5vw,2.25rem)] tracking-[-0.03em]">
+                      AB
+                    </span>
+                    <span class="h-px w-12 md:w-16 bg-ab-gold" />
+                    <span class="font-black text-white text-[clamp(1.25rem,3.5vw,2.25rem)] tracking-[-0.03em]">
+                      {slide.matchup.opponent}
+                    </span>
+                  </div>
+                  {slide.matchup.isCup && slide.matchup.cupLabel && (
+                    <span class="inline-flex items-center leading-none font-black uppercase tracking-[0.06em] text-[0.65rem] text-ab-green bg-ab-beige rounded-full px-2.5 py-1 mt-3">
+                      {slide.matchup.cupLabel}
+                    </span>
+                  )}
+                </div>
+
+                <div class="flex items-center gap-6 md:gap-10">
+                  <img
+                    src="/images/ab-crest.svg"
+                    alt="AB"
+                    width="112"
+                    height="112"
+                    class="w-20 h-20 md:w-28 md:h-28 object-contain"
+                  />
+                  {slide.matchup.oppLogo && (
+                    <img
+                      src={slide.matchup.oppLogo}
+                      alt={slide.matchup.opponent}
+                      width="112"
+                      height="112"
+                      class="w-20 h-20 md:w-28 md:h-28 object-contain"
+                    />
+                  )}
+                </div>
+
+                {(slide.matchup.dateStr || slide.matchup.timeStr) && (
+                  <p class="font-medium text-white text-[clamp(1rem,2.2vw,1.4rem)]">
+                    {[slide.matchup.dateStr, slide.matchup.timeStr].filter(Boolean).join(' | ')}
+                  </p>
+                )}
+
+                <a
+                  href={slide.ctaUrl}
+                  target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                  rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                  {slide.ctaLabel}
+                </a>
+              </div>
+            </>
           ) : (
             <>
               <div class="absolute inset-0 bg-black/20" />
