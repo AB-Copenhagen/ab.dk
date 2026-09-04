@@ -25,6 +25,10 @@ import product2Img from '@/assets/images/product-2.png';
 import product3Img from '@/assets/images/product-3.png';
 import heroAbReturnsImg from '@/assets/images/hero-ab-returns.jpg';
 import playerFeaturedImg from '@/assets/images/player-featured.png';
+// TEMP — preview-only test slides, do not merge to main. See TEST_HERO_SLIDES below.
+import heroTestMatchupDarkGreen from '@/assets/images/hero-test-matchup-dark-green.png';
+import heroTestMatchupBw from '@/assets/images/hero-test-matchup-bw-overlay.png';
+import heroTestMatchupLightGreen from '@/assets/images/hero-test-matchup-light-green.png';
 import {
   fmtDate,
   dtAttrs,
@@ -185,6 +189,9 @@ interface HeroSlide {
   ctaLabel: string;
   ctaUrl: string;
   ctaVariant: string;
+  /** Image slides only — 'bottom' pins the CTA low (like video slides) instead of dead-center,
+   *  for slides whose baked-in graphic already fills the center. Defaults to 'center'. */
+  ctaPosition?: 'center' | 'bottom';
 }
 
 // Used when the Strapi `hero-slides` collection is empty or unreachable (e.g.
@@ -235,22 +242,44 @@ const FALLBACK_HERO_SLIDES: HeroSlide[] = [
 // require for <video> playback and scrubbing. Wasabi's presigned URL supports
 // Range natively and is re-signed on every request (5-minute Strapi cache TTL
 // vs. the 7-day signed-URL expiry), so staleness isn't a concern.
-const heroSlides: HeroSlide[] =
-  cmsHeroSlides.length > 0
-    ? cmsHeroSlides.map((slide) => ({
-        type: slide.slideType,
-        img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
-        imgWidth: slide.image?.width,
-        imgHeight: slide.image?.height,
-        video: slide.video?.url,
-        alt: slide.alt,
-        headline: slide.headline,
-        subtitle: slide.subtitle,
-        ctaLabel: slide.ctaLabel,
-        ctaUrl: slide.ctaUrl,
-        ctaVariant: slide.ctaVariant,
-      }))
-    : FALLBACK_HERO_SLIDES;
+
+// TEMP — preview-only, do not merge to main: forces the 3 "next match" matchup
+// graphics as the only hero slides regardless of Strapi content, so this can be
+// reviewed on the Vercel preview URL without publishing anything to production
+// Strapi (which is shared with main). Remove this block + the imports above and
+// the branch reverts to normal CMS/fallback behavior.
+const TEST_HERO_SLIDES: HeroSlide[] = [
+  {
+    type: 'image',
+    img: heroTestMatchupDarkGreen,
+    alt: 'AB - HVI, næste kamp',
+    ctaLabel: translate(locale, 'buyTickets'),
+    ctaUrl: 'https://billet.ab.dk/',
+    ctaVariant: 'btn-beige',
+    ctaPosition: 'bottom',
+  },
+  {
+    type: 'image',
+    img: heroTestMatchupBw,
+    alt: 'AB - HVI, næste kamp',
+    ctaLabel: translate(locale, 'buyTickets'),
+    ctaUrl: 'https://billet.ab.dk/',
+    ctaVariant: 'btn-beige',
+    ctaPosition: 'bottom',
+  },
+  {
+    type: 'image',
+    img: heroTestMatchupLightGreen,
+    alt: 'AB - HVI, næste kamp',
+    ctaLabel: translate(locale, 'buyTickets'),
+    ctaUrl: 'https://billet.ab.dk/',
+    ctaVariant: 'btn-beige',
+    ctaPosition: 'bottom',
+  },
+];
+
+const heroSlides: HeroSlide[] = TEST_HERO_SLIDES;
+void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEMP comment
 ---
 
 <style>
@@ -310,10 +339,15 @@ const heroSlides: HeroSlide[] =
           ) : (
             <>
               <div class="absolute inset-0 bg-black/20" />
-              <div class="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
-                <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance text-center">
-                  {slide.headline}
-                </h1>
+              <div
+                class={`absolute inset-0 z-10 flex flex-col items-center px-6 text-center ${
+                  slide.ctaPosition === 'bottom' ? 'justify-end pb-28' : 'justify-center'
+                }`}>
+                {slide.headline && (
+                  <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance text-center">
+                    {slide.headline}
+                  </h1>
+                )}
                 {slide.subtitle && (
                   <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
                     {slide.subtitle}
