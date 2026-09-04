@@ -386,19 +386,19 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
             <>
               <div
                 class="absolute inset-0"
-                style="background:linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.15) 45%, rgba(10,10,10,0.6) 100%)"
+                style="background:linear-gradient(180deg, rgba(10,10,10,0.65) 0%, rgba(10,10,10,0.25) 45%, rgba(10,10,10,0.7) 100%)"
               />
               <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 md:gap-8 px-6 pb-20 text-center">
                 <div>
-                  <h1 class="font-black text-white leading-none text-[clamp(2.25rem,6vw,4.5rem)] tracking-[-0.04em]">
+                  <h1 class="font-black text-white uppercase tracking-[0.14em] text-[clamp(0.8rem,1.6vw,1rem)]">
                     {translate(locale, 'nextMatch')}
                   </h1>
                   <div class="flex items-center justify-center gap-4 mt-3">
-                    <span class="font-black text-white text-[clamp(1.25rem,3.5vw,2.25rem)] tracking-[-0.03em]">
+                    <span class="font-black text-white leading-none text-[clamp(2rem,5.5vw,4rem)] tracking-[-0.03em]">
                       AB
                     </span>
                     <span class="h-px w-12 md:w-16 bg-ab-gold" />
-                    <span class="font-black text-white text-[clamp(1.25rem,3.5vw,2.25rem)] tracking-[-0.03em]">
+                    <span class="font-black text-white leading-none text-[clamp(2rem,5.5vw,4rem)] tracking-[-0.03em]">
                       {slide.matchup.opponent}
                     </span>
                   </div>
@@ -445,7 +445,7 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
             </>
           ) : (
             <>
-              <div class="absolute inset-0 bg-black/20" />
+              <div class="absolute inset-0 bg-black/30" />
               <div
                 class={`absolute inset-0 z-10 flex flex-col items-center px-6 text-center ${
                   slide.ctaPosition === 'bottom' ? 'justify-end pb-28' : 'justify-center'
