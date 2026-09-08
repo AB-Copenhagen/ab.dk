@@ -326,6 +326,20 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
       transform: scaleX(1);
     }
   }
+
+  /* Repeatable film-grain texture — layer over a photo (below the foreground
+     content, above the gradient scrim) to dim it a touch and add depth
+     without flattening it into a plain tinted rectangle. Reusable: copy this
+     class + a sibling <div class="grain-overlay absolute inset-0" /> onto any
+     other slide/section that needs the same treatment. */
+  .grain-overlay {
+    background-image: url('/images/hero-grain.webp');
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    mix-blend-mode: multiply;
+    opacity: 0.6;
+    pointer-events: none;
+  }
 </style>
 
 <!-- ── Hero Slider ───────────────────────────────────────── -->
@@ -388,6 +402,7 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
                 class="absolute inset-0"
                 style="background:linear-gradient(180deg, rgba(10,10,10,0.65) 0%, rgba(10,10,10,0.25) 45%, rgba(10,10,10,0.7) 100%)"
               />
+              <div class="grain-overlay absolute inset-0" />
               <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 md:gap-8 px-6 pb-20 text-center">
                 <div>
                   <h1 class="font-black text-white uppercase tracking-[0.14em] text-[clamp(0.8rem,1.6vw,1rem)]">
