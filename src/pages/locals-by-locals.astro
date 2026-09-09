@@ -1,0 +1,143 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+
+interface Match {
+  date: string;
+  opponent: string;
+}
+
+const matches: Match[] = [
+  { date: '19.09.2026', opponent: 'AB - Esbjerg FB' },
+  { date: '09.10.2026', opponent: 'AB - Aarhus Fremad' },
+  { date: '24.10.2026', opponent: 'AB - Kolding IF' },
+  { date: '06.11.2026', opponent: 'AB - Vendsyssel FF' },
+  { date: '28.11.2026', opponent: 'AB - Vejle BK' },
+];
+
+const concept: string[] = [
+  'To fotografer pr. kamp.',
+  'Der skal tages billeder af mennesker, følelser og de helt specielle oplevelser som skabes.',
+  'Der skal IKKE tages sportsbilleder af spillere og kampen. Fokus på fans og menneskerne på stadion.',
+  'Kamera afleveres efter kampen til ABs ansvarlige, som sammen med Canon udvælger dagens bedste fotos, som vi hermed deler.',
+  'Sæsonens bedste billede belønnes med en flot hovedpræmie fra Canon, og vinderens foto produceres i storformat og plakater til videresalg til fans og andre interesserede.',
+];
+---
+
+<Base locale="da" title="Locals by Locals | AB 1889">
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB x Canon</span>
+      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7rem)] tracking-[-0.04em]">Locals by Locals</h1>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Et kamera – en opgave</span>
+      </div>
+      <div class="max-w-3xl space-y-5 text-[#333]" style="font-size:clamp(1rem,1.6vw,1.1875rem);line-height:1.7">
+        <p>
+          I samarbejde med Canon har vi lanceret "Locals by Locals". Et
+          fotoprojekt, hvor vi inviterer lokale fotografer, dig der drømmer om
+          at blive fotograf, og alle jer der bare synes det er fedt at tage
+          billeder med.
+        </p>
+        <p>
+          Locals by Locals er et projekt der handler om mennesker og de
+          oplevelser vi skaber sammen samt de momenter som fanges, når man
+          mindst forventer det.
+        </p>
+        <p>
+          Vi er gået sammen med Canon om at skabe et projekt der skal fortælle
+          historien omkring en fodboldkamp, fællesskabet og lokalmiljøet.
+          Disse momenter og billeder fanges gennem forskellige og helt
+          almindelige mennesker eller lokale fotografer, om man vil.
+        </p>
+        <p>
+          Ved hver hjemmekamp på Gladsaxe Stadion udstyres dagens fotografer
+          med et kamera fra Canon og skal klikke løs. De bedste billeder deles
+          her på siden og via vores medier, og de bedste billeder samles
+          årligt i vores bog "Locals by Locals", som sættes til salg i vores
+          shop samt udvalgte butikker.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Koncept -->
+  <section class="bg-[#F2F2F0] border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <h2 class="font-black mb-10 text-[#111]" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+        Koncept
+      </h2>
+      <ul class="grid sm:grid-cols-2 gap-5">
+        {concept.map((item) => (
+          <li class="bg-white border border-[#E5E7EB] p-6 flex gap-4">
+            <span class="w-2 h-2 rounded-full bg-ab-green shrink-0 mt-2" aria-hidden="true"></span>
+            <p class="text-[0.95rem] text-[#333] leading-relaxed">{item}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Ledige kampe -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Ledige kampe 2026</span>
+      </div>
+      <h2 class="font-black text-[clamp(1.5rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-4 max-w-[28ch]">
+        Er du klar til at blive en del af "Locals by Locals"?
+      </h2>
+      <p class="text-[1.05rem] leading-[1.75] text-[#444] max-w-[62ch] mb-10">
+        Så er nedenstående kampe klar til at tage imod dig og dine skills.
+      </p>
+      <div class="max-w-2xl divide-y divide-[#E5E7EB] border-y border-[#E5E7EB]">
+        {matches.map((match) => (
+          <div class="flex items-center justify-between py-4">
+            <span class="font-black text-[0.9rem] text-[#999] tracking-[-0.01em]">{match.date}</span>
+            <span class="font-black text-[1.05rem] text-[#111] tracking-[-0.02em]">{match.opponent}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Kontakt -->
+  <section class="bg-ab-green py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center mb-6 bg-ab-neon rounded-full py-[7px] px-[18px]">
+          <span class="font-black text-[0.75rem] text-ab-green tracking-[0.1em] uppercase">Deltag</span>
+        </div>
+        <h2 class="font-black text-white text-[clamp(1.8rem,4vw,3rem)] tracking-[-0.04em] leading-[1.05] mb-4">
+          Vil du høre mere og deltage?
+        </h2>
+        <p class="text-white/80 text-[1rem] leading-[1.75] mb-8">
+          Skriv til Mads Johansen for at høre mere om projektet.
+        </p>
+        <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4 mb-10 w-fit">
+          <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <div>
+            <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Mads Johansen</p>
+            <a href="mailto:mjohansen@ab.dk" class="font-black text-white text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">mjohansen@ab.dk</a>
+          </div>
+        </div>
+        <p class="text-white/60 text-[0.85rem] leading-relaxed max-w-[60ch]">
+          Vi gør opmærksom på, at projektet er ulønnet, og at kameraet udlånes
+          af AB og skal returneres efter hvert projekt. Alle fotografier taget
+          i forbindelse med projektet overdrages til AB og tilhører herefter
+          AB og Canon.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</Base>

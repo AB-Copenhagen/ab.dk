@@ -1,0 +1,153 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = true;
+
+interface Match {
+  date: string;
+  opponent: string;
+}
+
+const matches: Match[] = [
+  { date: '19.09.2026', opponent: 'AB vs. Esbjerg FB' },
+  { date: '09.10.2026', opponent: 'AB vs. Aarhus Fremad' },
+  { date: '24.10.2026', opponent: 'AB vs. Kolding IF' },
+  { date: '06.11.2026', opponent: 'AB vs. Vendsyssel FF' },
+  { date: '28.11.2026', opponent: 'AB vs. Vejle BK' },
+];
+
+const concept: string[] = [
+  'Two photographers per match.',
+  'Capture people, emotions, and the unique experiences that are created.',
+  'No sports photography of the players or the match. The focus is on the fans and the people at the stadium.',
+  "After the match, the camera is returned to AB's project lead, who, together with Canon, will select the best photos from the day to be shared.",
+  'The Photo of the Season will receive a great grand prize from Canon. The winning photo will also be produced in large format and as posters, available for fans and others to purchase.',
+];
+---
+
+<Base
+  locale="en"
+  title="Locals by Locals | Akademisk Boldklub – Get Involved"
+  description="AB x Canon present Locals by Locals — a photography project inviting local photographers to capture the people, emotions and community at Gladsaxe Stadion."
+  ogTitle="Locals by Locals — AB x Canon"
+  ogDescription="Join AB's Locals by Locals photography project with Canon, capturing fans and matchday atmosphere at Gladsaxe Stadion."
+>
+
+  <!-- Hero -->
+  <div class="bg-ab-black py-16 px-8 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-5">AB x Canon</span>
+      <h1 class="font-black text-white leading-none text-[clamp(3.5rem,9vw,7rem)] tracking-[-0.04em]">Locals by Locals</h1>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-8 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">One Camera — One Mission</span>
+      </div>
+      <div class="max-w-3xl space-y-5 text-[#333]" style="font-size:clamp(1rem,1.6vw,1.1875rem);line-height:1.7">
+        <p>
+          In collaboration with Canon, AB has launched "Locals by Locals" — a
+          photography project where we invite local photographers, aspiring
+          photographers, and anyone who simply loves taking pictures to join
+          us.
+        </p>
+        <p>
+          Locals by Locals is a project about people, the experiences we
+          create together, and those special moments that are captured when
+          we least expect them.
+        </p>
+        <p>
+          Together with Canon, we have created a project that tells the story
+          of a football match, the sense of community, and the local
+          environment surrounding it. These moments and images are captured
+          by different people — everyday fans, aspiring photographers, and
+          local photographers alike.
+        </p>
+        <p>
+          At every home match at Gladsaxe Stadion, the photographers of the
+          day will be equipped with a Canon camera and encouraged to capture
+          as many moments as possible. The best photos will be shared here on
+          the website and across our social media channels. Each year, the
+          very best images will be collected in our "Locals by Locals"
+          photobook, which will be available for purchase in our shop and at
+          selected retailers.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Concept -->
+  <section class="bg-[#F2F2F0] border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <h2 class="font-black mb-10 text-[#111]" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+        The Concept
+      </h2>
+      <ul class="grid sm:grid-cols-2 gap-5">
+        {concept.map((item) => (
+          <li class="bg-white border border-[#E5E7EB] p-6 flex gap-4">
+            <span class="w-2 h-2 rounded-full bg-ab-green shrink-0 mt-2" aria-hidden="true"></span>
+            <p class="text-[0.95rem] text-[#333] leading-relaxed">{item}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Available Matches -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Available Matches — 2026</span>
+      </div>
+      <h2 class="font-black text-[clamp(1.5rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-4 max-w-[28ch]">
+        Ready to join "Locals by Locals"?
+      </h2>
+      <p class="text-[1.05rem] leading-[1.75] text-[#444] max-w-[62ch] mb-10">
+        The following 2026 home matches are available for you to showcase
+        your skills.
+      </p>
+      <div class="max-w-2xl divide-y divide-[#E5E7EB] border-y border-[#E5E7EB]">
+        {matches.map((match) => (
+          <div class="flex items-center justify-between py-4">
+            <span class="font-black text-[0.9rem] text-[#999] tracking-[-0.01em]">{match.date}</span>
+            <span class="font-black text-[1.05rem] text-[#111] tracking-[-0.02em]">{match.opponent}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="bg-ab-green py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center mb-6 bg-ab-neon rounded-full py-[7px] px-[18px]">
+          <span class="font-black text-[0.75rem] text-ab-green tracking-[0.1em] uppercase">Take Part</span>
+        </div>
+        <h2 class="font-black text-white text-[clamp(1.8rem,4vw,3rem)] tracking-[-0.04em] leading-[1.05] mb-4">
+          Want to learn more or take part?
+        </h2>
+        <p class="text-white/80 text-[1rem] leading-[1.75] mb-8">
+          Contact Mads Johansen for more information about the project.
+        </p>
+        <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4 mb-10 w-fit">
+          <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <div>
+            <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Mads Johansen</p>
+            <a href="mailto:mjohansen@ab.dk" class="font-black text-white text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">mjohansen@ab.dk</a>
+          </div>
+        </div>
+        <p class="text-white/60 text-[0.85rem] leading-relaxed max-w-[60ch]">
+          Please note that this is an unpaid project. The camera is provided
+          on loan by AB and must be returned after each project. All
+          photographs taken for the project will be owned by both AB and
+          Canon.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</Base>

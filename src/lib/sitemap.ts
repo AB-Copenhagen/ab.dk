@@ -32,6 +32,7 @@ const STATIC_ROUTES: [string, string][] = [
   ['/kontakt', '/en/contact'],
   ['/partnere', '/en/partners'],
   ['/hospitality', '/en/hospitality'],
+  ['/locals-by-locals', '/en/locals-by-locals'],
   ['/medier', '/en/media'],
   ['/events', '/en/events'],
   ['/products', '/en/products'],
