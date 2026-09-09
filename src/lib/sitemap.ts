@@ -1,5 +1,6 @@
 import { getPlayerSlug } from '@/data/player-cms-data';
-import { fetchABEvents, fetchABPlayers } from '@/lib/si/client';
+import { fetchABEvents } from '@/lib/si/client';
+import { getSquadPlayers } from '@/lib/si/squad';
 import {
   fetchCollectionTypeWithMeta,
   fetchPartners,
@@ -128,7 +129,9 @@ export async function buildSitemapEntries(
   }
 
   // Players — `{id}-{slugified name}`, identical slug in both locales.
-  const players = await fetchABPlayers('da').catch(() => []);
+  // getSquadPlayers (not the raw SI roster) so hideFromSquad players (departed,
+  // retired) don't get a sitemap entry pointing at a redirecting URL.
+  const players = await getSquadPlayers('da').catch(() => []);
   for (const player of players) {
     const slug = getPlayerSlug(player.id, player.name);
     entries.push({ loc: abs(`/spiller/${slug}`) });
