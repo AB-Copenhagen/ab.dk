@@ -1,0 +1,53 @@
+---
+import { fetchABHighlights } from '@/lib/si/client';
+import { extractYouTubeId, youTubeThumbnailUrl } from '@/lib/video';
+import { decodeHtml } from '@/lib/utils';
+
+interface Props {
+  eventId: number;
+  locale: 'da' | 'en';
+}
+
+const { eventId, locale } = Astro.props;
+
+const t = {
+  da: { label: 'Highlights' },
+  en: { label: 'Highlights' },
+}[locale];
+
+const highlights = await fetchABHighlights(undefined, eventId).catch(() => []);
+const highlight = highlights[0] ?? null;
+const videoId = highlight?.source === 'youtube' ? extractYouTubeId(highlight.url) : null;
+---
+
+{
+  highlight && (
+    <div class="space-y-4">
+      <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">{t.label}</p>
+      <a
+        href={highlight.url}
+        target="_blank"
+        rel="noopener"
+        class="block relative rounded overflow-hidden"
+        style="aspect-ratio:16/9;background:linear-gradient(135deg,var(--ab-green),#0d1f13)"
+      >
+        {videoId && (
+          <img
+            src={youTubeThumbnailUrl(videoId)}
+            alt=""
+            loading="lazy"
+            class="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+        <div class="absolute inset-0 flex items-center justify-center" style="background:rgba(0,0,0,0.25)">
+          <span class="flex items-center justify-center w-10 h-10 rounded-full" style="background:var(--ab-neon)">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="var(--ab-green)">
+              <path d="M3 1.5v11l9-5.5-9-5.5z" />
+            </svg>
+          </span>
+        </div>
+      </a>
+      <p class="text-sm font-bold text-[#111] leading-snug line-clamp-2">{decodeHtml(highlight.title)}</p>
+    </div>
+  )
+}

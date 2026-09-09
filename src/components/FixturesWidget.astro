@@ -1,5 +1,5 @@
 ---
-import { fetchABEvents } from '@/lib/si/client';
+import { fetchABEvents, formatEventScore } from '@/lib/si/client';
 import { fmtDate, dtAttrs, DATE_TIME_SHORT_OPTS } from '@/lib/dateFormat';
 
 interface Props {
@@ -45,27 +45,31 @@ function formatDate(dateStr: string) {
       const isLive = event.statusType === 'inprogress';
       const home = isABHome ? 'AB' : (opponent ?? '—');
       const away = isABHome ? (opponent ?? '—') : 'AB';
+      const scoreStr = formatEventScore(event.score);
+      const matchHref = locale === 'da' ? `/kamp/${event.eventId}` : `/en/match/${event.eventId}`;
+      const matchLabel = locale === 'da' ? `Se kamp: AB mod ${opponent}` : `View match: AB vs ${opponent}`;
       return (
-        <div class="py-3 px-4 transition-colors"
+        <div class="relative py-3 px-4 transition-colors"
              style={`border-bottom:1px solid ${divider};`}
              onmouseenter={`this.style.background='${hoverBg}'`}
              onmouseleave={`this.style.background='transparent'`}>
+          <a href={matchHref} class="absolute inset-0 z-0" aria-label={matchLabel} />
 
           <!-- Date row -->
-          <p class="text-xs mb-1" style={`color:${dateColor}`} {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_TIME_SHORT_OPTS)}>{formatDate(event.startDate)}</p>
+          <p class="relative z-10 pointer-events-none text-xs mb-1" style={`color:${dateColor}`} {...dtAttrs(event.startDate, locale === 'da' ? 'da-DK' : 'en-GB', DATE_TIME_SHORT_OPTS)}>{formatDate(event.startDate)}</p>
 
           <!-- Teams row -->
-          <div class="flex items-center gap-2">
+          <div class="relative z-10 pointer-events-none flex items-center gap-2">
             <span class="text-sm font-medium flex-1 text-right" style={`color:${nameColor};`}>
               {home}
             </span>
 
-            {(isFinished || isLive) && event.score ? (
+            {(isFinished || isLive) && scoreStr ? (
               <span class="font-bold tabular-nums px-2 py-0.5 shrink-0"
                     style={`font-size:0.9rem; ${isLive
                       ? 'color:var(--ab-neon);background:color-mix(in srgb, var(--ab-neon) 8%, transparent)'
                       : 'color:var(--ab-gold);background:color-mix(in srgb, var(--ab-gold) 8%, transparent)'}`}>
-                {event.score}
+                {scoreStr}
               </span>
             ) : (
               <span class="text-sm shrink-0 font-medium" style={`color:${dateColor}`}>vs</span>

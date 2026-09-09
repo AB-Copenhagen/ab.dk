@@ -9,6 +9,7 @@
 import { CacheManager, FileCacheDriver } from '@datum-cloud/strapi-revalidate';
 
 import { abConfig, siConfig } from '../config/ab';
+import { normalizeApostrophes } from '../utils';
 
 // /tmp is writable on Vercel serverless; project dir is not.
 const CACHE_DIR = '/tmp/si-cache';
@@ -81,6 +82,31 @@ export function formatEventScore(
   const a = Number(score.away);
   if (isNaN(h) || isNaN(a)) return null;
   return `${h}-${a}`;
+}
+
+/**
+ * True for Danish Cup fixtures. SI has no stable tournament ID for the cup —
+ * it changes every season with the title sponsor (DBU Pokalen, Oddset
+ * Pokalen, Betano Pokalen, …) — but "Pokalen" is always in the name.
+ */
+export function isCupMatch(event: Pick<SIEvent, 'tournamentName'>): boolean {
+  return /pokalen/i.test(event.tournamentName ?? '');
+}
+
+/**
+ * Cup fixtures are branded by their title sponsor each season ("Betano
+ * Pokalen", "Oddset Pokalen", …) — derive a "<Sponsor> Cup"/"<Sponsor> Pokal"
+ * label from that instead of a generic "Cup match" tag.
+ */
+export function cupTournamentLabel(
+  event: Pick<SIEvent, 'tournamentName'>,
+  locale: Locale
+): string {
+  const sponsor = (event.tournamentName ?? '')
+    .replace(/\s*pokalen\s*$/i, '')
+    .trim();
+  const suffix = locale === 'da' ? 'Pokal' : 'Cup';
+  return sponsor ? `${sponsor} ${suffix}` : suffix;
 }
 
 const TEAM_LOGO_CDN =
@@ -185,21 +211,29 @@ export interface FetchEventsParams {
   status?: EventStatus;
   limit?: number;
   locale?: Locale;
+  /**
+   * Include every competition AB plays (league + cup) instead of scoping to
+   * the league season. Only safe to set when fromDate/toDate bound the query —
+   * SI's `seasonId` filter is what excludes the cup, and dropping it with no
+   * date range falls through to the API's unbounded default (events back to 1999).
+   */
+  allCompetitions?: boolean;
 }
 
 /** Fetch AB's fixtures and results for the current season. */
 export async function fetchABEvents(
   params: FetchEventsParams = {}
 ): Promise<SIEvent[]> {
+  const { allCompetitions, ...rest } = params;
   // API returns { events: SIEvent[] }
   const data = await siFetch<{ events: SIEvent[] }>('/events-v2', {
     teamId: abConfig.teamId,
     tournamentId: abConfig.tournamentId ?? undefined,
-    seasonId: abConfig.seasonId ?? undefined,
+    seasonId: allCompetitions ? undefined : (abConfig.seasonId ?? undefined),
     sportId: 1,
     limit: 100,
     locale: params.locale ?? 'da',
-    ...params,
+    ...rest,
   });
   return data.events ?? [];
 }
@@ -290,7 +324,14 @@ export async function fetchABPlayers(
   locale: Locale = 'da'
 ): Promise<SIPlayer[]> {
   if (!abConfig.teamId) return [];
-  return siFetch<SIPlayer[]>('/players', { teamId: abConfig.teamId, locale });
+  const players = await siFetch<SIPlayer[]>('/players', {
+    teamId: abConfig.teamId,
+    locale,
+  });
+  return players.map((p) => ({
+    ...p,
+    name: p.name ? normalizeApostrophes(p.name) : p.name,
+  }));
 }
 
 export interface SIPlayerMatchStat {
@@ -357,7 +398,13 @@ export async function fetchPlayerProfile(
   playerId: number,
   locale: Locale = 'da'
 ): Promise<SIPlayerProfile> {
-  return siFetch<SIPlayerProfile>(`/players/${playerId}/profile`, { locale });
+  const profile = await siFetch<SIPlayerProfile>(
+    `/players/${playerId}/profile`,
+    { locale }
+  );
+  return profile.name
+    ? { ...profile, name: normalizeApostrophes(profile.name) }
+    : profile;
 }
 
 // ── Team form ─────────────────────────────────────────────────────────────────

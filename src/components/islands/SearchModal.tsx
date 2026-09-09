@@ -18,12 +18,18 @@ export default function SearchModal({ locale }: Props) {
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(-1);
+  // Position of the trigger button at click-time, so the panel can drop down
+  // right next to it instead of appearing pinned near the top of the
+  // viewport, disconnected from wherever the button actually is on the page
+  // (e.g. the news category row, which can be far below the fold).
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const blogBase = locale === 'en' ? '/en/news' : '/nyheder';
 
-  const openModal = useCallback(() => {
+  const openModal = useCallback((rect?: DOMRect) => {
+    setAnchorRect(rect ?? null);
     setOpen(true);
     setQuery('');
     setResults([]);
@@ -39,7 +45,8 @@ export default function SearchModal({ locale }: Props) {
   // Wire external button + Cmd/Ctrl+K
   useEffect(() => {
     const btn = document.getElementById('search-open-btn');
-    if (btn) btn.addEventListener('click', openModal);
+    const onBtnClick = () => openModal(btn?.getBoundingClientRect());
+    if (btn) btn.addEventListener('click', onBtnClick);
 
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -50,7 +57,7 @@ export default function SearchModal({ locale }: Props) {
     };
     window.addEventListener('keydown', onKey);
     return () => {
-      if (btn) btn.removeEventListener('click', openModal);
+      if (btn) btn.removeEventListener('click', onBtnClick);
       window.removeEventListener('keydown', onKey);
     };
   }, [open, openModal, closeModal]);
@@ -102,20 +109,44 @@ export default function SearchModal({ locale }: Props) {
 
   if (!open) return null;
 
+  // Anchored under the trigger button when we have its position (regular
+  // click); falls back to the old centered-near-top placement for the
+  // Cmd/Ctrl+K shortcut, which has no button to anchor to.
+  const width = Math.min(560, window.innerWidth - 32);
+  const panelStyle: React.CSSProperties = anchorRect
+    ? (() => {
+        const gap = 10;
+        const spaceBelow = window.innerHeight - anchorRect.bottom;
+        const openUpward = spaceBelow < 340 && anchorRect.top > spaceBelow;
+        return {
+          position: 'fixed',
+          width,
+          right: Math.max(16, window.innerWidth - anchorRect.right),
+          ...(openUpward
+            ? { bottom: window.innerHeight - anchorRect.top + gap }
+            : { top: anchorRect.bottom + gap }),
+          boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
+        };
+      })()
+    : {
+        position: 'fixed',
+        width,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        top: 'clamp(60px,12vh,140px)',
+        boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
+      };
+
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-start justify-center"
-      style={{
-        background: 'rgba(0,0,0,0.6)',
-        paddingTop: 'clamp(60px,12vh,140px)',
-      }}
+      className="fixed inset-0 z-[9999]"
       onClick={(e) => {
         if (e.target === e.currentTarget) closeModal();
       }}
     >
       <div
-        className="bg-white rounded-[12px] w-full max-w-[580px] mx-[16px] overflow-hidden"
-        style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.35)' }}
+        className="bg-white rounded-[12px] overflow-hidden border border-[#E5E7EB]"
+        style={panelStyle}
       >
         {/* Input row */}
         <div className="flex items-center gap-[12px] py-[16px] px-[20px] border-b border-[#E5E7EB]">

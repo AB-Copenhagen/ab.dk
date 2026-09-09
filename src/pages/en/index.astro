@@ -1,7 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro';
 import Homepage from '@/components/homepage/Homepage.astro';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 ---
 
 <Base

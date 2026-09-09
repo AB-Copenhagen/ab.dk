@@ -10,7 +10,7 @@ docs
 .env
 .env.local
 .env.*.local
-.claude
+.claude/*
 .agents
 skills-lock.json
 
@@ -41,5 +41,9 @@ strapi/.strapi-updater*.json
 # Cursor project rules — override global ignore to keep rules in repo
 !.cursor/
 !.cursor/**
+
+# Claude Code project skills — shared with the team, unlike the rest of .claude/
+!.claude/skills
+!.claude/skills/**
 .vercel
 .env*

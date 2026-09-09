@@ -1,0 +1,106 @@
+---
+import Base from '@/layouts/Base.astro';
+import SquadCard from '@/components/SquadCard.astro';
+import StaffCard from '@/components/StaffCard.astro';
+import { getSquadPlayers, type SquadPlayer } from '@/lib/si/squad';
+import { fetchStaffRoster } from '@/lib/strapi/client';
+import Img from '@/components/Img.astro';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
+export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
+
+const locale = 'da' as const;
+
+const POSITION_GROUPS = {
+  keeper: 'Målmand',
+  defender: 'Forsvarsspillere',
+  midfielder: 'Midtbanespillere',
+  forward: 'Angribere',
+} as const;
+type PositionKey = keyof typeof POSITION_GROUPS;
+const GROUP_ORDER: PositionKey[] = [
+  'keeper',
+  'defender',
+  'midfielder',
+  'forward',
+];
+
+
+const [players, staffRoster] = await Promise.all([
+  getSquadPlayers(locale),
+  fetchStaffRoster(locale),
+]);
+
+players.sort((a, b) => {
+  const ai = GROUP_ORDER.indexOf(a.position as PositionKey);
+  const bi = GROUP_ORDER.indexOf(b.position as PositionKey);
+  if (ai !== bi) return ai - bi;
+  return (a.shirtNumber ?? 99) - (b.shirtNumber ?? 99);
+});
+
+const groups = new Map<PositionKey, SquadPlayer[]>();
+for (const p of players) {
+  const key = p.position as PositionKey;
+  if (!groups.has(key)) groups.set(key, []);
+  groups.get(key)!.push(p);
+}
+---
+
+<Base
+  locale="da"
+  title="Truppen | Akademisk Boldklub">
+  <div class="bg-white">
+    <!-- Squad banner (image with embedded title) -->
+    <div class="w-full">
+      <Img
+        src="/images/squad-banner.png"
+        alt="AB 1889 Truppen"
+        class="w-full h-auto block"
+        loading="eager"
+      />
+    </div>
+
+    <div class="max-w-[1680px] mx-auto px-5 md:px-10 py-10 lg:py-14">
+      {
+        players.length === 0 ? (
+          <p class="text-center py-24 text-sm text-gray-400">
+            Oplysninger om truppen er ikke tilgængelige i øjeblikket.
+          </p>
+        ) : (
+          GROUP_ORDER.map((key) => {
+            const group = groups.get(key);
+            if (!group?.length) return null;
+            return (
+              <section class="mb-14">
+                <h2
+                  class="font-black mb-6 text-[#111]"
+                  style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; text-transform:none;">
+                  {POSITION_GROUPS[key]}
+                </h2>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-7">
+                  {group.map((player) => (
+                    <SquadCard
+                      player={player}
+                      locale="da"
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })
+        )
+      }
+      <!-- Coaching Staff -->
+      <section class="mb-14">
+        <h2
+          class="font-black mb-6 text-[#111]"
+          style="font-size:clamp(1.5rem,3vw,2.5rem); letter-spacing:-0.03em; text-transform:none;">
+          Trænerstab
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-7">
+          {staffRoster.map((staff) => <StaffCard staff={staff} locale="da" />)}
+        </div>
+      </section>
+    </div>
+  </div>
+</Base>

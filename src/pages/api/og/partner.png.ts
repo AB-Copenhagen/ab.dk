@@ -1,8 +1,10 @@
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { APIContext } from 'astro';
 import sharp from 'sharp';
 
 import abCrestDataUri from '../../../../public/images/ab-crest.svg?inline';
 import { OG_COLORS, OG_FONT_FAMILY, renderTextSvgToPng } from '@/lib/og-image';
+import { fetchPartnerBySlug, wasabiObjectKey } from '@/lib/strapi/client';
 
 export const prerender = false;
 
@@ -10,36 +12,48 @@ const CANVAS_W = 1200;
 const CANVAS_H = 630;
 const BG_COLOR = '#F2F2F0';
 
-// Partner logos always live under /images/sponsors/ in this codebase (see src/data/partners.ts)
-// — this endpoint takes `logo` from the client, so it must not become an open SSRF proxy.
-const SAFE_LOGO_PATH = /^\/images\/sponsors\/.*\.(png|jpe?g|gif|svg|webp)$/i;
+const BUCKET = import.meta.env.WASABI_BUCKET ?? 'ab-media';
+const REGION = import.meta.env.WASABI_REGION ?? 'eu-central-1';
+const ENDPOINT = `https://s3.${REGION}.wasabisys.com`;
+const STRAPI_URL = (
+  import.meta.env.STRAPI_URL ?? 'http://localhost:1337'
+).replace(/\/$/, '');
 
-// All ~30 partner logos are static files committed to the repo, so they're bundled at
-// build time (like the AB crest below) instead of self-fetched over HTTP — a self-fetch
-// to this app's own origin doesn't carry the caller's session, so on a deployment with
-// Vercel deployment protection enabled it gets silently redirected to the SSO login page
-// instead of the real file (see src/lib/og-image.ts's file header for the full story).
-// Keyed by the same /images/sponsors/... path used in partners.ts and the `logo` param.
-const sponsorLogoModules = import.meta.glob<string>(
-  '../../../../public/images/sponsors/**/*.{png,jpg,jpeg,gif,webp,svg}',
-  { eager: true, query: '?inline', import: 'default' }
-);
-const sponsorLogos = new Map(
-  Object.entries(sponsorLogoModules).map(([path, dataUri]) => [
-    path.replace(/^.*\/public\/images\/sponsors\//, '/images/sponsors/'),
-    dataUri,
-  ])
-);
+const s3 = new S3Client({
+  region: REGION,
+  endpoint: ENDPOINT,
+  forcePathStyle: true,
+  credentials: {
+    accessKeyId: import.meta.env.WASABI_ACCESS_KEY_ID ?? '',
+    secretAccessKey: import.meta.env.WASABI_SECRET_ACCESS_KEY ?? '',
+  },
+});
 
-/** Decodes a data: URI back to raw bytes — Vite's `?inline` uses base64 for binary assets, percent-encoding for SVG/text. */
-function dataUriToBytes(dataUri: string): Uint8Array {
-  const comma = dataUri.indexOf(',');
-  const meta = dataUri.slice(5, comma);
-  const data = dataUri.slice(comma + 1);
-  if (meta.endsWith(';base64')) {
-    return Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
+/**
+ * Fetches a partner logo's raw bytes. Wasabi objects are read directly via S3 (the
+ * bucket is private, so this needs our own credentials rather than a public fetch).
+ * Anything else (Strapi Cloud's CDN, a local dev Strapi server) is a third-party
+ * origin from this app's point of view, so a direct fetch is safe there too — unlike
+ * self-fetching this app's own /api/media proxy, which gets redirected to Vercel's
+ * deployment-protection SSO login instead of the real file (see src/lib/og-image.ts).
+ */
+async function fetchLogoBytes(logoUrl: string): Promise<Uint8Array | null> {
+  const wasabiKey = wasabiObjectKey(logoUrl);
+  if (wasabiKey) {
+    const res = await s3.send(
+      new GetObjectCommand({ Bucket: BUCKET, Key: wasabiKey })
+    );
+    if (!res.Body) return null;
+    return (
+      res.Body as { transformToByteArray(): Promise<Uint8Array> }
+    ).transformToByteArray();
   }
-  return new TextEncoder().encode(decodeURIComponent(data));
+  const absoluteUrl = logoUrl.startsWith('http')
+    ? logoUrl
+    : `${STRAPI_URL}${logoUrl}`;
+  const res = await fetch(absoluteUrl);
+  if (!res.ok) return null;
+  return new Uint8Array(await res.arrayBuffer());
 }
 
 /** Contain-fit dimensions for an image inside a box, given its natural size. */
@@ -57,17 +71,31 @@ function containFit(
 }
 
 export async function GET({ url }: APIContext) {
-  const logoPath = url.searchParams.get('logo');
+  const slug = url.searchParams.get('slug');
+  const locale = url.searchParams.get('locale') === 'en' ? 'en' : 'da';
 
-  const partnerDataUri =
-    logoPath && SAFE_LOGO_PATH.test(logoPath)
-      ? sponsorLogos.get(logoPath)
-      : undefined;
-  if (!partnerDataUri) {
-    return new Response('Invalid logo path', { status: 400 });
+  if (!slug) {
+    return new Response('Missing slug', { status: 400 });
+  }
+
+  const partner = await fetchPartnerBySlug(slug, locale);
+  if (!partner?.logo?.url) {
+    return new Response('Partner not found', { status: 404 });
   }
 
   try {
+    const logoBytes = await fetchLogoBytes(partner.logo.url);
+    if (!logoBytes) {
+      return new Response('Logo not found', { status: 404 });
+    }
+
+    const logoMeta = await sharp(logoBytes).metadata();
+    const logoMime =
+      logoMeta.format === 'svg'
+        ? 'image/svg+xml'
+        : `image/${logoMeta.format ?? 'png'}`;
+    const logoDataUri = `data:${logoMime};base64,${Buffer.from(logoBytes).toString('base64')}`;
+
     const cardSize = 360;
     const cardPadding = 48;
     const innerBox = cardSize - cardPadding * 2;
@@ -81,15 +109,14 @@ export async function GET({ url }: APIContext) {
     const abX = leftCardX + (cardSize - abFit.width) / 2;
     const abY = cardY + (cardSize - abFit.height) / 2;
 
-    const partnerMeta = await sharp(dataUriToBytes(partnerDataUri)).metadata();
-    const partnerFit = containFit(
-      partnerMeta.width ?? innerBox,
-      partnerMeta.height ?? innerBox,
+    const logoFit = containFit(
+      logoMeta.width ?? innerBox,
+      logoMeta.height ?? innerBox,
       innerBox,
       innerBox
     );
-    const partnerX = rightCardX + (cardSize - partnerFit.width) / 2;
-    const partnerY = cardY + (cardSize - partnerFit.height) / 2;
+    const logoX = rightCardX + (cardSize - logoFit.width) / 2;
+    const logoY = cardY + (cardSize - logoFit.height) / 2;
 
     const svg = `
       <svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
@@ -97,7 +124,7 @@ export async function GET({ url }: APIContext) {
         <rect x="${leftCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>
         <rect x="${rightCardX}" y="${cardY}" width="${cardSize}" height="${cardSize}" rx="16" fill="${OG_COLORS.white}" stroke="#E0E0DC" stroke-width="1"/>
         <image href="${abCrestDataUri}" x="${abX}" y="${abY}" width="${abFit.width}" height="${abFit.height}"/>
-        <image href="${partnerDataUri}" x="${partnerX}" y="${partnerY}" width="${partnerFit.width}" height="${partnerFit.height}"/>
+        <image href="${logoDataUri}" x="${logoX}" y="${logoY}" width="${logoFit.width}" height="${logoFit.height}"/>
         <text x="600" y="${CANVAS_H / 2 + 24}" font-family="${OG_FONT_FAMILY}" font-size="56" font-weight="900" fill="#111111" text-anchor="middle">&#215;</text>
       </svg>
     `;

@@ -1,6 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
-export const prerender = false;
+export const prerender = true;
 
 const SECTIONS = [
   { id: 'getting-here',  label: 'Getting Here' },
@@ -113,8 +113,8 @@ const PROHIBITED_ITEMS = [
             <div>
               <h3 class="mb-3 text-base font-black text-neutral-900">Public Transportation</h3>
               <ul class="space-y-3 text-body leading-[1.75] text-neutral-700">
-                <li><strong>Bus:</strong> Lines 4A, 30E, 68 and 164 stop at the door. Alight at <em>Høje Gladsaxe</em>.</li>
-                <li><strong>S-Train:</strong> Nearest stations are Buddinge and Kildebakke. From there, walk 10–15 min or take a bus direct to Gladsaxevej 202. Alight at <em>Høje Gladsaxe</em>.</li>
+                <li><strong>Bus:</strong> Lines 4A and 68 stop at the door. Alight at <em>Høje Gladsaxe</em>.</li>
+                <li><strong>S-Train:</strong> From <em>Buddinge</em> Station: take bus 4A to <em>Høje Gladsaxe</em>. From <em>Kildebakke</em> Station: take bus 166 to <em>Gladsaxe Sportshal</em> — a 5-minute walk to the stadium.</li>
               </ul>
               <div class="mt-4 flex gap-2">
                 <a href="https://www.rejseplanen.dk/" target="_blank" rel="noreferrer"
@@ -142,12 +142,9 @@ const PROHIBITED_ITEMS = [
             <h2 class="text-2xl font-black tracking-tight text-neutral-900 lg:text-3xl">Food & Drink</h2>
           </div>
 
-          <p class="mb-6 text-body leading-[1.75] text-neutral-700">
-            At AB, we care about what we serve — all food at Gladsaxe Stadion is <strong>100% organic</strong>. We offer a wide selection with a strong focus on quality and great taste, including healthy meals, vegan and gluten-free options. Our coffee bar serves organic coffee alongside organic pastries and cakes from local bakeries.
-          </p>
           <div class="mb-6 rounded border-l-[3px] border-ab-beige bg-ab-green/5 p-5">
             <p class="mb-1 text-base font-black text-ab-green">The Mad Owl Pub</p>
-            <p class="text-body leading-[1.75] text-neutral-600">Beers from around the world — alcoholic and non-alcoholic — plus great drinks. Located on the first floor. Opens <strong>2 hours before kick-off</strong>.</p>
+            <p class="text-body leading-[1.75] text-neutral-600">Beers from around the world — alcoholic and non-alcoholic — plus great drinks. Located on the first floor. Opens <strong>1.5 hours before kick-off</strong>. Open only for special and private events.</p>
           </div>
           <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div class="rounded bg-neutral-100 p-5">
@@ -156,7 +153,8 @@ const PROHIBITED_ITEMS = [
             </div>
             <div class="rounded bg-neutral-100 p-5">
               <p class="mb-1 text-xs font-black tracking-wider text-ab-green">THE MAD OWL PUB</p>
-              <p class="text-body text-neutral-700">Open <strong>2 hours</strong> before kick-off</p>
+              <p class="text-body text-neutral-700">Open <strong>1.5 hours</strong> before kick-off</p>
+              <p class="mt-1 text-sm text-neutral-500">Open only for special and private events.</p>
             </div>
           </div>
           <p class="rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-neutral-500">

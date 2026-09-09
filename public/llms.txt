@@ -34,5 +34,5 @@ AB 1889 plays its home matches at Gladsaxe Stadion. The site is bilingual: Danis
 
 - [Forside](https://ab.dk/): Homepage
 - [Kampe](https://ab.dk/kampe): Fixtures and results
-- [Holdet](https://ab.dk/hold): Squad
+- [Truppen](https://ab.dk/truppen): Squad
 - [Nyheder](https://ab.dk/nyheder): News

@@ -2,16 +2,33 @@
 import Base from '@/layouts/Base.astro';
 import SiWidget from '@/components/widgets/SiWidget.astro';
 import TeamForm from '@/components/TeamForm.astro';
-import { fetchEvent, fetchTeamForm, formatEventScore, getTeamLogoSrc } from '@/lib/si/client';
+import MatchCountdown from '@/components/MatchCountdown.astro';
+import MatchHeroForm from '@/components/MatchHeroForm.astro';
+import MatchHeroPhoto from '@/components/MatchHeroPhoto.astro';
+import MatchHypeReel from '@/components/MatchHypeReel.astro';
+import MatchHighlightCard from '@/components/MatchHighlightCard.astro';
+import MatchFeaturedPlayer from '@/components/MatchFeaturedPlayer.astro';
+import MatchWatchPartyPromo from '@/components/MatchWatchPartyPromo.astro';
+import MatchAppPromo from '@/components/MatchAppPromo.astro';
+import MatchStandingsPreview from '@/components/MatchStandingsPreview.astro';
+import MatchdayGuideTeaser from '@/components/MatchdayGuideTeaser.astro';
+import AwayDayGuideTeaser from '@/components/AwayDayGuideTeaser.astro';
+import { fetchEvent, fetchTeamForm, formatEventScore, getTeamLogoSrc, isCupMatch } from '@/lib/si/client';
 import type { SIEvent } from '@/lib/si/client';
 import { fetchMatchContent, strapiMediaUrl } from '@/lib/strapi/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
-import Img from '@/components/Img.astro';
 import { decodeHtml } from '@/lib/utils';
 import { fmtDate, dtAttrs, DATE_LONG_YEAR_OPTS, TIME_OPTS } from '@/lib/dateFormat';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
+import {
+  breadcrumbSchema,
+  estimatedMatchEndDate,
+  youTubeVideoSchema,
+} from '@/lib/structured-data';
 
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 const { slug } = Astro.params;
 const eventId = slug ? parseInt(slug.split('-')[0], 10) : NaN;
@@ -41,6 +58,10 @@ const isLive = statusType === 'inprogress';
 const isFinished = statusType === 'finished';
 const isUpcoming = !isLive && !isFinished;
 const isHome = event.homeId === abConfig.teamId;
+// Cup fixtures have no stable SI tournament ID (see isCupMatch's doc comment
+// in si/client.ts) — the xG widget needs one, so it's skipped for cup matches
+// instead of guessing with the league's ID.
+const isCup = isCupMatch(event);
 
 const matchDate = fmtDate(startDate, 'en-GB', { ...DATE_LONG_YEAR_OPTS, ...TIME_OPTS });
 const matchDateDay = fmtDate(startDate, 'en-GB', DATE_LONG_YEAR_OPTS);
@@ -56,8 +77,10 @@ const [cmsMatch, billetMap, homeForm, awayForm] = await Promise.all([
 const accentColor = cmsMatch?.accentColor ?? 'var(--ab-green)';
 const preMatchArticle = cmsMatch?.preMatchArticle ?? null;
 const postMatchArticle = cmsMatch?.postMatchArticle ?? null;
+const awayTravelArticle = cmsMatch?.awayTravelArticle ?? null;
 const otherArticles = [...(cmsMatch?.communityNewsArticles ?? []), ...(cmsMatch?.otherArticles ?? [])];
 const socialEmbeds = cmsMatch?.socialEmbeds ?? [];
+const hasFeaturedContent = Boolean(preMatchArticle) || Boolean(postMatchArticle) || socialEmbeds.length > 0;
 
 const billetFallback = billetMap
   ? (findTicketUrl(billetMap, awayName) ?? 'https://billet.ab.dk/')
@@ -80,26 +103,68 @@ const ogImageParams = new URLSearchParams({
   date: matchDateDay,
   time: matchTime,
   venue: venueName,
+  ...(isFinished && score ? { score } : {}),
 });
 const ogCardImageUrl = `/api/og/match.png?${ogImageParams.toString()}`;
+
+const matchImageUrl = new URL(
+  cmsMatch?.bannerImage ? strapiMediaUrl(cmsMatch.bannerImage.url) : ogCardImageUrl,
+  Astro.site
+).href;
 
 const matchSchema = {
   '@context': 'https://schema.org',
   '@type': 'SportsEvent',
   name: `${homeName} vs ${awayName}`,
+  description: matchDescription,
+  image: [matchImageUrl],
   startDate,
+  endDate: estimatedMatchEndDate(startDate),
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-  location: { '@type': 'Place', name: venueName },
+  location: {
+    '@type': 'Place',
+    name: venueName,
+    // Only known for home fixtures — the away side's stadium address isn't
+    // data we hold anywhere in this codebase.
+    ...(isHome
+      ? {
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'Gladsaxevej 202',
+            addressLocality: 'Søborg',
+            postalCode: '2860',
+            addressCountry: 'DK',
+          },
+        }
+      : {}),
+  },
   homeTeam: { '@type': 'SportsTeam', name: homeName },
   awayTeam: { '@type': 'SportsTeam', name: awayName },
   competitor: [
     { '@type': 'SportsTeam', name: homeName },
     { '@type': 'SportsTeam', name: awayName },
   ],
-  organizer: { '@type': 'SportsOrganization', name: tournamentName },
+  organizer: {
+    '@type': 'SportsOrganization',
+    name: tournamentName,
+    url: 'https://ab.dk',
+  },
   url: `https://ab.dk/en/match/${eventId}`,
 };
+
+const matchBreadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: 'https://ab.dk/en' },
+  { name: 'Matches', url: 'https://ab.dk/en/matches' },
+  { name: `${homeName} vs ${awayName}`, url: `https://ab.dk/en/match/${eventId}` },
+]);
+
+const matchVideoSchemas = socialEmbeds
+  .filter((embed) => embed.platform === 'youtube')
+  .map((embed) => youTubeVideoSchema(embed, startDate))
+  .filter((schema): schema is NonNullable<typeof schema> => schema !== null);
+
+const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas];
 ---
 
 <Base
@@ -107,12 +172,13 @@ const matchSchema = {
   title={pageTitle}
   description={matchDescription}
   ogImage={ogCardImageUrl}
-  structuredData={matchSchema}
+  structuredData={matchStructuredData}
 >
 
   <!-- Hero -->
-  <div style="background:#2A2A2A">
-    <div class="max-w-5xl mx-auto px-5 md:px-12 pt-8 pb-10">
+  <div class="relative overflow-hidden" style="background:#2A2A2A">
+    <MatchHeroPhoto bannerImageUrl={cmsMatch?.bannerImage ? strapiMediaUrl(cmsMatch.bannerImage.url) : null} />
+    <div class="relative z-10 max-w-5xl mx-auto px-5 md:px-12 pt-8 pb-10">
 
       <!-- Back link -->
       <a
@@ -121,6 +187,8 @@ const matchSchema = {
       >
         ← All matches
       </a>
+
+      {isUpcoming && <MatchCountdown startDate={startDate} locale="en" />}
 
       <!-- Competition / round label -->
       {tournamentName && (
@@ -144,6 +212,7 @@ const matchSchema = {
             />
           </div>
           <span class="font-black text-white text-center leading-tight" style="font-size:clamp(0.75rem,2vw,1rem);max-width:140px">{homeName}</span>
+          <MatchHeroForm form={homeForm} />
         </div>
 
         <!-- Centre: score or VS -->
@@ -177,14 +246,18 @@ const matchSchema = {
             />
           </div>
           <span class="font-black text-white text-center leading-tight" style="font-size:clamp(0.75rem,2vw,1rem);max-width:140px">{awayName}</span>
+          <MatchHeroForm form={awayForm} />
         </div>
 
       </div>
 
       <!-- Date, time, home/away badge -->
-      <div class="flex flex-wrap items-center justify-center gap-3 mt-8 pt-7" style="border-top:1px solid rgba(255,255,255,0.08)">
+      <div
+        class="flex flex-wrap items-center justify-center gap-3 mt-8 mx-auto w-fit px-5 py-3 rounded-2xl"
+        style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px)"
+      >
         <!-- Calendar icon + date -->
-        <div class="inline-flex items-center gap-2 text-white/60" style="font-size:0.8125rem">
+        <div class="inline-flex items-center gap-2 text-white" style="font-size:0.8125rem">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
             <path d="M5 1v3M11 1v3M2 7h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
@@ -192,7 +265,7 @@ const matchSchema = {
           <span class="font-semibold capitalize" {...dtAttrs(startDate, 'en-GB', DATE_LONG_YEAR_OPTS)}>{matchDateDay}</span>
         </div>
         <!-- Clock icon + time -->
-        <div class="inline-flex items-center gap-2 text-white/60" style="font-size:0.8125rem">
+        <div class="inline-flex items-center gap-2 text-white" style="font-size:0.8125rem">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
             <path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -202,12 +275,12 @@ const matchSchema = {
         <!-- Home / Away badge -->
         <span
           class="inline-flex items-center px-3 py-1 font-black uppercase tracking-[0.14em] rounded-full"
-          style={`font-size:0.6rem;${isHome ? 'background:var(--ab-green);color:var(--ab-neon)' : 'background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55)'}`}
+          style={`font-size:0.6rem;${isHome ? 'background:var(--ab-green);color:var(--ab-neon)' : 'background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.92)'}`}
         >
           {isHome ? 'Home' : 'Away'}
         </span>
         <!-- Venue -->
-        <div class="inline-flex items-center gap-2 text-white/40" style="font-size:0.8125rem">
+        <div class="inline-flex items-center gap-2 text-white" style="font-size:0.8125rem">
           <svg width="12" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M8 1.5C5.515 1.5 3.5 3.515 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.485-2.015-4.5-4.5-4.5Z" stroke="currentColor" stroke-width="1.3"/>
             <circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.3"/>
@@ -219,26 +292,59 @@ const matchSchema = {
     </div>
   </div>
 
+  <!-- Match name + key action band -->
+  <div class="bg-ab-green">
+    <div class="max-w-7xl mx-auto px-5 md:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="text-center sm:text-left">
+        {tournamentName && (
+          <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-1" style="color:var(--ab-neon)">{tournamentName}</p>
+        )}
+        <h1 class="font-black text-white" style="font-size:clamp(1.25rem,2.5vw,1.75rem);letter-spacing:-0.02em">
+          {homeName} vs. {awayName}
+        </h1>
+      </div>
+      {!isFinished && ticketUrl && (
+        <a
+          class="vivenu-btn inline-flex items-center gap-2.5 px-8 py-3.5 rounded-[4px] font-black uppercase tracking-[0.1em] shrink-0 transition-transform hover:scale-105"
+          href={`${ticketUrl}?useEmbed=true`}
+          style="background:#fff;color:var(--ab-gold);font-size:0.875rem"
+        >
+          <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2" />
+            <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2" />
+          </svg>
+          Buy tickets
+        </a>
+      )}
+    </div>
+  </div>
+
   <div class="bg-white">
     <div class="max-w-7xl mx-auto px-5 md:px-12 py-10 lg:py-14">
-      <h1 class="font-black text-[#111] mb-8 md:mb-10" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
-        {homeName} vs. {awayName}
-      </h1>
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 lg:gap-12 items-start">
 
         <!-- Main content column -->
         <div class="space-y-14">
 
           {isUpcoming && (
-            <TeamForm
-              homeId={event.homeId}
-              homeName={homeName}
-              homeForm={homeForm}
-              awayId={event.awayId}
-              awayName={awayName}
-              awayForm={awayForm}
-              locale="en"
-            />
+            <>
+              <MatchHypeReel locale="en" />
+              <MatchStandingsPreview
+                locale="en"
+                homeId={event.homeId}
+                awayId={event.awayId}
+                fullTableHref="/en/matches#standings"
+              />
+              <TeamForm
+                homeId={event.homeId}
+                homeName={homeName}
+                homeForm={homeForm}
+                awayId={event.awayId}
+                awayName={awayName}
+                awayForm={awayForm}
+                locale="en"
+              />
+            </>
           )}
 
           {!isUpcoming && (
@@ -275,7 +381,7 @@ const matchSchema = {
                         locale="en"
                         widget="IncidentListOpta"
                         params={{ eventId, header: 'false', card: 'false', initialCollapse: 'false', transparent: 'true', width: '100%' }}
-                        minHeight={320}
+                        minHeight={700}
                         label="Incidents"
                       />
                     </div>
@@ -292,34 +398,20 @@ const matchSchema = {
                       />
                     </div>
                   </div>
-                  <div>
-                    <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">xG — Expected goals</h3>
-                    <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
-                      <SiWidget
-                        locale="en"
-                        widget="TwoTeamsXGoalsPitch"
-                        params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, dotSize: 32.5, header: 'true', showHeader: 'false', nopadding: 'true', card: 'false', transparent: 'true', width: '100%' }}
-                        minHeight={480}
-                        label="xG pitch"
-                      />
+                  {!isCup && (
+                    <div>
+                      <h3 class="text-[0.6rem] font-bold uppercase mb-3 text-gray-400 tracking-[0.18em]">xG — Expected goals</h3>
+                      <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
+                        <SiWidget
+                          locale="en"
+                          widget="TwoTeamsXGoalsPitch"
+                          params={{ eventId, tournamentId: WIDGET_TOURNAMENT_ID, dotSize: 32.5, header: 'true', showHeader: 'false', nopadding: 'true', card: 'false', transparent: 'true', width: '100%' }}
+                          minHeight={480}
+                          label="xG pitch"
+                        />
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </section>
-
-              <section>
-                <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Video</p>
-                <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
-                  Highlights
-                </h2>
-                <div class="overflow-hidden" style="background:var(--surface-card-light);border:1px solid var(--surface-card-light-border);padding:1.25rem">
-                  <SiWidget
-                    locale="en"
-                    widget="SPDKMatchVideo"
-                    params={{ eventId, width: '100%', card: 'false', transparent: 'true' }}
-                    minHeight={400}
-                    label="Match video"
-                  />
+                  )}
                 </div>
               </section>
             <TeamForm
@@ -334,94 +426,22 @@ const matchSchema = {
             </>
           )}
 
-          {socialEmbeds.length > 0 && (
-            <section>
-              <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style={`color:${accentColor}`}>Social</p>
-              <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
-                From social media
-              </h2>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 items-start">
-                {socialEmbeds.map((embed) => (
-                  <div class="flex flex-col gap-3">
-                    <div set:html={embed.embedCode} />
-                    {embed.caption && <p class="text-sm text-[#6B7280]">{embed.caption}</p>}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {isHome && (
-            <section class="relative overflow-hidden rounded-[4px]" style="min-height:280px;background:var(--surface-ground)">
-              <Img
-                src="/images/about-stadium-seat.png"
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover object-center"
-                style="opacity:0.75"
-              />
-              <div class="absolute inset-0" style="background:linear-gradient(135deg,color-mix(in srgb, var(--surface-ground) 72%, transparent) 30%,color-mix(in srgb, var(--surface-ground) 35%, transparent))" />
-              <div class="relative z-10 flex flex-col items-center text-center px-8 py-14">
-                <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] mb-4" style="color:var(--ab-neon)">Gladsaxe Stadium</p>
-                <h2 class="font-black text-white uppercase mb-4" style="font-size:clamp(1.75rem,4vw,2.75rem);letter-spacing:-0.02em">
-                  Matchday Guide
-                </h2>
-                <p class="text-white/60 max-w-md mb-8 leading-relaxed" style="font-size:0.9375rem">
-                  Everything you need to know to have the best time at Gladsaxe Stadium — transport, parking, and stadium info.
-                </p>
-                <a
-                  href="/en/matchday"
-                  class="font-black uppercase no-underline px-8 py-3 rounded transition-opacity hover:opacity-90"
-                  style="background:var(--ab-neon);color:var(--ab-green);font-size:0.8rem;letter-spacing:0.08em"
-                >
-                  Go to guide
-                </a>
-              </div>
-            </section>
+          {isHome ? (
+            <MatchdayGuideTeaser locale="en" />
+          ) : (
+            <AwayDayGuideTeaser
+              locale="en"
+              opponentId={event.homeId}
+              opponentName={homeName}
+              awayTravelArticle={awayTravelArticle}
+              ticketUrl={ticketUrl}
+            />
           )}
         </div>
 
         <!-- Sidebar -->
         <aside class="space-y-5 lg:sticky lg:top-24">
 
-          <!-- Match info -->
-          <div class="border border-gray-200 rounded-[4px] p-5 space-y-4 bg-white">
-            <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">Match info</p>
-            <div class="space-y-3 text-sm text-[#444]">
-              <div class="flex items-start gap-3">
-                <svg class="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#888" stroke-width="1.2"/>
-                  <path d="M5 1v3M11 1v3M2 7h12" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
-                </svg>
-                <div>
-                  <p class="font-bold text-[#111] capitalize" {...dtAttrs(startDate, 'en-GB', DATE_LONG_YEAR_OPTS)}>{matchDateDay}</p>
-                  <p class="text-[#888] mt-0.5" {...dtAttrs(startDate, 'en-GB', TIME_OPTS)}>{matchTime}</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <svg class="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M8 1.5C5.515 1.5 3.5 3.515 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.485-2.015-4.5-4.5-4.5Z" stroke="#888" stroke-width="1.2"/>
-                  <circle cx="8" cy="6" r="1.5" stroke="#888" stroke-width="1.2"/>
-                </svg>
-                <p class="text-[#444]">{venueName}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ticket CTA (home + upcoming/live only) -->
-          {!isFinished && ticketUrl && (
-            <a
-              class="vivenu-btn flex items-center justify-center gap-2.5 w-full py-4 text-sm font-black uppercase tracking-[0.1em] text-white rounded-[4px] transition-opacity hover:opacity-90"
-              href={`${ticketUrl}?useEmbed=true`}
-              style="background:var(--ab-green)"
-            >
-              <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <rect x="1" y="4" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/>
-                <path d="M10 4v-.5a2 2 0 0 0-4 0V4" stroke="currentColor" stroke-width="1.2"/>
-              </svg>
-              Buy tickets
-            </a>
-          )}
 
           <!-- Pre/Post match reports + related news -->
           {[
@@ -453,6 +473,30 @@ const matchSchema = {
               </a>
             </div>
           ))}
+
+          {!isUpcoming && <MatchHighlightCard eventId={eventId} locale="en" />}
+
+          {!hasFeaturedContent && (
+            <>
+              <MatchFeaturedPlayer locale="en" />
+              <MatchWatchPartyPromo locale="en" />
+              <MatchAppPromo locale="en" />
+            </>
+          )}
+
+          {socialEmbeds.length > 0 && (
+            <div class="space-y-4">
+              <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-[#888]">Social</p>
+              <div class="space-y-6">
+                {socialEmbeds.map((embed) => (
+                  <div class="flex flex-col gap-3">
+                    <div set:html={embed.embedCode} />
+                    {embed.caption && <p class="text-sm text-[#6B7280]">{embed.caption}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {otherArticles.length > 0 && (
             <div class="space-y-4">

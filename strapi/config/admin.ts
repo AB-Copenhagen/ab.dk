@@ -19,6 +19,8 @@ const getPreviewPathname = (uid, { locale, document }): string | null => {
       return locale === 'en' ? `/en/news/${slug}` : `/nyheder/${slug}`;
     case 'api::blog-page.blog-page':
       return locale === 'en' ? '/en/news' : '/nyheder';
+    case 'api::hero-slide.hero-slide':
+      return locale === 'en' ? '/en' : '/';
     default:
       return null;
   }

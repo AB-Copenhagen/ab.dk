@@ -63,6 +63,8 @@ export function isNavItemActive(
 export interface NavConfig {
   preHeader: { left: PreHeaderItem[] };
   primary: NavItem[];
+  /** Off-site live-stream link shown next to Shop/Search — English only, play.ab.dk has no Danish site. */
+  liveStream?: { label: string; href: string };
   login: string;
   myAccount: string;
   logout: string;
@@ -78,7 +80,7 @@ const da: NavConfig = {
     ],
   },
   primary: [
-    { label: 'Hold', href: '/hold' },
+    { label: 'Truppen', href: '/truppen' },
     { label: 'Kampe', href: '/kampe' },
     { label: 'Nyheder', href: '/nyheder' },
     {
@@ -101,6 +103,7 @@ const da: NavConfig = {
         { label: 'Partnere', href: '/partnere' },
         { label: 'Arrangementer', href: '/events' },
         { label: 'Gæsteoplevelser', href: '/hospitality' },
+        { label: 'Locals by Locals', href: '/locals-by-locals' },
       ],
     },
     { label: 'Shop', href: 'https://shop.ab.dk', external: true },
@@ -143,10 +146,12 @@ const en: NavConfig = {
         { label: 'Partners', href: '/partners' },
         { label: 'Events', href: '/events' },
         { label: 'Hospitality', href: '/hospitality' },
+        { label: 'Locals by Locals', href: '/locals-by-locals' },
       ],
     },
     { label: 'Shop', href: 'https://shop.ab.dk', external: true },
   ],
+  liveStream: { label: 'Match Stream', href: 'https://play.ab.dk' },
   login: 'MyAB login',
   myAccount: 'My MyAB account',
   logout: 'Log out',

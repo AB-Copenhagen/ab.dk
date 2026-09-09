@@ -53,6 +53,7 @@ export const GET: APIRoute = async ({ params, request }) => {
     const headers: Record<string, string> = {
       'Cache-Control': cacheControl,
       'Access-Control-Allow-Origin': '*',
+      Vary: 'Accept',
     };
     if (contentType) headers['Content-Type'] = contentType;
     const contentLength = upstream.headers.get('Content-Length');

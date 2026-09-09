@@ -7,7 +7,7 @@ export function getLocale(url: URL): Locale {
 // DA slug → EN slug mapping (exact paths; prefix entries end with '/')
 const daToEn: Record<string, string> = {
   '/kampe': '/matches',
-  '/hold': '/squad',
+  '/truppen': '/squad',
   '/nyheder': '/news',
   '/nyheder/': '/news/',
   '/om/historik': '/about/history',
@@ -15,6 +15,8 @@ const daToEn: Record<string, string> = {
   '/partnere': '/partners',
   '/partnere/': '/partners/',
   '/hospitality': '/hospitality',
+  '/locals-by-locals': '/locals-by-locals',
+  '/kampdag': '/matchday',
   '/kamp/': '/match/',
   '/spiller/': '/player/',
   '/stab/': '/staff/',
@@ -28,6 +30,7 @@ const daToEn: Record<string, string> = {
   '/events': '/events',
   '/privatlivspolitik': '/privacy-policy',
   '/returpolitik': '/refund-and-returns-policy',
+  '/slet-profil': '/delete-profile',
 };
 
 const enToDa: Record<string, string> = Object.fromEntries(
@@ -68,7 +71,7 @@ export function switchLocalePath(
 export const t: Record<Locale, Record<string, string>> = {
   da: {
     home: 'Forside',
-    squad: 'Holdet',
+    squad: 'Truppen',
     fixtures: 'Kampe',
     news: 'Nyheder',
     about: 'Om AB',
@@ -123,7 +126,7 @@ export const t: Record<Locale, Record<string, string>> = {
     playerNationality: 'Nationalitet',
     playerHeight: 'Højde',
     playerBirthDate: 'Fødselsdato',
-    playerBackToSquad: 'Holdet',
+    playerBackToSquad: 'Truppen',
     // Homepage
     abtvSubtitle: 'Live recaps & eksklusivt indhold',
     watchLive: 'Se\nLive',
@@ -176,7 +179,7 @@ export const t: Record<Locale, Record<string, string>> = {
     recap: 'Referat',
     score: 'Resultat',
     seeAllArrow: 'Se alle →',
-    seeFullSquad: 'Se hele holdet',
+    seeFullSquad: 'Se hele truppen',
     seeMoreNews: 'Se alle nyheder',
     shopAbStore: 'Shop AB Store',
     standingsTitle: 'Stillingen',
@@ -188,9 +191,11 @@ export const t: Record<Locale, Record<string, string>> = {
     watchOn: 'Se på',
     watchOnline: 'Online',
     matchRound: 'Runde',
+    cupTabLabel: 'Pokal',
     noUpcomingFixtures: 'Ingen kommende kampe fundet.',
     noHomeFixtures: 'Ingen kommende hjemmekampe.',
     noAwayFixtures: 'Ingen kommende udekampe.',
+    noCupFixtures: 'Ingen kommende pokalkampe.',
     noResultsFound: 'Ingen resultater fundet.',
     defaultStadium: 'Gladsaxe Stadion',
     notFoundHeading: 'Siden blev ikke fundet',
@@ -322,9 +327,11 @@ export const t: Record<Locale, Record<string, string>> = {
     watchOn: 'Watch on',
     watchOnline: 'Online',
     matchRound: 'Round',
+    cupTabLabel: 'Cup',
     noUpcomingFixtures: 'No upcoming fixtures found.',
     noHomeFixtures: 'No upcoming home fixtures.',
     noAwayFixtures: 'No upcoming away fixtures.',
+    noCupFixtures: 'No upcoming cup fixtures.',
     noResultsFound: 'No results found.',
     defaultStadium: 'Gladsaxe Stadium',
     notFoundHeading: 'Page not found',

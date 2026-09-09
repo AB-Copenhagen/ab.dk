@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_partner_contacts",
+  "info": {
+    "displayName": "Contact",
+    "icon": "user",
+    "description": "A key contact person for a partner (name, role, email, phone)"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "role": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "phone": {
+      "type": "string"
+    }
+  }
+}

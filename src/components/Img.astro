@@ -83,7 +83,7 @@ const webpSrc = isLocalConvertibleImage
       {...rest}
     />
   ) : isLocalConvertibleImage && webpSrc ? (
-    <picture>
+    <picture class={className}>
       <source srcset={webpSrc} type="image/webp" />
       <img
         src={src as string}

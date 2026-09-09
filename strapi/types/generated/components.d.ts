@@ -241,38 +241,6 @@ export interface DynamicZoneTestimonials extends Struct.ComponentSchema {
   };
 }
 
-export interface GlobalFooter extends Struct.ComponentSchema {
-  collectionName: 'components_global_footers';
-  info: {
-    description: '';
-    displayName: 'Footer';
-    icon: 'apps';
-  };
-  attributes: {
-    built_with: Schema.Attribute.String;
-    copyright: Schema.Attribute.String;
-    description: Schema.Attribute.String;
-    designed_developed_by: Schema.Attribute.String;
-    internal_links: Schema.Attribute.Component<'shared.link', true>;
-    logo: Schema.Attribute.Relation<'oneToOne', 'api::logo.logo'>;
-    policy_links: Schema.Attribute.Component<'shared.link', true>;
-    social_media_links: Schema.Attribute.Component<'shared.link', true>;
-  };
-}
-
-export interface GlobalNavbar extends Struct.ComponentSchema {
-  collectionName: 'components_global_navbars';
-  info: {
-    displayName: 'Navbar';
-    icon: 'bold';
-  };
-  attributes: {
-    left_navbar_items: Schema.Attribute.Component<'shared.link', true>;
-    logo: Schema.Attribute.Relation<'oneToOne', 'api::logo.logo'>;
-    right_navbar_items: Schema.Attribute.Component<'shared.link', true>;
-  };
-}
-
 export interface ItemsGraphCardTopItems extends Struct.ComponentSchema {
   collectionName: 'components_items_graph_card_top_items';
   info: {
@@ -352,6 +320,22 @@ export interface ItemsRayItems extends Struct.ComponentSchema {
   };
 }
 
+export interface MatchArticleLink extends Struct.ComponentSchema {
+  collectionName: 'components_match_article_links';
+  info: {
+    description: 'Associates an article with a match, tagged by its role (Pre Match Report, Post Match Report, etc.)';
+    displayName: 'Article Link';
+    icon: 'link';
+  };
+  attributes: {
+    article: Schema.Attribute.Relation<'oneToOne', 'api::article.article'>;
+    role: Schema.Attribute.Enumeration<
+      ['pre_match', 'post_match', 'community_news', 'other']
+    > &
+      Schema.Attribute.Required;
+  };
+}
+
 export interface MatchSocialEmbed extends Struct.ComponentSchema {
   collectionName: 'components_match_social_embeds';
   info: {
@@ -365,6 +349,21 @@ export interface MatchSocialEmbed extends Struct.ComponentSchema {
       ['instagram', 'twitter', 'youtube', 'facebook', 'tiktok']
     > &
       Schema.Attribute.Required;
+  };
+}
+
+export interface PartnerContact extends Struct.ComponentSchema {
+  collectionName: 'components_partner_contacts';
+  info: {
+    description: 'A key contact person for a partner (name, role, email, phone)';
+    displayName: 'Contact';
+    icon: 'user';
+  };
+  attributes: {
+    email: Schema.Attribute.Email;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    phone: Schema.Attribute.String;
+    role: Schema.Attribute.String;
   };
 }
 
@@ -540,13 +539,13 @@ declare module '@strapi/strapi' {
       'dynamic-zone.related-articles': DynamicZoneRelatedArticles;
       'dynamic-zone.related-products': DynamicZoneRelatedProducts;
       'dynamic-zone.testimonials': DynamicZoneTestimonials;
-      'global.footer': GlobalFooter;
-      'global.navbar': GlobalNavbar;
       'items.graph-card-top-items': ItemsGraphCardTopItems;
       'items.input': ItemsInput;
       'items.left-navbar-items': ItemsLeftNavbarItems;
       'items.ray-items': ItemsRayItems;
+      'match.article-link': MatchArticleLink;
       'match.social-embed': MatchSocialEmbed;
+      'partner.contact': PartnerContact;
       'shared.button': SharedButton;
       'shared.form': SharedForm;
       'shared.launches': SharedLaunches;

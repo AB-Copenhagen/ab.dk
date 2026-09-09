@@ -1,19 +1,14 @@
 ---
 import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
-import { PARTNERS } from '@/data/partners';
 import Img from '@/components/Img.astro';
+import { clampLogoSize } from '@/lib/partner-logo-size';
 
 interface Props {
   locale?: string;
-  globalData?: any;
 }
 
-const { locale = 'da', globalData } = Astro.props;
-const d = globalData;
+const { locale = 'da' } = Astro.props;
 const year = new Date().getFullYear();
-
-const resourceLinks = d?.footer?.policy_links as
-  { text: string; URL: string }[] | undefined;
 
 const footerHeadingClass =
   'font-black text-base text-white tracking-[-0.02em] mb-5';
@@ -21,22 +16,26 @@ const footerItemClass = 'text-sm leading-6 tracking-[-0.01em] text-white/80';
 const footerLinkClass = `${footerItemClass} cursor-pointer hover:opacity-70 transition-opacity no-underline`;
 
 const FALLBACK_PARTNERS = [
-  { name: 'Myriad360', src: '/images/sponsors/myriad360.png',   url: 'https://myriad360.com/',        logoWidth: 226, logoHeight: 50 },
-  { name: 'Datum',     src: '/images/sponsors/datum.png',       url: 'https://datum.net/',            logoWidth: 240, logoHeight: 80 },
-  { name: 'Lind Law',  src: '/images/sponsors/lind-law.png',    url: 'https://lindlaw.dk/',           logoWidth: 85,  logoHeight: 23 },
-  { name: 'Select',    src: '/images/sponsors/select-sport.png', url: 'https://dk.select-sport.com/', logoWidth: 200, logoHeight: 65 },
-  { name: 'Unisport',  src: '/images/sponsors/unisport.png',    url: 'https://www.select-sport.com/', logoWidth: 160, logoHeight: 52 },
+  { name: 'Myriad360', src: '/images/sponsors/myriad360.png',   url: 'https://myriad360.com/',        logoWidth: 226, logoHeight: 50, slug: 'myriad360', category: 'supreme' as const },
+  { name: 'Datum',     src: '/images/sponsors/datum.png',       url: 'https://datum.net/',            logoWidth: 240, logoHeight: 80, slug: 'datum',     category: 'supreme' as const },
+  { name: 'Lind Law',  src: '/images/sponsors/lind-law.png',    url: 'https://lindlaw.dk/',           logoWidth: 85,  logoHeight: 23, slug: 'lind',      category: 'premium' as const },
+  { name: 'Select',    src: '/images/sponsors/select-sport.png', url: 'https://dk.select-sport.com/', logoWidth: 200, logoHeight: 65, slug: 'select',    category: 'premium' as const },
+  { name: 'Unisport',  src: '/images/sponsors/unisport.png',    url: 'https://www.select-sport.com/', logoWidth: 160, logoHeight: 52, slug: 'unisport',  category: 'premium' as const },
 ];
 
-/** Resolve a sponsor's external URL to its internal partner page, when one exists. */
-function toPartnerHref(externalUrl: string): string | undefined {
-  const slug = PARTNERS.find((p) => p.website === externalUrl)?.slug;
-  if (!slug) return undefined;
+/** Resolve a sponsor's own internal partner page href, falling back to its external site. */
+function partnerHref(slug: string | undefined, externalUrl: string): string {
+  if (!slug) return externalUrl;
   return locale === 'en' ? `/en/partners/${slug}` : `/partnere/${slug}`;
 }
 
+/** Returns up to `count` random items from `arr`, order shuffled. */
+function pickRandom<T>(arr: T[], count: number): T[] {
+  return [...arr].sort(() => Math.random() - 0.5).slice(0, count);
+}
+
 const strapiPartners = await fetchPartners();
-const partners = (
+const eligiblePartners = (
   strapiPartners.length > 0
     ? strapiPartners.map((p) => ({
         name: p.name,
@@ -44,9 +43,41 @@ const partners = (
         url: p.url ?? '',
         logoWidth: p.logoWidth,
         logoHeight: p.logoHeight,
+        slug: p.slug,
+        category: p.category,
       }))
     : FALLBACK_PARTNERS
-).map((p) => ({ ...p, href: toPartnerHref(p.url) ?? p.url }));
+)
+  // This strip is a logo showcase, so a partner without a real logo yet (no
+  // logo uploaded, or still the "logo coming soon" placeholder seeded for
+  // every partner that didn't have one) doesn't belong here — unlike the full
+  // partners listing page, which shows every partner regardless.
+  .filter((p) => p.src && !p.src.toLowerCase().includes('placeholder'));
+
+// Every supreme partner (top tier, small in number) plus a rotating random
+// sample of premium partners, so premium partners get even exposure over
+// time rather than the same few always being shown.
+const supremePartners = eligiblePartners.filter((p) => p.category === 'supreme');
+const premiumPartners = eligiblePartners.filter((p) => p.category === 'premium');
+
+// Supreme partners get a slightly bigger ceiling than premium — they pay
+// more, and this mirrors the original hardcoded sizing (Datum/Myriad360
+// bigger than Lind/Select/Unisport) while still capping any one outlier
+// (e.g. a Strapi entry authored at a mismatched size) from dominating the row.
+function logoCeiling(category: string): { maxWidth: number; maxHeight: number } {
+  return category === 'supreme'
+    ? { maxWidth: 260, maxHeight: 90 }
+    : { maxWidth: 200, maxHeight: 65 };
+}
+
+const partners = [...supremePartners, ...pickRandom(premiumPartners, 3)].map((p) => {
+  const { maxWidth, maxHeight } = logoCeiling(p.category);
+  return {
+    ...p,
+    href: partnerHref(p.slug, p.url),
+    logoSize: clampLogoSize(p.logoWidth, p.logoHeight, maxWidth, maxHeight),
+  };
+});
 ---
 
 <!-- Sponsor row (white bg) -->
@@ -54,7 +85,7 @@ const partners = (
   <div class="max-w-7xl mx-auto px-8">
     <div class="grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-10 md:flex md:flex-nowrap md:justify-between md:gap-8">
       {
-        partners.map(({ src, name, href, logoWidth, logoHeight }, index) => {
+        partners.map(({ src, name, href, logoSize }, index) => {
           const isInternal = href.startsWith('/');
           const isLoneLastItem = index === partners.length - 1 && partners.length % 2 === 1;
           return (
@@ -68,10 +99,10 @@ const partners = (
               <Img
                 src={src}
                 alt={name}
-                width={logoWidth}
-                height={logoHeight}
-                class="sponsor-logo object-contain object-center"
-                style={`width:${logoWidth}px;height:${logoHeight}px`}
+                width={logoSize.width}
+                height={logoSize.height}
+                style={`width:${logoSize.width}px;height:${logoSize.height}px`}
+                class="sponsor-logo object-contain object-center max-w-full"
               />
             </a>
           );
@@ -163,37 +194,23 @@ const partners = (
         <!-- Resources -->
         <div>
           <p class={footerHeadingClass}>{locale === 'da' ? 'Ressourcer' : 'Resources'}</p>
-          {resourceLinks?.length ? (
-            <ul class="flex flex-col">
-              {resourceLinks.map((link) => (
-                <li>
-                  <a href={link.URL} class={footerLinkClass}>{link.text}</a>
-                </li>
-              ))}
+          <ul class="flex flex-col">
+            {([
+              { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/brand', external: false },
+              { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/privatlivspolitik', external: false },
+              { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/returpolitik', external: false },
+              { label: locale === 'da' ? 'Slet din profil' : 'Delete Your Profile', href: locale === 'en' ? '/en/delete-profile' : '/slet-profil', external: false },
+            ] as {label:string; href:string; external:boolean}[]).map((item) => (
               <li>
-                <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
-                  {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
-                </button>
+                <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
               </li>
-            </ul>
-          ) : (
-            <ul class="flex flex-col">
-              {([
-                { label: 'Brand', href: locale === 'en' ? '/en/brand' : '/brand', external: false },
-                { label: locale === 'da' ? 'Privatlivspolitik' : 'Privacy policy', href: locale === 'en' ? '/en/privacy-policy' : '/privatlivspolitik', external: false },
-                { label: locale === 'da' ? 'Refunderings- og returpolitik' : 'Refund and Return Policy', href: locale === 'en' ? '/en/refund-and-returns-policy' : '/returpolitik', external: false },
-              ] as {label:string; href:string; external:boolean}[]).map((item) => (
-                <li>
-                  <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noreferrer' : undefined} class={footerLinkClass}>{item.label}</a>
-                </li>
-              ))}
-              <li>
-                <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
-                  {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
-                </button>
-              </li>
-            </ul>
-          )}
+            ))}
+            <li>
+              <button type="button" onclick="window.abOpenCookieSettings && window.abOpenCookieSettings()" class={`${footerLinkClass} bg-transparent border-0 p-0 text-left`}>
+                {locale === 'da' ? 'Cookie-indstillinger' : 'Cookie settings'}
+              </button>
+            </li>
+          </ul>
         </div>
         </div>
       </div>
@@ -212,7 +229,7 @@ const partners = (
   <!-- Neon green copyright strip -->
   <div class="bg-ab-neon flex items-center justify-center px-8 py-4">
     <p class="text-xs text-rich-black text-center tracking-[-0.01em]">
-      {d?.footer?.copyright ?? `© ${year} AB Gladsaxe. All rights reserved.`}
+      {`© ${year} AB Gladsaxe. All rights reserved.`}
     </p>
   </div>
 </footer>

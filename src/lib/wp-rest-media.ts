@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro';
 
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { strapiMediaUrl } from '@/lib/strapi/client';
 import { decodeHtml } from '@/lib/utils';
 import { fetchArticleById, wpNotFoundResponse } from '@/lib/wp-rest-posts';
@@ -95,7 +96,12 @@ export async function buildWpMediaResponse(
     },
   };
 
-  return new Response(JSON.stringify(media), {
-    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+  const headers = new Headers({
+    'Content-Type': 'application/json; charset=UTF-8',
   });
+  // Same reasoning as buildWpPostResponse — repeat requests for the same
+  // media id should hit the CDN, not Strapi, on every poll.
+  setCdnCacheHeaders(headers);
+
+  return new Response(JSON.stringify(media), { headers });
 }

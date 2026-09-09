@@ -56,13 +56,16 @@ const uid = `siw-${Math.random().toString(36).slice(2, 9)}`;
 >
   {/* Green shimmer placeholder shown until IntersectionObserver fires */}
   <div
-    class="si-widget-shimmer absolute inset-0"
+    class="si-widget-shimmer absolute inset-0 z-[2]"
     aria-hidden="true"
     style="background:linear-gradient(90deg,var(--surface-base) 25%,#122718 50%,var(--surface-base) 75%);background-size:200% 100%;animation:siShimmer 1.6s ease-in-out infinite;"
   ></div>
 
-  {/* Shown instead of the widget when functional consent hasn't been granted yet */}
-  <div class="si-widget-consent-needed hidden absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center" style="background:var(--surface-base)">
+  {/* Shown instead of the widget when functional consent hasn't been granted yet. Needs a
+      higher z-index than the iframe below (z-[1]) — otherwise the iframe, which stays in the
+      DOM and interactive even before its src is set, sits on top and swallows clicks meant
+      for the Enable button. */}
+  <div class="si-widget-consent-needed hidden absolute inset-0 z-[2] flex flex-col items-center justify-center gap-3 px-4 text-center" style="background:var(--surface-base)">
     <p class="text-white/60 text-xs max-w-[32ch]">{t.message}</p>
     <button
       type="button"

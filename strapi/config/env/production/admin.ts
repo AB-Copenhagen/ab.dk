@@ -20,6 +20,8 @@ const getPreviewPathname = (uid, { locale, document }): string | null => {
       return isEnglish ? `/news/${slug}` : `/nyheder/${slug}`;
     case 'api::blog-page.blog-page':
       return isEnglish ? '/news' : '/nyheder';
+    case 'api::hero-slide.hero-slide':
+      return '/';
     default:
       return null;
   }

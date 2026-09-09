@@ -1,0 +1,55 @@
+---
+import Img from '@/components/Img.astro';
+
+interface Props {
+  bannerImageUrl: string | null;
+}
+
+const { bannerImageUrl } = Astro.props;
+---
+
+<!-- Photo + Ken Burns zoom is desktop-only: on small screens it's just a solid
+     background (set by the caller), which is cheaper and reads better on mobile. -->
+<div class="hidden md:block absolute inset-0 overflow-hidden">
+  <div class="hero-photo absolute inset-0">
+    {
+      bannerImageUrl ? (
+        <img src={bannerImageUrl} alt="" aria-hidden="true" class="w-full h-full object-cover opacity-90" />
+      ) : (
+        <Img
+          src="/images/match-hero-default.jpg"
+          alt=""
+          aria-hidden="true"
+          class="w-full h-full object-cover opacity-90"
+        />
+      )
+    }
+  </div>
+  <div
+    class="absolute inset-0"
+    style="background:linear-gradient(180deg, rgba(15,15,15,0.4) 0%, rgba(15,15,15,0.08) 45%, rgba(15,15,15,0.45) 100%)"
+  />
+</div>
+
+<style>
+  .hero-photo {
+    transform-origin: center;
+    filter: saturate(1.25) contrast(1.08);
+    animation: hero-ken-burns 11s ease-in-out infinite alternate;
+  }
+
+  @keyframes hero-ken-burns {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.15);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-photo {
+      animation: none;
+    }
+  }
+</style>

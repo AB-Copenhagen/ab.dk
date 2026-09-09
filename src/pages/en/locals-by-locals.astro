@@ -1,0 +1,390 @@
+---
+import Base from '@/layouts/Base.astro';
+import heroImage from '@/assets/images/hero.jpg';
+
+export const prerender = true;
+
+interface Match {
+  date: string;
+  opponent: string;
+}
+
+const matches: Match[] = [
+  { date: '19.09.2026', opponent: 'AB vs. Esbjerg FB' },
+  { date: '09.10.2026', opponent: 'AB vs. Aarhus Fremad' },
+  { date: '24.10.2026', opponent: 'AB vs. Kolding IF' },
+  { date: '06.11.2026', opponent: 'AB vs. Vendsyssel FF' },
+  { date: '28.11.2026', opponent: 'AB vs. Vejle BK' },
+];
+
+const concept: string[] = [
+  'Two photographers per match.',
+  'Capture people, emotions, and the unique experiences that are created.',
+  'No sports photography of the players or the match. The focus is on the fans and the people at the stadium.',
+  "After the match, the camera is returned to AB's project lead, who, together with Canon, will select the best photos from the day to be shared.",
+  'The Photo of the Season will receive a great grand prize from Canon. The winning photo will also be produced in large format and as posters, available for fans and others to purchase.',
+];
+---
+
+<Base
+  locale="en"
+  title="Locals by Locals | Akademisk Boldklub – Get Involved"
+  description="AB x Canon present Locals by Locals — a photography project inviting local photographers to capture the people, emotions and community at Gladsaxe Stadion."
+  ogTitle="Locals by Locals — AB x Canon"
+  ogDescription="Join AB's Locals by Locals photography project with Canon, capturing fans and matchday atmosphere at Gladsaxe Stadion."
+>
+
+  <!-- Hero -->
+  <div class="relative overflow-hidden" style="min-height:clamp(560px,82vh,860px)">
+    <img
+      src={heroImage.src}
+      alt="AB player on the pitch at Gladsaxe Stadion under the floodlights at night"
+      width={heroImage.width}
+      height={heroImage.height}
+      class="absolute inset-0 w-full h-full object-cover object-[center_25%]"
+    />
+    <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0.25)_35%,rgba(0,0,0,0.92)_100%)]"></div>
+    <div class="absolute inset-0 grain-overlay" aria-hidden="true"></div>
+
+    <!-- Viewfinder frame -->
+    <div class="absolute inset-4 sm:inset-8 pointer-events-none" aria-hidden="true">
+      <span class="vf-corner vf-tl"></span>
+      <span class="vf-corner vf-tr"></span>
+      <span class="vf-corner vf-bl"></span>
+      <span class="vf-corner vf-br"></span>
+    </div>
+
+    <!-- EXIF-style readout -->
+    <div class="absolute top-8 sm:top-11 left-7 sm:left-11 right-7 sm:right-11 flex items-center justify-between">
+      <span class="exif-text">GLADSAXE STADION</span>
+      <span class="exif-text hidden sm:inline">ƒ/2.8 · 1/500 · ISO 200</span>
+    </div>
+
+    <!-- Aperture ring watermark -->
+    <svg class="aperture-ring aperture-spin absolute -right-16 -bottom-16 sm:-right-10 sm:-bottom-10 w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] opacity-[0.16]" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="0.6" aria-hidden="true">
+      <circle cx="50" cy="50" r="48"/>
+      <circle cx="50" cy="50" r="34"/>
+      <circle cx="50" cy="50" r="20"/>
+      <line x1="50" y1="50" x2="98" y2="50"/>
+      <line x1="50" y1="50" x2="83.9" y2="16.1"/>
+      <line x1="50" y1="50" x2="50" y2="2"/>
+      <line x1="50" y1="50" x2="16.1" y2="16.1"/>
+      <line x1="50" y1="50" x2="2" y2="50"/>
+      <line x1="50" y1="50" x2="16.1" y2="83.9"/>
+      <line x1="50" y1="50" x2="50" y2="98"/>
+      <line x1="50" y1="50" x2="83.9" y2="83.9"/>
+    </svg>
+
+    <div class="relative h-full flex flex-col justify-end px-6 sm:px-11 pb-14 sm:pb-16 max-w-7xl mx-auto w-full" style="min-height:clamp(560px,82vh,860px)">
+      <div class="inline-flex items-center gap-2.5 mb-7 bg-white rounded-full py-1.5 pl-1.5 pr-4 w-fit shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
+        <span class="w-6 h-6 rounded-full bg-canon-red flex items-center justify-center shrink-0" aria-hidden="true">
+          <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        </span>
+        <span class="font-black text-[0.7rem] uppercase tracking-[0.12em] text-[#111]">AB × Canon</span>
+      </div>
+
+      <div class="relative">
+        <span class="ghost-heading" aria-hidden="true">Locals by<br/>Locals</span>
+        <h1 class="relative font-black text-white leading-[0.9] text-[clamp(3rem,10vw,7.5rem)] tracking-[-0.04em]">
+          Locals by<br/>Locals
+        </h1>
+      </div>
+      <p class="mt-6 font-black text-white/70 text-[0.75rem] uppercase tracking-[0.16em]">One Camera — One Mission</p>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <section class="relative bg-white py-[clamp(56px,8vw,96px)] overflow-hidden">
+    <svg class="aperture-ring absolute -left-24 top-1/2 -translate-y-1/2 w-[420px] h-[420px] opacity-[0.05] hidden lg:block" viewBox="0 0 100 100" fill="none" stroke="#111" stroke-width="0.4" aria-hidden="true">
+      <circle cx="50" cy="50" r="48"/>
+      <circle cx="50" cy="50" r="34"/>
+      <circle cx="50" cy="50" r="20"/>
+      <line x1="50" y1="50" x2="98" y2="50"/>
+      <line x1="50" y1="50" x2="83.9" y2="16.1"/>
+      <line x1="50" y1="50" x2="50" y2="2"/>
+      <line x1="50" y1="50" x2="16.1" y2="16.1"/>
+      <line x1="50" y1="50" x2="2" y2="50"/>
+      <line x1="50" y1="50" x2="16.1" y2="83.9"/>
+      <line x1="50" y1="50" x2="50" y2="98"/>
+      <line x1="50" y1="50" x2="83.9" y2="83.9"/>
+    </svg>
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-16">
+      <div class="grid lg:grid-cols-[1.1fr_auto_1fr] gap-8 lg:gap-12">
+        <div>
+          <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">A Photography Project</span>
+          </div>
+          <p class="font-black text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);line-height:1.2;letter-spacing:-0.03em">
+            In collaboration with Canon, AB has launched "Locals by Locals" —
+            a photography project where we invite local photographers,
+            aspiring photographers, and anyone who simply loves taking
+            pictures to join us.
+          </p>
+        </div>
+
+        <div class="filmstrip-divider hidden lg:block" aria-hidden="true"></div>
+
+        <div class="space-y-5 text-[#444] text-[1.0625rem] leading-[1.75] lg:pt-2">
+          <p>
+            Locals by Locals is a project about people, the experiences we
+            create together, and those special moments that are captured when
+            we least expect them.
+          </p>
+          <p>
+            Together with Canon, we have created a project that tells the
+            story of a football match, the sense of community, and the local
+            environment surrounding it. These moments and images are captured
+            by different people — everyday fans, aspiring photographers, and
+            local photographers alike.
+          </p>
+          <p>
+            At every home match at Gladsaxe Stadion, the photographers of the
+            day will be equipped with a Canon camera and encouraged to capture
+            as many moments as possible. The best photos will be shared here
+            on the website and across our social media channels. Each year,
+            the very best images will be collected in our "Locals by Locals"
+            photobook, which will be available for purchase in our shop and
+            at selected retailers.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Concept -->
+  <section class="bg-[#0A0A0A] py-[clamp(56px,8vw,96px)] overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16">
+      <div class="flex items-end justify-between mb-10 flex-wrap gap-3">
+        <h2 class="font-black text-white" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+          The Concept
+        </h2>
+        <span class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-white/40">5 rules · 1 camera</span>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-16">
+      <div class="flex gap-5 overflow-x-auto pb-2 snap-x snap-mandatory -mx-6 px-6 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-5 lg:overflow-visible">
+        {concept.map((item, i) => (
+          <div class="frame shrink-0 w-[76vw] sm:w-[300px] lg:w-auto snap-start">
+            <div class="frame-sprockets" aria-hidden="true">
+              {Array.from({ length: 8 }).map(() => <span></span>)}
+            </div>
+            <div class="frame-body">
+              <span class="frame-number">0{i + 1}<span class="text-canon-red">A</span></span>
+              <p class="frame-text">{item}</p>
+            </div>
+            <div class="frame-sprockets" aria-hidden="true">
+              {Array.from({ length: 8 }).map(() => <span></span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Available Matches -->
+  <section class="bg-white py-[clamp(56px,8vw,96px)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Available Matches — 2026</span>
+      </div>
+      <h2 class="font-black text-[clamp(1.5rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-4 max-w-[28ch]">
+        Ready to join "Locals by Locals"?
+      </h2>
+      <p class="text-[1.05rem] leading-[1.75] text-[#444] max-w-[62ch] mb-10">
+        The following 2026 home matches are available for you to showcase
+        your skills.
+      </p>
+      <div class="max-w-3xl flex flex-col gap-3">
+        {matches.map((match, i) => (
+          <div class="call-sheet-row group">
+            <div class="flex items-center gap-4">
+              <span class="call-sheet-index">0{i + 1}</span>
+              <span class="font-black text-[1.05rem] sm:text-[1.2rem] text-[#111] tracking-[-0.02em]">{match.opponent}</span>
+            </div>
+            <span class="date-stamp">{match.date.split('.').join(' . ')}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="bg-ab-green py-[clamp(56px,8vw,96px)]">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center gap-2 mb-6 bg-canon-red rounded-full py-[7px] pl-[14px] pr-[18px] w-fit">
+          <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <span class="font-black text-[0.75rem] text-white tracking-[0.1em] uppercase">Take Part</span>
+        </div>
+        <h2 class="font-black text-white text-[clamp(1.8rem,4vw,3rem)] tracking-[-0.04em] leading-[1.05] mb-4">
+          Want to learn more or take part?
+        </h2>
+        <p class="text-white/80 text-[1rem] leading-[1.75] mb-8">
+          Contact Mads Johansen for more information about the project.
+        </p>
+        <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4 mb-10 w-fit">
+          <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <div>
+            <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Mads Johansen</p>
+            <a href="mailto:mjohansen@ab.dk" class="font-black text-white text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">mjohansen@ab.dk</a>
+          </div>
+        </div>
+        <p class="text-white/60 text-[0.85rem] leading-relaxed max-w-[60ch] pt-5 border-t border-dashed border-white/20">
+          Please note that this is an unpaid project. The camera is provided
+          on loan by AB and must be returned after each project. All
+          photographs taken for the project will be owned by both AB and
+          Canon.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  :root {
+    --canon-red: #e30613;
+  }
+  .bg-canon-red {
+    background-color: var(--canon-red);
+  }
+  .text-canon-red {
+    color: var(--canon-red);
+  }
+
+  /* ── Hero ────────────────────────────────────────────────────────── */
+  .grain-overlay {
+    opacity: 0.15;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 140px 140px;
+  }
+
+  .vf-corner {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .vf-tl { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
+  .vf-tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
+  .vf-bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
+  .vf-br { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
+
+  .exif-text {
+    font-family: 'Courier New', ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .aperture-spin {
+    animation: spin-slow 50s linear infinite;
+  }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aperture-spin { animation: none; }
+  }
+
+  .ghost-heading {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-weight: 900;
+    line-height: 0.9;
+    font-size: clamp(3rem, 10vw, 7.5rem);
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+    z-index: 0;
+  }
+
+  /* ── Intro ───────────────────────────────────────────────────────── */
+  .filmstrip-divider {
+    width: 1px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.15) 0,
+      rgba(0, 0, 0, 0.15) 6px,
+      transparent 6px,
+      transparent 14px
+    );
+  }
+
+  /* ── Koncept filmstrip ───────────────────────────────────────────── */
+  .frame {
+    background: #161616;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.3s ease;
+  }
+  @media (min-width: 1024px) {
+    .frame:nth-child(odd) { transform: rotate(-1.25deg); }
+    .frame:nth-child(even) { transform: rotate(1.25deg); }
+    .frame:hover { transform: rotate(0deg) translateY(-6px); }
+  }
+  .frame-sprockets {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #000;
+  }
+  .frame-sprockets span {
+    width: 6px;
+    height: 9px;
+    border-radius: 1px;
+    background: rgba(214, 160, 42, 0.55);
+  }
+  .frame-body {
+    padding: 22px 20px 26px;
+  }
+  .frame-number {
+    display: block;
+    font-family: 'Courier New', ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 10px;
+  }
+  .frame-text {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* ── Call sheet / matches ────────────────────────────────────────── */
+  .call-sheet-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 1.1rem 1.35rem;
+    transition: border-color 0.2s ease;
+  }
+  .call-sheet-row:hover {
+    border-color: var(--ab-green);
+  }
+  .call-sheet-index {
+    font-family: 'Courier New', ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #fff;
+    background: #111;
+    padding: 0.2rem 0.45rem;
+  }
+  .date-stamp {
+    font-family: 'Courier New', ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    color: #ff7a1a;
+    text-shadow: 0 0 1px rgba(255, 122, 26, 0.4);
+  }
+</style>

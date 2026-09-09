@@ -141,13 +141,11 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
   }
 
   // Descope session validation for auth-gated routes
-  const GATED_PATHS = [
-    '/konto/profil',
-    '/en/account/profile',
-    '/play',
-    '/en/play',
-  ];
-  const isGated = GATED_PATHS.some((p) => context.url.pathname.startsWith(p));
+  const GATED_PATHS = ['/konto/profil', '/en/account/profile'];
+  const isGated = GATED_PATHS.some(
+    (p) =>
+      context.url.pathname === p || context.url.pathname.startsWith(`${p}/`)
+  );
 
   if (isGated) {
     const loginUrl = locale === 'en' ? '/en/account' : '/konto';

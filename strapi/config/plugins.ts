@@ -23,6 +23,10 @@ export default ({ env }: { env: (key: string, fallback?: string) => string }) =>
         uploadStream: {},
         delete: {},
       },
+      // Resizes to Strapi's default breakpoints and recompresses at the original
+      // format/quality — no WebP conversion (that's a separate scheduled job).
+      sizeOptimization: true,
+      responsiveDimensions: true,
     },
   },
   email: {

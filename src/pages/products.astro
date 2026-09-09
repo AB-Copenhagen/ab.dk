@@ -1,8 +1,10 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { fetchCollectionType, fetchSingleType, strapiMediaUrl } from '@/lib/strapi/client';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 let pageData: any = null;
 let products: any[] = [];

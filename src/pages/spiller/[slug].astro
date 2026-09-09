@@ -5,13 +5,17 @@ import PlayerMetadataBar from '@/components/player/PlayerMetadataBar.astro';
 import PlayerSeasonStatsTable from '@/components/player/PlayerSeasonStatsTable.astro';
 import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
 import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
-import { fetchPlayerCmsData, strapiMediaUrl } from '@/lib/strapi/client';
+import { fetchPlayerCmsData, resolvePlayerPhoto, strapiMediaUrl } from '@/lib/strapi/client';
 import type { StrapiPlayer } from '@/lib/strapi/client';
-import { getPlayerPhotoUrl } from '@/lib/si/player-photos';
-import { resolveShirtNumber, resolveName, resolvePosition } from '@/data/player-cms-data';
-import { findManualPlayer } from '@/data/manual-players';
+import { PENDING_PHOTO_SHIRT_NUMBERS, EXCLUDED_PLAYER_SLUGS, toSlug } from '@/lib/si/player-photos';
+import { findManualPlayer, manualPlayersAsSIPlayers } from '@/data/manual-players';
+import { findPlayerIdByNameSlug, getPlayerSlug } from '@/data/player-cms-data';
+import { abConfig } from '@/lib/config/ab';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { breadcrumbSchema } from '@/lib/structured-data';
 
 export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 // Slug format: {playerId}-{name}  e.g. "987654-mikkel-hansen"
 const { slug } = Astro.params;
@@ -19,7 +23,18 @@ const { slug } = Astro.params;
 const playerId = slug ? parseInt(slug, 10) : NaN;
 
 if (isNaN(playerId)) {
-  return Astro.redirect('/hold');
+  // Legacy pre-2026-07-05 URLs sometimes encoded only the player's name, with
+  // no leading SI id — resolve by name against the current roster so a
+  // still-indexed old URL lands on the real player, not the squad listing.
+  const roster = slug
+    ? [...(await fetchABPlayers('da').catch(() => [])), ...manualPlayersAsSIPlayers()]
+    : [];
+  const resolvedId = slug ? findPlayerIdByNameSlug(roster, slug) : null;
+  if (resolvedId != null) {
+    const resolvedName = roster.find((p) => p.id === resolvedId)?.name ?? null;
+    return Astro.redirect(`/spiller/${getPlayerSlug(resolvedId, resolvedName)}`, 308);
+  }
+  return Astro.redirect('/truppen');
 }
 
 const manualPlayer = findManualPlayer(playerId);
@@ -38,14 +53,14 @@ if (manualPlayer) {
     birthDate: manualPlayer.birthDate,
     height: manualPlayer.height,
   };
-  shirtNumber = manualPlayer.shirtNumber;
-  cmsPlayer = {
+  cmsPlayer = (await fetchPlayerCmsData(manualPlayer.id, 'da').catch(() => null)) ?? {
     siPlayerId: manualPlayer.id,
     nickname: manualPlayer.nickname,
     formerClubs: manualPlayer.formerClubs,
     bio: manualPlayer.bio?.da,
     quote: manualPlayer.quote?.da,
   };
+  shirtNumber = cmsPlayer?.shirtNumberOverride ?? manualPlayer.shirtNumber;
 } else {
   try {
     player = await fetchPlayerProfile(playerId, 'da');
@@ -53,8 +68,17 @@ if (manualPlayer) {
     // fall through to redirect
   }
 
-  if (!player) {
-    return Astro.redirect('/hold');
+  // SI returns an empty (but truthy) profile for an id it doesn't recognize
+  // — e.g. a retired synthetic manual-player id — rather than 404ing.
+  if (!player?.name) {
+    return Astro.redirect('/truppen');
+  }
+
+  // Legacy exclusion list (no Strapi row needed) — e.g. a retired player whose
+  // Strapi row was deleted outright. Checked on the raw SI name, same as
+  // getSquadPlayers' own fallback (src/lib/si/squad.ts).
+  if (EXCLUDED_PLAYER_SLUGS.has(toSlug(player.name))) {
+    return Astro.redirect('/truppen');
   }
 
   const [squadPlayers, matchStats, fetchedCms] = await Promise.all([
@@ -63,21 +87,43 @@ if (manualPlayer) {
     fetchPlayerCmsData(playerId, 'da').catch(() => null),
   ]);
 
-  shirtNumber = resolveShirtNumber(playerId, squadPlayers.find(p => p.id === playerId)?.shirtNumber ?? null);
+  const siShirtNumber = squadPlayers.find(p => p.id === playerId)?.shirtNumber ?? null;
+  shirtNumber = fetchedCms?.shirtNumberOverride ?? siShirtNumber;
   seasonStats = aggregateSeasonStats(matchStats);
   cmsPlayer = fetchedCms;
+
+  // hideFromSquad also removes the detail page itself (e.g. a departed player
+  // still hidden via a Strapi row, rather than the legacy exclusion list) — SI
+  // keeps serving their profile even after they're gone, so this is the only
+  // way to take the page down without deleting the Strapi row.
+  if (cmsPlayer?.hideFromSquad) {
+    return Astro.redirect('/truppen');
+  }
 }
 
 if (!player) {
-  return Astro.redirect('/hold');
+  return Astro.redirect('/truppen');
 }
 
 const { name, countryName, birthDate, height } = player;
-const position = resolvePosition(playerId, player.position) ?? player.position;
-// Photo/slug lookups stay keyed on the raw SI name (may be ASCII-mangled,
-// e.g. "Soeren Ilsoee") — only the rendered text uses the corrected name.
-const photoUrl = getPlayerPhotoUrl(name);
-const displayName = resolveName(playerId, name) ?? name;
+const position = cmsPlayer?.positionOverride ?? player.position;
+const displayName = cmsPlayer?.displayNameOverride ?? name;
+// hidePhoto falls back to the legacy PENDING_PHOTO_SHIRT_NUMBERS set only when
+// there's no real Strapi row for this player yet (cmsPlayer.hidePhoto is
+// `undefined`, not `false`, in that case — see fetchPlayerCmsData).
+const hidePhoto =
+  cmsPlayer?.hidePhoto ??
+  (shirtNumber != null && PENDING_PHOTO_SHIRT_NUMBERS.has(Number(shirtNumber)));
+// Photo lookups stay keyed on the raw SI name (may be ASCII-mangled, e.g.
+// "Soeren Ilsoee") — only the rendered text uses the corrected name.
+const { photoUrl, photoFallbackUrl: siPhotoFallbackUrl } = resolvePlayerPhoto({
+  hidePhoto,
+  strapiPhoto: cmsPlayer?.photo,
+  strapiPhotoPosition: cmsPlayer?.photoPosition,
+  siName: name,
+  siPlayerId: playerId,
+  teamId: abConfig.teamId,
+});
 
 const posLabels: Record<string, string> = {
   keeper:     'Målmand',
@@ -122,6 +168,14 @@ const personSchema = {
   memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
   url: `https://ab.dk/spiller/${slug}`,
 };
+
+const playerBreadcrumbs = breadcrumbSchema([
+  { name: 'Forside', url: 'https://ab.dk' },
+  { name: 'Truppen', url: 'https://ab.dk/truppen' },
+  { name: displayName, url: `https://ab.dk/spiller/${slug}` },
+]);
+
+const playerStructuredData = [personSchema, playerBreadcrumbs];
 ---
 
 <Base
@@ -130,7 +184,7 @@ const personSchema = {
   description={playerDescription}
   ogImage={ogCardImageUrl}
   ogType="profile"
-  structuredData={personSchema}
+  structuredData={playerStructuredData}
 >
   <!-- ── Hero ───────────────────────────────────────────────────────── -->
   <div class="relative w-full overflow-hidden"
@@ -153,10 +207,11 @@ const personSchema = {
       <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-[2]">
         <img
           src={photoUrl}
+          data-si-fallback={siPhotoFallbackUrl}
           alt={displayName}
           loading="eager"
           class="h-full w-auto max-w-none"
-          onerror="this.style.display='none'"
+          onerror="const f=this.dataset.siFallback; if (f && this.src !== f) { this.src = f; } else { this.style.display='none'; }"
         />
       </div>
     )}

@@ -2,7 +2,54 @@
 import Base from '@/layouts/Base.astro';
 import Img from '@/components/Img.astro';
 import heroImage from '@/assets/images/IMG_7926.jpeg';
-import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } from '@/data/partners';
+import { fetchPartners, strapiMediaUrl, type StrapiPartner } from '@/lib/strapi/client';
+import { clampLogoSize } from '@/lib/partner-logo-size';
+
+/**
+ * Attaches a `logoSize` clamped to this section's ceiling to each partner.
+ * `scale` inflates both the partner's curated size and the ceiling together,
+ * so it grows every logo in the section uniformly (e.g. 1.25 = 25% bigger)
+ * without changing which entries count as outliers relative to their peers.
+ */
+function withLogoSize(
+  partners: StrapiPartner[],
+  maxWidth: number,
+  maxHeight: number,
+  scale = 1
+) {
+  return partners.map((p) => ({
+    ...p,
+    logoSize: clampLogoSize(
+      (p.logoWidth ?? 0) * scale,
+      (p.logoHeight ?? 0) * scale,
+      maxWidth * scale,
+      maxHeight * scale
+    ),
+  }));
+}
+
+const allPartners = await fetchPartners('en');
+const supremePartners = withLogoSize(
+  allPartners.filter((p) => p.category === 'supreme'),
+  280,
+  200,
+  1.25
+);
+const premiumPartners = withLogoSize(
+  allPartners.filter((p) => p.category === 'premium'),
+  200,
+  90
+);
+const localHeroPartners = withLogoSize(
+  allPartners.filter((p) => p.category === 'local-hero'),
+  200,
+  100
+);
+const ab1889Partners = withLogoSize(
+  allPartners.filter((p) => p.category === 'ab1889'),
+  200,
+  100
+);
 ---
 
 <Base
@@ -52,6 +99,10 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
         <p class="font-black text-ab-neon text-[1rem] tracking-[-0.01em] mt-6">
           Join the team. Let's build the future together.
         </p>
+        <p class="text-surface-muted text-[0.9375rem] leading-[1.7] mt-3">
+          For more information and questions, contact Partnership Manager
+          Simon Taylor via our <a href="/en/contact?topic=partnerships" class="text-white underline hover:text-ab-neon">contact form</a> (select subject "Partnerships").
+        </p>
       </div>
     </div>
   </div>
@@ -67,22 +118,25 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
         These companies are most closely tied to AB 1889 and contribute directly to the club's sporting and commercial development.
       </p>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {supremePartners.map((p) => (
           <a
             href={`/en/partners/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-6 py-10 flex-1">
+            <div class="flex items-center justify-center px-10 py-16 h-64 overflow-hidden">
               <Img
-                src={p.logo}
+                src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class:list={['object-contain object-center', p.logoSize ?? 'max-h-16 max-w-full']}
+                width={p.logoSize.width}
+                height={p.logoSize.height}
+                style={`width:${p.logoSize.width}px;height:${p.logoSize.height}px`}
+                class="object-contain object-center max-w-full"
                 loading="lazy"
               />
             </div>
-            <div class="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-[#FAFAFA]">
-              <span class="font-black text-[0.72rem] text-[#555] tracking-[-0.01em] truncate pr-2">{p.name}</span>
-              <svg class="w-3.5 h-3.5 text-[#CCC] group-hover:text-ab-green transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-[#FAFAFA]">
+              <span class="font-black text-[0.85rem] text-[#555] tracking-[-0.01em] truncate pr-2">{p.name}</span>
+              <svg class="w-4 h-4 text-[#CCC] group-hover:text-ab-green transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
             </div>
           </a>
         ))}
@@ -106,11 +160,14 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
           <a
             href={`/en/partners/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-6 py-10 flex-1">
+            <div class="flex items-center justify-center px-6 py-10 h-40 overflow-hidden">
               <Img
-                src={p.logo}
+                src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class:list={['object-contain object-center', p.logoSize ?? 'max-h-16 max-w-full']}
+                width={p.logoSize.width}
+                height={p.logoSize.height}
+                style={`width:${p.logoSize.width}px;height:${p.logoSize.height}px`}
+                class="object-contain object-center max-w-full"
                 loading="lazy"
               />
             </div>
@@ -140,11 +197,14 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
           <a
             href={`/en/partners/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
+            <div class="flex items-center justify-center px-5 py-7 h-40 overflow-hidden">
               <Img
-                src={p.logo}
+                src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class="max-h-14 max-w-full object-contain"
+                width={p.logoSize.width}
+                height={p.logoSize.height}
+                style={`width:${p.logoSize.width}px;height:${p.logoSize.height}px`}
+                class="max-w-full object-contain"
                 loading="lazy"
               />
             </div>
@@ -174,11 +234,14 @@ import { supremePartners, premiumPartners, localHeroPartners, ab1889Partners } f
           <a
             href={`/en/partners/${p.slug}`}
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
-            <div class="flex items-center justify-center px-5 py-7 min-h-[96px]">
+            <div class="flex items-center justify-center px-5 py-7 h-40 overflow-hidden">
               <Img
-                src={p.logo}
+                src={strapiMediaUrl(p.logo?.url)}
                 alt={p.name}
-                class="max-h-14 max-w-full object-contain"
+                width={p.logoSize.width}
+                height={p.logoSize.height}
+                style={`width:${p.logoSize.width}px;height:${p.logoSize.height}px`}
+                class="max-w-full object-contain"
                 loading="lazy"
               />
             </div>

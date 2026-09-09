@@ -43,6 +43,7 @@ export async function GET({ url }: APIContext) {
   const date = url.searchParams.get('date') ?? '';
   const time = url.searchParams.get('time') ?? '';
   const venue = url.searchParams.get('venue') ?? '';
+  const score = url.searchParams.get('score') ?? '';
 
   if (!home || !away || !homeLogo || !awayLogo) {
     return new Response('Missing required params', { status: 400 });
@@ -85,8 +86,8 @@ export async function GET({ url }: APIContext) {
         <image href="${homeLogoDataUri}" x="${homeCrestX}" y="${crestY}" width="${crestSize}" height="${crestSize}"/>
         <text x="300" y="${nameY}" font-family="${OG_FONT_FAMILY}" font-size="38" font-weight="900" fill="${OG_COLORS.white}" text-anchor="middle">${escapeXml(home)}</text>
 
-        <!-- VS -->
-        <text x="600" y="${crestY + crestSize / 2 + 16}" font-family="${OG_FONT_FAMILY}" font-size="44" font-weight="900" fill="${OG_COLORS.gold}" text-anchor="middle">VS</text>
+        <!-- Score (finished/live matches) or VS (upcoming) -->
+        <text x="600" y="${crestY + crestSize / 2 + 16}" font-family="${OG_FONT_FAMILY}" font-size="${score ? 56 : 44}" font-weight="900" fill="${OG_COLORS.gold}" text-anchor="middle">${score ? escapeXml(score) : 'VS'}</text>
 
         <!-- Center: away crest + name -->
         <image href="${awayLogoDataUri}" x="${awayCrestX}" y="${crestY}" width="${crestSize}" height="${crestSize}"/>

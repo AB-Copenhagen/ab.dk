@@ -22,7 +22,11 @@ const NAME_MIN_REM = [0.95, 0.8, 0.7, 0.6];
 const NAME_VW = '2.1vw';
 const NAME_MAX_REM = 1.75;
 
-const NUMBER_MIN_REM = [2.5, 2.1, 1.8, 1.5];
+// Severity 0/1 share the same size: most real names (any 7+ letter surname
+// already trips severity 1) have no actual overflow risk, so the number
+// shouldn't visibly shrink for them — only 2-3 line-wrap risk (severity 2/3)
+// genuinely needs a smaller number to keep content inside the card.
+const NUMBER_MIN_REM = [2.1, 2.1, 1.8, 1.5];
 const NUMBER_VW = '6.5vw';
 const NUMBER_MAX_REM = 6.5;
 

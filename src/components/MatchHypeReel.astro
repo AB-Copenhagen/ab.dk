@@ -1,0 +1,68 @@
+---
+import { fetchABHighlights } from '@/lib/si/client';
+import { extractYouTubeId, youTubeThumbnailUrl } from '@/lib/video';
+import { decodeHtml } from '@/lib/utils';
+
+interface Props {
+  locale: 'da' | 'en';
+}
+
+const { locale } = Astro.props;
+
+const t = {
+  da: { eyebrow: 'Højdepunkter', heading: 'Seneste fra AB' },
+  en: { eyebrow: 'Highlights', heading: 'Latest from AB' },
+}[locale];
+
+const highlights = await fetchABHighlights().catch(() => []);
+const reel = highlights.slice(0, 6);
+---
+
+{
+  reel.length > 0 && (
+    <section>
+      <p class="text-[0.6rem] font-bold uppercase mb-2 tracking-[0.2em]" style="color:var(--ab-green)">
+        {t.eyebrow}
+      </p>
+      <h2 class="font-black mb-6 text-[#111]" style="font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-0.03em">
+        {t.heading}
+      </h2>
+      <div class="flex gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden" style="scrollbar-width:none">
+        {reel.map((h) => {
+          const videoId = h.source === 'youtube' ? extractYouTubeId(h.url) : null;
+          return (
+            <a
+              href={h.url}
+              target="_blank"
+              rel="noopener"
+              class="relative shrink-0 w-56 rounded-[4px] overflow-hidden"
+              style="aspect-ratio:16/9;background:linear-gradient(135deg,var(--ab-green),#0d1f13)"
+            >
+              {videoId && (
+                <img
+                  src={youTubeThumbnailUrl(videoId)}
+                  alt=""
+                  loading="lazy"
+                  class="absolute inset-0 w-full h-full object-cover"
+                />
+              )}
+              <div class="absolute inset-0 flex items-center justify-center" style="background:rgba(0,0,0,0.25)">
+                <span class="flex items-center justify-center w-10 h-10 rounded-full" style="background:var(--ab-neon)">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="var(--ab-green)">
+                    <path d="M3 1.5v11l9-5.5-9-5.5z" />
+                  </svg>
+                </span>
+              </div>
+              <p
+                class="absolute bottom-0 left-0 right-0 px-2.5 py-2 text-xs font-bold text-white leading-snug line-clamp-2"
+                style="background:linear-gradient(to top, rgba(0,0,0,0.75), transparent)"
+              >
+                {decodeHtml(h.title)}
+              </p>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  )
+}
