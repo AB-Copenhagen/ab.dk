@@ -45,7 +45,12 @@ export const POST: APIRoute = async ({ request }) => {
   // `subject` carries a stable topic code from the form's dropdown (not free
   // text), so it can route to a different inbox per target without depending
   // on page locale.
-  const topic = subject === 'partnerships' ? 'partnerships' : 'general';
+  const topic =
+    subject === 'partnerships'
+      ? 'partnerships'
+      : subject === 'locals-by-locals'
+        ? 'locals-by-locals'
+        : 'general';
   // Read via `process.env` (not `import.meta.env`) — see src/lib/mailgun.ts for
   // why: Vercel's "Sensitive" env vars are runtime-only, and `import.meta.env.X`
   // gets statically inlined at build time, which would permanently bake in an
@@ -57,7 +62,12 @@ export const POST: APIRoute = async ({ request }) => {
   const to =
     topic === 'partnerships'
       ? process.env.PARTNERSHIP_EMAIL || generalInbox
-      : generalInbox;
+      : topic === 'locals-by-locals'
+        ? // Always info@ab.dk regardless of CONTACT_EMAIL — this isn't a
+          // personal/sensitive address, it's the club's already-public general
+          // inbox (same one hardcoded as the generalInbox fallback above).
+          'info@ab.dk'
+        : generalInbox;
 
   // The form sends which page it was submitted from, so the notification
   // email — subject and field labels — matches the submitter's language
@@ -72,14 +82,20 @@ export const POST: APIRoute = async ({ request }) => {
       : 'Kontaktformular';
   const nameLabel = isEnglish ? 'Name' : 'Navn';
   const emailLabel = 'E-mail';
+  const emailSubject =
+    topic === 'locals-by-locals'
+      ? `Locals by Locals Application - ${name.trim()}`
+      : `${subjectLabel}: ${name.trim()}`;
 
   try {
     await sendMail({
       to,
-      subject: `${subjectLabel}: ${name.trim()}`,
+      subject: emailSubject,
       text: `${nameLabel}: ${name.trim()}\n${emailLabel}: ${email.trim()}\n\n${message.trim()}`,
       html: `<p><strong>${nameLabel}:</strong> ${escapeHtml(name.trim())}</p><p><strong>${emailLabel}:</strong> <a href="mailto:${escapeHtml(email.trim())}">${escapeHtml(email.trim())}</a></p><hr><p>${escapeHtml(message.trim()).replace(/\n/g, '<br>')}</p>`,
-      replyTo: email.trim(),
+      // "Name <email>" so hitting reply in the team's mail client shows the
+      // customer's name instead of a bare address.
+      replyTo: `${name.trim()} <${email.trim()}>`,
     });
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
