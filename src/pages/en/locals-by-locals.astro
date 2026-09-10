@@ -8,14 +8,18 @@ export const prerender = true;
 interface Match {
   date: string;
   opponent: string;
+  eventId: number;
 }
 
+// eventIds looked up from the SI API by date + opponent (Sep 2026) — this
+// page's fixture list is a curated subset, not the full live schedule, so
+// it's hardcoded rather than fetched at build time.
 const matches: Match[] = [
-  { date: '19.09.2026', opponent: 'AB vs. Esbjerg FB' },
-  { date: '09.10.2026', opponent: 'AB vs. Aarhus Fremad' },
-  { date: '24.10.2026', opponent: 'AB vs. Kolding IF' },
-  { date: '06.11.2026', opponent: 'AB vs. Vendsyssel FF' },
-  { date: '28.11.2026', opponent: 'AB vs. Vejle BK' },
+  { date: '19.09.2026', opponent: 'AB vs. Esbjerg FB', eventId: 5764500 },
+  { date: '09.10.2026', opponent: 'AB vs. Aarhus Fremad', eventId: 5764506 },
+  { date: '24.10.2026', opponent: 'AB vs. Kolding IF', eventId: 5764518 },
+  { date: '06.11.2026', opponent: 'AB vs. Vendsyssel FF', eventId: 5764530 },
+  { date: '28.11.2026', opponent: 'AB vs. Vejle BK', eventId: 5764481 },
 ];
 
 const concept: string[] = [
@@ -24,6 +28,21 @@ const concept: string[] = [
   'No sports photography of the players or the match. The focus is on the fans and the people at the stadium.',
   "After the match, the camera is returned to AB's project lead, who, together with Canon, will select the best photos from the day to be shared.",
   'The Photo of the Season will receive a great grand prize from Canon. The winning photo will also be produced in large format and as posters, available for fans and others to purchase.',
+];
+
+// One icon per concept rule, in order — inner <path>/<circle> markup only
+// (outer <svg> attrs are shared, see the .frame-icon markup below).
+const conceptIcons: string[] = [
+  // 01 — two photographers: camera
+  '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/>',
+  // 02 — capture people & emotions: heart
+  '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+  // 03 — focus on fans, not players: users
+  '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  // 04 — camera handed back for selection: rotate/return
+  '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+  // 05 — grand prize: award
+  '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>',
 ];
 ---
 
@@ -183,7 +202,10 @@ const concept: string[] = [
               {Array.from({ length: 8 }).map(() => <span></span>)}
             </div>
             <div class="frame-body">
-              <span class="frame-number">0{i + 1}<span class="text-canon-red">A</span></span>
+              <div class="flex items-center justify-between mb-[10px]">
+                <span class="frame-number !mb-0">0{i + 1}<span class="text-canon-red">A</span></span>
+                <svg class="frame-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={conceptIcons[i]} />
+              </div>
               <p class="frame-text">{item}</p>
             </div>
             <div class="frame-sprockets" aria-hidden="true">
@@ -195,60 +217,61 @@ const concept: string[] = [
     </div>
   </section>
 
-  <!-- Available Matches -->
+  <!-- Available Matches + Take Part -->
   <section class="bg-white py-[clamp(56px,8vw,96px)]">
     <div class="max-w-7xl mx-auto px-6 lg:px-16">
-      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
-        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Available Matches — 2026</span>
-      </div>
-      <h2 class="font-black text-[clamp(1.5rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-4 max-w-[28ch]">
-        Ready to join "Locals by Locals"?
-      </h2>
-      <p class="text-[1.05rem] leading-[1.75] text-[#444] max-w-[62ch] mb-10">
-        The following 2026 home matches are available for you to showcase
-        your skills.
-      </p>
-      <div class="max-w-3xl flex flex-col gap-3">
-        {matches.map((match, i) => (
-          <div class="call-sheet-row group">
-            <div class="flex items-center gap-4">
-              <span class="call-sheet-index">0{i + 1}</span>
-              <span class="font-black text-[1.05rem] sm:text-[1.2rem] text-[#111] tracking-[-0.02em]">{match.opponent}</span>
-            </div>
-            <span class="date-stamp">{match.date.split('.').join(' . ')}</span>
+      <div class="grid md:grid-cols-2 gap-12 lg:gap-16">
+        <!-- Available Matches -->
+        <div>
+          <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Available Matches — 2026</span>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
+          <h2 class="font-black text-[clamp(1.5rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-4 max-w-[28ch]">
+            Ready to join "Locals by Locals"?
+          </h2>
+          <p class="text-[1.05rem] leading-[1.75] text-[#444] max-w-[62ch] mb-10">
+            The following 2026 home matches are available for you to showcase
+            your skills.
+          </p>
+          <div class="flex flex-col gap-3">
+            {matches.map((match, i) => (
+              <a href={`/en/match/${match.eventId}`} class="call-sheet-row group no-underline">
+                <div class="flex items-center gap-4">
+                  <span class="call-sheet-index">0{i + 1}</span>
+                  <span class="font-black text-[1.05rem] sm:text-[1.2rem] text-[#111] tracking-[-0.02em]">{match.opponent}</span>
+                </div>
+                <span class="date-stamp">{match.date.split('.').join(' . ')}</span>
+              </a>
+            ))}
+          </div>
+        </div>
 
-  <!-- Contact -->
-  <section class="bg-ab-green py-[clamp(56px,8vw,96px)]">
-    <div class="max-w-7xl mx-auto px-6 lg:px-16">
-      <div class="max-w-2xl">
-        <div class="inline-flex items-center gap-2 mb-6 bg-canon-red rounded-full py-[7px] pl-[14px] pr-[18px] w-fit">
-          <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></svg>
-          <span class="font-black text-[0.75rem] text-white tracking-[0.1em] uppercase">Take Part</span>
-        </div>
-        <h2 class="font-black text-white text-[clamp(1.8rem,4vw,3rem)] tracking-[-0.04em] leading-[1.05] mb-4">
-          Want to learn more or take part?
-        </h2>
-        <p class="text-white/80 text-[1rem] leading-[1.75] mb-8">
-          Contact Mads Johansen for more information about the project.
-        </p>
-        <div class="bg-white/10 border border-white/20 p-5 flex items-center gap-4 mb-10 w-fit">
-          <svg class="w-5 h-5 text-ab-neon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          <div>
-            <p class="text-white/50 text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Mads Johansen</p>
-            <a href="mailto:mjohansen@ab.dk" class="font-black text-white text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">mjohansen@ab.dk</a>
+        <!-- Take Part -->
+        <div>
+          <div class="inline-flex items-center gap-2 mb-6 bg-canon-red rounded-full py-[7px] pl-[14px] pr-[18px] w-fit">
+            <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <span class="font-black text-[0.75rem] text-white tracking-[0.1em] uppercase">Take Part</span>
           </div>
+          <h2 class="font-black text-[#111] text-[clamp(1.5rem,3.5vw,2.5rem)] tracking-[-0.03em] leading-[1.05] mb-4">
+            Want to learn more or take part?
+          </h2>
+          <p class="text-[#444] text-[1.05rem] leading-[1.75] mb-8">
+            Contact Mads Johansen for more information about the project.
+          </p>
+          <div class="bg-[#F9FAFB] border border-gray-200 p-5 flex items-center gap-4 mb-10 w-fit">
+            <svg class="w-5 h-5 text-ab-green shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <div>
+              <p class="text-[#888] text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Mads Johansen</p>
+              <a href="mailto:mjohansen@ab.dk" class="font-black text-[#111] text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">mjohansen@ab.dk</a>
+            </div>
+          </div>
+          <p class="text-[#666] text-[0.85rem] leading-relaxed max-w-[60ch] pt-5 border-t border-dashed border-gray-200">
+            Please note that this is an unpaid project. The camera is provided
+            on loan by AB and must be returned after each project. All
+            photographs taken for the project will be owned by both AB and
+            Canon.
+          </p>
         </div>
-        <p class="text-white/60 text-[0.85rem] leading-relaxed max-w-[60ch] pt-5 border-t border-dashed border-white/20">
-          Please note that this is an unpaid project. The camera is provided
-          on loan by AB and must be returned after each project. All
-          photographs taken for the project will be owned by both AB and
-          Canon.
-        </p>
       </div>
     </div>
   </section>
@@ -349,6 +372,12 @@ const concept: string[] = [
     background: #161616;
     border: 1px solid rgba(255, 255, 255, 0.08);
     transition: transform 0.3s ease;
+    /* Flex column so frame-body's flex:1 pins the bottom sprockets flush to
+       the card's bottom edge regardless of text length — otherwise the grid
+       row stretches .frame to a uniform height (grid default) but leaves the
+       bottom sprockets floating wherever the shorter text happens to end. */
+    display: flex;
+    flex-direction: column;
   }
   @media (min-width: 1024px) {
     .frame:nth-child(odd) { transform: rotate(-1.25deg); }
@@ -369,6 +398,13 @@ const concept: string[] = [
   }
   .frame-body {
     padding: 22px 20px 26px;
+    flex: 1;
+  }
+  .frame-icon {
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
   }
   .frame-number {
     display: block;
