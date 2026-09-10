@@ -47,7 +47,9 @@ export async function GET({ url }: APIContext) {
       // imagePath is /media/{key} — fetch the same Strapi Cloud object
       // directly from the pinned host, rather than self-fetching over HTTP.
       const strapiKey = imagePath.replace(/^\/media\//, '');
-      imageBytes = await fetchBytes(`https://${STRAPI_MEDIA_HOST}/${strapiKey}`);
+      imageBytes = await fetchBytes(
+        `https://${STRAPI_MEDIA_HOST}/${strapiKey}`
+      );
     } else {
       return new Response('Invalid image path', { status: 400 });
     }
