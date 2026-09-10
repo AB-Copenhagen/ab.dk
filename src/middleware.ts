@@ -9,6 +9,10 @@ import {
   sessionCookieOptions,
 } from '@/lib/descope-server';
 import { type Locale, switchLocalePath } from '@/lib/i18n';
+import {
+  htmlPageToMarkdown,
+  prefersMarkdown,
+} from '@/lib/markdown-negotiation';
 import { PREVIEW_COOKIE, runWithPreview } from '@/lib/preview-context';
 
 const LOCALE_COOKIE = 'locale';
@@ -207,7 +211,53 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
     }
   }
 
-  const response = await next();
+  let response = await next();
+
+  const isHtmlResponse = (
+    response.headers.get('content-type') ?? ''
+  ).startsWith('text/html');
+
+  if (isHtmlResponse) {
+    // Tells caches/CDNs this response varies by Accept, whether or not this
+    // particular request asked for markdown — otherwise a markdown variant
+    // (or the HTML one) could get served from cache to a client asking for
+    // the other. https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents/
+    const existingVary = response.headers.get('vary');
+    const varyValues = new Set(
+      (existingVary ?? '')
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean)
+    );
+    varyValues.add('Accept');
+    varyValues.add('Accept-Encoding');
+    response = new Response(response.body, response);
+    response.headers.set('Vary', [...varyValues].join(', '));
+
+    // Prerendered routes are served as static files directly from Vercel's
+    // CDN in production — this middleware (and the live request it needs to
+    // read Accept from) never runs for them at all, so markdown negotiation
+    // is only possible for SSR (prerender = false) routes. See AGENTS.md /
+    // the PR that introduced this for the full explanation and the follow-up
+    // needed to cover static pages too (e.g. a Vercel `has: header` rewrite).
+    if (
+      !context.isPrerendered &&
+      prefersMarkdown(context.request.headers.get('accept'))
+    ) {
+      const html = await response.clone().text();
+      const markdown = htmlPageToMarkdown(html);
+      const markdownResponse = new Response(markdown, response);
+      markdownResponse.headers.set(
+        'Content-Type',
+        'text/markdown; charset=utf-8'
+      );
+      markdownResponse.headers.set(
+        'x-markdown-tokens',
+        String(Math.ceil(markdown.length / 4))
+      );
+      response = markdownResponse;
+    }
+  }
 
   if (isSearchIndexingBlocked()) {
     const blocked = new Response(response.body, response);
