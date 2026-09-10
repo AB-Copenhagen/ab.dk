@@ -175,19 +175,11 @@ const conceptIcons: string[] = [
       <div class="flex gap-5 overflow-x-auto pb-2 snap-x snap-mandatory -mx-6 px-6 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-5 lg:overflow-visible">
         {concept.map((item, i) => (
           <div class="frame shrink-0 w-[76vw] sm:w-[300px] lg:w-auto snap-start">
-            <div class="frame-sprockets" aria-hidden="true">
-              {Array.from({ length: 8 }).map(() => <span></span>)}
+            <div class="flex items-center justify-between mb-3">
+              <span class="frame-number">0{i + 1}</span>
+              <svg class="frame-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={conceptIcons[i]} />
             </div>
-            <div class="frame-body">
-              <div class="flex items-center justify-between mb-[10px]">
-                <span class="frame-number !mb-0">0{i + 1}<span class="text-canon-red">A</span></span>
-                <svg class="frame-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={conceptIcons[i]} />
-              </div>
-              <p class="frame-text">{item}</p>
-            </div>
-            <div class="frame-sprockets" aria-hidden="true">
-              {Array.from({ length: 8 }).map(() => <span></span>)}
-            </div>
+            <p class="frame-text">{item}</p>
           </div>
         ))}
       </div>
@@ -261,9 +253,6 @@ const conceptIcons: string[] = [
   .bg-canon-red {
     background-color: var(--canon-red);
   }
-  .text-canon-red {
-    color: var(--canon-red);
-  }
 
   /* ── Hero ────────────────────────────────────────────────────────── */
   .grain-overlay {
@@ -328,56 +317,32 @@ const conceptIcons: string[] = [
     );
   }
 
-  /* ── Koncept filmstrip ───────────────────────────────────────────── */
+  /* ── Koncept ─────────────────────────────────────────────────────── */
   .frame {
-    background: #161616;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: transform 0.3s ease;
-    /* Flex column so frame-body's flex:1 pins the bottom sprockets flush to
-       the card's bottom edge regardless of text length — otherwise the grid
-       row stretches .frame to a uniform height (grid default) but leaves the
-       bottom sprockets floating wherever the shorter text happens to end. */
+    background: var(--canon-red);
+    padding: 24px 22px 26px;
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s ease;
   }
-  @media (min-width: 1024px) {
-    .frame:nth-child(odd) { transform: rotate(-1.25deg); }
-    .frame:nth-child(even) { transform: rotate(1.25deg); }
-    .frame:hover { transform: rotate(0deg) translateY(-6px); }
-  }
-  .frame-sprockets {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 12px;
-    background: #000;
-  }
-  .frame-sprockets span {
-    width: 6px;
-    height: 9px;
-    border-radius: 1px;
-    background: rgba(214, 160, 42, 0.55);
-  }
-  .frame-body {
-    padding: 22px 20px 26px;
-    flex: 1;
+  .frame:hover {
+    transform: translateY(-4px);
   }
   .frame-icon {
-    width: 18px;
-    height: 18px;
-    color: rgba(255, 255, 255, 0.4);
+    width: 20px;
+    height: 20px;
+    color: rgba(255, 255, 255, 0.8);
     flex-shrink: 0;
   }
   .frame-number {
     display: block;
-    font-family: 'Courier New', ui-monospace, monospace;
-    font-weight: 700;
+    font-weight: 900;
     font-size: 0.85rem;
-    letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.4);
-    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.75);
   }
   .frame-text {
-    color: rgba(255, 255, 255, 0.85);
+    color: #fff;
     font-size: 0.95rem;
     line-height: 1.6;
   }
