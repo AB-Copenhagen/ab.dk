@@ -224,15 +224,32 @@ const conceptIcons: string[] = [
             Vil du høre mere og deltage?
           </h2>
           <p class="text-[#444] text-[1.05rem] leading-[1.75] mb-8">
-            Skriv til Mads Johansen for at høre mere om projektet.
+            Udfyld formularen, så vender vi tilbage til dig.
           </p>
-          <div class="bg-[#F9FAFB] border border-gray-200 p-5 flex items-center gap-4 mb-10 w-fit">
-            <svg class="w-5 h-5 text-ab-green shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            <div>
-              <p class="text-[#888] text-[0.7rem] font-black uppercase tracking-[0.1em] mb-0.5">Mads Johansen</p>
-              <a href="mailto:mjohansen@ab.dk" class="font-black text-[#111] text-[1rem] tracking-[-0.02em] no-underline hover:opacity-70">mjohansen@ab.dk</a>
+          <form id="lbl-form" class="flex flex-col gap-4 mb-10" novalidate>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="lbl-name" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Navn</label>
+                <input id="lbl-name" name="name" type="text" required autocomplete="name"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="Dit navn" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="lbl-email" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Email</label>
+                <input id="lbl-email" name="email" type="email" required autocomplete="email"
+                  class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors" placeholder="din@email.dk" />
+              </div>
             </div>
-          </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="lbl-message" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Beskriv din interesse, og hvorfor du gerne vil være en AB Local?</label>
+              <textarea id="lbl-message" name="message" required rows="4"
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors resize-none" placeholder="Fortæl os lidt om dig selv og din interesse for fotografering..."></textarea>
+            </div>
+            <div id="lbl-status" class="hidden text-[0.85rem] font-medium px-4 py-3"></div>
+            <button type="submit" id="lbl-submit"
+              class="self-start inline-flex items-center gap-2 font-black text-[0.8rem] uppercase tracking-[0.08em] bg-ab-green text-white px-7 py-3.5 transition-opacity hover:opacity-80 disabled:opacity-50">
+              Send ansøgning
+            </button>
+          </form>
           <p class="text-[#666] text-[0.85rem] leading-relaxed max-w-[60ch] pt-5 border-t border-dashed border-gray-200">
             Vi gør opmærksom på, at projektet er ulønnet, og at kameraet udlånes
             af AB og skal returneres efter hvert projekt. Alle fotografier taget
@@ -245,6 +262,53 @@ const conceptIcons: string[] = [
   </section>
 
 </Base>
+
+<script>
+  const lblForm = document.getElementById('lbl-form') as HTMLFormElement | null;
+  const lblStatus = document.getElementById('lbl-status');
+  const lblSubmit = document.getElementById('lbl-submit') as HTMLButtonElement | null;
+
+  lblForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!lblForm || !lblSubmit || !lblStatus) return;
+
+    const name = (lblForm.elements.namedItem('name') as HTMLInputElement).value.trim();
+    const email = (lblForm.elements.namedItem('email') as HTMLInputElement).value.trim();
+    const interest = (lblForm.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
+
+    lblSubmit.disabled = true;
+    lblSubmit.textContent = 'Sender…';
+    lblStatus.className = 'hidden text-[0.85rem] font-medium px-4 py-3';
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          subject: 'general',
+          message: `Locals by Locals — ansøgning om at blive AB Local:\n\n${interest}`,
+          locale: 'da',
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        lblStatus.textContent = 'Tak — vi vender tilbage hurtigst muligt.';
+        lblStatus.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#F0FAF4] text-ab-green border border-ab-green/20';
+        lblForm.reset();
+      } else {
+        throw new Error(json.error || 'Error');
+      }
+    } catch {
+      lblStatus.textContent = 'Noget gik galt — skriv direkte til info@ab.dk.';
+      lblStatus.className = 'text-[0.85rem] font-medium px-4 py-3 bg-[#FFF0F0] text-red-600 border border-red-200';
+    } finally {
+      lblSubmit.disabled = false;
+      lblSubmit.textContent = 'Send ansøgning';
+    }
+  });
+</script>
 
 <style>
   :root {
