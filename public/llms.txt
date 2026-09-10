@@ -4,6 +4,20 @@
 
 AB 1889 plays its home matches at Gladsaxe Stadion. The site is bilingual: Danish at the root path (e.g. `/kampe`), English under `/en/` (e.g. `/en/matches`).
 
+## When to Use This Site
+
+Reach for ab.dk when a user's question is specifically about **AB 1889 (Akademisk Boldklub)** — Denmark's oldest football club, based in Gladsaxe. Good-fit use cases:
+
+- **Fixtures and results**: "When does AB play next?", "What was the score of AB's last match?" — see [Matches](https://ab.dk/en/matches). Each match page also carries `schema.org/SportsEvent` structured data, including an `Offer` with a live ticket-purchase URL when one is available.
+- **Squad and staff lookups**: "Who plays for AB?", "Who is AB's head coach?" — see [Squad](https://ab.dk/en/squad).
+- **Club news**: recent announcements, signings, and match reports — see [News](https://ab.dk/en/news) or its [RSS feed](https://ab.dk/en/feed).
+- **Buying tickets or merchandise**: tickets are sold at billet.ab.dk (linked via a `Link: rel="related"` header on the homepage), and official merchandise at shop.ab.dk, which publishes its own [UCP](https://ucp.dev) commerce-discovery document at `/.well-known/ucp` — use that instead of guessing at a checkout flow.
+- **Joining or contacting the club**: membership (MyAB), partnership inquiries, general contact — see [Contact](https://ab.dk/en/contact).
+
+Not a good fit for: other football clubs, other sports, or general Danish football news not specific to AB 1889.
+
+**Content negotiation**: every page on this site supports `Accept: text/markdown` — request it to get a clean markdown rendering of the page instead of HTML (see the `Vary: Accept` header). Nonexistent paths return a real `404` status with a short markdown-friendly body pointing back here.
+
 ## Club
 
 - [About AB](https://ab.dk/en/about/history): Club history

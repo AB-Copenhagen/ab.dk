@@ -35,6 +35,10 @@ const matchesHref = localePath(locale, '/kampe');
     <a href={matchesHref} class="not-found__cta">{translate(locale, 'notFoundCta')}</a>
     <a href={homeHref} class="not-found__home">{translate(locale, 'notFoundHome')}</a>
   </div>
+  <div class="not-found__recovery">
+    <a href="/sitemap.xml">{translate(locale, 'notFoundSitemap')}</a>
+    <a href="/llms.txt">{translate(locale, 'notFoundLlms')}</a>
+  </div>
 </section>
 
 <style>
@@ -144,6 +148,25 @@ const matchesHref = localePath(locale, '/kampe');
   }
   .not-found__home:hover {
     opacity: 0.6;
+  }
+
+  .not-found__recovery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    justify-content: center;
+    margin-top: 1.75rem;
+  }
+
+  .not-found__recovery a {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--ab-black) 55%, transparent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .not-found__recovery a:hover {
+    color: var(--ab-black);
   }
 
   @keyframes not-found-bounce {

@@ -162,6 +162,9 @@ export const t: Record<Locale, Record<string, string>> = {
     previousSlide: 'Forrige slide',
     nextSlide: 'Næste slide',
     insideTheClub: 'Inde i klubben',
+    homeAboutHeading: 'Akademisk Boldklub',
+    homeAboutBody:
+      'Akademisk Boldklub (AB) er en dansk fodboldklub stiftet i 1889 og en af Danmarks ældste fodboldklubber. Klubbens hjemmebane er Gladsaxe Stadion i Gladsaxe, nord for København, hvor førsteholdet spiller sine hjemmekampe. I mere end 135 år har AB været et sted, hvor fodbold bringer mennesker sammen — fra klubbens rødder som studenterklub til nutidens brede fællesskab af spillere, frivillige, partnere og fans.',
     joinTeamAbCta: 'Bliv en del af holdet. Tilmeld dig MyAB',
     joinTeamAbHeadline: 'Bliv en del af Team AB',
     matchdayGear: 'Matchday Gear',
@@ -203,6 +206,8 @@ export const t: Record<Locale, Record<string, string>> = {
       'Beklager, men siden du leder efter eksisterer ikke eller er blevet flyttet.',
     notFoundCta: 'Se kampprogram',
     notFoundHome: 'Til forsiden',
+    notFoundSitemap: 'Sitemap',
+    notFoundLlms: 'Sideoversigt for AI-agenter (llms.txt)',
   },
   en: {
     home: 'Home',
@@ -294,6 +299,9 @@ export const t: Record<Locale, Record<string, string>> = {
     heroShopSubtitle: 'Get the latest kit',
     homeTeam: 'Home',
     insideTheClub: 'Inside the club',
+    homeAboutHeading: 'Akademisk Boldklub',
+    homeAboutBody:
+      "Akademisk Boldklub (AB) is a Danish football club founded in 1889, one of Denmark's oldest football clubs. The club's home ground is Gladsaxe Stadion in Gladsaxe, north of Copenhagen, where the first team plays its home matches. For more than 135 years, AB has been a place where football brings people together — from the club's roots as a student club to today's broad community of players, volunteers, partners, and fans.",
     pauseSlideshow: 'Pause slideshow',
     playSlideshow: 'Play slideshow',
     previousSlide: 'Previous slide',
@@ -339,6 +347,8 @@ export const t: Record<Locale, Record<string, string>> = {
       "Sorry, the page you're looking for doesn't exist or has been moved.",
     notFoundCta: 'See match schedule',
     notFoundHome: 'Back to homepage',
+    notFoundSitemap: 'Sitemap',
+    notFoundLlms: 'AI-agent page index (llms.txt)',
   },
 };
 
