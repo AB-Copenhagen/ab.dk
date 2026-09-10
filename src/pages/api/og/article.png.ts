@@ -18,10 +18,16 @@ const CANVAS_H = 630;
 // the proxy — same as player.png.ts).
 const SAFE_MEDIA_PROXY_PATH =
   /^\/api\/media\/uploads\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|gif)$/i;
-// Strapi Cloud's own media CDN — an external host, so fetching it directly is
-// safe (no self-fetch/deployment-protection risk), same as the SI API CDN.
-const SAFE_STRAPI_CLOUD_MEDIA_URL =
-  /^https:\/\/[a-z0-9-]+\.media\.strapiapp\.com\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|gif)$/i;
+// strapiMediaUrl() (src/lib/strapi/client.ts) proxies Strapi Cloud CDN images
+// through our own /media/{key} route rather than returning the raw
+// strapiapp.com URL — so that's the shape callers actually pass here, not the
+// external host. Fetched via the same pinned host as /media/[...key].ts,
+// never taken from the request, so this can't become an open proxy.
+const SAFE_STRAPI_PROXY_PATH =
+  /^\/media\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|gif)$/i;
+const STRAPI_MEDIA_HOST =
+  import.meta.env.STRAPI_MEDIA_HOST ||
+  'supportive-miracle-581511a57f.media.strapiapp.com';
 
 export async function GET({ url }: APIContext) {
   const imagePath = url.searchParams.get('image');
@@ -37,8 +43,11 @@ export async function GET({ url }: APIContext) {
       // same Wasabi object directly, rather than self-fetching over HTTP.
       const wasabiKey = imagePath.replace(/^\/api\/media\//, '');
       imageBytes = await fetchWasabiBytes(wasabiKey);
-    } else if (SAFE_STRAPI_CLOUD_MEDIA_URL.test(imagePath)) {
-      imageBytes = await fetchBytes(imagePath);
+    } else if (SAFE_STRAPI_PROXY_PATH.test(imagePath)) {
+      // imagePath is /media/{key} — fetch the same Strapi Cloud object
+      // directly from the pinned host, rather than self-fetching over HTTP.
+      const strapiKey = imagePath.replace(/^\/media\//, '');
+      imageBytes = await fetchBytes(`https://${STRAPI_MEDIA_HOST}/${strapiKey}`);
     } else {
       return new Response('Invalid image path', { status: 400 });
     }
