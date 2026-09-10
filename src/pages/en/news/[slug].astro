@@ -106,13 +106,16 @@ const absoluteImageUrl = articleImageUrl
     ? articleImageUrl
     : `https://ab.dk${articleImageUrl}`
   : undefined;
-// Article images live either behind our own Wasabi media proxy (/api/media/uploads/...)
-// or directly on Strapi Cloud's own media CDN (*.media.strapiapp.com), depending on
-// which provider handled the upload — both get the branded overlay treatment.
+// Article images live either behind our own Wasabi media proxy
+// (/api/media/uploads/...) or Strapi Cloud's media CDN — strapiMediaUrl()
+// (src/lib/strapi/client.ts) already rewrites the latter to our own
+// /media/{key} proxy path rather than the raw strapiapp.com URL, so that's
+// the shape to match here, not the external host. Both get the branded
+// overlay treatment.
 const ogCardImageUrl =
   articleImageUrl &&
   (/^\/api\/media\/uploads\//.test(articleImageUrl) ||
-    /^https:\/\/[a-z0-9-]+\.media\.strapiapp\.com\//.test(articleImageUrl))
+    /^\/media\//.test(articleImageUrl))
     ? `/api/og/article.png?image=${encodeURIComponent(articleImageUrl)}`
     : articleImageUrl;
 
