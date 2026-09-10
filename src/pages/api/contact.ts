@@ -97,6 +97,11 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
+    // Logged server-side (not just returned to the client) so a failure like
+    // a misconfigured PARTNERSHIP_EMAIL/CONTACT_EMAIL or a Mailgun rejection
+    // is actually visible in Vercel's runtime logs instead of only ever
+    // showing up as a generic "something went wrong" in the browser.
+    console.error(`[api/contact] sendMail failed (topic=${topic}):`, message);
     return new Response(JSON.stringify({ success: false, error: message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
