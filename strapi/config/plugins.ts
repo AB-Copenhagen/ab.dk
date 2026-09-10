@@ -40,7 +40,7 @@ export default ({ env }: { env: (key: string, fallback?: string) => string }) =>
       },
       settings: {
         defaultFrom: env('MAILGUN_FROM', 'noreply@ab.dk'),
-        defaultReplyTo: env('MAILGUN_REPLY_TO', 'kontakt@ab.dk'),
+        defaultReplyTo: env('MAILGUN_REPLY_TO', 'info@ab.dk'),
       },
     },
   },
