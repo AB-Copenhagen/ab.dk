@@ -123,6 +123,21 @@ const matchSchema = {
   endDate: estimatedMatchEndDate(startDate),
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  // No per-seat/membership price data available from billet.ab.dk's ticket
+  // listing (fetchBilletTicketMap only scrapes event URLs, not prices) — omit
+  // `price` rather than publish a number that isn't actually accurate.
+  ...(ticketUrl
+    ? {
+        offers: {
+          '@type': 'Offer',
+          url: ticketUrl,
+          availability: isUpcoming
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/SoldOut',
+          validFrom: new Date().toISOString(),
+        },
+      }
+    : {}),
   location: {
     '@type': 'Place',
     name: venueName,
