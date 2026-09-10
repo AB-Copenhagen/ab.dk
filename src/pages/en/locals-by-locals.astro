@@ -70,23 +70,9 @@ const conceptIcons: string[] = [
     <div class="absolute inset-4 sm:inset-8 pointer-events-none" aria-hidden="true">
       <span class="vf-corner vf-tl"></span>
       <span class="vf-corner vf-tr"></span>
+      <span class="vf-corner vf-bl"></span>
+      <span class="vf-corner vf-br"></span>
     </div>
-
-    <!-- Hands framing the shot -->
-    <svg class="hand-corner hand-corner-left" viewBox="0 0 160 160" fill="#C9955F" stroke="rgba(0,0,0,0.35)" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
-      <rect x="-20" y="95" width="90" height="85" rx="30"/>
-      <rect x="70" y="85" width="18" height="26" rx="9"/>
-      <rect x="92" y="88" width="16" height="22" rx="8"/>
-      <rect x="35" y="108" width="115" height="22" rx="11"/>
-      <rect x="48" y="15" width="22" height="100" rx="11"/>
-    </svg>
-    <svg class="hand-corner hand-corner-right" viewBox="0 0 160 160" fill="#C9955F" stroke="rgba(0,0,0,0.35)" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
-      <rect x="-20" y="95" width="90" height="85" rx="30"/>
-      <rect x="70" y="85" width="18" height="26" rx="9"/>
-      <rect x="92" y="88" width="16" height="22" rx="8"/>
-      <rect x="35" y="108" width="115" height="22" rx="11"/>
-      <rect x="48" y="15" width="22" height="100" rx="11"/>
-    </svg>
 
     <!-- EXIF-style readout -->
     <div class="absolute top-8 sm:top-11 left-7 sm:left-11 right-7 sm:right-11 flex items-center justify-between">
@@ -306,23 +292,8 @@ const conceptIcons: string[] = [
   }
   .vf-tl { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
   .vf-tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
-
-  .hand-corner {
-    position: absolute;
-    bottom: 0;
-    width: clamp(110px, 16vw, 190px);
-    height: clamp(110px, 16vw, 190px);
-    opacity: 0.92;
-    filter: drop-shadow(0 -6px 20px rgba(0, 0, 0, 0.35));
-    pointer-events: none;
-  }
-  .hand-corner-left {
-    left: 0;
-  }
-  .hand-corner-right {
-    right: 0;
-    transform: scaleX(-1);
-  }
+  .vf-bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
+  .vf-br { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
 
   .exif-text {
     font-family: 'Courier New', ui-monospace, monospace;
