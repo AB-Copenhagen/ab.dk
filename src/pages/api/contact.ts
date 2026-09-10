@@ -70,22 +70,16 @@ export const POST: APIRoute = async ({ request }) => {
         : generalInbox;
 
   // The form sends which page it was submitted from, so the notification
-  // email — subject and field labels — matches the submitter's language
-  // instead of always being Danish.
+  // email's field labels match the submitter's language instead of always
+  // being Danish. Subject lines are a fixed English format regardless of
+  // locale — internal team-facing text, not visitor-facing copy.
   const isEnglish = locale === 'en';
-  const subjectLabel = isEnglish
-    ? topic === 'partnerships'
-      ? 'Partnership inquiry'
-      : 'Contact form'
-    : topic === 'partnerships'
-      ? 'Partnerskabshenvendelse'
-      : 'Kontaktformular';
   const nameLabel = isEnglish ? 'Name' : 'Navn';
   const emailLabel = 'E-mail';
   const emailSubject =
     topic === 'locals-by-locals'
       ? `Locals by Locals Application - ${name.trim()}`
-      : `${subjectLabel}: ${name.trim()}`;
+      : `Contact Form - ${topic === 'partnerships' ? 'Partnerships' : 'General Inquiry'}`;
 
   try {
     await sendMail({
