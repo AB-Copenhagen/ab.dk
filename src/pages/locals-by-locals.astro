@@ -206,7 +206,7 @@ const conceptIcons: string[] = [
               <a href={`/kamp/${match.eventId}`} class="call-sheet-row group no-underline">
                 <div class="flex items-center gap-4">
                   <span class="call-sheet-index">0{i + 1}</span>
-                  <span class="font-black text-[1.05rem] sm:text-[1.2rem] text-[#111] tracking-[-0.02em]">{match.opponent}</span>
+                  <span class="font-black text-[1.05rem] sm:text-[1.2rem] text-[#111] tracking-[-0.02em] whitespace-nowrap">{match.opponent}</span>
                 </div>
                 <span class="date-stamp">{match.date.split('.').join(' . ')}</span>
               </a>
@@ -240,7 +240,7 @@ const conceptIcons: string[] = [
               </div>
             </div>
             <div class="flex flex-col gap-1.5">
-              <label for="lbl-message" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Beskriv din interesse, og hvorfor du gerne vil være en AB Local?</label>
+              <label for="lbl-message" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Beskriv din interesse, og hvorfor du gerne vil være en del af "Locals by Locals"</label>
               <textarea id="lbl-message" name="message" required rows="4"
                 class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors resize-none" placeholder="Fortæl os lidt om dig selv og din interesse for fotografering..."></textarea>
             </div>
@@ -416,11 +416,21 @@ const conceptIcons: string[] = [
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
     background: #fff;
     border: 1px solid #e5e7eb;
     padding: 1.1rem 1.35rem;
     transition: border-color 0.2s ease;
+  }
+  /* Below this, the opponent name + date-stamp no longer both fit on one
+     line — stack them instead of letting either wrap mid-word. Matches the
+     sm: breakpoint where the opponent name's own font-size already steps up. */
+  @media (max-width: 639px) {
+    .call-sheet-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
   .call-sheet-row:hover {
     border-color: var(--ab-green);
@@ -433,6 +443,7 @@ const conceptIcons: string[] = [
     color: #fff;
     background: #111;
     padding: 0.2rem 0.45rem;
+    flex-shrink: 0;
   }
   .date-stamp {
     font-family: 'Courier New', ui-monospace, monospace;
@@ -441,5 +452,6 @@ const conceptIcons: string[] = [
     letter-spacing: 0.06em;
     color: #ff7a1a;
     text-shadow: 0 0 1px rgba(255, 122, 26, 0.4);
+    white-space: nowrap;
   }
 </style>
