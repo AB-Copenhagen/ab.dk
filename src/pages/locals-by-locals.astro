@@ -74,20 +74,6 @@ const conceptIcons: string[] = [
       <span class="exif-text hidden sm:inline">ƒ/2.8 · 1/500 · ISO 200</span>
     </div>
 
-    <!-- Aperture ring watermark -->
-    <svg class="aperture-ring aperture-spin absolute -right-16 -bottom-16 sm:-right-10 sm:-bottom-10 w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] opacity-[0.16]" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="0.6" aria-hidden="true">
-      <circle cx="50" cy="50" r="48"/>
-      <circle cx="50" cy="50" r="34"/>
-      <circle cx="50" cy="50" r="20"/>
-      <line x1="50" y1="50" x2="98" y2="50"/>
-      <line x1="50" y1="50" x2="83.9" y2="16.1"/>
-      <line x1="50" y1="50" x2="50" y2="2"/>
-      <line x1="50" y1="50" x2="16.1" y2="16.1"/>
-      <line x1="50" y1="50" x2="2" y2="50"/>
-      <line x1="50" y1="50" x2="16.1" y2="83.9"/>
-      <line x1="50" y1="50" x2="50" y2="98"/>
-      <line x1="50" y1="50" x2="83.9" y2="83.9"/>
-    </svg>
 
     <div class="relative h-full flex flex-col justify-end px-6 sm:px-11 pb-10 sm:pb-12 max-w-7xl mx-auto w-full" style="min-height:clamp(460px,58vh,640px)">
       <div class="inline-flex items-center gap-4 mb-5 bg-white rounded-xl px-5 py-3 w-fit shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
@@ -343,17 +329,6 @@ const conceptIcons: string[] = [
     font-size: 0.7rem;
     letter-spacing: 0.08em;
     color: rgba(255, 255, 255, 0.6);
-  }
-
-  .aperture-spin {
-    animation: spin-slow 50s linear infinite;
-  }
-  @keyframes spin-slow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .aperture-spin { animation: none; }
   }
 
   .ghost-heading {
