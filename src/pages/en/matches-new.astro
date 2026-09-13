@@ -1,0 +1,313 @@
+---
+// DESIGN PROTOTYPE — "Editorial" fixtures list, inspired by the dense,
+// data-forward fixtures pages big clubs (e.g. Arsenal.com) use: a flat list
+// grouped by month with a sticky ticket/table sidebar, rather than a card
+// grid. Not linked from navigation — compare at /en/matches-new against the
+// live /en/matches and the alternate /en/matches-new2 prototype.
+import Base from '@/layouts/Base.astro';
+import MatchCountdown from '@/components/MatchCountdown.astro';
+import StandingsWidget from '@/components/StandingsWidget.astro';
+import {
+  fetchABEvents,
+  isCupMatch,
+  getTeamLogoSrc,
+  formatEventScore,
+  cupTournamentLabel,
+  type SIEvent,
+} from '@/lib/si/client';
+import { abConfig } from '@/lib/config/ab';
+import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+import { translate } from '@/lib/i18n';
+import { fmtDate, dtAttrs, AB_TIMEZONE, TIME_OPTS } from '@/lib/dateFormat';
+import Img from '@/components/Img.astro';
+import matchesHeaderBg from '@/assets/images/matches-header-bg.png';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
+export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
+
+const locale = 'en';
+const dateLocale = 'en-GB';
+
+const now = new Date();
+const seasonFrom = new Date(now);
+seasonFrom.setMonth(seasonFrom.getMonth() - 11);
+const seasonTo = new Date(now);
+seasonTo.setMonth(seasonTo.getMonth() + 3);
+
+let events: SIEvent[] = [];
+try {
+  events = await fetchABEvents({
+    locale,
+    limit: 200,
+    fromDate: seasonFrom.toISOString().slice(0, 10),
+    toDate: seasonTo.toISOString().slice(0, 10),
+    allCompetitions: true,
+  });
+} catch {
+  /* SI API unavailable */
+}
+
+type Filter = 'upcoming' | 'home' | 'away' | 'cup' | 'results';
+const filter = (Astro.url.searchParams.get('filter') ?? 'upcoming') as Filter;
+
+const isDone = (e: SIEvent) =>
+  e.statusType === 'finished' || e.statusType === 'cancelled';
+const upcoming = events
+  .filter((e) => !isDone(e))
+  .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+const finished = events
+  .filter(isDone)
+  .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+const displayEvents: SIEvent[] =
+  filter === 'home' ? upcoming.filter((e) => e.homeId === abConfig.teamId) :
+  filter === 'away' ? upcoming.filter((e) => e.homeId !== abConfig.teamId) :
+  filter === 'cup' ? upcoming.filter(isCupMatch) :
+  filter === 'results' ? finished :
+  upcoming;
+const isPast = filter === 'results';
+
+const billetMap = await fetchBilletTicketMap().catch(() => new Map<string, string>());
+const ticketByEventId: Record<number, string> = {};
+for (const event of upcoming) {
+  if (event.homeId === abConfig.teamId) {
+    const url = findTicketUrl(billetMap, event.awayName ?? '');
+    if (url) ticketByEventId[event.eventId] = url;
+  }
+}
+
+const nextMatch = upcoming[0] ?? null;
+
+// Group into month sections in AB's local timezone so a late-December match
+// doesn't get filed under January just because the ISO string is UTC.
+function monthKey(iso: string): string {
+  return fmtDate(iso, 'en-CA', { year: 'numeric', month: '2-digit' }, AB_TIMEZONE);
+}
+function monthLabel(iso: string): string {
+  return fmtDate(iso, dateLocale, { month: 'long', year: 'numeric' }, AB_TIMEZONE);
+}
+
+const months: { key: string; label: string; matches: SIEvent[] }[] = [];
+for (const event of displayEvents) {
+  const key = monthKey(event.startDate);
+  let bucket = months.find((m) => m.key === key);
+  if (!bucket) {
+    bucket = { key, label: monthLabel(event.startDate), matches: [] };
+    months.push(bucket);
+  }
+  bucket.matches.push(event);
+}
+
+const tabs: { label: string; value: Filter }[] = [
+  { label: 'All', value: 'upcoming' },
+  { label: 'Home', value: 'home' },
+  { label: 'Away', value: 'away' },
+  { label: 'Cup', value: 'cup' },
+  { label: 'Results', value: 'results' },
+];
+
+function emptyMessage(f: Filter): string {
+  switch (f) {
+    case 'home': return translate(locale, 'noHomeFixtures');
+    case 'away': return translate(locale, 'noAwayFixtures');
+    case 'cup': return translate(locale, 'noCupFixtures');
+    case 'results': return translate(locale, 'noResultsFound');
+    default: return translate(locale, 'noUpcomingFixtures');
+  }
+}
+
+const matchHref = (id: number) => `/en/match/${id}`;
+---
+
+<Base
+  locale={locale}
+  title="Fixtures | Akademisk Boldklub"
+  description="AB 1889's full fixture list — kickoff times, venues and tickets for every match this season."
+  ogTitle="AB Fixtures"
+  ogDescription="Every AB match this season — fixtures, results and the league table."
+>
+  <!-- Hero -->
+  <div class="relative w-full bg-[#0A0A09]">
+    <Img
+      src={matchesHeaderBg}
+      alt="AB 1889 Fixtures"
+      class="w-full h-auto block opacity-60"
+      loading="eager"
+      fetchpriority="high"
+      widths={[640, 828, 1200, 1920, 3840]}
+      sizes="100vw"
+    />
+    <div class="absolute inset-0" style="background:linear-gradient(180deg, rgba(10,10,9,0.2) 0%, rgba(10,10,9,0.55) 65%, #0A0A09 100%);"></div>
+    <div class="absolute inset-0 flex flex-col justify-end px-6 lg:px-16 pb-10">
+      <p class="text-xs font-bold uppercase tracking-[0.25em] text-ab-neon mb-3">2026/27 Season</p>
+      <h1 class="font-black text-white leading-[0.9] tracking-[-0.04em] normal-case" style="font-size:clamp(2.75rem,8vw,6rem);">Fixtures</h1>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="bg-[#0A0A09] border-b border-white/10 sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16 flex items-center justify-between h-[52px] overflow-x-auto">
+      <div class="flex items-center gap-6 shrink-0">
+        {tabs.map((tab) => (
+          <a
+            href={tab.value === 'upcoming' ? '/en/matches-new' : `/en/matches-new?filter=${tab.value}`}
+            class="relative font-bold text-sm py-1 whitespace-nowrap no-underline"
+            style={`letter-spacing:-0.01em; color:${filter === tab.value ? '#fff' : 'rgba(255,255,255,0.45)'};`}
+          >
+            {tab.label}
+            {filter === tab.value && (
+              <span class="absolute left-0 right-0 -bottom-[15px] h-[2px]" style="background:var(--ab-neon);"></span>
+            )}
+          </a>
+        ))}
+      </div>
+      <a
+        href="https://billet.ab.dk/?useEmbed=true"
+        class="vivenu-btn hidden md:inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.1em] px-4 py-2 rounded-full no-underline shrink-0"
+        style="background:var(--ab-neon); color:var(--ab-green);"
+      >
+        Tickets
+      </a>
+    </div>
+  </div>
+
+  <!-- Body: fixture list + sidebar -->
+  <div class="bg-[#F5F5F4] py-10 md:py-14">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-16 flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+
+      <!-- Fixture list -->
+      <div class="flex-1 min-w-0 w-full flex flex-col gap-10">
+        {months.length === 0 && (
+          <div class="text-center py-16 text-sm text-[#777] bg-white rounded border border-gray-200">{emptyMessage(filter)}</div>
+        )}
+        {months.map((month) => (
+          <section>
+            <div class="flex items-baseline gap-3 mb-4 pb-2 border-b-2 border-[#111]">
+              <h2 class="font-black uppercase tracking-[-0.01em] text-[#111]" style="font-size:1.05rem;">{month.label}</h2>
+              <span class="text-xs text-[#888] font-medium">{month.matches.length} {month.matches.length === 1 ? 'match' : 'matches'}</span>
+            </div>
+            <div class="flex flex-col divide-y divide-gray-200 bg-white border border-gray-200 rounded-[4px] overflow-hidden">
+              {month.matches.map((event) => {
+                const isABHome = event.homeId === abConfig.teamId;
+                const homeName = isABHome ? 'AB' : event.homeName;
+                const awayName = isABHome ? event.awayName : 'AB';
+                const isCup = isCupMatch(event);
+                const isLive = event.statusType === 'inprogress';
+                const score = formatEventScore(event.score);
+                const venue = event.properties?.venueName ?? (isABHome ? translate(locale, 'defaultStadium') : event.homeName);
+                const ticketUrl = ticketByEventId[event.eventId] ?? 'https://billet.ab.dk/';
+
+                return (
+                  <div class="group relative flex items-center gap-3 sm:gap-5 px-3 sm:px-5 py-3.5 hover:bg-[#FAFAF9] transition-colors">
+                    <a
+                      href={matchHref(event.eventId)}
+                      class="absolute inset-0 z-0"
+                      aria-label={`View match: ${homeName} vs ${awayName}`}
+                    />
+                    <!-- Date block -->
+                    <div class="flex flex-col items-center justify-center w-11 sm:w-14 shrink-0 text-center">
+                      <span class="text-[0.6rem] font-bold uppercase tracking-[0.05em] text-[#999]" {...dtAttrs(event.startDate, dateLocale, { weekday: 'short' })}>
+                        {fmtDate(event.startDate, dateLocale, { weekday: 'short' })}
+                      </span>
+                      <span class="font-black text-[#111] leading-none" style="font-size:1.4rem;" {...dtAttrs(event.startDate, dateLocale, { day: 'numeric' })}>
+                        {fmtDate(event.startDate, dateLocale, { day: 'numeric' })}
+                      </span>
+                    </div>
+
+                    <!-- Competition + round -->
+                    <div class="hidden md:flex flex-col w-[92px] shrink-0 gap-0.5">
+                      {isCup ? (
+                        <span class="inline-flex w-fit items-center text-[0.6rem] font-black uppercase tracking-[0.05em] text-ab-green bg-ab-beige rounded-full px-2 py-0.5">
+                          {cupTournamentLabel(event, locale)}
+                        </span>
+                      ) : (
+                        <span class="text-[0.65rem] font-bold uppercase tracking-[0.04em] text-[#999]">{translate(locale, 'secondDivision')}</span>
+                      )}
+                      <span class="text-[0.65rem] text-[#BBB]" {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtDate(event.startDate, dateLocale, TIME_OPTS)}</span>
+                    </div>
+
+                    <!-- Teams -->
+                    <div class="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
+                      <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt="" width="24" height="24" class="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      <span class={`text-sm truncate ${isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{homeName}</span>
+                      {isLive ? (
+                        <span class="mx-1 shrink-0 inline-flex items-center gap-1 text-[0.65rem] font-black uppercase tracking-[0.1em] text-ab-green">
+                          <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>Live
+                        </span>
+                      ) : score ? (
+                        <span class="mx-1 shrink-0 font-black tabular-nums text-[#111]" style="font-size:0.9rem;">{score}</span>
+                      ) : (
+                        <span class="mx-1 shrink-0 text-[0.65rem] font-bold text-[#BBB]">v</span>
+                      )}
+                      <span class={`text-sm truncate ${!isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{awayName}</span>
+                      <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt="" width="24" height="24" class="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                    </div>
+
+                    <!-- Venue (desktop only) -->
+                    <span class="hidden lg:block w-36 shrink-0 text-xs text-[#999] truncate">{venue}</span>
+
+                    <!-- Action -->
+                    <div class="relative z-10 shrink-0 ml-auto sm:ml-0">
+                      {!isPast && isABHome ? (
+                        <a
+                          href={`${ticketUrl}?useEmbed=true`}
+                          class="vivenu-btn inline-flex items-center text-[0.7rem] font-black uppercase tracking-[0.05em] px-3 py-1.5 rounded no-underline text-white"
+                          style="background:var(--ab-green);"
+                        >
+                          Tickets
+                        </a>
+                      ) : (
+                        <span class="text-[0.7rem] font-bold text-[#AAA] group-hover:text-ab-green transition-colors">→</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <!-- Sidebar -->
+      <div class="w-full lg:w-[340px] shrink-0 flex flex-col gap-6 lg:sticky lg:top-[68px]">
+        {nextMatch && (
+          <div class="bg-[#0A0A09] rounded-[4px] overflow-hidden">
+            <div class="px-5 pt-5 pb-1 text-center">
+              <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-ab-neon mb-4">Next Match</p>
+              <div class="flex items-center justify-center gap-4 mb-1">
+                <div class="flex flex-col items-center gap-2 w-20">
+                  <img src={nextMatch.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.homeId)} alt="" width="40" height="40" class="w-10 h-10 object-contain" loading="lazy" onerror="this.style.opacity='0'" />
+                  <span class="text-[0.7rem] font-bold text-white text-center leading-tight line-clamp-2">{nextMatch.homeId === abConfig.teamId ? 'AB' : nextMatch.homeName}</span>
+                </div>
+                <span class="text-xs font-black text-white/30">VS</span>
+                <div class="flex flex-col items-center gap-2 w-20">
+                  <img src={nextMatch.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.awayId)} alt="" width="40" height="40" class="w-10 h-10 object-contain" loading="lazy" onerror="this.style.opacity='0'" />
+                  <span class="text-[0.7rem] font-bold text-white text-center leading-tight line-clamp-2">{nextMatch.awayId === abConfig.teamId ? 'AB' : nextMatch.awayName}</span>
+                </div>
+              </div>
+              <MatchCountdown startDate={nextMatch.startDate} locale="en" />
+            </div>
+            <div class="px-5 pb-5 flex flex-col gap-2">
+              {nextMatch.homeId === abConfig.teamId && (
+                <a
+                  class="vivenu-btn w-full text-center text-xs font-black uppercase tracking-[0.08em] px-4 py-2.5 rounded no-underline text-ab-green"
+                  style="background:var(--ab-neon);"
+                  href={`${ticketByEventId[nextMatch.eventId] ?? 'https://billet.ab.dk/'}?useEmbed=true`}
+                >
+                  Buy Tickets
+                </a>
+              )}
+              <a class="w-full text-center text-xs font-bold px-4 py-2.5 rounded no-underline border border-white/20 text-white hover:bg-white/10 transition-colors" href={matchHref(nextMatch.eventId)}>
+                Match Details
+              </a>
+            </div>
+          </div>
+        )}
+
+        <div class="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+          <StandingsWidget locale="en" showHeader={true} highlightTeamIds={[abConfig.teamId]} />
+        </div>
+      </div>
+    </div>
+  </div>
+</Base>
