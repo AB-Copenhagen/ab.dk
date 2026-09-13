@@ -126,21 +126,103 @@ const matchHref = (id: number) => `/en/match/${id}`;
   ogTitle="AB Fixtures"
   ogDescription="Every AB match this season — fixtures, results and the league table."
 >
-  <!-- Hero -->
-  <div class="relative w-full bg-[#0A0A09]">
-    <Img
-      src={matchesHeaderBg}
-      alt="AB 1889 Fixtures"
-      class="w-full h-auto block opacity-60"
-      loading="eager"
-      fetchpriority="high"
-      widths={[640, 828, 1200, 1920, 3840]}
-      sizes="100vw"
-    />
-    <div class="absolute inset-0" style="background:linear-gradient(180deg, rgba(10,10,9,0.2) 0%, rgba(10,10,9,0.55) 65%, #0A0A09 100%);"></div>
-    <div class="absolute inset-0 flex flex-col justify-end px-6 lg:px-16 pb-10">
+  <!-- Hero — height follows content (title + next-match panel), not the -->
+  <!-- banner image, so the photo can't clip the panel on narrow viewports. -->
+  <!-- Photo is desktop-only (mirrors MatchHeroPhoto's mobile solid-bg pattern -->
+  <!-- used on the match detail pages) — cheaper and reads better on small screens. -->
+  <div class="relative overflow-hidden bg-[#0A0A09]">
+    <div class="hidden md:block absolute inset-0">
+      <Img
+        src={matchesHeaderBg}
+        alt=""
+        class="w-full h-full object-cover opacity-45"
+        loading="eager"
+        fetchpriority="high"
+        widths={[640, 828, 1200, 1920, 3840]}
+        sizes="100vw"
+      />
+      <div class="absolute inset-0" style="background:linear-gradient(180deg, rgba(10,10,9,0.35) 0%, rgba(10,10,9,0.7) 100%);"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-16 pt-10 pb-9 md:pt-14 md:pb-12">
       <p class="text-xs font-bold uppercase tracking-[0.25em] text-ab-neon mb-3">2026/27 Season</p>
-      <h1 class="font-black text-white leading-[0.9] tracking-[-0.04em] normal-case" style="font-size:clamp(2.75rem,8vw,6rem);">Fixtures</h1>
+      <h1 class="font-black text-white leading-[0.9] tracking-[-0.04em] normal-case mb-7 md:mb-9" style="font-size:clamp(2.5rem,7vw,5rem);">Fixtures</h1>
+
+      {nextMatch && (() => {
+        const isABHome = nextMatch.homeId === abConfig.teamId;
+        const homeName = isABHome ? 'AB' : nextMatch.homeName;
+        const awayName = isABHome ? nextMatch.awayName : 'AB';
+        const isLive = nextMatch.statusType === 'inprogress';
+        const score = formatEventScore(nextMatch.score);
+        const venue = nextMatch.properties?.venueName ?? (isABHome ? translate(locale, 'defaultStadium') : nextMatch.homeName);
+        const ticketUrl = ticketByEventId[nextMatch.eventId] ?? 'https://billet.ab.dk/';
+
+        return (
+          <div class="bg-white/[0.06] border border-white/10 rounded-[6px] px-5 py-6 md:px-8 md:py-7 backdrop-blur-sm">
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mb-5">
+              <span class="inline-flex items-center gap-2 text-[0.65rem] font-black uppercase tracking-[0.2em] text-ab-neon">
+                {isLive && <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>}
+                {isLive ? 'Live Now' : 'Next Match'}
+              </span>
+              <span class="text-xs text-white/50">
+                <span {...dtAttrs(nextMatch.startDate, dateLocale, { weekday: 'short', day: 'numeric', month: 'short' })}>
+                  {fmtDate(nextMatch.startDate, dateLocale, { weekday: 'short', day: 'numeric', month: 'short' })}
+                </span>
+                {' · '}
+                <span {...dtAttrs(nextMatch.startDate, dateLocale, TIME_OPTS)}>{fmtDate(nextMatch.startDate, dateLocale, TIME_OPTS)}</span>
+                {' · '}{venue}
+                {isCupMatch(nextMatch) && (
+                  <>
+                    {' · '}
+                    <span class="text-ab-beige">{cupTournamentLabel(nextMatch, locale)}</span>
+                  </>
+                )}
+              </span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center gap-6">
+              <div class="flex items-center justify-center sm:justify-start gap-4 flex-1">
+                <div class="flex flex-col items-center gap-2 w-20 shrink-0">
+                  <img src={nextMatch.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.homeId)} alt="" width="48" height="48" class="w-11 h-11 md:w-12 md:h-12 object-contain" loading="eager" onerror="this.style.opacity='0'" />
+                  <span class="text-xs font-bold text-white text-center leading-tight line-clamp-2">{homeName}</span>
+                </div>
+                {isLive && score ? (
+                  <span class="text-xl font-black tabular-nums text-ab-neon shrink-0 px-1" style="letter-spacing:-0.02em">{score}</span>
+                ) : (
+                  <span class="text-xs font-black text-white/25 shrink-0 px-1">VS</span>
+                )}
+                <div class="flex flex-col items-center gap-2 w-20 shrink-0">
+                  <img src={nextMatch.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.awayId)} alt="" width="48" height="48" class="w-11 h-11 md:w-12 md:h-12 object-contain" loading="eager" onerror="this.style.opacity='0'" />
+                  <span class="text-xs font-bold text-white text-center leading-tight line-clamp-2">{awayName}</span>
+                </div>
+              </div>
+
+              {!isLive && (
+                <div class="flex justify-center sm:px-6 sm:border-x sm:border-white/10">
+                  <MatchCountdown startDate={nextMatch.startDate} locale="en" />
+                </div>
+              )}
+
+              <div class="flex items-center justify-center gap-2 shrink-0">
+                {isABHome ? (
+                  <a
+                    class="vivenu-btn text-center text-xs font-black uppercase tracking-[0.08em] px-4 py-2.5 rounded no-underline text-ab-green whitespace-nowrap"
+                    style="background:var(--ab-neon);"
+                    href={`${ticketUrl}?useEmbed=true`}
+                  >
+                    Buy Tickets
+                  </a>
+                ) : (
+                  <span class="text-xs font-bold text-white/40 uppercase tracking-[0.05em] whitespace-nowrap">Away Match</span>
+                )}
+                <a class="text-center text-xs font-bold px-4 py-2.5 rounded no-underline border border-white/20 text-white hover:bg-white/10 transition-colors whitespace-nowrap" href={matchHref(nextMatch.eventId)}>
+                  Details
+                </a>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   </div>
 
@@ -268,42 +350,9 @@ const matchHref = (id: number) => `/en/match/${id}`;
         ))}
       </div>
 
-      <!-- Sidebar -->
-      <div class="w-full lg:w-[340px] shrink-0 flex flex-col gap-6 lg:sticky lg:top-[68px]">
-        {nextMatch && (
-          <div class="bg-[#0A0A09] rounded-[4px] overflow-hidden">
-            <div class="px-5 pt-5 pb-1 text-center">
-              <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-ab-neon mb-4">Next Match</p>
-              <div class="flex items-center justify-center gap-4 mb-1">
-                <div class="flex flex-col items-center gap-2 w-20">
-                  <img src={nextMatch.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.homeId)} alt="" width="40" height="40" class="w-10 h-10 object-contain" loading="lazy" onerror="this.style.opacity='0'" />
-                  <span class="text-[0.7rem] font-bold text-white text-center leading-tight line-clamp-2">{nextMatch.homeId === abConfig.teamId ? 'AB' : nextMatch.homeName}</span>
-                </div>
-                <span class="text-xs font-black text-white/30">VS</span>
-                <div class="flex flex-col items-center gap-2 w-20">
-                  <img src={nextMatch.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.awayId)} alt="" width="40" height="40" class="w-10 h-10 object-contain" loading="lazy" onerror="this.style.opacity='0'" />
-                  <span class="text-[0.7rem] font-bold text-white text-center leading-tight line-clamp-2">{nextMatch.awayId === abConfig.teamId ? 'AB' : nextMatch.awayName}</span>
-                </div>
-              </div>
-              <MatchCountdown startDate={nextMatch.startDate} locale="en" />
-            </div>
-            <div class="px-5 pb-5 flex flex-col gap-2">
-              {nextMatch.homeId === abConfig.teamId && (
-                <a
-                  class="vivenu-btn w-full text-center text-xs font-black uppercase tracking-[0.08em] px-4 py-2.5 rounded no-underline text-ab-green"
-                  style="background:var(--ab-neon);"
-                  href={`${ticketByEventId[nextMatch.eventId] ?? 'https://billet.ab.dk/'}?useEmbed=true`}
-                >
-                  Buy Tickets
-                </a>
-              )}
-              <a class="w-full text-center text-xs font-bold px-4 py-2.5 rounded no-underline border border-white/20 text-white hover:bg-white/10 transition-colors" href={matchHref(nextMatch.eventId)}>
-                Match Details
-              </a>
-            </div>
-          </div>
-        )}
-
+      <!-- Sidebar — next match now lives in the hero above; this holds the -->
+      <!-- league table only. -->
+      <div class="w-full lg:w-[340px] shrink-0 lg:sticky lg:top-[68px]">
         <div class="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
           <StandingsWidget locale="en" showHeader={true} highlightTeamIds={[abConfig.teamId]} />
         </div>
