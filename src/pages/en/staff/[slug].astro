@@ -9,7 +9,7 @@ setCdnCacheHeaders(Astro.response.headers);
 
 const { slug } = Astro.params;
 const staff = slug ? await fetchStaffMember(slug, 'en') : null;
-if (!staff) return Astro.redirect('/en/squad');
+if (!staff) return Astro.rewrite('/en/404');
 
 const initials = staffInitials(staff.name);
 const parts = staff.name.trim().split(' ');

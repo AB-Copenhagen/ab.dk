@@ -34,7 +34,7 @@ if (isNaN(playerId)) {
     const resolvedName = roster.find((p) => p.id === resolvedId)?.name ?? null;
     return Astro.redirect(`/spiller/${getPlayerSlug(resolvedId, resolvedName)}`, 308);
   }
-  return Astro.redirect('/truppen');
+  return Astro.rewrite('/404');
 }
 
 const manualPlayer = findManualPlayer(playerId);
@@ -71,7 +71,7 @@ if (manualPlayer) {
   // SI returns an empty (but truthy) profile for an id it doesn't recognize
   // — e.g. a retired synthetic manual-player id — rather than 404ing.
   if (!player?.name) {
-    return Astro.redirect('/truppen');
+    return Astro.rewrite('/404');
   }
 
   // Legacy exclusion list (no Strapi row needed) — e.g. a retired player whose
@@ -102,7 +102,7 @@ if (manualPlayer) {
 }
 
 if (!player) {
-  return Astro.redirect('/truppen');
+  return Astro.rewrite('/404');
 }
 
 const { name, countryName, birthDate, height } = player;
