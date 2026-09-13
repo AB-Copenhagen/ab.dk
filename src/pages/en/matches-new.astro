@@ -180,30 +180,26 @@ const matchHref = (id: number) => `/en/match/${id}`;
               </span>
             </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-center gap-6">
-              <div class="flex items-center justify-center sm:justify-start gap-4 flex-1">
-                <div class="flex flex-col items-center gap-2 w-20 shrink-0">
-                  <img src={nextMatch.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.homeId)} alt="" width="48" height="48" class="w-11 h-11 md:w-12 md:h-12 object-contain" loading="eager" onerror="this.style.opacity='0'" />
-                  <span class="text-xs font-bold text-white text-center leading-tight line-clamp-2">{homeName}</span>
+            <div class="flex flex-col gap-7">
+              <!-- Crests — centered, larger; the panel's focal point -->
+              <div class="flex items-center justify-center gap-6 sm:gap-8">
+                <div class="flex flex-col items-center gap-2 w-24 sm:w-28 shrink-0">
+                  <img src={nextMatch.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.homeId)} alt="" width="80" height="80" class="w-16 h-16 sm:w-20 sm:h-20 object-contain" loading="eager" onerror="this.style.opacity='0'" />
+                  <span class="text-xs sm:text-sm font-bold text-white text-center leading-tight line-clamp-2">{homeName}</span>
                 </div>
                 {isLive && score ? (
-                  <span class="text-xl font-black tabular-nums text-ab-neon shrink-0 px-1" style="letter-spacing:-0.02em">{score}</span>
+                  <span class="text-2xl font-black tabular-nums text-ab-neon shrink-0 px-1" style="letter-spacing:-0.02em">{score}</span>
                 ) : (
-                  <span class="text-xs font-black text-white/25 shrink-0 px-1">VS</span>
+                  <span class="text-sm font-black text-white/25 shrink-0 px-1">VS</span>
                 )}
-                <div class="flex flex-col items-center gap-2 w-20 shrink-0">
-                  <img src={nextMatch.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.awayId)} alt="" width="48" height="48" class="w-11 h-11 md:w-12 md:h-12 object-contain" loading="eager" onerror="this.style.opacity='0'" />
-                  <span class="text-xs font-bold text-white text-center leading-tight line-clamp-2">{awayName}</span>
+                <div class="flex flex-col items-center gap-2 w-24 sm:w-28 shrink-0">
+                  <img src={nextMatch.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(nextMatch.awayId)} alt="" width="80" height="80" class="w-16 h-16 sm:w-20 sm:h-20 object-contain" loading="eager" onerror="this.style.opacity='0'" />
+                  <span class="text-xs sm:text-sm font-bold text-white text-center leading-tight line-clamp-2">{awayName}</span>
                 </div>
               </div>
 
-              {!isLive && (
-                <div class="flex justify-center sm:px-6 sm:border-x sm:border-white/10">
-                  <MatchCountdown startDate={nextMatch.startDate} locale="en" />
-                </div>
-              )}
-
-              <div class="flex items-center justify-center gap-2 shrink-0">
+              <!-- Ticket CTAs -->
+              <div class="flex items-center justify-center gap-2">
                 {isABHome ? (
                   <a
                     class="vivenu-btn text-center text-xs font-black uppercase tracking-[0.08em] px-4 py-2.5 rounded no-underline text-ab-green whitespace-nowrap"
@@ -219,6 +215,13 @@ const matchHref = (id: number) => `/en/match/${id}`;
                   Details
                 </a>
               </div>
+
+              <!-- Kick-off countdown — left-aligned, beneath the CTAs -->
+              {!isLive && (
+                <div class="flex justify-start">
+                  <MatchCountdown startDate={nextMatch.startDate} locale="en" />
+                </div>
+              )}
             </div>
           </div>
         );
