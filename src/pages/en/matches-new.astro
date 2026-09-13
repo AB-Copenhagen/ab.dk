@@ -279,7 +279,10 @@ const matchHref = (id: number) => `/en/match/${id}`;
                 const awayName = isABHome ? event.awayName : 'AB';
                 const isCup = isCupMatch(event);
                 const isLive = event.statusType === 'inprogress';
-                const score = formatEventScore(event.score);
+                // SI still populates a 0-0 score object before kickoff, so only
+                // trust it once the match has actually finished — otherwise an
+                // upcoming fixture would misleadingly show "0-0" instead of "v".
+                const score = event.statusType === 'finished' ? formatEventScore(event.score) : null;
                 const venue = event.properties?.venueName ?? (isABHome ? translate(locale, 'defaultStadium') : event.homeName);
                 const ticketUrl = ticketByEventId[event.eventId] ?? 'https://billet.ab.dk/';
 
@@ -312,39 +315,53 @@ const matchHref = (id: number) => `/en/match/${id}`;
                       <span class="text-[0.65rem] text-[#BBB]" {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtDate(event.startDate, dateLocale, TIME_OPTS)}</span>
                     </div>
 
-                    <!-- Teams -->
+                    <!-- Teams — home/score/away as sub-columns of one flex-1 -->
+                    <!-- group, so the score/status gets its own fixed-width slot -->
+                    <!-- instead of being crammed directly between the crests. -->
                     <div class="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
-                      <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt="" width="24" height="24" class="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
-                      <span class={`text-sm truncate ${isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{homeName}</span>
-                      {isLive ? (
-                        <span class="mx-1 shrink-0 inline-flex items-center gap-1 text-[0.65rem] font-black uppercase tracking-[0.1em] text-ab-green">
-                          <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>Live
-                        </span>
-                      ) : score ? (
-                        <span class="mx-1 shrink-0 font-black tabular-nums text-[#111]" style="font-size:0.9rem;">{score}</span>
-                      ) : (
-                        <span class="mx-1 shrink-0 text-[0.65rem] font-bold text-[#BBB]">v</span>
-                      )}
-                      <span class={`text-sm truncate ${!isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{awayName}</span>
-                      <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt="" width="24" height="24" class="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      <div class="flex-1 min-w-0 flex items-center justify-end gap-2 sm:gap-3">
+                        <span class={`text-sm truncate text-right ${isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{homeName}</span>
+                        <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt="" width="24" height="24" class="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      </div>
+
+                      <div class="w-12 sm:w-16 shrink-0 flex items-center justify-center">
+                        {isLive ? (
+                          <span class="inline-flex items-center gap-1 text-[0.65rem] font-black uppercase tracking-[0.1em] text-ab-green">
+                            <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>Live
+                          </span>
+                        ) : score ? (
+                          <span class="font-black tabular-nums text-[#111]" style="font-size:0.9rem;">{score}</span>
+                        ) : (
+                          <span class="text-[0.65rem] font-bold text-[#BBB]">v</span>
+                        )}
+                      </div>
+
+                      <div class="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
+                        <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt="" width="24" height="24" class="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                        <span class={`text-sm truncate ${!isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{awayName}</span>
+                      </div>
                     </div>
 
                     <!-- Venue (desktop only) -->
                     <span class="hidden lg:block w-36 shrink-0 text-xs text-[#999] truncate">{venue}</span>
 
                     <!-- Action -->
-                    <div class="relative z-10 shrink-0 ml-auto sm:ml-0">
-                      {!isPast && isABHome ? (
+                    <div class="relative z-10 shrink-0 ml-auto sm:ml-0 flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
+                      {!isPast && isABHome && (
                         <a
                           href={`${ticketUrl}?useEmbed=true`}
-                          class="vivenu-btn inline-flex items-center text-[0.7rem] font-black uppercase tracking-[0.05em] px-3 py-1.5 rounded no-underline text-white"
+                          class="vivenu-btn inline-flex items-center text-[0.65rem] sm:text-[0.7rem] font-black uppercase tracking-[0.05em] px-2.5 py-1 sm:px-3 sm:py-1.5 rounded no-underline text-white whitespace-nowrap"
                           style="background:var(--ab-green);"
                         >
                           Tickets
                         </a>
-                      ) : (
-                        <span class="text-[0.7rem] font-bold text-[#AAA] group-hover:text-ab-green transition-colors">→</span>
                       )}
+                      <a
+                        href={matchHref(event.eventId)}
+                        class="inline-flex items-center text-[0.65rem] sm:text-[0.7rem] font-black uppercase tracking-[0.05em] px-2.5 py-1 sm:px-3 sm:py-1.5 rounded no-underline border border-gray-300 text-[#555] whitespace-nowrap hover:border-ab-green hover:text-ab-green transition-colors"
+                      >
+                        Info
+                      </a>
                     </div>
                   </div>
                 );
