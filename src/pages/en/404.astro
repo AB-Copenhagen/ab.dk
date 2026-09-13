@@ -1,0 +1,21 @@
+---
+import Base from '@/layouts/Base.astro';
+import NotFound from '@/components/NotFound.astro';
+import { translate } from '@/lib/i18n';
+
+// English counterpart to src/pages/404.astro. English content routes rewrite
+// here rather than to /404 because getLocale() reads the rewritten path, not
+// the original request — rewriting to /404 would serve a Danish page for an
+// unknown English URL.
+Astro.response.status = 404;
+
+const locale = 'en' as const;
+---
+
+<Base
+  locale={locale}
+  title={`404 | ${translate(locale, 'notFoundHeading')}`}
+  description={translate(locale, 'notFoundBody')}
+>
+  <NotFound locale={locale} />
+</Base>

@@ -7,7 +7,7 @@ import { fetchPartnerBySlug, strapiMediaUrl } from '@/lib/strapi/client';
 const { slug } = Astro.params;
 const partner = await fetchPartnerBySlug(slug ?? '', 'da');
 
-if (!partner) return Astro.redirect('/partnere', 302);
+if (!partner) return Astro.rewrite('/404');
 
 const tierLabel = TIER_LABELS[partner.category].da;
 const backHref = '/partnere';

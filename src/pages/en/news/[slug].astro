@@ -59,7 +59,7 @@ const [results, allArticleSlugs, relatedCandidates] = await Promise.all([
 ]);
 
 const article = results[0];
-if (!article) return Astro.redirect('/en/news');
+if (!article) return Astro.rewrite('/en/404');
 
 // Strapi's i18n localizations relation links this article to its Danish
 // original when one exists (only populated when an editor used Strapi's
