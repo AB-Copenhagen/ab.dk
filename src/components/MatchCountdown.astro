@@ -2,9 +2,15 @@
 interface Props {
   startDate: string;
   locale: 'da' | 'en';
+  /**
+   * 'pill' (default): the standalone rounded badge used on match-detail hero
+   * pages. 'inline': just the ticking value with no wrapper/label/margin, for
+   * composing into a caller's own sentence (e.g. "Next Match in {value}").
+   */
+  variant?: 'pill' | 'inline';
 }
 
-const { startDate, locale } = Astro.props;
+const { startDate, locale, variant = 'pill' } = Astro.props;
 
 const t = {
   da: { label: 'Kick-off om', started: 'Kampen er i gang' },
@@ -12,20 +18,26 @@ const t = {
 }[locale];
 ---
 
-<div
-  class="flex flex-wrap items-center justify-center gap-4 mb-6"
-  data-match-countdown
-  data-countdown-iso={startDate}
-  data-label-started={t.started}
->
+{variant === 'inline' ? (
+  <span data-match-countdown data-countdown-iso={startDate} data-label-started={t.started}>
+    <span class="countdown-value font-black tabular-nums text-ab-neon" data-countdown-value>—</span>
+  </span>
+) : (
   <div
-    class="inline-flex items-center gap-2 px-4 py-2 rounded-full"
-    style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px)"
+    class="flex flex-wrap items-center justify-center gap-4 mb-6"
+    data-match-countdown
+    data-countdown-iso={startDate}
+    data-label-started={t.started}
   >
-    <span class="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-white">{t.label}</span>
-    <span class="countdown-value font-black tabular-nums text-ab-neon" style="font-size:0.9375rem" data-countdown-value>—</span>
+    <div
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+      style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px)"
+    >
+      <span class="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-white">{t.label}</span>
+      <span class="countdown-value font-black tabular-nums text-ab-neon" style="font-size:0.9375rem" data-countdown-value>—</span>
+    </div>
   </div>
-</div>
+)}
 
 <script>
   const pad = (n: number) => String(n).padStart(2, '0');
