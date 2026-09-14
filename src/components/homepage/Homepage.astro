@@ -5,7 +5,7 @@ import {
   fetchStaffRoster,
   strapiMediaUrl,
 } from '@/lib/strapi/client';
-import { fetchABEvents, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
+import { fetchABEvents, fetchEvent, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
 import { getSquadPlayers } from '@/lib/si/squad';
 import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
 import SquadCard from '@/components/SquadCard.astro';
@@ -25,10 +25,6 @@ import product2Img from '@/assets/images/product-2.png';
 import product3Img from '@/assets/images/product-3.png';
 import heroAbReturnsImg from '@/assets/images/hero-ab-returns.jpg';
 import playerFeaturedImg from '@/assets/images/player-featured.png';
-// TEMP — preview-only test slides, do not merge to main. See TEST_HERO_SLIDES below.
-import heroTestMatchupDarkGreen from '@/assets/images/hero-test-matchup-dark-green.png';
-import heroTestMatchupBw from '@/assets/images/hero-test-matchup-bw-overlay.png';
-import heroTestMatchupLightGreen from '@/assets/images/hero-test-matchup-light-green.png';
 import {
   fmtDate,
   dtAttrs,
@@ -192,8 +188,9 @@ interface HeroSlide {
   /** Image slides only — 'bottom' pins the CTA low (like video slides) instead of dead-center,
    *  for slides whose baked-in graphic already fills the center. Defaults to 'center'. */
   ctaPosition?: 'center' | 'bottom';
-  /** 'matchup' slides only — real next-match data (crests, date/time) rendered live
-   *  instead of a flat designer-exported image. See TEST_MATCHUP_SLIDE below. */
+  /** 'matchup' slides only — the picked fixture's crests/date/time, resolved
+   *  live from SI (see matchupDataFor below) instead of a flat designer-
+   *  exported image. */
   matchup?: {
     opponent: string;
     oppLogo: string | null;
@@ -253,68 +250,95 @@ const FALLBACK_HERO_SLIDES: HeroSlide[] = [
 // Range natively and is re-signed on every request (5-minute Strapi cache TTL
 // vs. the 7-day signed-URL expiry), so staleness isn't a concern.
 
-// TEMP — preview-only, do not merge to main: forces the 3 "next match" matchup
-// graphics as the only hero slides regardless of Strapi content, so this can be
-// reviewed on the Vercel preview URL without publishing anything to production
-// Strapi (which is shared with main). Remove this block + the imports above and
-// the branch reverts to normal CMS/fallback behavior.
-const TEST_HERO_SLIDES: HeroSlide[] = [
-  {
-    type: 'image',
-    img: heroTestMatchupDarkGreen,
-    alt: 'AB - HVI, næste kamp',
-    ctaLabel: translate(locale, 'buyTickets'),
-    ctaUrl: 'https://billet.ab.dk/',
-    ctaVariant: 'btn-beige',
-    ctaPosition: 'bottom',
-  },
-  {
-    type: 'image',
-    img: heroTestMatchupBw,
-    alt: 'AB - HVI, næste kamp',
-    ctaLabel: translate(locale, 'buyTickets'),
-    ctaUrl: 'https://billet.ab.dk/',
-    ctaVariant: 'btn-beige',
-    ctaPosition: 'bottom',
-  },
-  {
-    type: 'image',
-    img: heroTestMatchupLightGreen,
-    alt: 'AB - HVI, næste kamp',
-    ctaLabel: translate(locale, 'buyTickets'),
-    ctaUrl: 'https://billet.ab.dk/',
-    ctaVariant: 'btn-beige',
-    ctaPosition: 'bottom',
-  },
+// 'matchup' slides (editor picks a fixture from a dropdown in Strapi, backed
+// by the same global::match-picker custom field the match-content type uses
+// — see strapi/src/api/hero-slide/content-types/hero-slide/schema.json) carry
+// only an eventId; the crests/date/time shown on the slide are looked up live
+// from SI here, not baked into a designer-exported graphic. Fetch every
+// matchup slide's event up front (in parallel) so the mapping below can stay
+// synchronous.
+const matchupEventIds = [
+  ...new Set(
+    cmsHeroSlides
+      .filter((s) => s.slideType === 'matchup' && s.eventId)
+      .map((s) => s.eventId!)
+  ),
 ];
+const matchupEventById = new Map(
+  (
+    await Promise.all(
+      matchupEventIds.map((id) => fetchEvent(id, locale).catch(() => null))
+    )
+  )
+    .filter((e): e is NonNullable<typeof e> => e !== null)
+    .map((e) => [e.eventId, e])
+);
 
-// TEMP — preview-only, do not merge to main: 4th slide, a live-data proof of concept
-// for the same "next match" idea — real crests + real date/time pulled from SI (via
-// the nextMatch/opponent/oppLogo/matchDateStr/matchTimeStr already computed above for
-// the homepage's "Next match" card), instead of a designer-exported static graphic.
-// Compare this against the 3 static variants above on the preview URL.
-const TEST_MATCHUP_SLIDE: HeroSlide | null =
-  nextMatch && opponent
-    ? {
-        type: 'matchup',
-        ctaLabel: translate(locale, 'buyTickets'),
-        ctaUrl: 'https://billet.ab.dk/',
-        ctaVariant: 'btn-beige',
-        matchup: {
-          opponent,
-          oppLogo,
-          isCup: nextMatchIsCup,
-          cupLabel: nextMatchIsCup ? cupTournamentLabel(nextMatch, locale) : null,
-          dateStr: matchDateStr,
-          timeStr: matchTimeStr,
-        },
-      }
-    : null;
+/** Same shape as the homepage's own "Next match" card data (opponent/oppLogo/
+ *  cup label/date/time above), but for any event — a matchup slide can point
+ *  at any fixture, not just the next one. */
+function matchupDataFor(event: NonNullable<ReturnType<(typeof matchupEventById)['get']>>) {
+  const isABHome = event.homeId === abConfig.teamId;
+  const oppId = isABHome ? event.awayId : event.homeId;
+  const isCup = isCupMatch(event);
+  return {
+    isABHome,
+    opponent: isABHome ? event.awayName : event.homeName,
+    oppLogo: getTeamLogoSrc(oppId),
+    isCup,
+    cupLabel: isCup ? cupTournamentLabel(event, locale) : null,
+    dateStr: fmtDate(event.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS),
+    timeStr: fmtDate(event.startDate, matchTimeLocale, TIME_24H_OPTS),
+  };
+}
 
-const heroSlides: HeroSlide[] = TEST_MATCHUP_SLIDE
-  ? [...TEST_HERO_SLIDES, TEST_MATCHUP_SLIDE]
-  : TEST_HERO_SLIDES;
-void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEMP comment
+const heroSlides: HeroSlide[] = (
+  cmsHeroSlides.length > 0
+    ? cmsHeroSlides
+        .map((slide): HeroSlide | null => {
+          if (slide.slideType === 'matchup') {
+            const event = slide.eventId ? matchupEventById.get(slide.eventId) : undefined;
+            // Skip gracefully rather than render a matchup slide with nothing
+            // to show — a picked event that SI can no longer resolve (or no
+            // event picked yet) shouldn't blank the whole slider.
+            if (!event) return null;
+            const { isABHome, ...matchup } = matchupDataFor(event);
+            // Spec: CTA defaults to "Buy Tickets" for AB home matches (the
+            // only case AB itself sells tickets for); an editor's own
+            // ctaLabel/ctaUrl always wins. Away matches fall back to the
+            // match detail page instead, so the slide's CTA is never blank.
+            const ctaLabel =
+              slide.ctaLabel || translate(locale, isABHome ? 'buyTickets' : 'matchDetails');
+            const ctaUrl =
+              slide.ctaUrl || (isABHome ? 'https://billet.ab.dk/' : matchHref(event.eventId));
+            return {
+              type: 'matchup',
+              img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
+              imgWidth: slide.image?.width,
+              imgHeight: slide.image?.height,
+              ctaLabel,
+              ctaUrl,
+              ctaVariant: slide.ctaVariant,
+              matchup,
+            };
+          }
+          return {
+            type: slide.slideType,
+            img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
+            imgWidth: slide.image?.width,
+            imgHeight: slide.image?.height,
+            video: slide.video?.url,
+            alt: slide.alt,
+            headline: slide.headline,
+            subtitle: slide.subtitle,
+            ctaLabel: slide.ctaLabel ?? '',
+            ctaUrl: slide.ctaUrl ?? '',
+            ctaVariant: slide.ctaVariant,
+          };
+        })
+        .filter((s): s is HeroSlide => s !== null)
+    : FALLBACK_HERO_SLIDES
+);
 ---
 
 <style>
@@ -390,13 +414,15 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
           )}
           {slide.type === 'video' ? (
             <div class="absolute inset-0 z-10 flex flex-col items-center justify-end pb-28 px-6 text-center">
-              <a
-                href={slide.ctaUrl}
-                target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
-                rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
-                class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
-                {slide.ctaLabel}
-              </a>
+              {slide.ctaLabel && slide.ctaUrl && (
+                <a
+                  href={slide.ctaUrl}
+                  target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                  rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                  {slide.ctaLabel}
+                </a>
+              )}
             </div>
           ) : slide.type === 'matchup' && slide.matchup ? (
             <>
@@ -451,13 +477,15 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
                   </p>
                 )}
 
-                <a
-                  href={slide.ctaUrl}
-                  target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
-                  rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
-                  {slide.ctaLabel}
-                </a>
+                {slide.ctaLabel && slide.ctaUrl && (
+                  <a
+                    href={slide.ctaUrl}
+                    target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                    rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                    {slide.ctaLabel}
+                  </a>
+                )}
               </div>
             </>
           ) : (
@@ -477,13 +505,15 @@ void cmsHeroSlides; // unused while TEST_HERO_SLIDES is forced above — see TEM
                     {slide.subtitle}
                   </p>
                 )}
-                <a
-                  href={slide.ctaUrl}
-                  target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
-                  rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
-                  {slide.ctaLabel}
-                </a>
+                {slide.ctaLabel && slide.ctaUrl && (
+                  <a
+                    href={slide.ctaUrl}
+                    target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                    rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                    {slide.ctaLabel}
+                  </a>
+                )}
               </div>
             </>
           )}

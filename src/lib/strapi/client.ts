@@ -707,16 +707,19 @@ export interface StrapiHeroSlideMedia {
 
 export interface StrapiHeroSlide {
   name: string;
-  slideType: 'image' | 'video';
+  slideType: 'image' | 'video' | 'matchup';
   sortOrder: number;
   image?: StrapiHeroSlideMedia;
   video?: StrapiHeroSlideMedia;
   headline?: string;
   subtitle?: string;
-  ctaLabel: string;
-  ctaUrl: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
   ctaVariant: 'btn-beige' | 'btn-green' | 'btn-dark';
   alt?: string;
+  /** 'matchup' slides only — SI event ID picked via the match-picker custom
+   *  field in Strapi admin (backs the "choose a fixture from a dropdown" UX). */
+  eventId?: number;
 }
 
 /** Fetch all published hero slides ordered by sortOrder, resolved to `locale`. */
