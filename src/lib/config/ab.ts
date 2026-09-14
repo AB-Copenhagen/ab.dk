@@ -23,3 +23,13 @@ export const abConfig = {
 
 /** Start date of the current season — update when a new season kicks off. */
 export const CURRENT_SEASON_START = '2026-07-24';
+
+/**
+ * "2026/27"-style label derived from CURRENT_SEASON_START, so display copy
+ * (e.g. the fixtures page hero) doesn't need its own separately-hardcoded
+ * year string that could drift out of sync when a new season starts.
+ */
+export function currentSeasonLabel(): string {
+  const startYear = new Date(CURRENT_SEASON_START).getFullYear();
+  return `${startYear}/${String(startYear + 1).slice(-2)}`;
+}
