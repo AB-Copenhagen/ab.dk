@@ -2,11 +2,13 @@
 import {
   fetchCollectionType,
   fetchHeroSlides,
+  fetchMatchContent,
   fetchStaffRoster,
   strapiMediaUrl,
 } from '@/lib/strapi/client';
 import { fetchABEvents, fetchEvent, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
 import { getSquadPlayers } from '@/lib/si/squad';
+import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
 import SquadCard from '@/components/SquadCard.astro';
 import StaffCard from '@/components/StaffCard.astro';
@@ -264,14 +266,30 @@ const matchupEventIds = [
       .map((s) => s.eventId!)
   ),
 ];
+// Ticket map/match-content are only ever consulted for matchup slides, and
+// the ticket map means scraping billet.ab.dk's own HTML (see src/lib/billet.ts)
+// — skip both requests entirely when there's nothing that would use them.
+const [matchupEvents, matchupBilletMap, matchupContents] = await Promise.all([
+  Promise.all(matchupEventIds.map((id) => fetchEvent(id, locale).catch(() => null))),
+  matchupEventIds.length > 0 ? fetchBilletTicketMap() : Promise.resolve(new Map<string, string>()),
+  Promise.all(
+    matchupEventIds.map((id) => fetchMatchContent(id, locale).catch(() => null))
+  ),
+]);
 const matchupEventById = new Map(
-  (
-    await Promise.all(
-      matchupEventIds.map((id) => fetchEvent(id, locale).catch(() => null))
-    )
-  )
+  matchupEvents
     .filter((e): e is NonNullable<typeof e> => e !== null)
     .map((e) => [e.eventId, e])
+);
+// match-content's own ticketUrl is an editor-entered override for exactly
+// this kind of case — e.g. billet.ab.dk's slug for "Sønderjyske" drops the
+// ø entirely, which findTicketUrl's fuzzy match can't bridge — so it takes
+// priority over the fuzzy lookup below, same precedence as the match detail
+// page (src/pages/en/match/[slug].astro) uses.
+const matchupTicketUrlById = new Map(
+  matchupContents
+    .filter((c): c is NonNullable<typeof c> => c?.ticketUrl != null)
+    .map((c) => [c.eventId, c.ticketUrl!])
 );
 
 /** Same shape as the homepage's own "Next match" card data (opponent/oppLogo/
@@ -312,10 +330,19 @@ const heroSlides: HeroSlide[] = (
             // only case AB itself sells tickets for); an editor's own
             // ctaLabel/ctaUrl always wins. Away matches fall back to the
             // match detail page instead, so the slide's CTA is never blank.
+            // The ticket link itself prefers this specific fixture's own
+            // Vivenu event page (same lookup src/pages/en/matches.astro uses)
+            // over the generic billet.ab.dk homepage, so a visitor lands
+            // straight on the right match instead of having to find it.
             const ctaLabel =
               slide.ctaLabel || translate(locale, isABHome ? 'buyTickets' : 'matchDetails');
             const ctaUrl =
-              slide.ctaUrl || (isABHome ? 'https://billet.ab.dk/' : matchHref(event.eventId));
+              slide.ctaUrl ||
+              (isABHome
+                ? (matchupTicketUrlById.get(event.eventId) ??
+                    findTicketUrl(matchupBilletMap, matchup.opponent) ??
+                    'https://billet.ab.dk/')
+                : matchHref(event.eventId));
             return {
               type: 'matchup',
               img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
@@ -323,7 +350,13 @@ const heroSlides: HeroSlide[] = (
               imgHeight: slide.image?.height,
               ctaLabel,
               ctaUrl,
-              ctaVariant: slide.ctaVariant,
+              // Strapi's schema default only applies when the field is
+              // omitted from a create request entirely — the admin UI
+              // instead saves an explicit null when nothing's picked in the
+              // dropdown, so an untouched field never actually gets
+              // 'btn-beige' without this fallback (confirmed live: a slide
+              // rendered class="btn btn-lg null ...", stringifying the null).
+              ctaVariant: slide.ctaVariant || 'btn-beige',
               matchup,
             };
           }
