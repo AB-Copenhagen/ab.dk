@@ -389,13 +389,15 @@ const heroSlides: HeroSlide[] = (
             />
           ) : slide.type === 'matchup' ? (
             <Img
-              src="/images/match-hero-default.jpg"
+              src={slide.img ?? '/images/match-hero-default.jpg'}
               alt=""
-              width={5463}
-              height={3642}
+              width={slide.imgWidth ?? 5463}
+              height={slide.imgHeight ?? 3642}
               loading={i === 0 ? 'eager' : 'lazy'}
               fetchpriority={i === 0 ? 'high' : undefined}
               draggable="false"
+              widths={[640, 828, 1200, 1920]}
+              sizes="100vw"
               class="w-full h-full object-cover object-center pointer-events-none"
             />
           ) : (
