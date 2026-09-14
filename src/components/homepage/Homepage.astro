@@ -302,6 +302,11 @@ const heroSlides: HeroSlide[] = (
             // to show — a picked event that SI can no longer resolve (or no
             // event picked yet) shouldn't blank the whole slider.
             if (!event) return null;
+            // Also skip once the picked match is over — an editor shouldn't
+            // have to remember to unpublish/delete the slide the day after.
+            // 'inprogress' still shows (the match itself is the moment to
+            // promote), only 'finished'/'cancelled' age it out.
+            if (event.statusType === 'finished' || event.statusType === 'cancelled') return null;
             const { isABHome, ...matchup } = matchupDataFor(event);
             // Spec: CTA defaults to "Buy Tickets" for AB home matches (the
             // only case AB itself sells tickets for); an editor's own
