@@ -32,6 +32,24 @@
     {
       "source": "/149e9513-01fa-4fb0-aad4-566afd725d1b/2d206a39-8ed7-437e-a3be-862e0f06eea3/:path*",
       "headers": [{ "key": "X-Frame-Options", "value": "SAMEORIGIN" }]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://shop.ab.dk/.well-known/ucp>; rel=\"service\"; title=\"AB 1889 Shop — UCP commerce discovery\", <https://billet.ab.dk>; rel=\"related\"; title=\"AB 1889 Official Ticketing\""
+        }
+      ]
+    },
+    {
+      "source": "/en",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://shop.ab.dk/.well-known/ucp>; rel=\"service\"; title=\"AB 1889 Shop — UCP commerce discovery\", <https://billet.ab.dk>; rel=\"related\"; title=\"AB 1889 Official Ticketing\""
+        }
+      ]
     }
   ]
 }

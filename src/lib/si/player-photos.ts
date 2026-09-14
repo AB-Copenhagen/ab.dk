@@ -1,7 +1,7 @@
 // Maps SI API player names (and WP site staff names) to Wasabi player photo keys.
 // Keys are under players/ in the ab-media bucket.
 
-function toSlug(name: string): string {
+export function toSlug(name: string): string {
   return (
     name
       // Danish æ/ø/å aren't decomposable via NFD (they're distinct letters, not
@@ -30,12 +30,14 @@ const OVERRIDES: Record<string, string> = {
   'soeren-ilsoee': 'players/soren-ilsoe.png',
 };
 
-// Players to hide from squad display (e.g. out of contract).
+// Players to hide from squad display (e.g. out of contract, retired). Slug is
+// of the raw SI name (pre displayNameOverride) — see toSlug above.
 export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
   'daniel-a-pedersen',
   'jeppe-gertsen',
   'anton-boye',
   'noah-maale',
+  'emil-mygind', // Emil Mygind Jensen — retired, no Strapi row
 ]);
 
 // Shirt numbers to hide the photo for — either no photo exists anywhere yet

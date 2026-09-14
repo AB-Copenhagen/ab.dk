@@ -7,7 +7,7 @@ import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonSt
 import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
 import { fetchPlayerCmsData, resolvePlayerPhoto, strapiMediaUrl } from '@/lib/strapi/client';
 import type { StrapiPlayer } from '@/lib/strapi/client';
-import { PENDING_PHOTO_SHIRT_NUMBERS } from '@/lib/si/player-photos';
+import { PENDING_PHOTO_SHIRT_NUMBERS, EXCLUDED_PLAYER_SLUGS, toSlug } from '@/lib/si/player-photos';
 import { findManualPlayer, manualPlayersAsSIPlayers } from '@/data/manual-players';
 import { findPlayerIdByNameSlug, getPlayerSlug } from '@/data/player-cms-data';
 import { abConfig } from '@/lib/config/ab';
@@ -34,7 +34,7 @@ if (isNaN(playerId)) {
     const resolvedName = roster.find((p) => p.id === resolvedId)?.name ?? null;
     return Astro.redirect(`/spiller/${getPlayerSlug(resolvedId, resolvedName)}`, 308);
   }
-  return Astro.redirect('/truppen');
+  return Astro.rewrite('/404');
 }
 
 const manualPlayer = findManualPlayer(playerId);
@@ -71,6 +71,13 @@ if (manualPlayer) {
   // SI returns an empty (but truthy) profile for an id it doesn't recognize
   // — e.g. a retired synthetic manual-player id — rather than 404ing.
   if (!player?.name) {
+    return Astro.rewrite('/404');
+  }
+
+  // Legacy exclusion list (no Strapi row needed) — e.g. a retired player whose
+  // Strapi row was deleted outright. Checked on the raw SI name, same as
+  // getSquadPlayers' own fallback (src/lib/si/squad.ts).
+  if (EXCLUDED_PLAYER_SLUGS.has(toSlug(player.name))) {
     return Astro.redirect('/truppen');
   }
 
@@ -84,10 +91,18 @@ if (manualPlayer) {
   shirtNumber = fetchedCms?.shirtNumberOverride ?? siShirtNumber;
   seasonStats = aggregateSeasonStats(matchStats);
   cmsPlayer = fetchedCms;
+
+  // hideFromSquad also removes the detail page itself (e.g. a departed player
+  // still hidden via a Strapi row, rather than the legacy exclusion list) — SI
+  // keeps serving their profile even after they're gone, so this is the only
+  // way to take the page down without deleting the Strapi row.
+  if (cmsPlayer?.hideFromSquad) {
+    return Astro.redirect('/truppen');
+  }
 }
 
 if (!player) {
-  return Astro.redirect('/truppen');
+  return Astro.rewrite('/404');
 }
 
 const { name, countryName, birthDate, height } = player;

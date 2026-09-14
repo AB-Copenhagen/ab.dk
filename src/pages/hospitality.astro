@@ -1,29 +1,30 @@
 ---
 import Base from '@/layouts/Base.astro';
+import Img from '@/components/Img.astro';
 import heroImage from '@/assets/images/gladsaxe.webp';
 
 export const prerender = true;
 
 const photos = [
   {
-    src: 'https://i0.wp.com/ab.dk/wp-content/uploads/2026/01/DSC09796.jpeg?ssl=1',
-    alt: 'Knud Lundberg Lounge interior',
+    src: '/images/hospitality-knud-lundberg-lounge.jpg',
+    alt: 'Knud Lundberg Lounge interiør',
   },
   {
-    src: 'https://i0.wp.com/ab.dk/wp-content/uploads/2026/01/DSC09813.jpeg?ssl=1',
+    src: '/images/hospitality-mad-owl-pub.jpg',
     alt: 'The Mad Owl Pub interiør',
   },
   {
-    src: 'https://i0.wp.com/ab.dk/wp-content/uploads/2026/01/DSC09940.jpeg?ssl=1',
-    alt: 'Function room at Gladsaxe Stadion',
+    src: '/images/hospitality-function-room.jpg',
+    alt: 'Selskabslokale på Gladsaxe Stadion',
   },
   {
-    src: 'https://i0.wp.com/ab.dk/wp-content/uploads/2026/01/1784BD9B-1E3E-4FAC-A07D-F128AB864107.jpg?ssl=1',
-    alt: 'Event space at AB 1889',
+    src: '/images/hospitality-event-space.jpg',
+    alt: 'Eventlokale hos AB 1889',
   },
   {
-    src: 'https://i0.wp.com/ab.dk/wp-content/uploads/2026/01/2EF799D9-18D0-4293-9805-C62FA32D621F.jpg?ssl=1',
-    alt: 'Venue at Gladsaxe Stadion',
+    src: '/images/hospitality-venue.jpg',
+    alt: 'Gladsaxe Stadion',
   },
 ];
 ---
@@ -157,7 +158,7 @@ const photos = [
               data-alt={photo.alt}
               aria-label={`View: ${photo.alt}`}
             >
-              <img
+              <Img
                 src={photo.src}
                 alt={photo.alt}
                 loading={i === 0 ? 'eager' : 'lazy'}
@@ -327,6 +328,12 @@ const photos = [
   }
   @media (min-width: 640px) {
     .gitem-1 { aspect-ratio: auto; }
+  }
+
+  .gitem picture {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 
   .gitem img {

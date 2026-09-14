@@ -203,3 +203,32 @@ hardcoded in `Homepage.astro` into Strapi. New slides going forward are entered 
 in Strapi admin.
 
 > Restart Strapi after the first deploy so it picks up the new content type.
+
+## Managing match content (Strapi)
+
+The **Match Content** content type (`api::match-content.match-content`) holds CMS-only
+extras for a specific SI fixture (identified by `eventId`, entered via a custom
+match-search picker) — it doesn't duplicate anything SI already provides (score, kickoff
+time, opponent, etc.).
+
+| Field          | Description                                                                      |
+| -------------- | -------------------------------------------------------------------------------- |
+| `eventId`      | SI event ID — search-and-select via the custom match picker, not typed manually  |
+| `title`        | Admin-only label — not shown on the site                                         |
+| `ticketUrl`    | Overrides the auto-derived billet.ab.dk ticket link for this match               |
+| `accentColor`  | Optional accent color for the match detail page                                  |
+| `bannerImage`  | Hero photo for the match detail page                                             |
+| `articleLinks` | Repeatable — tags an Article by role (see below)                                 |
+| `socialEmbeds` | Repeatable — `platform` (Instagram/Twitter/YouTube/Facebook/TikTok) + embed code |
+
+`articleLinks` is how pre-match previews, post-match reports, and similar are attached to
+a fixture: each entry pairs a `role` (`pre_match` / `post_match` / `community_news` /
+`away_travel` / `other`) with a relation to an **Article**.
+
+**Picking the right locale in that Article relation search:** Strapi's relation picker
+shows titles in whichever locale the admin is currently viewing — and because Match
+Content itself isn't a localized content type, that ambient locale defaults to Danish
+regardless of which article you're actually looking for. If your Article titles are
+easier to find in English, switch Strapi's locale selector to English _before_ opening
+the Match Content entry (rather than after) — the article-link search will then show
+English titles instead. There's no per-field locale toggle inside the picker itself.

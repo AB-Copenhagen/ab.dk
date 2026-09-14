@@ -123,26 +123,48 @@ const matchSchema = {
   endDate: estimatedMatchEndDate(startDate),
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  // No per-seat/membership price data available from billet.ab.dk's ticket
+  // listing (fetchBilletTicketMap only scrapes event URLs, not prices) — omit
+  // `price` rather than publish a number that isn't actually accurate.
+  ...(ticketUrl
+    ? {
+        offers: {
+          '@type': 'Offer',
+          url: ticketUrl,
+          availability: isUpcoming
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/SoldOut',
+          validFrom: new Date().toISOString(),
+        },
+      }
+    : {}),
   location: {
     '@type': 'Place',
     name: venueName,
-    // Only known for home fixtures — the away side's stadium address isn't
-    // data we hold anywhere in this codebase.
-    ...(isHome
+    // Google treats location.address as required for Event rich results, so
+    // it's always emitted. The full street address is only known for home
+    // fixtures — SI gives us nothing but a venue name for away grounds, so
+    // those fall back to the country alone rather than omitting the field
+    // and failing validation outright.
+    address: isHome
       ? {
-          address: {
-            '@type': 'PostalAddress',
-            streetAddress: 'Gladsaxevej 202',
-            addressLocality: 'Søborg',
-            postalCode: '2860',
-            addressCountry: 'DK',
-          },
+          '@type': 'PostalAddress',
+          streetAddress: 'Gladsaxevej 202',
+          addressLocality: 'Søborg',
+          postalCode: '2860',
+          addressCountry: 'DK',
         }
-      : {}),
+      : { '@type': 'PostalAddress', addressCountry: 'DK' },
   },
   homeTeam: { '@type': 'SportsTeam', name: homeName },
   awayTeam: { '@type': 'SportsTeam', name: awayName },
   competitor: [
+    { '@type': 'SportsTeam', name: homeName },
+    { '@type': 'SportsTeam', name: awayName },
+  ],
+  // The two sides are the event's performers in schema.org terms; Google
+  // reports a SportsEvent without `performer` as an incomplete rich result.
+  performer: [
     { '@type': 'SportsTeam', name: homeName },
     { '@type': 'SportsTeam', name: awayName },
   ],
