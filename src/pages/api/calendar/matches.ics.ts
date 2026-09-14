@@ -1,6 +1,7 @@
 import type { APIContext } from 'astro';
-import { fetchABEvents, cupTournamentLabel, isCupMatch } from '@/lib/si/client';
+
 import { abConfig } from '@/lib/config/ab';
+import { cupTournamentLabel, fetchABEvents, isCupMatch } from '@/lib/si/client';
 
 export const prerender = false;
 
@@ -48,7 +49,10 @@ function foldLine(line: string): string {
 }
 
 function toIcsUtc(iso: string): string {
-  return new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  return new Date(iso)
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}Z$/, 'Z');
 }
 
 const MATCH_DURATION_MS = 2 * 60 * 60 * 1000; // kickoff + ~2h (incl. build-up/stoppage)
@@ -63,7 +67,11 @@ export async function GET({ url }: APIContext) {
 
   let events: Awaited<ReturnType<typeof fetchABEvents>> = [];
   try {
-    events = await fetchABEvents({ ...seasonWindow(), limit: 200, allCompetitions: true });
+    events = await fetchABEvents({
+      ...seasonWindow(),
+      limit: 200,
+      allCompetitions: true,
+    });
   } catch {
     // SI unavailable — still return a syntactically valid (empty) feed
     // rather than a 502, so a subscribed calendar app doesn't hard-fail.
@@ -88,8 +96,12 @@ export async function GET({ url }: APIContext) {
   for (const event of events) {
     const isABHome = event.homeId === abConfig.teamId;
     const summary = `${event.homeName} vs ${event.awayName}`;
-    const competition = isCupMatch(event) ? cupTournamentLabel(event, locale) : event.tournamentName;
-    const venueName = event.properties?.venueName ?? (isABHome ? 'Gladsaxe Stadion' : event.homeName);
+    const competition = isCupMatch(event)
+      ? cupTournamentLabel(event, locale)
+      : event.tournamentName;
+    const venueName =
+      event.properties?.venueName ??
+      (isABHome ? 'Gladsaxe Stadion' : event.homeName);
     const matchUrl = `https://ab.dk/${locale === 'da' ? 'kamp' : 'en/match'}/${event.eventId}`;
     const description = `${competition}\n${t.venue}: ${venueName}\n${t.matchDetails}: ${matchUrl}`;
 
@@ -122,7 +134,8 @@ export async function GET({ url }: APIContext) {
       // Calendar apps re-poll subscribed feeds on their own schedule (hours,
       // not minutes) — s-maxage lets the CDN absorb that without re-hitting
       // the SI API on every poll.
-      'Cache-Control': 'public, max-age=0, s-maxage=1800, stale-while-revalidate=3600',
+      'Cache-Control':
+        'public, max-age=0, s-maxage=1800, stale-while-revalidate=3600',
     },
   });
 }
