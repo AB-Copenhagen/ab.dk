@@ -315,14 +315,16 @@ const matchHref = (id: number) => `/en/match/${id}`;
                       <span class="text-[0.65rem] text-[#BBB]" {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtDate(event.startDate, dateLocale, TIME_OPTS)}</span>
                     </div>
 
-                    <!-- Teams — home/score/away as sub-columns of one flex-1 -->
-                    <!-- group, so the score/status gets its own fixed-width slot -->
-                    <!-- instead of being crammed directly between the crests. -->
-                    <div class="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
-                      <div class="flex-1 min-w-0 flex items-center justify-end gap-2 sm:gap-3">
-                        <span class={`hidden sm:inline text-sm truncate text-right ${isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{homeName}</span>
-                        <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt={homeName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
-                      </div>
+                    <!-- Teams — crest + score/status + crest only, no names. -->
+                    <!-- Team names were still truncating even at full desktop -->
+                    <!-- width once a flex-1 name span had to compete with the -->
+                    <!-- score column, venue, and action buttons for space; the -->
+                    <!-- crest + row-level "View match: X vs Y" link (below) -->
+                    <!-- carry the identity instead. Fixed-width now that there's -->
+                    <!-- no variable-length text inside it — see the Venue -->
+                    <!-- comment for why that matters for column alignment. -->
+                    <div class="shrink-0 flex items-center gap-2 sm:gap-3">
+                      <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt={homeName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
 
                       <div class="w-12 sm:w-16 shrink-0 flex items-center justify-center">
                         {isLive ? (
@@ -336,17 +338,20 @@ const matchHref = (id: number) => `/en/match/${id}`;
                         )}
                       </div>
 
-                      <div class="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
-                        <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt={awayName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
-                        <span class={`hidden sm:inline text-sm truncate ${!isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{awayName}</span>
-                      </div>
+                      <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt={awayName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
                     </div>
 
-                    <!-- Venue (desktop only) -->
-                    <span class="hidden lg:block w-36 shrink-0 text-xs text-[#999] truncate">{venue}</span>
+                    <!-- Venue (desktop only) — the row's one flex-1 element, so -->
+                    <!-- it starts at the same x on every row: everything before -->
+                    <!-- it (date/competition/teams) is now fixed-width, so it no -->
+                    <!-- longer shifts depending on whether Tickets renders next -->
+                    <!-- to it (previously Teams was flex-1 and absorbed however -->
+                    <!-- much space Action's variable Tickets/Info combo left -->
+                    <!-- over, which pushed Venue's start position around). -->
+                    <span class="hidden lg:block flex-1 min-w-0 text-xs text-[#999] truncate">{venue}</span>
 
                     <!-- Action -->
-                    <div class="relative z-10 shrink-0 ml-auto sm:ml-0 flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
+                    <div class="relative z-10 shrink-0 ml-auto flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
                       {!isPast && isABHome && (
                         <a
                           href={`${ticketUrl}?useEmbed=true`}
