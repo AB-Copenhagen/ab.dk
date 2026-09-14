@@ -83,7 +83,7 @@ async function siEventsRequest(
   return data.events ?? [];
 }
 
-/** List AB's current-season fixtures/results (league + cup) as `{ id, label }` picker options, newest first. */
+/** List AB's current-season fixtures/results (league + cup) as `{ id, label }` picker options, nearest to now first (soonest upcoming match at the top, then further out; a distant past result sorts last too). */
 export async function listCurrentSeasonMatches(): Promise<MatchOption[]> {
   const eventsByCompetition = await Promise.all(
     COMPETITIONS.map((competition) => {
@@ -111,9 +111,14 @@ export async function listCurrentSeasonMatches(): Promise<MatchOption[]> {
       return true;
     });
 
+  const now = Date.now();
   return events
     .slice()
-    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+    .sort(
+      (a, b) =>
+        Math.abs(new Date(a.startDate).getTime() - now) -
+        Math.abs(new Date(b.startDate).getTime() - now)
+    )
     .map((event) => ({ id: event.eventId, label: formatMatchLabel(event) }));
 }
 
