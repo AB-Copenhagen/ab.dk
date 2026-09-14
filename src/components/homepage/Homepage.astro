@@ -5,7 +5,7 @@ import {
   fetchStaffRoster,
   strapiMediaUrl,
 } from '@/lib/strapi/client';
-import { fetchABEvents, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
+import { fetchABEvents, fetchEvent, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
 import { getSquadPlayers } from '@/lib/si/squad';
 import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
 import SquadCard from '@/components/SquadCard.astro';
@@ -174,7 +174,7 @@ const products = shopifyProducts.length > 0
   : staticProducts;
 
 interface HeroSlide {
-  type: 'image' | 'video';
+  type: 'image' | 'video' | 'matchup';
   img?: ImageMetadata | string;
   imgWidth?: number;
   imgHeight?: number;
@@ -185,6 +185,20 @@ interface HeroSlide {
   ctaLabel: string;
   ctaUrl: string;
   ctaVariant: string;
+  /** Image slides only — 'bottom' pins the CTA low (like video slides) instead of dead-center,
+   *  for slides whose baked-in graphic already fills the center. Defaults to 'center'. */
+  ctaPosition?: 'center' | 'bottom';
+  /** 'matchup' slides only — the picked fixture's crests/date/time, resolved
+   *  live from SI (see matchupDataFor below) instead of a flat designer-
+   *  exported image. */
+  matchup?: {
+    opponent: string;
+    oppLogo: string | null;
+    isCup: boolean;
+    cupLabel: string | null;
+    dateStr: string | null;
+    timeStr: string | null;
+  };
 }
 
 // Used when the Strapi `hero-slides` collection is empty or unreachable (e.g.
@@ -235,22 +249,96 @@ const FALLBACK_HERO_SLIDES: HeroSlide[] = [
 // require for <video> playback and scrubbing. Wasabi's presigned URL supports
 // Range natively and is re-signed on every request (5-minute Strapi cache TTL
 // vs. the 7-day signed-URL expiry), so staleness isn't a concern.
-const heroSlides: HeroSlide[] =
+
+// 'matchup' slides (editor picks a fixture from a dropdown in Strapi, backed
+// by the same global::match-picker custom field the match-content type uses
+// — see strapi/src/api/hero-slide/content-types/hero-slide/schema.json) carry
+// only an eventId; the crests/date/time shown on the slide are looked up live
+// from SI here, not baked into a designer-exported graphic. Fetch every
+// matchup slide's event up front (in parallel) so the mapping below can stay
+// synchronous.
+const matchupEventIds = [
+  ...new Set(
+    cmsHeroSlides
+      .filter((s) => s.slideType === 'matchup' && s.eventId)
+      .map((s) => s.eventId!)
+  ),
+];
+const matchupEventById = new Map(
+  (
+    await Promise.all(
+      matchupEventIds.map((id) => fetchEvent(id, locale).catch(() => null))
+    )
+  )
+    .filter((e): e is NonNullable<typeof e> => e !== null)
+    .map((e) => [e.eventId, e])
+);
+
+/** Same shape as the homepage's own "Next match" card data (opponent/oppLogo/
+ *  cup label/date/time above), but for any event — a matchup slide can point
+ *  at any fixture, not just the next one. */
+function matchupDataFor(event: NonNullable<ReturnType<(typeof matchupEventById)['get']>>) {
+  const isABHome = event.homeId === abConfig.teamId;
+  const oppId = isABHome ? event.awayId : event.homeId;
+  const isCup = isCupMatch(event);
+  return {
+    isABHome,
+    opponent: isABHome ? event.awayName : event.homeName,
+    oppLogo: getTeamLogoSrc(oppId),
+    isCup,
+    cupLabel: isCup ? cupTournamentLabel(event, locale) : null,
+    dateStr: fmtDate(event.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS),
+    timeStr: fmtDate(event.startDate, matchTimeLocale, TIME_24H_OPTS),
+  };
+}
+
+const heroSlides: HeroSlide[] = (
   cmsHeroSlides.length > 0
-    ? cmsHeroSlides.map((slide) => ({
-        type: slide.slideType,
-        img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
-        imgWidth: slide.image?.width,
-        imgHeight: slide.image?.height,
-        video: slide.video?.url,
-        alt: slide.alt,
-        headline: slide.headline,
-        subtitle: slide.subtitle,
-        ctaLabel: slide.ctaLabel,
-        ctaUrl: slide.ctaUrl,
-        ctaVariant: slide.ctaVariant,
-      }))
-    : FALLBACK_HERO_SLIDES;
+    ? cmsHeroSlides
+        .map((slide): HeroSlide | null => {
+          if (slide.slideType === 'matchup') {
+            const event = slide.eventId ? matchupEventById.get(slide.eventId) : undefined;
+            // Skip gracefully rather than render a matchup slide with nothing
+            // to show — a picked event that SI can no longer resolve (or no
+            // event picked yet) shouldn't blank the whole slider.
+            if (!event) return null;
+            const { isABHome, ...matchup } = matchupDataFor(event);
+            // Spec: CTA defaults to "Buy Tickets" for AB home matches (the
+            // only case AB itself sells tickets for); an editor's own
+            // ctaLabel/ctaUrl always wins. Away matches fall back to the
+            // match detail page instead, so the slide's CTA is never blank.
+            const ctaLabel =
+              slide.ctaLabel || translate(locale, isABHome ? 'buyTickets' : 'matchDetails');
+            const ctaUrl =
+              slide.ctaUrl || (isABHome ? 'https://billet.ab.dk/' : matchHref(event.eventId));
+            return {
+              type: 'matchup',
+              img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
+              imgWidth: slide.image?.width,
+              imgHeight: slide.image?.height,
+              ctaLabel,
+              ctaUrl,
+              ctaVariant: slide.ctaVariant,
+              matchup,
+            };
+          }
+          return {
+            type: slide.slideType,
+            img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
+            imgWidth: slide.image?.width,
+            imgHeight: slide.image?.height,
+            video: slide.video?.url,
+            alt: slide.alt,
+            headline: slide.headline,
+            subtitle: slide.subtitle,
+            ctaLabel: slide.ctaLabel ?? '',
+            ctaUrl: slide.ctaUrl ?? '',
+            ctaVariant: slide.ctaVariant,
+          };
+        })
+        .filter((s): s is HeroSlide => s !== null)
+    : FALLBACK_HERO_SLIDES
+);
 ---
 
 <style>
@@ -261,6 +349,22 @@ const heroSlides: HeroSlide[] =
     to {
       transform: scaleX(1);
     }
+  }
+
+  /* Repeatable film-grain texture — layer over a photo (below the foreground
+     content, above the gradient vignette scrim) to add depth/texture.
+     `overlay` blend keeps the photo's own tones undisturbed; `multiply`
+     visibly darkens everything under it, which the vignette below already
+     handles. Reusable: copy this class + a sibling <div class="grain-overlay
+     absolute inset-0" /> onto any other slide/section that needs the same
+     treatment. */
+  .grain-overlay {
+    background-image: url('/images/hero-grain.webp');
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    mix-blend-mode: overlay;
+    opacity: 1;
+    pointer-events: none;
   }
 </style>
 
@@ -283,6 +387,17 @@ const heroSlides: HeroSlide[] =
               draggable="false"
               class="hero-video w-full h-full max-w-[1680px] mx-auto object-cover object-center pointer-events-none"
             />
+          ) : slide.type === 'matchup' ? (
+            <Img
+              src="/images/match-hero-default.jpg"
+              alt=""
+              width={5463}
+              height={3642}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : undefined}
+              draggable="false"
+              class="w-full h-full object-cover object-center pointer-events-none"
+            />
           ) : (
             <Img
               src={slide.img ?? ''}
@@ -299,26 +414,7 @@ const heroSlides: HeroSlide[] =
           )}
           {slide.type === 'video' ? (
             <div class="absolute inset-0 z-10 flex flex-col items-center justify-end pb-28 px-6 text-center">
-              <a
-                href={slide.ctaUrl}
-                target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
-                rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
-                class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
-                {slide.ctaLabel}
-              </a>
-            </div>
-          ) : (
-            <>
-              <div class="absolute inset-0 bg-black/20" />
-              <div class="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
-                <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance text-center">
-                  {slide.headline}
-                </h1>
-                {slide.subtitle && (
-                  <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
-                    {slide.subtitle}
-                  </p>
-                )}
+              {slide.ctaLabel && slide.ctaUrl && (
                 <a
                   href={slide.ctaUrl}
                   target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
@@ -326,6 +422,98 @@ const heroSlides: HeroSlide[] =
                   class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
                   {slide.ctaLabel}
                 </a>
+              )}
+            </div>
+          ) : slide.type === 'matchup' && slide.matchup ? (
+            <>
+              <div
+                class="absolute inset-0"
+                style="background:linear-gradient(180deg, rgba(10,10,10,0.65) 0%, rgba(10,10,10,0.15) 30%, rgba(10,10,10,0.15) 70%, rgba(10,10,10,0.7) 100%)"
+              />
+              <div class="grain-overlay absolute inset-0" />
+              <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 md:gap-8 px-6 pb-20 text-center">
+                <div>
+                  <h1 class="font-black text-white uppercase tracking-[0.14em] text-[clamp(0.8rem,1.6vw,1rem)]">
+                    {translate(locale, 'nextMatch')}
+                  </h1>
+                  <div class="flex items-center justify-center gap-4 mt-3">
+                    <span class="font-black text-white leading-none text-[clamp(2rem,5.5vw,4rem)] tracking-[-0.03em]">
+                      AB
+                    </span>
+                    <span class="h-px w-12 md:w-16 bg-ab-gold" />
+                    <span class="font-black text-white leading-none text-[clamp(2rem,5.5vw,4rem)] tracking-[-0.03em]">
+                      {slide.matchup.opponent}
+                    </span>
+                  </div>
+                  {slide.matchup.isCup && slide.matchup.cupLabel && (
+                    <span class="inline-flex items-center leading-none font-black uppercase tracking-[0.06em] text-[0.65rem] text-ab-green bg-ab-beige rounded-full px-2.5 py-1 mt-3">
+                      {slide.matchup.cupLabel}
+                    </span>
+                  )}
+                </div>
+
+                <div class="flex items-center gap-6 md:gap-10">
+                  <img
+                    src="/images/ab-crest.svg"
+                    alt="AB"
+                    width="112"
+                    height="112"
+                    class="w-20 h-20 md:w-28 md:h-28 object-contain"
+                  />
+                  {slide.matchup.oppLogo && (
+                    <img
+                      src={slide.matchup.oppLogo}
+                      alt={slide.matchup.opponent}
+                      width="112"
+                      height="112"
+                      class="w-20 h-20 md:w-28 md:h-28 object-contain"
+                    />
+                  )}
+                </div>
+
+                {(slide.matchup.dateStr || slide.matchup.timeStr) && (
+                  <p class="font-medium text-white text-[clamp(1rem,2.2vw,1.4rem)]">
+                    {[slide.matchup.dateStr, slide.matchup.timeStr].filter(Boolean).join(' | ')}
+                  </p>
+                )}
+
+                {slide.ctaLabel && slide.ctaUrl && (
+                  <a
+                    href={slide.ctaUrl}
+                    target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                    rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                    {slide.ctaLabel}
+                  </a>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <div class="absolute inset-0 bg-black/30" />
+              <div
+                class={`absolute inset-0 z-10 flex flex-col items-center px-6 text-center ${
+                  slide.ctaPosition === 'bottom' ? 'justify-end pb-28' : 'justify-center'
+                }`}>
+                {slide.headline && (
+                  <h1 class="font-black text-white leading-none text-[clamp(4rem,11vw,10rem)] tracking-[-0.04em] text-balance text-center">
+                    {slide.headline}
+                  </h1>
+                )}
+                {slide.subtitle && (
+                  <p class="font-medium text-white mt-8 mb-5 text-[clamp(1.7rem,2.8vw,2rem)]">
+                    {slide.subtitle}
+                  </p>
+                )}
+                {slide.ctaLabel && slide.ctaUrl && (
+                  <a
+                    href={slide.ctaUrl}
+                    target={slide.ctaUrl.startsWith('http') ? '_blank' : undefined}
+                    rel={slide.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto`}>
+                    {slide.ctaLabel}
+                  </a>
+                )}
               </div>
             </>
           )}

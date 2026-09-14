@@ -26,7 +26,7 @@
     },
     "slideType": {
       "type": "enumeration",
-      "enum": ["image", "video"],
+      "enum": ["image", "video", "matchup"],
       "required": true,
       "pluginOptions": {
         "i18n": {
@@ -47,6 +47,15 @@
       "type": "media",
       "multiple": false,
       "allowedTypes": ["images"],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "eventId": {
+      "type": "integer",
+      "customField": "global::match-picker",
       "pluginOptions": {
         "i18n": {
           "localized": false
@@ -81,7 +90,6 @@
     },
     "ctaLabel": {
       "type": "string",
-      "required": true,
       "pluginOptions": {
         "i18n": {
           "localized": true
@@ -90,7 +98,6 @@
     },
     "ctaUrl": {
       "type": "string",
-      "required": true,
       "pluginOptions": {
         "i18n": {
           "localized": true
