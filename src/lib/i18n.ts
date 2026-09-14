@@ -200,6 +200,10 @@ export const t: Record<Locale, Record<string, string>> = {
     noAwayFixtures: 'Ingen kommende udekampe.',
     noCupFixtures: 'Ingen kommende pokalkampe.',
     noResultsFound: 'Ingen resultater fundet.',
+    syncToCalendar: 'Synkronisér til kalender',
+    syncToCalendarSubtitle: 'Abonnér, og få alle ABs kampe direkte i din kalender — opdateres automatisk.',
+    downloadIcsFile: 'eller download .ics-filen',
+    recentForm: 'ABs seneste form',
     defaultStadium: 'Gladsaxe Stadion',
     notFoundHeading: 'Siden blev ikke fundet',
     notFoundBody:
@@ -341,6 +345,10 @@ export const t: Record<Locale, Record<string, string>> = {
     noAwayFixtures: 'No upcoming away fixtures.',
     noCupFixtures: 'No upcoming cup fixtures.',
     noResultsFound: 'No results found.',
+    syncToCalendar: 'Sync to Calendar',
+    syncToCalendarSubtitle: 'Subscribe to get every AB match straight into your calendar — updates automatically.',
+    downloadIcsFile: 'or download the .ics file',
+    recentForm: "AB's Recent Form",
     defaultStadium: 'Gladsaxe Stadium',
     notFoundHeading: 'Page not found',
     notFoundBody:
