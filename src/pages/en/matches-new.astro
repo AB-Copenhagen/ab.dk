@@ -320,8 +320,8 @@ const matchHref = (id: number) => `/en/match/${id}`;
                     <!-- instead of being crammed directly between the crests. -->
                     <div class="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
                       <div class="flex-1 min-w-0 flex items-center justify-end gap-2 sm:gap-3">
-                        <span class={`text-sm truncate text-right ${isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{homeName}</span>
-                        <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt="" width="24" height="24" class="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                        <span class={`hidden sm:inline text-sm truncate text-right ${isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{homeName}</span>
+                        <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt={homeName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
                       </div>
 
                       <div class="w-12 sm:w-16 shrink-0 flex items-center justify-center">
@@ -337,8 +337,8 @@ const matchHref = (id: number) => `/en/match/${id}`;
                       </div>
 
                       <div class="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
-                        <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt="" width="24" height="24" class="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
-                        <span class={`text-sm truncate ${!isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{awayName}</span>
+                        <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt={awayName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                        <span class={`hidden sm:inline text-sm truncate ${!isABHome ? 'font-black text-[#111]' : 'font-medium text-[#333]'}`}>{awayName}</span>
                       </div>
                     </div>
 
