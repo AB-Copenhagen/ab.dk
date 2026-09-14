@@ -15,6 +15,7 @@ import {
 } from '@/lib/si/client';
 import { abConfig, currentSeasonLabel } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+import { fetchMatchTicketUrls } from '@/lib/strapi/client';
 import { translate } from '@/lib/i18n';
 import { fmtDate, dtAttrs, AB_TIMEZONE, TIME_OPTS } from '@/lib/dateFormat';
 import Img from '@/components/Img.astro';
@@ -85,11 +86,18 @@ const displayEvents: SIEvent[] =
   upcoming;
 const isPast = filter === 'results';
 
-const billetMap = await fetchBilletTicketMap().catch(() => new Map<string, string>());
+const homeEventIds = upcoming.filter((e) => e.homeId === abConfig.teamId).map((e) => e.eventId);
+const [billetMap, cmsTicketUrls] = await Promise.all([
+  fetchBilletTicketMap().catch(() => new Map<string, string>()),
+  fetchMatchTicketUrls(homeEventIds).catch(() => new Map<number, string>()),
+]);
 const ticketByEventId: Record<number, string> = {};
 for (const event of upcoming) {
   if (event.homeId === abConfig.teamId) {
-    const url = findTicketUrl(billetMap, event.awayName ?? '');
+    // CMS override (Strapi match-content.ticketUrl) wins — same precedence as
+    // the match detail page — falling back to the billet.ab.dk scrape/fuzzy-
+    // match only when no override is set.
+    const url = cmsTicketUrls.get(event.eventId) ?? findTicketUrl(billetMap, event.awayName ?? '');
     if (url) ticketByEventId[event.eventId] = url;
   }
 }
