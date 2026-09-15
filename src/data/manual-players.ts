@@ -34,6 +34,20 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
     position: 'forward',
     shirtNumber: 77,
   },
+  // Has an SI player profile (siPlayerId 1413477, /players/1413477/profile
+  // resolves fine — Strapi Player override is keyed to that real ID) but SI
+  // still hasn't added him to AB's team roster/members list, so
+  // fetchABPlayers doesn't return him and he's absent from squad listings.
+  // Confirmed 2026-09-15 after a prior removal of this same entry turned out
+  // to be premature. Remove this entry once fetchABPlayers actually returns
+  // him (squad.ts's name-match dedup will also drop it automatically then).
+  {
+    id: -3,
+    name: 'Marius Stenner',
+    position: 'defender',
+    shirtNumber: 17,
+    birthDate: '2004-06-28',
+  },
 ];
 
 export function findManualPlayer(id: number): ManualPlayer | undefined {
