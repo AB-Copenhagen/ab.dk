@@ -11,6 +11,15 @@ export interface ManualPlayer {
   name: string;
   position: PlayerPosition;
   shirtNumber: number;
+  /**
+   * The player's real SI-assigned id, when SI already has a profile for them
+   * (i.e. `/players/{siPlayerId}/profile` resolves) even though SI's team
+   * roster/members endpoint doesn't return them yet. Purely informational —
+   * shown on the SI roster debug page so it reflects SI's real id instead of
+   * the synthetic `id` below. Squad merging, routing, and this player's own
+   * detail-page URL still key off the synthetic `id`.
+   */
+  siPlayerId?: number;
   /** Omit while the player's full profile (bio, birth date, etc.) hasn't been supplied yet. */
   birthDate?: string;
   height?: number;
@@ -27,13 +36,11 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
   // left behind when Aidan Liu synced to SI for real and was removed from
   // this array — nobody deleted the Strapi row. Using -1 again silently
   // pulls in that dead override (wrong name/shirt/position on EN only). Skip
-  // it until that row is cleaned up in Strapi; -2 is the next safe ID.
-  {
-    id: -2,
-    name: 'Jermain Fernandes',
-    position: 'forward',
-    shirtNumber: 77,
-  },
+  // it until that row is cleaned up in Strapi. -2 was freed up the same way
+  // (Jermain Fernandes, removed 2026-09-15 once SI's roster started
+  // returning him for real) — check Strapi for a similarly orphaned override
+  // row at siPlayerId -2 before reusing it; -4 is the next id with no known
+  // history either way.
   // Has an SI player profile (siPlayerId 1413477, /players/1413477/profile
   // resolves fine — Strapi Player override is keyed to that real ID) but SI
   // still hasn't added him to AB's team roster/members list, so
@@ -43,6 +50,7 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
   // him (squad.ts's name-match dedup will also drop it automatically then).
   {
     id: -3,
+    siPlayerId: 1413477,
     name: 'Marius Stenner',
     position: 'defender',
     shirtNumber: 17,
