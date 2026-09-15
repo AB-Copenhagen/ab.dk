@@ -1,0 +1,155 @@
+---
+// Internal diagnostic page — not linked from nav, not localized (developer
+// tool, not user-facing content). Shows the *raw* SI roster endpoint next to
+// the manual-player overrides and the final merged squad-listing output, so a
+// "player X isn't on the site" report can be triaged at a glance: is SI
+// missing them entirely, are they stuck in MANUAL_PLAYERS, or are they being
+// filtered out by a Strapi hideFromSquad/exclusion rule?
+import Base from '@/layouts/Base.astro';
+import { fetchABPlayers } from '@/lib/si/client';
+import type { SIPlayer } from '@/lib/si/client';
+import { getSquadPlayers } from '@/lib/si/squad';
+import { MANUAL_PLAYERS } from '@/data/manual-players';
+import { getPlayerSlug } from '@/data/player-cms-data';
+
+export const prerender = false;
+
+let siPlayers: SIPlayer[] = [];
+let siError: string | null = null;
+try {
+  siPlayers = await fetchABPlayers('da');
+} catch (err) {
+  siError = err instanceof Error ? err.message : String(err);
+}
+
+let squadIds = new Set<number>();
+let squadError: string | null = null;
+try {
+  squadIds = new Set((await getSquadPlayers('da')).map((p) => p.id));
+} catch (err) {
+  squadError = err instanceof Error ? err.message : String(err);
+}
+
+interface RosterRow {
+  id: number;
+  name: string;
+  position: string;
+  shirtNumber: number | null;
+  birthDate: string | null;
+  source: 'SI roster' | 'Manual override';
+  onSquadPage: boolean;
+}
+
+const rows: RosterRow[] = [
+  ...siPlayers.map(
+    (p): RosterRow => ({
+      id: p.id,
+      name: p.name,
+      position: p.position,
+      shirtNumber: p.shirtNumber,
+      birthDate: p.birthDate,
+      source: 'SI roster',
+      onSquadPage: squadIds.has(p.id),
+    })
+  ),
+  ...MANUAL_PLAYERS.map(
+    (p): RosterRow => ({
+      id: p.id,
+      name: p.name,
+      position: p.position,
+      shirtNumber: p.shirtNumber,
+      birthDate: p.birthDate ?? null,
+      source: 'Manual override',
+      onSquadPage: squadIds.has(p.id),
+    })
+  ),
+].sort((a, b) => (a.shirtNumber ?? 999) - (b.shirtNumber ?? 999));
+
+const posLabels: Record<string, string> = {
+  keeper: 'Keeper',
+  defender: 'Defender',
+  midfielder: 'Midfielder',
+  forward: 'Forward',
+};
+---
+
+<Base title="SI Roster Debug | Akademisk Boldklub" description="Internal SI roster diagnostic page.">
+  <div class="max-w-[1200px] mx-auto px-5 py-10 font-mono text-sm">
+    <h1 class="text-2xl font-bold mb-1">SI roster debug</h1>
+    <p class="text-gray-500 mb-6">
+      Raw <code>fetchABPlayers()</code> output plus <code>MANUAL_PLAYERS</code>, compared
+      against the final merged output of <code>getSquadPlayers()</code> (what actually
+      renders on /truppen, the homepage, and /en/squad).
+    </p>
+
+    {siError && (
+      <p class="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
+        SI roster fetch failed: {siError}
+      </p>
+    )}
+    {squadError && (
+      <p class="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
+        getSquadPlayers() failed: {squadError}
+      </p>
+    )}
+
+    <p class="mb-4 text-gray-500">
+      {siPlayers.length} SI player(s), {MANUAL_PLAYERS.length} manual override(s),
+      {squadIds.size} shown on the final squad listing.
+    </p>
+
+    <div class="overflow-x-auto border border-gray-200 rounded">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-gray-50 text-left border-b border-gray-200">
+            <th class="p-2">#</th>
+            <th class="p-2">Name</th>
+            <th class="p-2">Position</th>
+            <th class="p-2">Birth date</th>
+            <th class="p-2">Source</th>
+            <th class="p-2">On squad page?</th>
+            <th class="p-2">ID</th>
+            <th class="p-2">Profile</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr class="border-b border-gray-100 last:border-0">
+              <td class="p-2">{row.shirtNumber ?? '—'}</td>
+              <td class="p-2 font-semibold">{row.name}</td>
+              <td class="p-2">{posLabels[row.position] ?? row.position}</td>
+              <td class="p-2">{row.birthDate ?? '—'}</td>
+              <td class="p-2">
+                <span
+                  class={
+                    row.source === 'Manual override'
+                      ? 'inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800'
+                      : 'inline-block px-2 py-0.5 rounded bg-gray-100 text-gray-700'
+                  }>
+                  {row.source}
+                </span>
+              </td>
+              <td class="p-2">
+                {row.onSquadPage ? (
+                  <span class="text-green-700">yes</span>
+                ) : (
+                  <span class="text-red-700">no</span>
+                )}
+              </td>
+              <td class="p-2 text-gray-400">{row.id}</td>
+              <td class="p-2">
+                <a
+                  href={`/spiller/${getPlayerSlug(row.id, row.name)}`}
+                  class="text-blue-600 underline"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  /spiller/{getPlayerSlug(row.id, row.name)}
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Base>
