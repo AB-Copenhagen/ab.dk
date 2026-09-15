@@ -11,6 +11,15 @@ export interface ManualPlayer {
   name: string;
   position: PlayerPosition;
   shirtNumber: number;
+  /**
+   * The player's real SI-assigned id, when SI already has a profile for them
+   * (i.e. `/players/{siPlayerId}/profile` resolves) even though SI's team
+   * roster/members endpoint doesn't return them yet. Purely informational —
+   * shown on the SI roster debug page so it reflects SI's real id instead of
+   * the synthetic `id` below. Squad merging, routing, and this player's own
+   * detail-page URL still key off the synthetic `id`.
+   */
+  siPlayerId?: number;
   /** Omit while the player's full profile (bio, birth date, etc.) hasn't been supplied yet. */
   birthDate?: string;
   height?: number;
@@ -41,6 +50,7 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
   // him (squad.ts's name-match dedup will also drop it automatically then).
   {
     id: -3,
+    siPlayerId: 1413477,
     name: 'Marius Stenner',
     position: 'defender',
     shirtNumber: 17,

@@ -31,7 +31,14 @@ try {
 }
 
 interface RosterRow {
-  id: number;
+  /** Id used internally for squad merging and (for manual players) this
+   * player's own detail-page route — synthetic/negative for a manual entry
+   * with no real SI id yet. */
+  internalId: number;
+  /** SI's own id for this player when known, even if SI hasn't added them to
+   * the roster/members endpoint yet (e.g. their profile endpoint already
+   * resolves). Null only for a manual entry SI has no record of at all. */
+  siId: number | null;
   name: string;
   position: string;
   shirtNumber: number | null;
@@ -43,7 +50,8 @@ interface RosterRow {
 const rows: RosterRow[] = [
   ...siPlayers.map(
     (p): RosterRow => ({
-      id: p.id,
+      internalId: p.id,
+      siId: p.id,
       name: p.name,
       position: p.position,
       shirtNumber: p.shirtNumber,
@@ -54,7 +62,8 @@ const rows: RosterRow[] = [
   ),
   ...MANUAL_PLAYERS.map(
     (p): RosterRow => ({
-      id: p.id,
+      internalId: p.id,
+      siId: p.siPlayerId ?? null,
       name: p.name,
       position: p.position,
       shirtNumber: p.shirtNumber,
@@ -108,7 +117,7 @@ const posLabels: Record<string, string> = {
             <th class="p-2">Birth date</th>
             <th class="p-2">Source</th>
             <th class="p-2">On squad page?</th>
-            <th class="p-2">ID</th>
+            <th class="p-2">SI ID</th>
             <th class="p-2">Profile</th>
           </tr>
         </thead>
@@ -136,14 +145,20 @@ const posLabels: Record<string, string> = {
                   <span class="text-red-700">no</span>
                 )}
               </td>
-              <td class="p-2 text-gray-400">{row.id}</td>
+              <td class="p-2 text-gray-400">
+                {row.siId ?? (
+                  <span title="No real SI id — not yet in SI's system at all">
+                    none yet
+                  </span>
+                )}
+              </td>
               <td class="p-2">
                 <a
-                  href={`/spiller/${getPlayerSlug(row.id, row.name)}`}
+                  href={`/spiller/${getPlayerSlug(row.siId ?? row.internalId, row.name)}`}
                   class="text-blue-600 underline"
                   target="_blank"
                   rel="noopener noreferrer">
-                  /spiller/{getPlayerSlug(row.id, row.name)}
+                  /spiller/{getPlayerSlug(row.siId ?? row.internalId, row.name)}
                 </a>
               </td>
             </tr>
