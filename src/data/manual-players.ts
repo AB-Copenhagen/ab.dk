@@ -27,13 +27,11 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
   // left behind when Aidan Liu synced to SI for real and was removed from
   // this array — nobody deleted the Strapi row. Using -1 again silently
   // pulls in that dead override (wrong name/shirt/position on EN only). Skip
-  // it until that row is cleaned up in Strapi; -2 is the next safe ID.
-  {
-    id: -2,
-    name: 'Jermain Fernandes',
-    position: 'forward',
-    shirtNumber: 77,
-  },
+  // it until that row is cleaned up in Strapi. -2 was freed up the same way
+  // (Jermain Fernandes, removed 2026-09-15 once SI's roster started
+  // returning him for real) — check Strapi for a similarly orphaned override
+  // row at siPlayerId -2 before reusing it; -4 is the next id with no known
+  // history either way.
   // Has an SI player profile (siPlayerId 1413477, /players/1413477/profile
   // resolves fine — Strapi Player override is keyed to that real ID) but SI
   // still hasn't added him to AB's team roster/members list, so
