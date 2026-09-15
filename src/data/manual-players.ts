@@ -34,17 +34,6 @@ export const MANUAL_PLAYERS: ManualPlayer[] = [
     position: 'forward',
     shirtNumber: 77,
   },
-  // Has an SI player profile (siPlayerId 1997629622 — used by the Strapi
-  // Player override once it's repointed to -3 below) but SI hasn't added him
-  // to AB's team roster list yet, so fetchABPlayers doesn't return him. Remove
-  // this entry once SI syncs him for real.
-  {
-    id: -3,
-    name: 'Marius Stenner',
-    position: 'defender',
-    shirtNumber: 17,
-    birthDate: '2004-06-28',
-  },
 ];
 
 export function findManualPlayer(id: number): ManualPlayer | undefined {
