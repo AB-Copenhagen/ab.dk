@@ -165,7 +165,7 @@ export const t: Record<Locale, Record<string, string>> = {
     insideTheClub: 'Inde i klubben',
     homeAboutHeading: 'Akademisk Boldklub',
     homeAboutBody:
-      'Akademisk Boldklub (AB) er en dansk fodboldklub stiftet i 1889 og en af Danmarks ældste fodboldklubber. Klubbens hjemmebane er Gladsaxe Stadion i Gladsaxe, nord for København, hvor førsteholdet spiller sine hjemmekampe. I mere end 135 år har AB været et sted, hvor fodbold bringer mennesker sammen — fra klubbens rødder som studenterklub til nutidens brede fællesskab af spillere, frivillige, partnere og fans.',
+      'Stiftet i 1889 er AB en af Danmarks ældste fodboldklubber. Førsteholdet spiller sine hjemmekampe på Gladsaxe Stadion, lige nord for København. Det, der startede som en studenterklub, er gennem mere end 135 år vokset til et fællesskab af spillere, frivillige, partnere og fans.',
     joinTeamAbCta: 'Bliv en del af holdet. Tilmeld dig MyAB',
     joinTeamAbHeadline: 'Bliv en del af Team AB',
     matchdayGear: 'Matchday Gear',
@@ -308,7 +308,7 @@ export const t: Record<Locale, Record<string, string>> = {
     insideTheClub: 'Inside the club',
     homeAboutHeading: 'Akademisk Boldklub',
     homeAboutBody:
-      "Akademisk Boldklub (AB) is a Danish football club founded in 1889, one of Denmark's oldest football clubs. The club's home ground is Gladsaxe Stadion in Gladsaxe, north of Copenhagen, where the first team plays its home matches. For more than 135 years, AB has been a place where football brings people together — from the club's roots as a student club to today's broad community of players, volunteers, partners, and fans.",
+      "Founded in 1889, AB is one of Denmark's oldest football clubs. The first team plays its home matches at Gladsaxe Stadion, just north of Copenhagen. What began as a student club has grown, over more than 135 years, into a community of players, volunteers, partners, and fans.",
     pauseSlideshow: 'Pause slideshow',
     playSlideshow: 'Play slideshow',
     previousSlide: 'Previous slide',
