@@ -628,6 +628,27 @@ export async function fetchMatchContent(
   };
 }
 
+/**
+ * Batch-fetch the CMS `ticketUrl` override for a set of SI event IDs (used by
+ * the /kampe and /en/matches list pages, which render many fixtures at once —
+ * a single `$in` query rather than one `fetchMatchContent` call per row).
+ * Same precedence as the match detail page: this takes priority over the
+ * auto-derived billet.ab.dk scrape/fuzzy-match in `@/lib/billet`.
+ */
+export async function fetchMatchTicketUrls(eventIds: number[]): Promise<Map<number, string>> {
+  const map = new Map<number, string>();
+  if (eventIds.length === 0) return map;
+  const results = await fetchCollectionType<RawStrapiMatchContent[]>('match-contents', {
+    filters: { eventId: { $in: eventIds } },
+    fields: ['eventId', 'ticketUrl'],
+    status: 'published',
+  }).catch(() => []);
+  for (const raw of results) {
+    if (raw.ticketUrl) map.set(raw.eventId, raw.ticketUrl);
+  }
+  return map;
+}
+
 // ── Partner / sponsor data ────────────────────────────────────────────────────
 
 export interface StrapiPartnerLogo {

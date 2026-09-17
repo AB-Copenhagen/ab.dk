@@ -15,6 +15,7 @@ import {
 } from '@/lib/si/client';
 import { abConfig, currentSeasonLabel } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
+import { fetchMatchTicketUrls } from '@/lib/strapi/client';
 import { translate } from '@/lib/i18n';
 import { fmtDate, dtAttrs, AB_TIMEZONE, TIME_OPTS } from '@/lib/dateFormat';
 import Img from '@/components/Img.astro';
@@ -85,11 +86,18 @@ const displayEvents: SIEvent[] =
   upcoming;
 const isPast = filter === 'results';
 
-const billetMap = await fetchBilletTicketMap().catch(() => new Map<string, string>());
+const homeEventIds = upcoming.filter((e) => e.homeId === abConfig.teamId).map((e) => e.eventId);
+const [billetMap, cmsTicketUrls] = await Promise.all([
+  fetchBilletTicketMap().catch(() => new Map<string, string>()),
+  fetchMatchTicketUrls(homeEventIds).catch(() => new Map<number, string>()),
+]);
 const ticketByEventId: Record<number, string> = {};
 for (const event of upcoming) {
   if (event.homeId === abConfig.teamId) {
-    const url = findTicketUrl(billetMap, event.awayName ?? '');
+    // CMS override (Strapi match-content.ticketUrl) wins — same precedence as
+    // the match detail page — falling back to the billet.ab.dk scrape/fuzzy-
+    // match only when no override is set.
+    const url = cmsTicketUrls.get(event.eventId) ?? findTicketUrl(billetMap, event.awayName ?? '');
     if (url) ticketByEventId[event.eventId] = url;
   }
 }
@@ -411,30 +419,6 @@ const seenDates = new Set<string>();
       <!-- Sidebar — stilling. `id="stilling"` rammes af kampdetalje-siderne -->
       <!-- "fuld tabel"-link (MatchStandingsPreview). -->
       <div id="stilling" class="w-full lg:w-[340px] shrink-0 lg:sticky lg:top-[68px] scroll-mt-16 flex flex-col gap-4">
-        <!-- Synkronisér til kalender -->
-        <div class="bg-white rounded-[4px] border border-gray-200 p-4">
-          <div class="flex items-center gap-2 mb-2">
-            <svg class="w-4 h-4 text-ab-green shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            <h3 class="text-xs font-black uppercase tracking-[0.08em] text-[#999]">{translate(locale, 'syncToCalendar')}</h3>
-          </div>
-          <p class="text-xs text-[#777] leading-relaxed mb-3">{translate(locale, 'syncToCalendarSubtitle')}</p>
-          <a
-            href={`webcal://ab.dk/api/calendar/matches.ics?locale=${locale}`}
-            class="inline-flex items-center justify-center w-full text-xs font-black uppercase tracking-[0.05em] px-4 py-2.5 rounded no-underline text-white"
-            style="background:var(--ab-green);"
-          >
-            {translate(locale, 'syncToCalendar')}
-          </a>
-          <a
-            href={`/api/calendar/matches.ics?locale=${locale}`}
-            class="block text-center text-[0.7rem] text-[#999] hover:text-ab-green underline underline-offset-2 mt-2.5"
-          >
-            {translate(locale, 'downloadIcsFile')}
-          </a>
-        </div>
-
         <!-- ABs seneste form — samlet på tværs af alle turneringer (liga + -->
         <!-- pokal), som andre kampstatistik-sider viser "form"; ikke opdelt -->
         <!-- pr. turnering. -->
