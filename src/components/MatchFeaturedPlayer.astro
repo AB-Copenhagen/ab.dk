@@ -31,20 +31,21 @@ const href =
         href={href}
         class="flex items-center gap-4 group no-underline rounded-[4px] p-3 -m-3 transition-colors hover:bg-[#F8F9FA]"
       >
-        <div class="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-[#F0F4F0] flex items-center justify-center">
-          {player.photoUrl ? (
+        <div class="relative w-16 h-16 rounded-full overflow-hidden shrink-0 bg-[#F0F4F0] flex items-center justify-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" stroke="var(--ab-green)" stroke-width="1.5" />
+            <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="var(--ab-green)" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          {player.photoUrl && (
             <img
               src={player.photoUrl}
+              data-si-fallback={player.photoFallbackUrl}
               alt=""
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="absolute inset-0 w-full h-full object-cover"
               style={`object-position:${player.photoPosition}`}
+              onerror="const f=this.dataset.siFallback; if (f && this.src !== f) { this.src = f; } else { this.style.display='none'; }"
             />
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="8" r="4" stroke="var(--ab-green)" stroke-width="1.5" />
-              <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="var(--ab-green)" stroke-width="1.5" stroke-linecap="round" />
-            </svg>
           )}
         </div>
         <div class="min-w-0">

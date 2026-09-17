@@ -133,11 +133,11 @@
 }
 
 @utility widget-th {
-  @apply font-black text-ab-green text-base tracking-[-0.04em] whitespace-nowrap text-left;
+  @apply font-black text-ab-green text-sm tracking-[-0.04em] whitespace-nowrap text-left;
 }
 
 @utility widget-td {
-  @apply text-ab-green text-base tracking-[-0.02em] align-middle;
+  @apply text-ab-green text-sm tracking-[-0.02em] align-middle;
 }
 
 @utility widget-row-even {

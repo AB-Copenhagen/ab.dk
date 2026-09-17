@@ -345,8 +345,10 @@ const seenDates = new Set<string>();
                       </span>
                     </div>
 
-                    <!-- Competition + round -->
-                    <div class="hidden md:flex flex-col w-[92px] shrink-0 gap-0.5">
+                    <!-- Competition + kickoff time + venue, consolidated into one -->
+                    <!-- column (lg+ only) so the teams block doesn't need a -->
+                    <!-- separate flex-1 venue slot fighting it for space. -->
+                    <div class="hidden lg:flex flex-col w-[130px] shrink-0 gap-0.5">
                       {isCup ? (
                         <span class="inline-flex w-fit items-center text-[0.6rem] font-black uppercase tracking-[0.05em] text-ab-green bg-ab-beige rounded-full px-2 py-0.5">
                           {cupTournamentLabel(event, locale)}
@@ -355,20 +357,21 @@ const seenDates = new Set<string>();
                         <span class="text-[0.65rem] font-bold uppercase tracking-[0.04em] text-[#999]">{translate(locale, 'secondDivision')}</span>
                       )}
                       <span class="text-[0.65rem] text-[#BBB]" {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtDate(event.startDate, dateLocale, TIME_OPTS)}</span>
+                      <span class="text-[0.65rem] text-[#BBB] truncate">{venue}</span>
                     </div>
 
-                    <!-- Teams — crest + score/status + crest only, no names. -->
-                    <!-- Team names still truncated even at full desktop width -->
-                    <!-- once a flex-1 name span had to compete with the score -->
-                    <!-- column, venue, and action buttons for space; the crest -->
-                    <!-- + row-level "View match: X vs Y" link (above) carry the -->
-                    <!-- identity instead. Fixed-width now that there's no -->
-                    <!-- variable-length text inside it — see the Venue comment -->
-                    <!-- for why that matters for column alignment. -->
+                    <!-- Teams — crest + name each side of the score. This whole -->
+                    <!-- block is shrink-0 (fixed to its content), not flex-1: -->
+                    <!-- letting it flex would tie the crest/score position to -->
+                    <!-- whether the Tickets button renders in that row (isABHome -->
+                    <!-- && !isPast), shifting alignment row-to-row. -->
                     <div class="shrink-0 flex items-center gap-2 sm:gap-3">
-                      <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt={homeName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      <div class="shrink-0 flex items-center justify-end gap-1.5 sm:gap-2">
+                        <span class="max-w-[90px] sm:max-w-[130px] truncate text-xs sm:text-sm font-medium text-[#111]">{homeName}</span>
+                        <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt={homeName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      </div>
 
-                      <div class="w-12 sm:w-16 shrink-0 flex items-center justify-center">
+                      <div class="w-10 sm:w-14 shrink-0 flex items-center justify-center">
                         {isLive ? (
                           <span class="inline-flex items-center gap-1 text-[0.65rem] font-black uppercase tracking-[0.1em] text-ab-green">
                             <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>Live
@@ -380,14 +383,11 @@ const seenDates = new Set<string>();
                         )}
                       </div>
 
-                      <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt={awayName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      <div class="shrink-0 flex items-center justify-start gap-1.5 sm:gap-2">
+                        <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt={awayName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                        <span class="max-w-[90px] sm:max-w-[130px] truncate text-xs sm:text-sm font-medium text-[#111]">{awayName}</span>
+                      </div>
                     </div>
-
-                    <!-- Venue (desktop only) — the row's one flex-1 element, so -->
-                    <!-- it starts at the same x on every row: everything before -->
-                    <!-- it (date/competition/teams) is fixed-width, so it doesn't -->
-                    <!-- shift depending on whether Tickets renders next to it. -->
-                    <span class="hidden lg:block flex-1 min-w-0 text-xs text-[#999] truncate">{venue}</span>
 
                     <!-- Action -->
                     <div class="relative z-10 shrink-0 ml-auto flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">

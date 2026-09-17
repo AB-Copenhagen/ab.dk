@@ -346,8 +346,10 @@ const seenDates = new Set<string>();
                       </span>
                     </div>
 
-                    <!-- Turnering + runde -->
-                    <div class="hidden md:flex flex-col w-[92px] shrink-0 gap-0.5">
+                    <!-- Turnering + kickoff-tid + bane, samlet i én kolonne (kun -->
+                    <!-- lg+), så holdblokken ikke behøver sin egen flex-1-plads -->
+                    <!-- til banen, som ellers ville konkurrere med den om pladsen. -->
+                    <div class="hidden lg:flex flex-col w-[130px] shrink-0 gap-0.5">
                       {isCup ? (
                         <span class="inline-flex w-fit items-center text-[0.6rem] font-black uppercase tracking-[0.05em] text-ab-green bg-ab-beige rounded-full px-2 py-0.5">
                           {cupTournamentLabel(event, locale)}
@@ -356,21 +358,21 @@ const seenDates = new Set<string>();
                         <span class="text-[0.65rem] font-bold uppercase tracking-[0.04em] text-[#999]">{translate(locale, 'secondDivision')}</span>
                       )}
                       <span class="text-[0.65rem] text-[#BBB]" {...dtAttrs(event.startDate, dateLocale, TIME_OPTS)}>{fmtDate(event.startDate, dateLocale, TIME_OPTS)}</span>
+                      <span class="text-[0.65rem] text-[#BBB] truncate">{venue}</span>
                     </div>
 
-                    <!-- Hold — kun klublogo + resultat/status, ingen holdnavne. -->
-                    <!-- Holdnavnene blev stadig afkortet selv i fuld desktop- -->
-                    <!-- bredde, når et flex-1-navnefelt skulle konkurrere med -->
-                    <!-- resultatkolonnen, banen og handlingsknapperne om -->
-                    <!-- pladsen; klublogoet + rækkens eget "Se kamp: X mod Y"- -->
-                    <!-- link (ovenfor) bærer identiteten i stedet. Fast bredde -->
-                    <!-- nu hvor der ikke er tekst med varierende længde i den -->
-                    <!-- — se kommentaren ved banen for hvorfor det betyder -->
-                    <!-- noget for kolonnejusteringen. -->
+                    <!-- Hold — klublogo + navn på hver side af resultatet. Blokken -->
+                    <!-- er shrink-0 (fast bredde efter indhold), ikke flex-1: hvis -->
+                    <!-- den fleksede, ville klublogo/resultat-positionen afhænge -->
+                    <!-- af om Billetter-knappen vises i den række (isABHome && -->
+                    <!-- !isPast), og rykke sig fra række til række. -->
                     <div class="shrink-0 flex items-center gap-2 sm:gap-3">
-                      <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt={homeName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      <div class="shrink-0 flex items-center justify-end gap-1.5 sm:gap-2">
+                        <span class="max-w-[90px] sm:max-w-[130px] truncate text-xs sm:text-sm font-medium text-[#111]">{homeName}</span>
+                        <img src={event.homeId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.homeId)} alt={homeName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      </div>
 
-                      <div class="w-12 sm:w-16 shrink-0 flex items-center justify-center">
+                      <div class="w-10 sm:w-14 shrink-0 flex items-center justify-center">
                         {isLive ? (
                           <span class="inline-flex items-center gap-1 text-[0.65rem] font-black uppercase tracking-[0.1em] text-ab-green">
                             <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>Live
@@ -382,14 +384,11 @@ const seenDates = new Set<string>();
                         )}
                       </div>
 
-                      <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt={awayName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                      <div class="shrink-0 flex items-center justify-start gap-1.5 sm:gap-2">
+                        <img src={event.awayId === abConfig.teamId ? '/images/ab-crest.svg' : getTeamLogoSrc(event.awayId)} alt={awayName} width="24" height="24" class="w-6 h-6 object-contain shrink-0" loading="lazy" onerror="this.style.opacity='0'" />
+                        <span class="max-w-[90px] sm:max-w-[130px] truncate text-xs sm:text-sm font-medium text-[#111]">{awayName}</span>
+                      </div>
                     </div>
-
-                    <!-- Bane (kun desktop) — rækkens eneste flex-1-element, så -->
-                    <!-- den starter samme sted på hver række: alt før den -->
-                    <!-- (dato/turnering/hold) er fast bredde, så den ikke -->
-                    <!-- rykker sig afhængigt af om Billetter vises ved siden af. -->
-                    <span class="hidden lg:block flex-1 min-w-0 text-xs text-[#999] truncate">{venue}</span>
 
                     <!-- Handling -->
                     <div class="relative z-10 shrink-0 ml-auto flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
