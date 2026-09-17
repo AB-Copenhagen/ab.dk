@@ -11,9 +11,10 @@ interface Props {
 
 const { locale, events, limit = 7 } = Astro.props;
 
-const rows = [...events]
+const rows = events
+  .filter((event) => event.statusType === 'finished')
   .sort(
-    (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
   )
   .slice(0, limit);
 
