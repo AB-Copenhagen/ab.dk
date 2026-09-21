@@ -29,10 +29,15 @@ function formatMatchDate(iso: string): string {
 
 // Every upcoming AB home fixture is a "Locals by Locals" opportunity, so this
 // pulls straight from SI (league season only — fetchABEvents excludes the cup
-// by default) rather than a hand-maintained list.
+// by default) rather than a hand-maintained list. The project only runs for
+// calendar year 2026, so fixtures from 2027 onward are excluded via toDate.
 let upcomingMatches: Match[] = [];
 try {
-  const events = await fetchABEvents({ locale: 'da', fromDate: new Date().toISOString().slice(0, 10) });
+  const events = await fetchABEvents({
+    locale: 'da',
+    fromDate: new Date().toISOString().slice(0, 10),
+    toDate: '2026-12-31',
+  });
   upcomingMatches = events
     .filter(
       (e: SIEvent) =>
