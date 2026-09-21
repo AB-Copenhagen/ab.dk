@@ -1,7 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import Img from '@/components/Img.astro';
-import heroImage from '@/assets/images/IMG_7926.jpeg';
+import heroImage from '@/assets/images/partners-hero-goal-celebration.jpg';
 import { fetchPartners, strapiMediaUrl, type StrapiPartner } from '@/lib/strapi/client';
 import { clampLogoSize } from '@/lib/partner-logo-size';
 
@@ -64,7 +64,7 @@ const ab1889Partners = withLogoSize(
   <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
     <Img
       src={heroImage}
-      alt="Partner boards at Gladsaxe Stadium"
+      alt="AB player celebrating a goal at Gladsaxe Stadium"
       class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.5] saturate-[0.6]"
     />
     <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.1)_70%)]"></div>
