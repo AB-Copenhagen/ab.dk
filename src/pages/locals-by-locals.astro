@@ -2,8 +2,13 @@
 import Base from '@/layouts/Base.astro';
 import heroImage from '@/assets/images/hero.jpg';
 import canonLogo from '@/assets/images/canon-logo.png';
+import { fetchABEvents, type SIEvent } from '@/lib/si/client';
+import { abConfig, currentSeasonLabel } from '@/lib/config/ab';
+import { AB_TIMEZONE } from '@/lib/dateFormat';
+import { setCdnCacheHeaders } from '@/lib/http-cache';
 
-export const prerender = true;
+export const prerender = false;
+setCdnCacheHeaders(Astro.response.headers);
 
 interface Match {
   date: string;
@@ -11,16 +16,39 @@ interface Match {
   eventId: number;
 }
 
-// eventIds slået op via SI API'et ud fra dato + modstander (sep. 2026) —
-// denne sides kampliste er et kurateret udvalg, ikke den fulde live-kalender,
-// så den er hardcoded frem for hentet ved build.
-const matches: Match[] = [
-  { date: '19.09.2026', opponent: 'AB - Esbjerg FB', eventId: 5764500 },
-  { date: '09.10.2026', opponent: 'AB - Aarhus Fremad', eventId: 5764506 },
-  { date: '24.10.2026', opponent: 'AB - Kolding IF', eventId: 5764518 },
-  { date: '06.11.2026', opponent: 'AB - Vendsyssel FF', eventId: 5764530 },
-  { date: '28.11.2026', opponent: 'AB - Vejle BK', eventId: 5764481 },
-];
+function formatMatchDate(iso: string): string {
+  const parts = new Intl.DateTimeFormat('da-DK', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: AB_TIMEZONE,
+  }).formatToParts(new Date(iso));
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+  return `${get('day')}.${get('month')}.${get('year')}`;
+}
+
+// Every upcoming AB home fixture is a "Locals by Locals" opportunity, so this
+// pulls straight from SI (league season only — fetchABEvents excludes the cup
+// by default) rather than a hand-maintained list.
+let upcomingMatches: Match[] = [];
+try {
+  const events = await fetchABEvents({ locale: 'da', fromDate: new Date().toISOString().slice(0, 10) });
+  upcomingMatches = events
+    .filter(
+      (e: SIEvent) =>
+        e.homeId === abConfig.teamId &&
+        e.statusType !== 'finished' &&
+        e.statusType !== 'cancelled'
+    )
+    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+    .map((e) => ({
+      date: formatMatchDate(e.startDate),
+      opponent: `AB - ${e.awayName}`,
+      eventId: e.eventId,
+    }));
+} catch {
+  /* SI API unavailable */
+}
 
 const concept: string[] = [
   'To fotografer pr. kamp.',
@@ -179,7 +207,7 @@ const conceptIcons: string[] = [
         <!-- Ledige kampe -->
         <div>
           <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
-            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Ledige kampe 2026</span>
+            <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Ledige kampe {currentSeasonLabel()}</span>
           </div>
           <h2 class="font-black text-[clamp(1.5rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-4 max-w-[28ch]">
             Er du klar til at blive en del af "Locals by Locals"?
@@ -188,7 +216,10 @@ const conceptIcons: string[] = [
             Så er nedenstående kampe klar til at tage imod dig og dine skills.
           </p>
           <div class="flex flex-col gap-3">
-            {matches.map((match, i) => (
+            {upcomingMatches.length === 0 && (
+              <p class="text-[0.95rem] text-[#777]">Ingen ledige hjemmekampe lige nu — tjek tilbage snart.</p>
+            )}
+            {upcomingMatches.map((match, i) => (
               <a href={`/kamp/${match.eventId}`} class="call-sheet-row group no-underline">
                 <div class="flex items-center gap-4">
                   <span class="call-sheet-index">0{i + 1}</span>
@@ -226,6 +257,17 @@ const conceptIcons: string[] = [
               </div>
             </div>
             <div class="flex flex-col gap-1.5">
+              <label for="lbl-match" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Hvilken kamp ønsker du?</label>
+              <select id="lbl-match" name="match" required
+                class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium bg-white focus:outline-none focus:border-ab-green transition-colors">
+                <option value="" disabled selected>Vælg en kamp</option>
+                {upcomingMatches.map((match) => (
+                  <option value={String(match.eventId)}>{match.opponent} — {match.date}</option>
+                ))}
+                <option value="any">Jeg er åben for enhver kamp!</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1.5">
               <label for="lbl-message" class="text-[0.7rem] font-black uppercase tracking-[0.1em] text-[#999]">Beskriv din interesse, og hvorfor du gerne vil være en del af "Locals by Locals"</label>
               <textarea id="lbl-message" name="message" required rows="4"
                 class="border border-[#E5E7EB] px-4 py-3 text-[0.9rem] text-[#111] font-medium placeholder:text-[#CCC] focus:outline-none focus:border-ab-green transition-colors resize-none" placeholder="Fortæl os lidt om dig selv og din interesse for fotografering..."></textarea>
@@ -260,6 +302,8 @@ const conceptIcons: string[] = [
 
     const name = (lblForm.elements.namedItem('name') as HTMLInputElement).value.trim();
     const email = (lblForm.elements.namedItem('email') as HTMLInputElement).value.trim();
+    const matchSelect = lblForm.elements.namedItem('match') as HTMLSelectElement;
+    const desiredMatch = matchSelect.options[matchSelect.selectedIndex]?.text ?? matchSelect.value;
     const interest = (lblForm.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
 
     lblSubmit.disabled = true;
@@ -274,7 +318,7 @@ const conceptIcons: string[] = [
           name,
           email,
           subject: 'locals-by-locals',
-          message: `Locals by Locals — ansøgning om at blive AB Local:\n\n${interest}`,
+          message: `Locals by Locals — ansøgning om at blive AB Local:\n\nØnsket kamp: ${desiredMatch}\n\n${interest}`,
           locale: 'da',
         }),
       });
