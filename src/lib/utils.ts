@@ -33,6 +33,16 @@ export const truncate = (text: string | null | undefined, length: number) => {
   return text.length > length ? `${text.substring(0, length)}...` : text;
 };
 
+/** Returns a new array with `arr`'s items in random order (Fisher–Yates). */
+export function shuffle<T>(arr: T[]): T[] {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
 export function cn(...classes: (string | undefined | false | null)[]) {
   return classes.filter(Boolean).join(' ');
 }

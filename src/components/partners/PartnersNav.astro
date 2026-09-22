@@ -1,0 +1,97 @@
+---
+interface Props {
+  locale?: 'da' | 'en';
+}
+
+const { locale = 'da' } = Astro.props as Props;
+
+// Tier names are used as English loanwords on both locales already (see the
+// "Supreme Partner" / "Premium Partner" / etc. pill badges above each section).
+const categories = [
+  { id: 'supreme', label: 'Supreme' },
+  { id: 'premium', label: 'Premium' },
+  { id: 'local-hero', label: 'Local Hero' },
+  { id: 'ab1889', label: 'AB 1889' },
+];
+
+const navLabel = locale === 'da' ? 'Partnerkategorier' : 'Partner categories';
+---
+
+<!-- Sticky anchor nav — same sticky top-bar pattern as history/TimelineNav.astro -->
+<nav
+  id="partners-topnav"
+  aria-label={navLabel}
+  class="sticky z-40 bg-white border-b border-[#E5E7EB] overflow-x-hidden"
+  style="top: var(--nav-height, 92px)">
+  <div class="max-w-7xl mx-auto px-8 lg:px-20 h-12 flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden" style="scrollbar-width: none;">
+    {
+      categories.map((c, i) => (
+        <>
+          <a
+            href={`#${c.id}`}
+            data-partner-cat={c.id}
+            class="partners-nav-link px-3 py-1.5 font-black text-[0.72rem] tracking-[-0.01em] text-[#999] transition-colors hover:text-ab-green whitespace-nowrap">
+            {c.label}
+          </a>
+          {i < categories.length - 1 && (
+            <span class="text-[#DDD] text-xs select-none mx-1" aria-hidden="true">|</span>
+          )}
+        </>
+      ))
+    }
+  </div>
+</nav>
+
+<script>
+  const topNav = document.getElementById('partners-topnav');
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('.partners-nav-link')
+  );
+
+  const scrollToSection = (id: string) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+    const navH =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--nav-height')
+      ) || 92;
+    const barH = topNav?.offsetHeight ?? 48;
+    const top = target.getBoundingClientRect().top + window.scrollY - navH - barH - 16;
+    window.scrollTo({ top, behavior: 'smooth' });
+    history.pushState(null, '', `#${id}`);
+  };
+
+  links.forEach((l) =>
+    l.addEventListener('click', (e) => {
+      e.preventDefault();
+      scrollToSection(l.dataset.partnerCat!);
+    })
+  );
+
+  const sections = links
+    .map((l) => document.getElementById(l.dataset.partnerCat ?? ''))
+    .filter((el): el is HTMLElement => Boolean(el));
+
+  let activeId = '';
+
+  const setActive = (id: string) => {
+    activeId = id;
+    links.forEach((l) => {
+      const on = l.dataset.partnerCat === id;
+      l.classList.toggle('text-ab-green', on);
+      l.classList.toggle('text-[#999]', !on);
+    });
+  };
+
+  const updateActive = () => {
+    const threshold = window.innerHeight * 0.35;
+    let current = sections[0];
+    for (const s of sections) {
+      if (s.getBoundingClientRect().top <= threshold) current = s;
+    }
+    if (current && current.id !== activeId) setActive(current.id);
+  };
+
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+</script>
