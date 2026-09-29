@@ -36,6 +36,9 @@
     "tailwindcss": "^4.3.2",
     "turndown": "^7.2.4"
   },
+  "overrides": {
+    "qs": "^6.16.0"
+  },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@tailwindcss/typography": "^0.5.20",
