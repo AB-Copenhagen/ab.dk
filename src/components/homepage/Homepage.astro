@@ -6,7 +6,7 @@ import {
   fetchStaffRoster,
   strapiMediaUrl,
 } from '@/lib/strapi/client';
-import { fetchABEvents, fetchEvent, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
+import { fetchABEvents, getTeamLogoSrc, isCupMatch, cupTournamentLabel } from '@/lib/si/client';
 import { getSquadPlayers } from '@/lib/si/squad';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import { abConfig, CURRENT_SEASON_START } from '@/lib/config/ab';
@@ -26,6 +26,7 @@ import product1Img from '@/assets/images/product-1.png';
 import product2Img from '@/assets/images/product-2.png';
 import product3Img from '@/assets/images/product-3.png';
 import heroAbReturnsImg from '@/assets/images/hero-ab-returns.jpg';
+import heroNextHomeImg from '@/assets/images/hero-next-home.jpg';
 import playerFeaturedImg from '@/assets/images/player-featured.png';
 import {
   fmtDate,
@@ -190,9 +191,8 @@ interface HeroSlide {
   /** Image slides only — 'bottom' pins the CTA low (like video slides) instead of dead-center,
    *  for slides whose baked-in graphic already fills the center. Defaults to 'center'. */
   ctaPosition?: 'center' | 'bottom';
-  /** 'matchup' slides only — the picked fixture's crests/date/time, resolved
-   *  live from SI (see matchupDataFor below) instead of a flat designer-
-   *  exported image. */
+  /** 'matchup' slides only — the next home fixture's crests/date/time, resolved
+   *  live from SI (see buildNextHomeSlide below). */
   matchup?: {
     opponent: string;
     oppLogo: string | null;
@@ -200,6 +200,7 @@ interface HeroSlide {
     cupLabel: string | null;
     dateStr: string | null;
     timeStr: string | null;
+    startDate: string;
   };
 }
 
@@ -252,116 +253,65 @@ const FALLBACK_HERO_SLIDES: HeroSlide[] = [
 // Range natively and is re-signed on every request (5-minute Strapi cache TTL
 // vs. the 7-day signed-URL expiry), so staleness isn't a concern.
 
-// 'matchup' slides (editor picks a fixture from a dropdown in Strapi, backed
-// by the same global::match-picker custom field the match-content type uses
-// — see strapi/src/api/hero-slide/content-types/hero-slide/schema.json) carry
-// only an eventId; the crests/date/time shown on the slide are looked up live
-// from SI here, not baked into a designer-exported graphic. Fetch every
-// matchup slide's event up front (in parallel) so the mapping below can stay
-// synchronous.
-const matchupEventIds = [
-  ...new Set(
-    cmsHeroSlides
-      .filter((s) => s.slideType === 'matchup' && s.eventId)
-      .map((s) => s.eventId!)
-  ),
-];
-// Ticket map/match-content are only ever consulted for matchup slides, and
-// the ticket map means scraping billet.ab.dk's own HTML (see src/lib/billet.ts)
-// — skip both requests entirely when there's nothing that would use them.
-const [matchupEvents, matchupBilletMap, matchupContents] = await Promise.all([
-  Promise.all(matchupEventIds.map((id) => fetchEvent(id, locale).catch(() => null))),
-  matchupEventIds.length > 0 ? fetchBilletTicketMap() : Promise.resolve(new Map<string, string>()),
-  Promise.all(
-    matchupEventIds.map((id) => fetchMatchContent(id, locale).catch(() => null))
-  ),
-]);
-const matchupEventById = new Map(
-  matchupEvents
-    .filter((e): e is NonNullable<typeof e> => e !== null)
-    .map((e) => [e.eventId, e])
-);
-// match-content's own ticketUrl is an editor-entered override for exactly
-// this kind of case — e.g. billet.ab.dk's slug for "Sønderjyske" drops the
-// ø entirely, which findTicketUrl's fuzzy match can't bridge — so it takes
-// priority over the fuzzy lookup below, same precedence as the match detail
-// page (src/pages/en/match/[slug].astro) uses.
-const matchupTicketUrlById = new Map(
-  matchupContents
-    .filter((c): c is NonNullable<typeof c> => c?.ticketUrl != null)
-    .map((c) => [c.eventId, c.ticketUrl!])
-);
+// Built-in "Next home match" slide — always the first slide, resolved live
+// from SI so nobody has to create/unpublish a Strapi slide per fixture. Its
+// photo is the match's own Strapi `bannerImage` (Match Content) when one is
+// set, otherwise the default shot below. Hidden when no home match is left.
+const nextHomeMatch = events
+  .filter(
+    (e: any) =>
+      e.homeId === abConfig.teamId &&
+      (e.statusType === 'notstarted' || e.statusType === 'inprogress')
+  )
+  .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
 
-/** Same shape as the homepage's own "Next match" card data (opponent/oppLogo/
- *  cup label/date/time above), but for any event — a matchup slide can point
- *  at any fixture, not just the next one. */
-function matchupDataFor(event: NonNullable<ReturnType<(typeof matchupEventById)['get']>>) {
-  const isABHome = event.homeId === abConfig.teamId;
-  const oppId = isABHome ? event.awayId : event.homeId;
-  const isCup = isCupMatch(event);
+const [nextHomeContent, nextHomeBilletMap] = nextHomeMatch
+  ? await Promise.all([
+      fetchMatchContent(nextHomeMatch.eventId, locale).catch(() => null),
+      fetchBilletTicketMap().catch(() => new Map<string, string>()),
+    ])
+  : [null, new Map<string, string>()];
+
+function buildNextHomeSlide(): HeroSlide | null {
+  if (!nextHomeMatch) return null;
+  const oppId = nextHomeMatch.awayId;
+  const opponentName = nextHomeMatch.awayName;
+  const isCup = isCupMatch(nextHomeMatch);
+  const banner = nextHomeContent?.bannerImage;
   return {
-    isABHome,
-    opponent: isABHome ? event.awayName : event.homeName,
-    oppLogo: getTeamLogoSrc(oppId),
-    isCup,
-    cupLabel: isCup ? cupTournamentLabel(event, locale) : null,
-    dateStr: fmtDate(event.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS),
-    timeStr: fmtDate(event.startDate, matchTimeLocale, TIME_24H_OPTS),
+    type: 'matchup',
+    img: banner ? strapiMediaUrl(banner.url) : heroNextHomeImg,
+    imgWidth: banner?.width,
+    imgHeight: banner?.height,
+    // The match's own ticket override wins, then billet.ab.dk's per-fixture
+    // page (fuzzy-matched by opponent), then the generic ticket shop.
+    ctaLabel: translate(locale, 'buyTickets'),
+    ctaUrl:
+      nextHomeContent?.ticketUrl ??
+      findTicketUrl(nextHomeBilletMap, opponentName) ??
+      'https://billet.ab.dk/',
+    ctaVariant: 'btn-beige',
+    matchup: {
+      opponent: opponentName,
+      oppLogo: getTeamLogoSrc(oppId),
+      isCup,
+      cupLabel: isCup ? cupTournamentLabel(nextHomeMatch, locale) : null,
+      dateStr: fmtDate(nextHomeMatch.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS),
+      timeStr: fmtDate(nextHomeMatch.startDate, matchTimeLocale, TIME_24H_OPTS),
+      startDate: nextHomeMatch.startDate,
+    },
   };
 }
+const nextHomeSlide = buildNextHomeSlide();
 
-const heroSlides: HeroSlide[] = (
+const configuredHeroSlides: HeroSlide[] =
   cmsHeroSlides.length > 0
     ? cmsHeroSlides
-        .map((slide): HeroSlide | null => {
-          if (slide.slideType === 'matchup') {
-            const event = slide.eventId ? matchupEventById.get(slide.eventId) : undefined;
-            // Skip gracefully rather than render a matchup slide with nothing
-            // to show — a picked event that SI can no longer resolve (or no
-            // event picked yet) shouldn't blank the whole slider.
-            if (!event) return null;
-            // Also skip once the picked match is over — an editor shouldn't
-            // have to remember to unpublish/delete the slide the day after.
-            // 'inprogress' still shows (the match itself is the moment to
-            // promote), only 'finished'/'cancelled' age it out.
-            if (event.statusType === 'finished' || event.statusType === 'cancelled') return null;
-            const { isABHome, ...matchup } = matchupDataFor(event);
-            // Spec: CTA defaults to "Buy Tickets" for AB home matches (the
-            // only case AB itself sells tickets for); an editor's own
-            // ctaLabel/ctaUrl always wins. Away matches fall back to the
-            // match detail page instead, so the slide's CTA is never blank.
-            // The ticket link itself prefers this specific fixture's own
-            // Vivenu event page (same lookup src/pages/en/matches.astro uses)
-            // over the generic billet.ab.dk homepage, so a visitor lands
-            // straight on the right match instead of having to find it.
-            const ctaLabel =
-              slide.ctaLabel || translate(locale, isABHome ? 'buyTickets' : 'matchDetails');
-            const ctaUrl =
-              slide.ctaUrl ||
-              (isABHome
-                ? (matchupTicketUrlById.get(event.eventId) ??
-                    findTicketUrl(matchupBilletMap, matchup.opponent) ??
-                    'https://billet.ab.dk/')
-                : matchHref(event.eventId));
-            return {
-              type: 'matchup',
-              img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
-              imgWidth: slide.image?.width,
-              imgHeight: slide.image?.height,
-              ctaLabel,
-              ctaUrl,
-              // Strapi's schema default only applies when the field is
-              // omitted from a create request entirely — the admin UI
-              // instead saves an explicit null when nothing's picked in the
-              // dropdown, so an untouched field never actually gets
-              // 'btn-beige' without this fallback (confirmed live: a slide
-              // rendered class="btn btn-lg null ...", stringifying the null).
-              ctaVariant: slide.ctaVariant || 'btn-beige',
-              matchup,
-            };
-          }
-          return {
-            type: slide.slideType,
+        // Legacy Strapi 'matchup' slides are superseded by the built-in slide above.
+        .filter((slide) => slide.slideType !== 'matchup')
+        .map(
+          (slide): HeroSlide => ({
+            type: slide.slideType as 'image' | 'video',
             img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
             imgWidth: slide.image?.width,
             imgHeight: slide.image?.height,
@@ -372,11 +322,13 @@ const heroSlides: HeroSlide[] = (
             ctaLabel: slide.ctaLabel ?? '',
             ctaUrl: slide.ctaUrl ?? '',
             ctaVariant: slide.ctaVariant,
-          };
-        })
-        .filter((s): s is HeroSlide => s !== null)
-    : FALLBACK_HERO_SLIDES
-);
+          })
+        )
+    : FALLBACK_HERO_SLIDES;
+
+const heroSlides: HeroSlide[] = nextHomeSlide
+  ? [nextHomeSlide, ...configuredHeroSlides]
+  : configuredHeroSlides;
 ---
 
 <style>
@@ -427,10 +379,10 @@ const heroSlides: HeroSlide[] = (
             />
           ) : slide.type === 'matchup' ? (
             <Img
-              src={slide.img ?? '/images/match-hero-default.jpg'}
+              src={slide.img ?? heroNextHomeImg}
               alt=""
-              width={slide.imgWidth ?? 5463}
-              height={slide.imgHeight ?? 3642}
+              width={slide.imgWidth}
+              height={slide.imgHeight}
               loading={i === 0 ? 'eager' : 'lazy'}
               fetchpriority={i === 0 ? 'high' : undefined}
               draggable="false"
@@ -474,7 +426,7 @@ const heroSlides: HeroSlide[] = (
               <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 md:gap-8 px-6 pb-20 text-center">
                 <div>
                   <h1 class="font-black text-white uppercase tracking-[0.14em] text-[clamp(0.8rem,1.6vw,1rem)]">
-                    {translate(locale, 'nextMatch')}
+                    {translate(locale, 'nextHomeMatch')}
                   </h1>
                   <div class="flex items-center justify-center gap-4 mt-3">
                     <span class="font-black text-white leading-none text-[clamp(2rem,5.5vw,4rem)] tracking-[-0.03em]">
@@ -513,7 +465,17 @@ const heroSlides: HeroSlide[] = (
 
                 {(slide.matchup.dateStr || slide.matchup.timeStr) && (
                   <p class="font-medium text-white text-[clamp(1rem,2.2vw,1.4rem)]">
-                    {[slide.matchup.dateStr, slide.matchup.timeStr].filter(Boolean).join(' | ')}
+                    {slide.matchup.dateStr && (
+                      <span {...dtAttrs(slide.matchup.startDate, matchDateLocale, DATE_WEEKDAY_MONTH_DAY_OPTS)}>
+                        {slide.matchup.dateStr}
+                      </span>
+                    )}
+                    {slide.matchup.dateStr && slide.matchup.timeStr && ' | '}
+                    {slide.matchup.timeStr && (
+                      <span {...dtAttrs(slide.matchup.startDate, matchTimeLocale, TIME_24H_OPTS)}>
+                        {slide.matchup.timeStr}
+                      </span>
+                    )}
                   </p>
                 )}
 
