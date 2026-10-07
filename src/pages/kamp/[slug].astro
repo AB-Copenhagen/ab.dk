@@ -35,7 +35,7 @@ const { slug } = Astro.params;
 const eventId = slug ? parseInt(slug.split('-')[0], 10) : NaN;
 
 if (isNaN(eventId)) {
-  return Astro.redirect('/kampe');
+  return Astro.rewrite('/404');
 }
 
 let event: SIEvent | null = null;
@@ -47,7 +47,7 @@ try {
 }
 
 if (!event) {
-  return Astro.redirect('/kampe');
+  return Astro.rewrite('/404');
 }
 
 const { homeName, awayName, startDate, statusType, tournamentName } = event;

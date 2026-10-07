@@ -21,7 +21,7 @@ try {
 } catch { /* fall through to 404 */ }
 
 if (!product) {
-  return Astro.redirect('/products');
+  return Astro.rewrite('/404');
 }
 
 const { name, description, price, buyLink, category } = product;
