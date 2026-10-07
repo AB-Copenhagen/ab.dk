@@ -34,7 +34,7 @@ const { slug } = Astro.params;
 const eventId = slug ? parseInt(slug.split('-')[0], 10) : NaN;
 
 if (isNaN(eventId)) {
-  return Astro.redirect('/en/matches');
+  return Astro.rewrite('/en/404');
 }
 
 let event: SIEvent | null = null;
@@ -42,11 +42,11 @@ let event: SIEvent | null = null;
 try {
   event = await fetchEvent(eventId, 'en');
 } catch {
-  // fall through to redirect
+  // fall through to 404
 }
 
 if (!event) {
-  return Astro.redirect('/en/matches');
+  return Astro.rewrite('/en/404');
 }
 
 const { homeName, awayName, startDate, statusType, tournamentName } = event;
