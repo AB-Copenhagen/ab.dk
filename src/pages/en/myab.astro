@@ -62,7 +62,11 @@ const groups: Group[] = [
         Become an AB Insider with MyAB, exclusively within the AB fan app!
       </h1>
 
-      <div class="inline-flex p-4 border border-[#E5E7EB] bg-white">
+      <a
+        href="/api/app"
+        aria-label="Download the MyAB app"
+        class="inline-flex p-4 border border-[#E5E7EB] bg-white hover:border-ab-green transition-colors"
+      >
         <img
           src="/api/qr/app.svg"
           alt="QR code to download the MyAB app"
@@ -71,7 +75,7 @@ const groups: Group[] = [
           class="w-[150px] h-[150px]"
           loading="lazy"
         />
-      </div>
+      </a>
       <p class="text-[#333] mt-6 mb-14" style="font-size:1rem;line-height:1.6">
         To download the app, open the camera on your mobile device. Point it
         at the QR code, and you're good to go — or get it directly on{' '}
