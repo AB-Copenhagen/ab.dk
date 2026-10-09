@@ -27,6 +27,7 @@ import product2Img from '@/assets/images/product-2.png';
 import product3Img from '@/assets/images/product-3.png';
 import heroAbReturnsImg from '@/assets/images/hero-ab-returns.jpg';
 import heroNextHomeImg from '@/assets/images/hero-next-home.jpg';
+import heroPresaleImg from '@/assets/images/hero-presale.png';
 import playerFeaturedImg from '@/assets/images/player-featured.png';
 import {
   fmtDate,
@@ -177,7 +178,7 @@ const products = shopifyProducts.length > 0
   : staticProducts;
 
 interface HeroSlide {
-  type: 'image' | 'video' | 'matchup';
+  type: 'image' | 'video' | 'matchup' | 'presale';
   img?: ImageMetadata | string;
   imgWidth?: number;
   imgHeight?: number;
@@ -191,6 +192,13 @@ interface HeroSlide {
   /** Image slides only — 'bottom' pins the CTA low (like video slides) instead of dead-center,
    *  for slides whose baked-in graphic already fills the center. Defaults to 'center'. */
   ctaPosition?: 'center' | 'bottom';
+  /** 'presale' slides only — copy shown over the photo. */
+  presale?: {
+    label: string;
+    headline: string;
+    match: string;
+    detail: string;
+  };
   /** 'matchup' slides only — the next home fixture's crests/date/time, resolved
    *  live from SI (see buildNextHomeSlide below). */
   matchup?: {
@@ -326,9 +334,32 @@ const configuredHeroSlides: HeroSlide[] =
         )
     : FALLBACK_HERO_SLIDES;
 
-const heroSlides: HeroSlide[] = nextHomeSlide
-  ? [nextHomeSlide, ...configuredHeroSlides]
-  : configuredHeroSlides;
+// Built-in presale slide (2nd slide). Presale opens Sunday 2026-10-11 at
+// 13:00 Copenhagen time (11:00 UTC) — hide the slide once it has started so
+// it doesn't linger. Remove this block once the campaign is over.
+const PRESALE_STARTS_AT = new Date('2026-10-11T11:00:00Z');
+const presaleSlide: HeroSlide | null =
+  now < PRESALE_STARTS_AT
+    ? {
+        type: 'presale',
+        img: heroPresaleImg,
+        ctaLabel: translate(locale, 'heroPresaleCta'),
+        ctaUrl: localPath('/myab'),
+        ctaVariant: 'btn-beige',
+        presale: {
+          label: translate(locale, 'heroPresaleLabel'),
+          headline: translate(locale, 'heroPresaleHeadline'),
+          match: 'AB vs Brøndby IF',
+          detail: translate(locale, 'heroPresaleDetail'),
+        },
+      }
+    : null;
+
+const heroSlides: HeroSlide[] = [
+  ...(nextHomeSlide ? [nextHomeSlide] : []),
+  ...(presaleSlide ? [presaleSlide] : []),
+  ...configuredHeroSlides,
+];
 ---
 
 <style>
@@ -390,6 +421,17 @@ const heroSlides: HeroSlide[] = nextHomeSlide
               sizes="100vw"
               class="w-full h-full object-cover object-center pointer-events-none grayscale"
             />
+          ) : slide.type === 'presale' ? (
+            <Img
+              src={slide.img ?? ''}
+              alt=""
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : undefined}
+              draggable="false"
+              widths={[640, 828, 1200]}
+              sizes="100vw"
+              class="w-full h-full object-cover object-center pointer-events-none"
+            />
           ) : (
             <Img
               src={slide.img ?? ''}
@@ -416,6 +458,39 @@ const heroSlides: HeroSlide[] = nextHomeSlide
                 </a>
               )}
             </div>
+          ) : slide.type === 'presale' && slide.presale ? (
+            <>
+              <div
+                class="absolute inset-0"
+                style="background:linear-gradient(180deg, rgba(10,10,10,0.45) 0%, rgba(10,10,10,0.3) 50%, rgba(10,10,10,0.55) 100%)"
+              />
+              <div class="grain-overlay absolute inset-0" style="opacity:0.5" />
+              <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 md:gap-6 px-6 pb-20 text-center">
+                <span class="inline-flex items-center leading-none font-black uppercase tracking-[0.14em] text-[clamp(0.75rem,1.4vw,0.95rem)] text-ab-black bg-ab-gold rounded-full px-4 py-2">
+                  {slide.presale.label}
+                </span>
+                <h1 class="font-black text-white leading-[0.95] text-[clamp(2.75rem,8vw,7rem)] tracking-[-0.04em] text-balance max-w-[16ch]">
+                  {slide.presale.headline}
+                </h1>
+                <div class="flex items-center justify-center gap-3 md:gap-4">
+                  <span class="h-px w-8 md:w-12 bg-ab-gold" />
+                  <p class="font-black text-white uppercase tracking-[0.06em] text-[clamp(1.1rem,2.6vw,2rem)]">
+                    {slide.presale.match}
+                  </p>
+                  <span class="h-px w-8 md:w-12 bg-ab-gold" />
+                </div>
+                <p class="font-medium text-white/90 text-[clamp(0.95rem,1.8vw,1.35rem)] max-w-[32ch] md:max-w-none text-balance">
+                  {slide.presale.detail}
+                </p>
+                {slide.ctaLabel && slide.ctaUrl && (
+                  <a
+                    href={slide.ctaUrl}
+                    class={`btn btn-lg ${slide.ctaVariant} pointer-events-auto mt-2`}>
+                    {slide.ctaLabel}
+                  </a>
+                )}
+              </div>
+            </>
           ) : slide.type === 'matchup' && slide.matchup ? (
             <>
               <div
