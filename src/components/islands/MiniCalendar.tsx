@@ -115,11 +115,11 @@ export default function MiniCalendar({
         const opponent = isHome ? hoveredEvent.awayName : hoveredEvent.homeName;
         const vs = isHome
           ? locale === 'da'
-            ? `AB vs ${opponent}`
-            : `AB vs ${opponent}`
+            ? `AB VS ${opponent}`
+            : `AB VS ${opponent}`
           : locale === 'da'
-            ? `${opponent} vs AB`
-            : `${opponent} vs AB`;
+            ? `${opponent} VS AB`
+            : `${opponent} VS AB`;
         const time = fmtTime(hoveredEvent.startDate, locale);
         return { vs, time };
       })()

@@ -48,7 +48,7 @@ try {
     .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
     .map((e) => ({
       date: formatMatchDate(e.startDate),
-      opponent: `AB vs. ${e.awayName}`,
+      opponent: `AB VS ${e.awayName}`,
       eventId: e.eventId,
     }));
 } catch {
