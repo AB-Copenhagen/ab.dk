@@ -196,7 +196,7 @@ interface HeroSlide {
   presale?: {
     label: string;
     headline: string;
-    match: string;
+    opponent: string;
     detail: string;
   };
   /** 'matchup' slides only — the next home fixture's crests/date/time, resolved
@@ -344,12 +344,12 @@ const presaleSlide: HeroSlide | null =
         type: 'presale',
         img: heroPresaleImg,
         ctaLabel: translate(locale, 'heroPresaleCta'),
-        ctaUrl: localPath('/myab'),
+        ctaUrl: '/api/app',
         ctaVariant: 'btn-beige',
         presale: {
           label: translate(locale, 'heroPresaleLabel'),
           headline: translate(locale, 'heroPresaleHeadline'),
-          match: 'AB vs Brøndby IF',
+          opponent: 'Brøndby IF',
           detail: translate(locale, 'heroPresaleDetail'),
         },
       }
@@ -472,13 +472,11 @@ const heroSlides: HeroSlide[] = [
                 <h1 class="font-black text-white leading-[0.95] text-[clamp(2.75rem,8vw,7rem)] tracking-[-0.04em] text-balance max-w-[16ch]">
                   {slide.presale.headline}
                 </h1>
-                <div class="flex items-center justify-center gap-3 md:gap-4">
-                  <span class="h-px w-8 md:w-12 bg-ab-gold" />
-                  <p class="font-black text-white uppercase tracking-[0.06em] text-[clamp(1.1rem,2.6vw,2rem)]">
-                    {slide.presale.match}
-                  </p>
-                  <span class="h-px w-8 md:w-12 bg-ab-gold" />
-                </div>
+                <p class="flex items-center justify-center gap-3 md:gap-4 font-black text-white uppercase tracking-[0.06em] text-[clamp(1.1rem,2.6vw,2rem)]">
+                  <span>AB</span>
+                  <span class="text-white/50 text-[0.6em] tracking-[0.12em]">VS</span>
+                  <span>{slide.presale.opponent}</span>
+                </p>
                 <p class="font-medium text-white/90 text-[clamp(0.95rem,1.8vw,1.35rem)] max-w-[32ch] md:max-w-none text-balance">
                   {slide.presale.detail}
                 </p>
@@ -507,7 +505,9 @@ const heroSlides: HeroSlide[] = [
                     <span class="font-black text-white leading-none text-[clamp(2rem,5.5vw,4rem)] tracking-[-0.03em]">
                       AB
                     </span>
-                    <span class="h-px w-12 md:w-16 bg-ab-gold" />
+                    <span class="font-black text-white/50 leading-none text-[clamp(1rem,2.2vw,1.6rem)] tracking-[0.12em]">
+                      VS
+                    </span>
                     <span class="font-black text-white leading-none text-[clamp(2rem,5.5vw,4rem)] tracking-[-0.03em]">
                       {slide.matchup.opponent}
                     </span>
