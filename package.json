@@ -37,7 +37,9 @@
     "turndown": "^7.2.4"
   },
   "overrides": {
-    "qs": "^6.16.0"
+    "qs": "^6.16.0",
+    "path-to-regexp": "6.3.0",
+    "postcss-selector-parser": "^7.1.6"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
