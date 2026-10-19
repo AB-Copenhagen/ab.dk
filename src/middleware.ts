@@ -237,9 +237,11 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
     // Prerendered routes are served as static files directly from Vercel's
     // CDN in production — this middleware (and the live request it needs to
     // read Accept from) never runs for them at all, so markdown negotiation
-    // is only possible for SSR (prerender = false) routes. See AGENTS.md /
-    // the PR that introduced this for the full explanation and the follow-up
-    // needed to cover static pages too (e.g. a Vercel `has: header` rewrite).
+    // is only possible for SSR (prerender = false) routes. As of the agent
+    // data-feed work, every page in src/pages is SSR for exactly this reason
+    // (see git history for the PR that flipped the remaining static pages) —
+    // if a new page is added with `prerender = true`, it silently loses
+    // markdown negotiation.
     if (
       !context.isPrerendered &&
       prefersMarkdown(context.request.headers.get('accept'))

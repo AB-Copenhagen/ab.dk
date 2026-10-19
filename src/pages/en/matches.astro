@@ -21,6 +21,7 @@ import { fmtDate, dtAttrs, AB_TIMEZONE, TIME_OPTS } from '@/lib/dateFormat';
 import Img from '@/components/Img.astro';
 import matchesHeaderBg from '@/assets/images/matches-header-bg.png';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { itemListSchema } from '@/lib/structured-data';
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
 
@@ -143,6 +144,23 @@ function emptyMessage(f: Filter): string {
 
 const matchHref = (id: number) => `/en/match/${id}`;
 
+const matchListStructuredData = itemListSchema(
+  `AB 1889 ${translate(locale, 'fixtures')}`,
+  displayEvents.map((event) => {
+    const isABHome = event.homeId === abConfig.teamId;
+    const homeName = isABHome ? 'AB' : event.homeName;
+    const awayName = isABHome ? event.awayName : 'AB';
+    return {
+      '@type': 'SportsEvent',
+      name: `${homeName} vs ${awayName}`,
+      startDate: event.startDate,
+      url: `https://ab.dk/en/match/${event.eventId}`,
+      homeTeam: { '@type': 'SportsTeam', name: homeName },
+      awayTeam: { '@type': 'SportsTeam', name: awayName },
+    };
+  })
+);
+
 // The homepage's MiniCalendar links to `/en/matches#{YYYY-MM-DD}` for any
 // date with a match — give the first row of each date that anchor id so the
 // jump actually lands on it. `scroll-mt` offsets for the sticky filter bar.
@@ -155,6 +173,7 @@ const seenDates = new Set<string>();
   description="AB 1889's full fixture list — kickoff times, venues and tickets for every match this season."
   ogTitle="AB Fixtures"
   ogDescription="Every AB match this season — fixtures, results and the league table."
+  structuredData={matchListStructuredData}
 >
   <!-- Hero — height follows content (title + next-match panel), not the -->
   <!-- banner image, so the photo can't clip the panel on narrow viewports. -->

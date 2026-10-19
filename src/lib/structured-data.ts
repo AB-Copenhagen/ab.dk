@@ -18,6 +18,26 @@ export function breadcrumbSchema(items: BreadcrumbItem[]) {
 }
 
 /**
+ * Builds a schema.org ItemList for a listing page (squad, fixtures, partners)
+ * out of already-built schema.org objects (each with at least `@type`, `name`
+ * and `url`) — so an agent can read the whole list as data in one request
+ * instead of crawling every detail page individually.
+ */
+export function itemListSchema(name: string, items: Record<string, unknown>[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name,
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item,
+    })),
+  };
+}
+
+/**
  * Estimated final whistle time for schema.org's required SportsEvent.endDate —
  * the SI API only gives us kickoff time. ~2 hours covers two 45-minute halves,
  * halftime, and stoppage time; close enough for a field Google treats as a

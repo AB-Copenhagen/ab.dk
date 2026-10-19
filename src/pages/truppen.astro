@@ -4,8 +4,10 @@ import SquadCard from '@/components/SquadCard.astro';
 import StaffCard from '@/components/StaffCard.astro';
 import { getSquadPlayers, type SquadPlayer } from '@/lib/si/squad';
 import { fetchStaffRoster } from '@/lib/strapi/client';
+import { getPlayerSlug } from '@/data/player-cms-data';
 import Img from '@/components/Img.astro';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
+import { itemListSchema } from '@/lib/structured-data';
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
 
@@ -44,11 +46,29 @@ for (const p of players) {
   if (!groups.has(key)) groups.set(key, []);
   groups.get(key)!.push(p);
 }
+
+const squadStructuredData = itemListSchema('AB 1889 Truppen', [
+  ...players.map((p) => ({
+    '@type': 'Person',
+    name: p.name,
+    url: `https://ab.dk/spiller/${getPlayerSlug(p.id, p.name)}`,
+    jobTitle: POSITION_GROUPS[p.position as PositionKey],
+    memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
+  })),
+  ...staffRoster.map((s) => ({
+    '@type': 'Person',
+    name: s.name,
+    url: `https://ab.dk/stab/${s.slug}`,
+    jobTitle: s.role,
+    memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
+  })),
+]);
 ---
 
 <Base
   locale="da"
-  title="Truppen | Akademisk Boldklub">
+  title="Truppen | Akademisk Boldklub"
+  structuredData={squadStructuredData}>
   <div class="bg-white">
     <!-- Squad banner (image with embedded title) -->
     <div class="w-full">
