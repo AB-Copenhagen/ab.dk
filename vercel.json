@@ -38,7 +38,7 @@
       "headers": [
         {
           "key": "Link",
-          "value": "<https://shop.ab.dk/.well-known/ucp>; rel=\"service\"; title=\"AB 1889 Shop — UCP commerce discovery\", <https://billet.ab.dk>; rel=\"related\"; title=\"AB 1889 Official Ticketing\""
+          "value": "<https://shop.ab.dk/.well-known/ucp>; rel=\"service\"; title=\"AB 1889 Shop — UCP commerce discovery\", <https://billet.ab.dk>; rel=\"related\"; title=\"AB 1889 Official Ticketing\", </llms.txt>; rel=\"service-doc\"; title=\"AB 1889 — Agent Guide\""
         }
       ]
     },
@@ -47,7 +47,7 @@
       "headers": [
         {
           "key": "Link",
-          "value": "<https://shop.ab.dk/.well-known/ucp>; rel=\"service\"; title=\"AB 1889 Shop — UCP commerce discovery\", <https://billet.ab.dk>; rel=\"related\"; title=\"AB 1889 Official Ticketing\""
+          "value": "<https://shop.ab.dk/.well-known/ucp>; rel=\"service\"; title=\"AB 1889 Shop — UCP commerce discovery\", <https://billet.ab.dk>; rel=\"related\"; title=\"AB 1889 Official Ticketing\", </llms.txt>; rel=\"service-doc\"; title=\"AB 1889 — Agent Guide\""
         }
       ]
     }
