@@ -6,6 +6,7 @@ import heroImage from '@/assets/images/partners-hero-goal-celebration.jpg';
 import { fetchPartners, strapiMediaUrl, type StrapiPartner } from '@/lib/strapi/client';
 import { clampLogoSize } from '@/lib/partner-logo-size';
 import { shuffle } from '@/lib/utils';
+import { itemListSchema } from '@/lib/structured-data';
 
 /**
  * Attaches a `logoSize` clamped to this section's ceiling to each partner.
@@ -54,6 +55,16 @@ const ab1889Partners = withLogoSize(
   200,
   100
 );
+
+const partnersStructuredData = itemListSchema(
+  'AB 1889 Partners',
+  allPartners.map((p) => ({
+    '@type': 'Organization',
+    name: p.name,
+    url: `https://ab.dk/en/partners/${p.slug}`,
+    logo: p.logo?.url ? strapiMediaUrl(p.logo.url) : undefined,
+  }))
+);
 ---
 
 <Base
@@ -62,6 +73,7 @@ const ab1889Partners = withLogoSize(
   description="Meet the sponsors and partners supporting Akademisk Boldklub, from principal partners to the wider AB partner network."
   ogTitle="AB's Partner Network"
   ogDescription="Discover the brands partnering with Akademisk Boldklub, and how to join the AB partner network."
+  structuredData={partnersStructuredData}
 >
 
   <!-- Hero -->

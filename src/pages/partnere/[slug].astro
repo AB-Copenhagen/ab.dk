@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import Img from '@/components/Img.astro';
 import { TIER_LABELS } from '@/data/partners';
 import { fetchPartnerBySlug, strapiMediaUrl } from '@/lib/strapi/client';
+import { breadcrumbSchema } from '@/lib/structured-data';
 
 const { slug } = Astro.params;
 const partner = await fetchPartnerBySlug(slug ?? '', 'da');
@@ -12,13 +13,29 @@ if (!partner) return Astro.rewrite('/404');
 const tierLabel = TIER_LABELS[partner.category].da;
 const backHref = '/partnere';
 const ogCardImageUrl = `/api/og/partner.png?slug=${encodeURIComponent(partner.slug)}&locale=da`;
+
+const partnerSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: partner.name,
+  url: partner.url,
+  logo: partner.logo?.url ? strapiMediaUrl(partner.logo.url) : undefined,
+  description: partner.description,
+};
+const partnerBreadcrumbs = breadcrumbSchema([
+  { name: 'Forside', url: 'https://ab.dk' },
+  { name: 'Partnere', url: 'https://ab.dk/partnere' },
+  { name: partner.name, url: `https://ab.dk/partnere/${partner.slug}` },
+]);
+const partnerStructuredData = [partnerSchema, partnerBreadcrumbs];
 ---
 
 <Base
   locale="da"
   title={`${partner.name} | Partnere | AB 1889`}
   description={partner.description ?? `${partner.name} er partner hos Akademisk Boldklub AB 1889.`}
-  ogImage={ogCardImageUrl}>
+  ogImage={ogCardImageUrl}
+  structuredData={partnerStructuredData}>
 
   <!-- Thin header -->
   <div class="bg-ab-black border-b border-white/10 py-10 px-8 lg:px-20">

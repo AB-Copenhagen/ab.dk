@@ -6,6 +6,7 @@ import heroImage from '@/assets/images/partners-hero-goal-celebration.jpg';
 import { fetchPartners, strapiMediaUrl, type StrapiPartner } from '@/lib/strapi/client';
 import { clampLogoSize } from '@/lib/partner-logo-size';
 import { shuffle } from '@/lib/utils';
+import { itemListSchema } from '@/lib/structured-data';
 
 /**
  * Attaches a `logoSize` clamped to this section's ceiling to each partner.
@@ -54,12 +55,23 @@ const ab1889Partners = withLogoSize(
   200,
   100
 );
+
+const partnersStructuredData = itemListSchema(
+  'AB 1889 Partnere',
+  allPartners.map((p) => ({
+    '@type': 'Organization',
+    name: p.name,
+    url: `https://ab.dk/partnere/${p.slug}`,
+    logo: p.logo?.url ? strapiMediaUrl(p.logo.url) : undefined,
+  }))
+);
 ---
 
 <Base
   locale="da"
   title="Partnere | AB 1889"
-  description="Mød de virksomheder og partnere, der støtter Akademisk Boldklub — fra hovedpartnere til AB Partner-netværket.">
+  description="Mød de virksomheder og partnere, der støtter Akademisk Boldklub — fra hovedpartnere til AB Partner-netværket."
+  structuredData={partnersStructuredData}>
 
   <!-- Hero -->
   <div class="relative overflow-hidden h-[clamp(260px,36vw,420px)]">
