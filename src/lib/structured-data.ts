@@ -1,3 +1,5 @@
+import type { StrapiVenue } from '@/lib/strapi/client';
+
 export interface BreadcrumbItem {
   name: string;
   url: string;
@@ -47,6 +49,51 @@ export function estimatedMatchEndDate(startDate: string): string {
   return new Date(
     new Date(startDate).getTime() + 2 * 60 * 60 * 1000
   ).toISOString();
+}
+
+/**
+ * Builds schema.org SportsEvent.location for a match page. For AB home
+ * fixtures the address is AB's own fixed ground. For away fixtures, uses the
+ * editor-maintained Venue row for that opponent (see AGENTS.md "Managing
+ * away-game venues") when one exists; otherwise falls back to the country
+ * alone rather than omitting `address` and failing Event rich-result
+ * validation outright — Google treats `location.address` as required.
+ */
+export function matchLocationSchema({
+  isHome,
+  venueName,
+  awayVenue,
+}: {
+  isHome: boolean;
+  venueName: string;
+  awayVenue: StrapiVenue | null;
+}) {
+  if (isHome) {
+    return {
+      '@type': 'Place',
+      name: venueName,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Gladsaxevej 202',
+        addressLocality: 'Søborg',
+        postalCode: '2860',
+        addressCountry: 'DK',
+      },
+    };
+  }
+  return {
+    '@type': 'Place',
+    name: venueName,
+    address: awayVenue
+      ? {
+          '@type': 'PostalAddress',
+          streetAddress: awayVenue.streetAddress,
+          addressLocality: awayVenue.addressLocality,
+          postalCode: awayVenue.postalCode,
+          addressCountry: awayVenue.addressCountry,
+        }
+      : { '@type': 'PostalAddress', addressCountry: 'DK' },
+  };
 }
 
 const YOUTUBE_ID_RE =

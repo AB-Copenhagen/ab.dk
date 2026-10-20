@@ -232,3 +232,32 @@ regardless of which article you're actually looking for. If your Article titles 
 easier to find in English, switch Strapi's locale selector to English _before_ opening
 the Match Content entry (rather than after) — the article-link search will then show
 English titles instead. There's no per-field locale toggle inside the picker itself.
+
+## Managing away-game venues (Strapi)
+
+The **Venue** content type (`api::venue.venue`) supplies the opponent's stadium name and
+address for away fixtures, used in the `SportsEvent.location` structured data (JSON-LD) on
+match detail pages (`src/pages/kamp/[slug].astro`, `src/pages/en/match/[slug].astro` via
+`matchLocationSchema()` in `src/lib/structured-data.ts`). Not localized — a stadium's
+name/address doesn't vary by site language. AB's own home ground (for home fixtures) is
+hardcoded in that same helper, not stored in Strapi.
+
+| Field             | Description                                                                  |
+| ----------------- | ---------------------------------------------------------------------------- |
+| `name`            | Stadium name, e.g. `"Right to Dream Park"`                                   |
+| `opponentTeamId`  | The opponent's SI team ID (from `event.homeId` on a fixture where they host) |
+| `streetAddress`   | Street address                                                               |
+| `addressLocality` | City/town                                                                    |
+| `postalCode`      | Postal code                                                                  |
+| `addressCountry`  | ISO country code, defaults to `"DK"`                                         |
+| `isNeutralVenue`  | Set for a neutral-ground fixture (e.g. a cup final) — informational only     |
+
+**Without a Venue row for an opponent**, the match page falls back to that opponent's team
+name (not a street address) for `location.name`, and a country-only `PostalAddress` for
+`location.address` — valid but low-detail structured data, not a validation error. Add a
+row before an away fixture (or once Google Search Console flags one) to fill in the real
+address.
+
+> Restart Strapi after the first deploy so it picks up the new content type, and grant the
+> Public role `find`/`findOne` permissions for Venue in Strapi admin (Settings → Users &
+> Permissions → Roles → Public) — new content types aren't auto-granted public read access.

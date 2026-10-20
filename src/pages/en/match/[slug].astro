@@ -15,7 +15,7 @@ import MatchdayGuideTeaser from '@/components/MatchdayGuideTeaser.astro';
 import AwayDayGuideTeaser from '@/components/AwayDayGuideTeaser.astro';
 import { fetchEvent, fetchTeamForm, formatEventScore, getTeamLogoSrc, isCupMatch } from '@/lib/si/client';
 import type { SIEvent } from '@/lib/si/client';
-import { fetchMatchContent, strapiMediaUrl } from '@/lib/strapi/client';
+import { fetchMatchContent, fetchVenueByOpponentTeamId, strapiMediaUrl } from '@/lib/strapi/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
 import { decodeHtml } from '@/lib/utils';
@@ -24,6 +24,7 @@ import { setCdnCacheHeaders } from '@/lib/http-cache';
 import {
   breadcrumbSchema,
   estimatedMatchEndDate,
+  matchLocationSchema,
   youTubeVideoSchema,
 } from '@/lib/structured-data';
 
@@ -68,11 +69,13 @@ const matchDateDay = fmtDate(startDate, 'en-GB', DATE_LONG_YEAR_OPTS);
 const matchTime = fmtDate(startDate, 'en-GB', TIME_OPTS);
 
 const beforeDate = startDate.slice(0, 10);
-const [cmsMatch, billetMap, homeForm, awayForm] = await Promise.all([
+const [cmsMatch, billetMap, homeForm, awayForm, awayVenue] = await Promise.all([
   fetchMatchContent(eventId, 'en').catch(() => null),
   isHome ? fetchBilletTicketMap().catch(() => null) : Promise.resolve(null),
   fetchTeamForm(event.homeId, { beforeDate, locale: 'en' }).catch(() => []),
   fetchTeamForm(event.awayId, { beforeDate, locale: 'en' }).catch(() => []),
+  // event.homeId is the actual hosting team when AB is away — i.e. the opponent.
+  isHome ? Promise.resolve(null) : fetchVenueByOpponentTeamId(event.homeId).catch(() => null),
 ]);
 const accentColor = cmsMatch?.accentColor ?? 'var(--ab-green)';
 const preMatchArticle = cmsMatch?.preMatchArticle ?? null;
@@ -89,7 +92,8 @@ const billetFallback = billetMap
     : null;
 const ticketUrl = cmsMatch?.ticketUrl ?? billetFallback;
 
-const venueName = event.properties?.venueName ?? (isHome ? 'Gladsaxe Stadium' : awayName);
+const venueName =
+  event.properties?.venueName ?? (isHome ? 'Gladsaxe Stadium' : (awayVenue?.name ?? homeName));
 
 const WIDGET_TOURNAMENT_ID = 46;
 
@@ -137,24 +141,7 @@ const matchSchema = {
         },
       }
     : {}),
-  location: {
-    '@type': 'Place',
-    name: venueName,
-    // Google treats location.address as required for Event rich results, so
-    // it's always emitted. The full street address is only known for home
-    // fixtures — SI gives us nothing but a venue name for away grounds, so
-    // those fall back to the country alone rather than omitting the field
-    // and failing validation outright.
-    address: isHome
-      ? {
-          '@type': 'PostalAddress',
-          streetAddress: 'Gladsaxevej 202',
-          addressLocality: 'Søborg',
-          postalCode: '2860',
-          addressCountry: 'DK',
-        }
-      : { '@type': 'PostalAddress', addressCountry: 'DK' },
-  },
+  location: matchLocationSchema({ isHome, venueName, awayVenue }),
   homeTeam: { '@type': 'SportsTeam', name: homeName },
   awayTeam: { '@type': 'SportsTeam', name: awayName },
   competitor: [
