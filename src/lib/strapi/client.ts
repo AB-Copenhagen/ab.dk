@@ -747,6 +747,20 @@ export async function fetchVenueByOpponentTeamId(opponentTeamId: number): Promis
   return results[0] ?? null;
 }
 
+/**
+ * Fetch every venue row and index by opponent SI team ID — for listing pages
+ * (e.g. the fixtures list) that need venue data for many fixtures at once,
+ * where a per-event fetchVenueByOpponentTeamId call each would mean one
+ * Strapi request per away fixture.
+ */
+export async function fetchVenuesByOpponentTeamId(): Promise<Map<number, StrapiVenue>> {
+  const results = await fetchCollectionType<StrapiVenue[]>('venues', {
+    status: 'published',
+    pagination: { pageSize: 100 },
+  }).catch(() => []);
+  return new Map(results.map((venue) => [venue.opponentTeamId, venue]));
+}
+
 // ── Hero slider ────────────────────────────────────────────────────────────────
 
 export interface StrapiHeroSlideMedia {
