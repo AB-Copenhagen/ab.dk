@@ -718,6 +718,35 @@ export async function fetchPartnerBySlug(
   return results[0] ?? null;
 }
 
+// ── Away-game venues ───────────────────────────────────────────────────────────
+
+/**
+ * Editor-maintained away-ground address for a specific opponent, keyed by
+ * their SI team ID (`event.homeId` when AB is the away side). Not localized —
+ * a stadium's name/address doesn't vary by site language. Used to fill in
+ * schema.org `SportsEvent.location` on match pages; when no row exists yet
+ * for an opponent, callers fall back to a generic placeholder rather than
+ * guessing an address.
+ */
+export interface StrapiVenue {
+  name: string;
+  opponentTeamId: number;
+  streetAddress: string;
+  addressLocality: string;
+  postalCode: string;
+  addressCountry: string;
+  isNeutralVenue: boolean;
+}
+
+/** Fetch the away venue for a given opponent SI team ID. Returns null if no row exists. */
+export async function fetchVenueByOpponentTeamId(opponentTeamId: number): Promise<StrapiVenue | null> {
+  const results = await fetchCollectionType<StrapiVenue[]>('venues', {
+    filters: { opponentTeamId: { $eq: opponentTeamId } },
+    status: 'published',
+  }).catch(() => []);
+  return results[0] ?? null;
+}
+
 // ── Hero slider ────────────────────────────────────────────────────────────────
 
 export interface StrapiHeroSlideMedia {
