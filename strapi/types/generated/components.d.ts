@@ -330,7 +330,7 @@ export interface MatchArticleLink extends Struct.ComponentSchema {
   attributes: {
     article: Schema.Attribute.Relation<'oneToOne', 'api::article.article'>;
     role: Schema.Attribute.Enumeration<
-      ['pre_match', 'post_match', 'community_news', 'other']
+      ['pre_match', 'post_match', 'community_news', 'other', 'away_travel']
     > &
       Schema.Attribute.Required;
   };
