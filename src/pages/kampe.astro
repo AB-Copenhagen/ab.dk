@@ -15,13 +15,13 @@ import {
 } from '@/lib/si/client';
 import { abConfig, currentSeasonLabel } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
-import { fetchMatchTicketUrls } from '@/lib/strapi/client';
+import { fetchMatchTicketUrls, fetchVenuesByOpponentTeamId } from '@/lib/strapi/client';
 import { translate } from '@/lib/i18n';
 import { fmtDate, dtAttrs, AB_TIMEZONE, TIME_OPTS } from '@/lib/dateFormat';
 import Img from '@/components/Img.astro';
 import matchesHeaderBg from '@/assets/images/matches-header-bg.png';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
-import { itemListSchema } from '@/lib/structured-data';
+import { itemListSchema, matchLocationSchema } from '@/lib/structured-data';
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
 
@@ -88,9 +88,10 @@ const displayEvents: SIEvent[] =
 const isPast = filter === 'results';
 
 const homeEventIds = upcoming.filter((e) => e.homeId === abConfig.teamId).map((e) => e.eventId);
-const [billetMap, cmsTicketUrls] = await Promise.all([
+const [billetMap, cmsTicketUrls, venuesByOpponentTeamId] = await Promise.all([
   fetchBilletTicketMap().catch(() => new Map<string, string>()),
   fetchMatchTicketUrls(homeEventIds).catch(() => new Map<number, string>()),
+  fetchVenuesByOpponentTeamId().catch(() => new Map()),
 ]);
 const ticketByEventId: Record<number, string> = {};
 for (const event of upcoming) {
@@ -151,11 +152,16 @@ const matchListStructuredData = itemListSchema(
     const isABHome = event.homeId === abConfig.teamId;
     const homeName = isABHome ? 'AB' : event.homeName;
     const awayName = isABHome ? event.awayName : 'AB';
+    const awayVenue = isABHome ? null : (venuesByOpponentTeamId.get(event.homeId) ?? null);
+    const venueName =
+      event.properties?.venueName ??
+      (isABHome ? translate(locale, 'defaultStadium') : (awayVenue?.name ?? event.homeName));
     return {
       '@type': 'SportsEvent',
       name: `${homeName} vs ${awayName}`,
       startDate: event.startDate,
       url: `https://ab.dk/kamp/${event.eventId}`,
+      location: matchLocationSchema({ isHome: isABHome, venueName, awayVenue }),
       homeTeam: { '@type': 'SportsTeam', name: homeName },
       awayTeam: { '@type': 'SportsTeam', name: awayName },
     };
