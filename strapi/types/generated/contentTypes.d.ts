@@ -1309,6 +1309,12 @@ export interface ApiPlayerPlayer extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<false>;
+    instagramUrl: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::player.player'>;
     nickname: Schema.Attribute.String &
@@ -1355,6 +1361,12 @@ export interface ApiPlayerPlayer extends Struct.CollectionTypeSchema {
       }>;
     siPlayerId: Schema.Attribute.Integer &
       Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    socialEmbeds: Schema.Attribute.Component<'match.social-embed', true> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: false;

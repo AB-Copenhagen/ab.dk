@@ -130,6 +130,25 @@
           "localized": false
         }
       }
+    },
+    "instagramUrl": {
+      "type": "string",
+      "regex": "^https://(www\\.)?instagram\\.com/.+$",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "socialEmbeds": {
+      "type": "component",
+      "repeatable": true,
+      "component": "match.social-embed",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
     }
   }
 }
