@@ -129,7 +129,8 @@ export const GET: APIRoute = async ({ params, request, url }) => {
       ).transformToByteArray();
 
       let pipeline = sharp(bytes);
-      if (width) pipeline = pipeline.resize({ width, withoutEnlargement: true });
+      if (width)
+        pipeline = pipeline.resize({ width, withoutEnlargement: true });
       const outBuffer = outputWebp
         ? await pipeline.webp({ quality: 85 }).toBuffer()
         : await pipeline.toBuffer();
@@ -169,7 +170,8 @@ export const GET: APIRoute = async ({ params, request, url }) => {
     };
     if (res.ContentType) headers['Content-Type'] = res.ContentType;
     if (sourceEtag) headers['ETag'] = sourceEtag;
-    if (res.ContentLength) headers['Content-Length'] = String(res.ContentLength);
+    if (res.ContentLength)
+      headers['Content-Length'] = String(res.ContentLength);
 
     return new Response(res.Body as ReadableStream, { status: 200, headers });
   } catch {
