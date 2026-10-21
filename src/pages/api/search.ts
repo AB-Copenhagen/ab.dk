@@ -1,11 +1,18 @@
 import type { APIRoute } from 'astro';
 
+import { rejectIfBot } from '@/lib/bot-check';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 import { decodeHtml } from '@/lib/utils';
 
 export const GET: APIRoute = async ({ url }) => {
-  const q = url.searchParams.get('q')?.trim() ?? '';
+  const botResponse = await rejectIfBot();
+  if (botResponse) return botResponse;
+
+  // Cap unreasonably long queries before they reach Strapi's $containsi (ILIKE) scan —
+  // the search box has no client-side limit, and a huge value doesn't improve matching,
+  // just the cost of running it.
+  const q = (url.searchParams.get('q')?.trim() ?? '').slice(0, 100);
   const locale = (url.searchParams.get('locale') ?? 'da') as 'da' | 'en';
 
   if (q.length < 2) {
