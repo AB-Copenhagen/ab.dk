@@ -6,6 +6,13 @@ interface Props {
 }
 
 const { bannerImageUrl } = Astro.props;
+
+// Hero banner is desktop-only and full-bleed within the page's max width — 1920 covers
+// every desktop viewport without serving editors' full-resolution uploads (which can run
+// several MB) straight to the browser. See api/media/[...key].ts for the `w` param.
+const sizedBannerImageUrl = bannerImageUrl
+  ? `${bannerImageUrl}${bannerImageUrl.includes('?') ? '&' : '?'}w=1920`
+  : null;
 ---
 
 <!-- Photo + Ken Burns zoom is desktop-only: on small screens it's just a solid
@@ -13,8 +20,8 @@ const { bannerImageUrl } = Astro.props;
 <div class="hidden md:block absolute inset-0 overflow-hidden">
   <div class="hero-photo absolute inset-0">
     {
-      bannerImageUrl ? (
-        <img src={bannerImageUrl} alt="" aria-hidden="true" class="w-full h-full object-cover opacity-90" />
+      sizedBannerImageUrl ? (
+        <img src={sizedBannerImageUrl} alt="" aria-hidden="true" loading="eager" class="w-full h-full object-cover opacity-90" />
       ) : (
         <Img
           src="/images/match-hero-default.jpg"
