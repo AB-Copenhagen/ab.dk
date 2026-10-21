@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import PlayerHeroContent from '@/components/player/PlayerHeroContent.astro';
 import PlayerMetadataBar from '@/components/player/PlayerMetadataBar.astro';
+import PlayerInstagram from '@/components/player/PlayerInstagram.astro';
 import PlayerSeasonStatsTable from '@/components/player/PlayerSeasonStatsTable.astro';
 import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
 import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
@@ -167,6 +168,7 @@ const personSchema = {
   birthDate: birthDate ?? undefined,
   image: absolutePhotoUrl,
   memberOf: { '@type': 'SportsTeam', name: 'Akademisk Boldklub' },
+  sameAs: cmsPlayer?.instagramUrl ? [cmsPlayer.instagramUrl] : undefined,
   url: `https://ab.dk/en/player/${slug}`,
 };
 
@@ -272,6 +274,8 @@ const playerStructuredData = [personSchema, playerBreadcrumbs];
       </div>
     </div>
   </section>
+
+  <PlayerInstagram locale="en" instagramUrl={cmsPlayer?.instagramUrl} embeds={cmsPlayer?.socialEmbeds} />
 
   <!-- ── Photo gallery ─────────────────────────────────────────────── -->
   {galleryImages.length > 0 && (
