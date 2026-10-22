@@ -1366,12 +1366,6 @@ export interface ApiPlayerPlayer extends Struct.CollectionTypeSchema {
           localized: false;
         };
       }>;
-    socialEmbeds: Schema.Attribute.Component<'match.social-embed', true> &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

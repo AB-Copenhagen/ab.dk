@@ -256,6 +256,7 @@ const playerStructuredData = [personSchema, playerBreadcrumbs];
               Spillerprofil tilføjes snart.
             </p>
           )}
+          <PlayerInstagram instagramUrl={cmsPlayer?.instagramUrl} />
           {cmsPlayer?.quote && (
             <div class="relative mt-8 pl-3">
               <span aria-hidden="true" class="absolute top-0 left-0 font-black leading-none select-none pointer-events-none text-[5rem] text-ab-beige opacity-25">&ldquo;</span>
@@ -273,8 +274,6 @@ const playerStructuredData = [personSchema, playerBreadcrumbs];
       </div>
     </div>
   </section>
-
-  <PlayerInstagram locale="da" instagramUrl={cmsPlayer?.instagramUrl} embeds={cmsPlayer?.socialEmbeds} />
 
   <!-- ── Photo gallery ─────────────────────────────────────────────── -->
   {galleryImages.length > 0 && (
