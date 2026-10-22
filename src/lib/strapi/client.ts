@@ -239,7 +239,6 @@ export interface StrapiPlayer {
   hidePhoto?: boolean;
   hideFromSquad?: boolean;
   instagramUrl?: string;
-  socialEmbeds?: StrapiSocialEmbed[];
   displayNameOverride?: string;
   shirtNumberOverride?: number;
   positionOverride?: 'keeper' | 'defender' | 'midfielder' | 'forward';
@@ -255,19 +254,11 @@ export async function fetchPlayerCmsData(
   siPlayerId: number,
   locale = 'da',
 ): Promise<StrapiPlayer | null> {
-  const query = (populate: Record<string, unknown>) =>
-    fetchCollectionType<StrapiPlayer[]>('players', {
-      filters: { siPlayerId: { $eq: siPlayerId } },
-      populate,
-      locale,
-    });
-  // socialEmbeds only on the detail-page fetch — the squad list's batch fetch
-  // below doesn't need the (potentially large) embed HTML. fetchCollectionType
-  // never throws (it resolves to [] on any failure), so if Strapi hasn't
-  // deployed that field yet and rejects the request, an empty result is the
-  // signal to retry without it rather than losing the player's bio/overrides.
-  let results = await query({ ...PLAYER_PHOTO_POPULATE, socialEmbeds: true });
-  if (results.length === 0) results = await query(PLAYER_PHOTO_POPULATE);
+  const results = await fetchCollectionType<StrapiPlayer[]>('players', {
+    filters: { siPlayerId: { $eq: siPlayerId } },
+    populate: PLAYER_PHOTO_POPULATE,
+    locale,
+  }).catch(() => []);
 
   if (results[0]) {
     const row = results[0];

@@ -1,69 +1,42 @@
 ---
-import type { Locale } from '@/lib/i18n';
-import type { StrapiSocialEmbed } from '@/lib/strapi/client';
-
 interface Props {
-  locale: Locale;
   instagramUrl?: string | null;
-  embeds?: StrapiSocialEmbed[];
 }
 
-const { locale, instagramUrl, embeds = [] } = Astro.props;
-const posts = embeds.filter((e) => e.platform === 'instagram');
+const { instagramUrl } = Astro.props;
 
 // "https://www.instagram.com/g.noga/" → "@g.noga"
 const handle = instagramUrl
   ? `@${instagramUrl.replace(/\/+$/, '').split('/').pop()?.split('?')[0]}`
   : null;
-const title = locale === 'en' ? 'From Instagram' : 'Fra Instagram';
 ---
 
 {
-  (instagramUrl || posts.length > 0) && (
-    <section class="bg-white border-t border-gray-200">
-      <div class="max-w-7xl mx-auto px-5 md:px-12 py-8 lg:py-10">
-        <h2 class="font-black text-xl text-[#111] flex flex-wrap items-center gap-x-2.5 gap-y-1">
-          <svg
-            class="w-5 h-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-            <path d="M17.5 6.5h.01" />
-          </svg>
-          {title}
-          {instagramUrl && (
-            // The "↗" comes from the global a[target='_blank'] style in global.css.
-            <a
-              href={instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-ab-green hover:underline"
-            >
-              {handle}
-            </a>
-          )}
-        </h2>
-        {posts.length > 0 && (
-          // Instagram's embed script won't render narrower than ~326px, so keep
-          // each post at that width in a single horizontal row instead of a
-          // tall column — keeps the section short next to the player profile.
-          <div class="mt-5 flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 px-5 md:mx-0 md:px-0">
-            {posts.map((embed) => (
-              <div class="shrink-0 w-[326px] max-w-[85vw] snap-start flex flex-col gap-2">
-                <div set:html={embed.embedCode} />
-                {embed.caption && <p class="text-sm text-[#6B7280]">{embed.caption}</p>}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+  instagramUrl && (
+    // aria-label also opts out of the global "↗" that global.css adds to
+    // a[target='_blank'] links without one.
+    <a
+      href={instagramUrl}
+      target="_blank"
+      aria-label={`Instagram ${handle}`}
+      rel="noopener noreferrer"
+      class="mt-6 inline-flex items-center gap-2 font-bold text-ab-green hover:underline"
+    >
+      <svg
+        class="w-5 h-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <path d="M17.5 6.5h.01" />
+      </svg>
+      {handle}
+    </a>
   )
 }

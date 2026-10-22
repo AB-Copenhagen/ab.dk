@@ -139,16 +139,6 @@
           "localized": false
         }
       }
-    },
-    "socialEmbeds": {
-      "type": "component",
-      "repeatable": true,
-      "component": "match.social-embed",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
     }
   }
 }
