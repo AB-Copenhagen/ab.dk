@@ -67,6 +67,98 @@ export function switchLocalePath(
   return translateSlug(pathWithoutLocale, enToDa);
 }
 
+export const LOCALE_COOKIE = 'locale';
+export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+interface LocaleRedirectContext {
+  request: Request;
+  url: URL;
+  cookies: {
+    get(name: string): { value: string } | undefined;
+    set(
+      name: string,
+      value: string,
+      opts: { path: string; maxAge: number }
+    ): void;
+  };
+}
+
+/**
+ * True if this request was triggered by navigating from another page on this
+ * site (an in-site link, e.g. LangSwitch), as opposed to a fresh top-level
+ * visit (typed URL, bookmark, or an external link) — needed to tell "the user
+ * just clicked to Danish, respect it" apart from "the user landed on the bare
+ * (Danish-by-default) URL again and we should honor their stored preference."
+ */
+export function isSameSiteNavigation(context: LocaleRedirectContext): boolean {
+  const secFetchSite = context.request.headers.get('sec-fetch-site');
+  if (secFetchSite)
+    return secFetchSite === 'same-origin' || secFetchSite === 'same-site';
+
+  // Older/uncommon clients that skip Sec-Fetch-Site — fall back to Referer.
+  const referer = context.request.headers.get('referer');
+  if (!referer) return false;
+  try {
+    return new URL(referer).host === context.url.host;
+  } catch {
+    return false;
+  }
+}
+
+/** True if Danish is the browser's highest-priority language, or the header gives no usable signal. */
+export function prefersDanish(acceptLanguage: string): boolean {
+  const tags = acceptLanguage
+    .split(',')
+    .map((part) => {
+      const [tag, qPart] = part.trim().split(';q=');
+      return {
+        tag: tag?.trim().toLowerCase() ?? '',
+        q: qPart ? parseFloat(qPart) : 1,
+      };
+    })
+    .filter((t) => t.tag && t.tag !== '*')
+    .sort((a, b) => b.q - a.q);
+
+  return tags.length === 0 || tags[0].tag.startsWith('da');
+}
+
+/**
+ * Locale-preference redirect for a specific article/detail page whose
+ * translated counterpart's exact path (`alternatePath`) is only knowable
+ * after looking up the real translation slug (DA/EN article slugs are
+ * independent strings — see src/pages/nyheder/[slug].astro) — unlike the
+ * middleware's generic path-prefix swap, which would guess a slug that
+ * doesn't exist on the other locale and 404. Pages using this must exclude
+ * themselves from that generic middleware redirect (see
+ * ARTICLE_DETAIL_PATTERN in src/middleware.ts).
+ */
+export function resolveArticleLocaleRedirect(
+  context: LocaleRedirectContext,
+  servedLocale: Locale,
+  alternatePath: string | undefined
+): string | null {
+  if (!alternatePath) return null;
+  const cookieLocale = context.cookies.get(LOCALE_COOKIE)?.value as
+    Locale | undefined;
+
+  if (!cookieLocale) {
+    if (servedLocale !== 'da') return null;
+    const acceptLanguage = context.request.headers.get('accept-language') ?? '';
+    if (prefersDanish(acceptLanguage)) return null;
+    context.cookies.set(LOCALE_COOKIE, 'en', {
+      path: '/',
+      maxAge: LOCALE_COOKIE_MAX_AGE,
+    });
+    return alternatePath;
+  }
+
+  if (cookieLocale !== servedLocale && !isSameSiteNavigation(context)) {
+    return alternatePath;
+  }
+
+  return null;
+}
+
 // UI strings dictionary
 export const t: Record<Locale, Record<string, string>> = {
   da: {

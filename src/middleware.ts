@@ -8,15 +8,19 @@ import {
   descope,
   sessionCookieOptions,
 } from '@/lib/descope-server';
-import { type Locale, switchLocalePath } from '@/lib/i18n';
+import {
+  LOCALE_COOKIE,
+  type Locale,
+  LOCALE_COOKIE_MAX_AGE as ONE_YEAR_SECONDS,
+  isSameSiteNavigation,
+  prefersDanish,
+  switchLocalePath,
+} from '@/lib/i18n';
 import {
   htmlPageToMarkdown,
   prefersMarkdown,
 } from '@/lib/markdown-negotiation';
 import { PREVIEW_COOKIE, runWithPreview } from '@/lib/preview-context';
-
-const LOCALE_COOKIE = 'locale';
-const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
 // Crawlers must always see the canonical content at the URL they request, never
 // bounced based on Accept-Language — otherwise indexing ends up reflecting the
@@ -32,44 +36,13 @@ const BOT_USER_AGENT_PATTERN =
 const NON_LOCALE_ROUTE_PATTERN =
   /^\/(feed|en\/feed|rss\/[^/]+|sitemap\.xml|robots\.txt|(en\/)?wp-json\/.*)$/;
 
-/**
- * True if this request was triggered by navigating from another page on this
- * site (an in-site link, e.g. LangSwitch), as opposed to a fresh top-level
- * visit (typed URL, bookmark, or an external link) — needed to tell "the user
- * just clicked to Danish, respect it" apart from "the user landed on the bare
- * (Danish-by-default) URL again and we should honor their stored preference."
- */
-function isSameSiteNavigation(context: APIContext): boolean {
-  const secFetchSite = context.request.headers.get('sec-fetch-site');
-  if (secFetchSite)
-    return secFetchSite === 'same-origin' || secFetchSite === 'same-site';
-
-  // Older/uncommon clients that skip Sec-Fetch-Site — fall back to Referer.
-  const referer = context.request.headers.get('referer');
-  if (!referer) return false;
-  try {
-    return new URL(referer).host === context.url.host;
-  } catch {
-    return false;
-  }
-}
-
-/** True if Danish is the browser's highest-priority language, or the header gives no usable signal. */
-function prefersDanish(acceptLanguage: string): boolean {
-  const tags = acceptLanguage
-    .split(',')
-    .map((part) => {
-      const [tag, qPart] = part.trim().split(';q=');
-      return {
-        tag: tag?.trim().toLowerCase() ?? '',
-        q: qPart ? parseFloat(qPart) : 1,
-      };
-    })
-    .filter((t) => t.tag && t.tag !== '*')
-    .sort((a, b) => b.q - a.q);
-
-  return tags.length === 0 || tags[0].tag.startsWith('da');
-}
+// Article detail pages have independent, per-locale slugs (DA/EN articles are
+// mostly unrelated Strapi entries — see src/pages/nyheder/[slug].astro), so
+// the generic path-prefix swap below (/nyheder/<slug> -> /en/news/<slug>)
+// guesses a slug that usually doesn't exist on the other locale and 404s.
+// These pages resolve the real translation slug themselves and redirect via
+// resolveArticleLocaleRedirect() instead — skip them here.
+const ARTICLE_DETAIL_PATTERN = /^\/(en\/news|nyheder)\/[^/]+\/?$/;
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Prerendered pages have no live request/cookies to check — and touching
@@ -102,12 +75,14 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
       context.request.headers.get('user-agent') ?? ''
     );
 
+  const isArticleDetail = ARTICLE_DETAIL_PATTERN.test(context.url.pathname);
+
   if (isPageRequest && !isBot) {
     const cookieLocale = context.cookies.get(LOCALE_COOKIE)?.value;
 
     if (!cookieLocale) {
       // First visit ever, no stored preference — auto-detect from Accept-Language.
-      if (locale === 'da') {
+      if (locale === 'da' && !isArticleDetail) {
         const acceptLanguage =
           context.request.headers.get('accept-language') ?? '';
         if (!prefersDanish(acceptLanguage)) {
@@ -119,7 +94,11 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
           return context.redirect(`${targetPath}${context.url.search}`, 302);
         }
       }
-    } else if (cookieLocale !== locale && !isSameSiteNavigation(context)) {
+    } else if (
+      cookieLocale !== locale &&
+      !isArticleDetail &&
+      !isSameSiteNavigation(context)
+    ) {
       // Returning visitor landing fresh (bookmark, typed URL, external link) on
       // a page whose implied locale doesn't match their stored preference —
       // honor the stored preference instead of silently reverting it. Danish
