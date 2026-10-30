@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import ArticleContent from '@/components/islands/ArticleContent';
 import FixturesWidget from '@/components/FixturesWidget.astro';
 import StandingsWidget from '@/components/StandingsWidget.astro';
+import { resolveArticleLocaleRedirect } from '@/lib/i18n';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 import { truncate, decodeHtml } from '@/lib/utils';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
@@ -85,6 +86,15 @@ if (!enTranslationSlug && article.originalPublishedAt) {
 
 // Falls back to the EN listing page when neither match is found.
 const alternateLocalePath = enTranslationSlug ? `/en/news/${enTranslationSlug}` : undefined;
+
+// The generic middleware redirect deliberately skips article detail pages
+// (see ARTICLE_DETAIL_PATTERN in src/middleware.ts) because it can't guess
+// the real EN slug — do the locale-preference redirect here instead, now
+// that the actual translation slug (or lack of one) is known.
+const localeRedirect = resolveArticleLocaleRedirect(Astro, 'da', alternateLocalePath);
+if (localeRedirect) {
+  return Astro.redirect(`${localeRedirect}${Astro.url.search}`, 302);
+}
 
 const idx = allArticleSlugs.findIndex((a) => a.slug === slug);
 const prevArticle = idx < allArticleSlugs.length - 1 ? allArticleSlugs[idx + 1] : null;
