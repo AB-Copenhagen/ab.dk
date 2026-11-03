@@ -263,8 +263,11 @@ const FALLBACK_HERO_SLIDES: HeroSlide[] = [
 
 // Built-in "Next home match" slide — always the first slide, resolved live
 // from SI so nobody has to create/unpublish a Strapi slide per fixture. Its
-// photo is the match's own Strapi `bannerImage` (Match Content) when one is
-// set, otherwise the default shot below. Hidden when no home match is left.
+// photo, in precedence order: the match's own Strapi `bannerImage` (Match
+// Content) → the `image` of the published 'matchup' Hero Slide (the editable
+// site-wide default background) → the bundled shot. Hidden when no home match
+// is left. Only the 'matchup' slide's `image` is read; its other fields and
+// its presence as a slide are ignored.
 const nextHomeMatch = events
   .filter(
     (e: any) =>
@@ -285,7 +288,9 @@ function buildNextHomeSlide(): HeroSlide | null {
   const oppId = nextHomeMatch.awayId;
   const opponentName = nextHomeMatch.awayName;
   const isCup = isCupMatch(nextHomeMatch);
-  const banner = nextHomeContent?.bannerImage;
+  const banner =
+    nextHomeContent?.bannerImage ??
+    cmsHeroSlides.find((slide) => slide.slideType === 'matchup' && slide.image)?.image;
   return {
     type: 'matchup',
     img: banner ? strapiMediaUrl(banner.url) : heroNextHomeImg,
@@ -372,6 +377,27 @@ const heroSlides: HeroSlide[] = [
     }
   }
 
+  /* Slow Ken Burns drift on the next-home photo: gentle zoom + pan, eased and
+     alternating so it never snaps back. Applied to a wrapper (not the <Img>)
+     so it stays within this file's scoped styles. */
+  @keyframes ken-burns {
+    from {
+      transform: scale(1) translate(0, 0);
+    }
+    to {
+      transform: scale(1.12) translate(-1.5%, -1%);
+    }
+  }
+  .ken-burns {
+    animation: ken-burns 18s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ken-burns {
+      animation: none;
+    }
+  }
+
   /* Repeatable film-grain texture — layer over a photo (below the foreground
      content, above the gradient vignette scrim) to add depth/texture.
      `overlay` blend keeps the photo's own tones undisturbed; `multiply`
@@ -409,18 +435,22 @@ const heroSlides: HeroSlide[] = [
               class="hero-video w-full h-full max-w-[1680px] mx-auto object-cover object-center pointer-events-none"
             />
           ) : slide.type === 'matchup' ? (
-            <Img
-              src={slide.img ?? heroNextHomeImg}
-              alt=""
-              width={slide.imgWidth}
-              height={slide.imgHeight}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              fetchpriority={i === 0 ? 'high' : undefined}
-              draggable="false"
-              widths={[640, 828, 1200, 1920]}
-              sizes="100vw"
-              class="w-full h-full object-cover object-center pointer-events-none grayscale"
-            />
+            <div class="absolute inset-0 overflow-hidden">
+              <div class="ken-burns w-full h-full">
+                <Img
+                  src={slide.img ?? heroNextHomeImg}
+                  alt=""
+                  width={slide.imgWidth}
+                  height={slide.imgHeight}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={i === 0 ? 'high' : undefined}
+                  draggable="false"
+                  widths={[640, 828, 1200, 1920]}
+                  sizes="100vw"
+                  class="w-full h-full object-cover object-center pointer-events-none grayscale"
+                />
+              </div>
+            </div>
           ) : slide.type === 'presale' ? (
             <Img
               src={slide.img ?? ''}

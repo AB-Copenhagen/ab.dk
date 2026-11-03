@@ -194,6 +194,12 @@ slider. `image` is shared across locales (same photo for da/en, like Partner `lo
 Whether a CTA opens in a new tab is derived automatically from `ctaUrl` (external `http(s)`
 links open in a new tab; internal paths don't) — there's no separate field for it.
 
+**Next-home matchup slide**: the first homepage slide is built in code from the next SI home
+fixture, not from a Strapi slide. Its background photo resolves as: that match's Match
+Content `bannerImage` → the `image` of a published Hero Slide with `slideType = matchup`
+(the editable site-wide default; only `image` is read, create one row per locale) → the
+bundled `hero-next-home.jpg`.
+
 If the `hero-slides` collection has no published entries (e.g. before seeding, or Strapi
 unreachable), the homepage falls back to a hardcoded set of slides in `Homepage.astro`
 rather than showing a blank hero section.
