@@ -83,7 +83,13 @@ async function siEventsRequest(
   return data.events ?? [];
 }
 
-/** List AB's upcoming fixtures (league + cup) as `{ id, label }` picker options, soonest first. Past matches are excluded — the picker is for choosing a fixture to promote (e.g. a hero-slide 'matchup' slide), not for looking up results. */
+// How far back the picker reaches. Editors attach post-match reports and
+// match-day content to fixtures that were just played, so finished matches
+// must stay selectable for a while after kickoff.
+const RECENT_PAST_DAYS = 60;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** List AB's fixtures (league + cup) as `{ id, label }` picker options: upcoming ones soonest first, then the last RECENT_PAST_DAYS days of played matches, most recent first. */
 export async function listCurrentSeasonMatches(): Promise<MatchOption[]> {
   const eventsByCompetition = await Promise.all(
     COMPETITIONS.map((competition) => {
@@ -102,6 +108,7 @@ export async function listCurrentSeasonMatches(): Promise<MatchOption[]> {
   );
 
   const now = Date.now();
+  const earliest = now - RECENT_PAST_DAYS * DAY_MS;
   const seen = new Set<number>();
   const events = eventsByCompetition
     .filter((events): events is SIEvent[] => events !== null)
@@ -109,13 +116,14 @@ export async function listCurrentSeasonMatches(): Promise<MatchOption[]> {
     .filter((event) => {
       if (seen.has(event.eventId)) return false;
       seen.add(event.eventId);
-      return new Date(event.startDate).getTime() >= now;
+      return new Date(event.startDate).getTime() >= earliest;
     });
 
-  return events
-    .slice()
-    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-    .map((event) => ({ id: event.eventId, label: formatMatchLabel(event) }));
+  const startMs = (event: SIEvent): number => new Date(event.startDate).getTime();
+  const upcoming = events.filter((event) => startMs(event) >= now).sort((a, b) => startMs(a) - startMs(b));
+  const recent = events.filter((event) => startMs(event) < now).sort((a, b) => startMs(b) - startMs(a));
+
+  return [...upcoming, ...recent].map((event) => ({ id: event.eventId, label: formatMatchLabel(event) }));
 }
 
 /** Resolve a single event ID to a human-readable "Home vs Away — date" label, or null if unavailable. */
