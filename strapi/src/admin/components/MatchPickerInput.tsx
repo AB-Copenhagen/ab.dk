@@ -2,7 +2,7 @@
  * Custom field Input for match-content's `eventId` — replaces Strapi's
  * default number input (which formats multi-digit integers with thousand
  * separators, making an ID look like a currency figure) with a searchable
- * dropdown of the current season's matches fetched from the SI API, so
+ * dropdown of upcoming and recently played matches fetched from the SI API, so
  * editors pick a match by team names instead of typing a raw event ID.
  */
 import * as React from 'react';
