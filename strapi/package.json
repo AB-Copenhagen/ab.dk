@@ -23,12 +23,12 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.1023.0",
     "@sensinum/strapi-plugin-mcp": "^1.1.0",
-    "@strapi/plugin-cloud": "5.53.0",
-    "@strapi/plugin-seo": "^2.0.4",
-    "@strapi/plugin-users-permissions": "5.53.0",
-    "@strapi/provider-email-mailgun": "^5.53.0",
-    "@strapi/provider-upload-aws-s3": "^5.53.0",
-    "@strapi/strapi": "5.53.0",
+    "@strapi/plugin-cloud": "5.61.0",
+    "@strapi/plugin-seo": "^2.0.9",
+    "@strapi/plugin-users-permissions": "5.61.0",
+    "@strapi/provider-email-mailgun": "5.61.0",
+    "@strapi/provider-upload-aws-s3": "5.61.0",
+    "@strapi/strapi": "5.61.0",
     "pg": "^8.22.0",
     "pluralize": "^8.0.0",
     "react": "^18.0.0",
@@ -44,7 +44,7 @@
     "uuid": "LAUNCHPAD-LOCAL-1d1a74ee-db0c-43e2-8844-99232b517817"
   },
   "engines": {
-    "node": ">=18.0.0 <=22.x.x",
+    "node": ">=22.0.0 <=26.x.x",
     "npm": ">=6.0.0"
   },
   "license": "MIT"
