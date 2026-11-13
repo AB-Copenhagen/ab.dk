@@ -1,5 +1,7 @@
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 
+import { sanitizeArticleHtml } from '@/lib/sanitize';
+
 interface Props {
   content: any;
   strapiUrl: string;
@@ -49,7 +51,9 @@ export default function ArticleContent({ content, strapiUrl }: Props) {
     return (
       <div
         className="article-prose"
-        dangerouslySetInnerHTML={{ __html: htmlToParapraphs(decoded) }}
+        dangerouslySetInnerHTML={{
+          __html: sanitizeArticleHtml(htmlToParapraphs(decoded)),
+        }}
       />
     );
   }

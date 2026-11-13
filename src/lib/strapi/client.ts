@@ -41,6 +41,19 @@ async function cacheKey(name: string, options?: QueryParams): Promise<string> {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
+ * `@strapi/client`'s HTTPError carries the full `Request`/`Response` it failed
+ * on — including the `Authorization: Bearer <STRAPI_API_TOKEN>` header — and
+ * logging it as-is leaks the live API token into Vercel's runtime logs on
+ * every transient Strapi failure. Strip it down to name/message/status before
+ * it ever reaches `console.error`.
+ */
+function sanitizeError(err: unknown): string {
+  if (!(err instanceof Error)) return String(err);
+  const status = (err as { response?: { status?: number } }).response?.status;
+  return status ? `${err.name}: ${err.message} (status ${status})` : `${err.name}: ${err.message}`;
+}
+
+/**
  * Retries transient Strapi failures (503s under load, the client's own 10s
  * request timeout aborting) with a short backoff — Strapi Cloud bursts of
  * concurrent requests routinely 503 for a moment and then recover, so most
@@ -85,7 +98,7 @@ export async function fetchCollectionType<T = unknown[]>(
     try {
       return await withRetry(doFetch);
     } catch (err) {
-      console.error(`[strapi] fetchCollectionType(${collectionName}) failed:`, err);
+      console.error(`[strapi] fetchCollectionType(${collectionName}) failed:`, sanitizeError(err));
       return null;
     }
   };
@@ -128,7 +141,7 @@ export async function fetchCollectionTypeWithMeta<T = unknown[]>(
     try {
       return await withRetry(doFetch);
     } catch (err) {
-      console.error(`[strapi] fetchCollectionTypeWithMeta(${collectionName}) failed:`, err);
+      console.error(`[strapi] fetchCollectionTypeWithMeta(${collectionName}) failed:`, sanitizeError(err));
       return null;
     }
   };
@@ -170,7 +183,7 @@ export async function fetchSingleType<T = unknown>(
     try {
       return await withRetry(doFetch);
     } catch (err) {
-      console.error(`[strapi] fetchSingleType(${singleTypeName}) failed:`, err);
+      console.error(`[strapi] fetchSingleType(${singleTypeName}) failed:`, sanitizeError(err));
       return null;
     }
   };
@@ -196,7 +209,7 @@ export async function fetchDocument<T = unknown>(
     try {
       return await withRetry(doFetch);
     } catch (err) {
-      console.error(`[strapi] fetchDocument(${collectionName}/${documentId}) failed:`, err);
+      console.error(`[strapi] fetchDocument(${collectionName}/${documentId}) failed:`, sanitizeError(err));
       return null;
     }
   };
