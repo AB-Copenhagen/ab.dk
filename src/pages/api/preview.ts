@@ -1,15 +1,11 @@
 import type { APIRoute } from 'astro';
 
 import { PREVIEW_COOKIE } from '@/lib/preview-context';
+import { isSafeRelativePath } from '@/lib/utils';
 
 export const prerender = false;
 
 const PREVIEW_SECRET = import.meta.env.PREVIEW_SECRET as string | undefined;
-
-/** Only allow redirecting back into this site — blocks the `url` param being used as an open redirect. */
-function isSafeRelativePath(url: string): boolean {
-  return url.startsWith('/') && !url.startsWith('//');
-}
 
 export const GET: APIRoute = ({ url, cookies, redirect }) => {
   const secret = url.searchParams.get('secret');

@@ -18,7 +18,8 @@ import type { SIEvent } from '@/lib/si/client';
 import { fetchMatchContent, fetchVenueByOpponentTeamId, strapiMediaUrl } from '@/lib/strapi/client';
 import { abConfig } from '@/lib/config/ab';
 import { fetchBilletTicketMap, findTicketUrl } from '@/lib/billet';
-import { decodeHtml } from '@/lib/utils';
+import { decodeHtml, withImageWidth } from '@/lib/utils';
+import { sanitizeEmbedHtml } from '@/lib/sanitize';
 import { fmtDate, dtAttrs, DATE_LONG_YEAR_OPTS, TIME_OPTS } from '@/lib/dateFormat';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 import {
@@ -463,7 +464,7 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
                 {article.image ? (
                   <div class="w-16 h-16 rounded overflow-hidden shrink-0 bg-gray-100">
                     <img
-                      src={strapiMediaUrl(article.image.url)}
+                      src={withImageWidth(strapiMediaUrl(article.image.url), 320)}
                       alt=""
                       class="w-full h-full object-cover"
                       loading="lazy"
@@ -499,7 +500,7 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
               <div class="space-y-6">
                 {socialEmbeds.map((embed) => (
                   <div class="flex flex-col gap-3">
-                    <div set:html={embed.embedCode} />
+                    <div set:html={sanitizeEmbedHtml(embed.embedCode)} />
                     {embed.caption && <p class="text-sm text-[#6B7280]">{embed.caption}</p>}
                   </div>
                 ))}
@@ -516,7 +517,7 @@ const matchStructuredData = [matchSchema, matchBreadcrumbs, ...matchVideoSchemas
                     {article.image ? (
                       <div class="w-16 h-16 rounded overflow-hidden shrink-0 bg-gray-100">
                         <img
-                          src={strapiMediaUrl(article.image.url)}
+                          src={withImageWidth(strapiMediaUrl(article.image.url), 320)}
                           alt=""
                           class="w-full h-full object-cover"
                           loading="lazy"

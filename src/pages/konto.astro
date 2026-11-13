@@ -1,14 +1,16 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { isSafeRelativePath } from '@/lib/utils';
 
 export const prerender = false;
 
 // If already authenticated (DS cookie present), go straight to profile
 const sessionToken = Astro.cookies.get('DS')?.value;
 if (sessionToken) {
-  return Astro.redirect(
-    Astro.url.searchParams.get('redirect') ?? '/konto/profil'
-  );
+  const redirectParam = Astro.url.searchParams.get('redirect');
+  const target =
+    redirectParam && isSafeRelativePath(redirectParam) ? redirectParam : '/konto/profil';
+  return Astro.redirect(target);
 }
 
 const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
@@ -42,7 +44,10 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
         el.addEventListener('success', async (e) => {
           const sessionJwt = e.detail?.sessionJwt;
           const refreshJwt = e.detail?.refreshJwt;
-          const target = new URLSearchParams(location.search).get('redirect') ?? '/konto/profil';
+          const redirectParam = new URLSearchParams(location.search).get('redirect');
+          // Block absolute/protocol-relative redirect targets — only ever navigate back into this site.
+          const isSafeRelativePath = (url) => url.startsWith('/') && !url.startsWith('//');
+          const target = redirectParam && isSafeRelativePath(redirectParam) ? redirectParam : '/konto/profil';
           if (!sessionJwt) return;
 
           const res = await fetch('/api/auth/session', {

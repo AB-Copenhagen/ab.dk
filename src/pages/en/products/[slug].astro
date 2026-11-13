@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { breadcrumbSchema } from '@/lib/structured-data';
+import { withImageWidth } from '@/lib/utils';
 
 export const prerender = false;
 setCdnCacheHeaders(Astro.response.headers);
@@ -26,6 +27,10 @@ if (!product) {
 
 const { name, description, price, buyLink, category } = product;
 const imageUrl = product.image?.url ? strapiMediaUrl(product.image.url) : null;
+// imageUrl itself stays full-resolution — it also feeds the og:image/schema.org
+// Product image below, which should get the editor's original upload, not a
+// thumbnail-sized crop.
+const displayImageUrl = withImageWidth(imageUrl, 828);
 const gallery: any[] = product.gallery ?? [];
 
 const productDescription = description
@@ -93,8 +98,8 @@ const productStructuredData = [productSchema, productBreadcrumbs];
 
         <div class="space-y-3">
           <div class="aspect-square overflow-hidden border border-gray-200" style="background:#F3F4F6">
-            {imageUrl ? (
-              <img src={imageUrl} alt={name} class="w-full h-full object-cover" />
+            {displayImageUrl ? (
+              <img src={displayImageUrl} alt={name} class="w-full h-full object-cover" />
             ) : (
               <div class="w-full h-full flex items-center justify-center font-black text-6xl" style="color:color-mix(in srgb, var(--ab-green) 15%, transparent)">AB</div>
             )}
@@ -103,7 +108,7 @@ const productStructuredData = [productSchema, productBreadcrumbs];
             <div class="grid grid-cols-4 gap-2">
               {gallery.slice(0, 4).map((img: any) => (
                 <div class="aspect-square overflow-hidden border border-gray-200">
-                  <img src={strapiMediaUrl(img.url)} alt="" class="w-full h-full object-cover" loading="lazy" />
+                  <img src={withImageWidth(strapiMediaUrl(img.url), 750)} alt="" class="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
             </div>

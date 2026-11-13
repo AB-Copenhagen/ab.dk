@@ -9,7 +9,4 @@ export default ({ env }) => ({
   cron: {
     tasks: cronTasks,
   },
-  mcp: {
-    enabled: true,
-  },
 });

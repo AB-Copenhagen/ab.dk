@@ -2,7 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import Pager from '@/components/Pager.astro';
 import { fetchCollectionType, fetchCollectionTypeWithMeta, strapiMediaUrl } from '@/lib/strapi/client';
-import { truncate, decodeHtml } from '@/lib/utils';
+import { truncate, decodeHtml, withImageWidth } from '@/lib/utils';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { translate } from '@/lib/i18n';
 export const prerender = false;
@@ -82,7 +82,7 @@ const [featured, ...rest] = !activeCategory && page === 1 ? pageArticles : [null
     <section class="relative w-full overflow-hidden" style="height:clamp(400px,52vw,660px)">
       {featured.image?.url ? (
         <img
-          src={strapiMediaUrl(featured.image.url)}
+          src={withImageWidth(strapiMediaUrl(featured.image.url), 1920)}
           alt={decodeHtml(featured.title)}
           loading="eager"
           class="absolute inset-0 w-full h-full object-cover object-center"
@@ -185,7 +185,7 @@ const [featured, ...rest] = !activeCategory && page === 1 ? pageArticles : [null
               <div class="overflow-hidden mb-4 aspect-[4/3] bg-[#F3F4F6]">
                 {article.image?.url ? (
                   <img
-                    src={strapiMediaUrl(article.image.url)}
+                    src={withImageWidth(strapiMediaUrl(article.image.url), 640)}
                     alt={decodeHtml(article.title)}
                     loading="lazy"
                     class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"

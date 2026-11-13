@@ -1,12 +1,9 @@
 import type { APIRoute } from 'astro';
 
 import { PREVIEW_COOKIE } from '@/lib/preview-context';
+import { isSafeRelativePath } from '@/lib/utils';
 
 export const prerender = false;
-
-function isSafeRelativePath(url: string): boolean {
-  return url.startsWith('/') && !url.startsWith('//');
-}
 
 export const GET: APIRoute = ({ url, cookies, redirect }) => {
   cookies.delete(PREVIEW_COOKIE, { path: '/' });

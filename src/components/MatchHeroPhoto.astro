@@ -1,5 +1,6 @@
 ---
 import Img from '@/components/Img.astro';
+import { withImageWidth } from '@/lib/utils';
 
 interface Props {
   bannerImageUrl: string | null;
@@ -10,9 +11,7 @@ const { bannerImageUrl } = Astro.props;
 // Hero banner is desktop-only and full-bleed within the page's max width — 1920 covers
 // every desktop viewport without serving editors' full-resolution uploads (which can run
 // several MB) straight to the browser. See api/media/[...key].ts for the `w` param.
-const sizedBannerImageUrl = bannerImageUrl
-  ? `${bannerImageUrl}${bannerImageUrl.includes('?') ? '&' : '?'}w=1920`
-  : null;
+const sizedBannerImageUrl = withImageWidth(bannerImageUrl, 1920);
 ---
 
 <!-- Photo + Ken Burns zoom is desktop-only: on small screens it's just a solid

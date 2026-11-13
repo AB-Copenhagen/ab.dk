@@ -15,7 +15,7 @@ import StaffCard from '@/components/StaffCard.astro';
 import MatchScheduleList from '@/components/MatchScheduleList.astro';
 import MiniCalendar from '@/components/MiniCalendar.astro';
 import { translate } from '@/lib/i18n';
-import { decodeHtml } from '@/lib/utils';
+import { decodeHtml, withImageWidth } from '@/lib/utils';
 import { fetchCollectionProducts } from '@/lib/shopify';
 import StandingsWidget from '@/components/StandingsWidget.astro';
 import Img from '@/components/Img.astro';
@@ -293,7 +293,7 @@ function buildNextHomeSlide(): HeroSlide | null {
     cmsHeroSlides.find((slide) => slide.slideType === 'matchup' && slide.image)?.image;
   return {
     type: 'matchup',
-    img: banner ? strapiMediaUrl(banner.url) : heroNextHomeImg,
+    img: banner ? withImageWidth(strapiMediaUrl(banner.url), 1920) : heroNextHomeImg,
     imgWidth: banner?.width,
     imgHeight: banner?.height,
     // The match's own ticket override wins, then billet.ab.dk's per-fixture
@@ -325,7 +325,7 @@ const configuredHeroSlides: HeroSlide[] =
         .map(
           (slide): HeroSlide => ({
             type: slide.slideType as 'image' | 'video',
-            img: slide.image ? strapiMediaUrl(slide.image.url) : undefined,
+            img: slide.image ? withImageWidth(strapiMediaUrl(slide.image.url), 1920) : undefined,
             imgWidth: slide.image?.width,
             imgHeight: slide.image?.height,
             video: slide.video?.url,
@@ -960,7 +960,7 @@ const heroSlides: HeroSlide[] = [
               <div class="overflow-hidden mb-4 aspect-3/2 bg-gray-300">
                 {article.image?.url ? (
                   <img
-                    src={strapiMediaUrl(article.image.url)}
+                    src={withImageWidth(strapiMediaUrl(article.image.url), 640)}
                     alt={decodeHtml(article.title)}
                     loading="lazy"
                     class="article-img w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"

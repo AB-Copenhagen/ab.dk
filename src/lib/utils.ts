@@ -91,6 +91,29 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+/**
+ * Requests a resized variant from the CMS media proxies (src/pages/api/media/[...key].ts,
+ * src/pages/media/[...key].ts) — both snap `w` to a fixed set of allowed widths. Without
+ * this, every `<img>` pointed at a Strapi-sourced photo serves the full-resolution upload
+ * (often several MB) even into a small thumbnail slot.
+ */
+export function withImageWidth(
+  url: string | undefined | null,
+  width: number
+): string | undefined {
+  if (!url) return undefined;
+  return `${url}${url.includes('?') ? '&' : '?'}w=${width}`;
+}
+
+/**
+ * Only allow redirecting back into this site — blocks a `?redirect=`/`?url=`
+ * query param being used as an open redirect (`//evil.com` is protocol-relative
+ * and still leaves the site, so it's rejected alongside absolute URLs).
+ */
+export function isSafeRelativePath(url: string): boolean {
+  return url.startsWith('/') && !url.startsWith('//');
+}
+
 /** Escape HTML special characters before interpolating untrusted input into an HTML string. */
 export function escapeHtml(str: string): string {
   return str

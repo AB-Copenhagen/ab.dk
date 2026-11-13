@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro';
 import { rejectIfBot } from '@/lib/bot-check';
 import { setCdnCacheHeaders } from '@/lib/http-cache';
 import { fetchCollectionType, strapiMediaUrl } from '@/lib/strapi/client';
-import { decodeHtml } from '@/lib/utils';
+import { decodeHtml, withImageWidth } from '@/lib/utils';
 
 export const GET: APIRoute = async ({ url }) => {
   const botResponse = await rejectIfBot();
@@ -35,7 +35,9 @@ export const GET: APIRoute = async ({ url }) => {
     title: decodeHtml(a.title),
     excerpt: a.description ? decodeHtml(a.description) : '',
     category: a.categories?.[0]?.name ?? null,
-    imageUrl: a.image?.url ? strapiMediaUrl(a.image.url) : null,
+    imageUrl: a.image?.url
+      ? (withImageWidth(strapiMediaUrl(a.image.url), 320) ?? null)
+      : null,
   }));
 
   const headers = new Headers({ 'Content-Type': 'application/json' });
