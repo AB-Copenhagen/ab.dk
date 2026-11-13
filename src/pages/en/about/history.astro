@@ -52,16 +52,19 @@ const coachRecords = [
   ogTitle="The History of Akademisk Boldklub (AB)"
   ogDescription="Explore 140+ years of AB history – from our 1889 founding to nine Danish championship titles."
 >
-  <!-- Hero -->
-  <div class="relative w-full">
+  <!-- Hero — height-constrained + object-cover, matching the other key pages
+       (e.g. src/pages/en/about/stadium.astro) instead of the image's raw
+       native aspect ratio, which rendered far taller than Squad/Stadium and
+       pushed the title toward the bottom edge of the viewport. -->
+  <div class="relative overflow-hidden h-[clamp(320px,34vw,480px)]">
     <Img
       src="/images/about-history-hero.png"
       alt="AB 1889 History"
-      class="w-full h-auto block"
+      class="absolute inset-0 w-full h-full object-cover object-center"
       loading="eager"
     />
     <div class="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.1)_30%,rgba(0,0,0,0.55)_100%)]"></div>
-    <div class="absolute inset-0 flex items-end px-8 lg:px-20 pb-14">
+    <div class="relative h-full flex flex-col justify-end max-w-7xl mx-auto w-full px-8 lg:px-20 pb-14">
       <h1 class="font-black text-white leading-none text-[clamp(3.5rem,10vw,8rem)] tracking-[-0.04em]">History</h1>
     </div>
   </div>
