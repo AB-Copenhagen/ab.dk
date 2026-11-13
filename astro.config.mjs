@@ -56,10 +56,32 @@ export default defineConfig({
       // sanitize-html depends on htmlparser2, which ships ESM-only (no CJS
       // build) — left external, Astro's SSR output requires() it natively and
       // Node throws ERR_REQUIRE_ESM, crashing every page that renders
-      // sanitized content (src/lib/sanitize.ts). Bundling both through Vite
-      // instead of requiring them from node_modules at runtime avoids the
-      // raw CJS require() entirely.
-      noExternal: ['sanitize-html', 'htmlparser2'],
+      // sanitized content (src/lib/sanitize.ts). Bundling it through Vite
+      // instead of requiring it from node_modules at runtime avoids the raw
+      // CJS require() entirely.
+      //
+      // Every package in this list is also a dependency (direct or nested)
+      // of sanitize-html. noExternal is NOT transitive — Vite only inlines
+      // require()/import calls for packages explicitly listed here, so a
+      // bundled package's own unbundled dependency is left as a literal
+      // require() inside the output chunk. Vercel's function-bundling
+      // dependency tracer then fails to detect that require() (it's inside
+      // a rolled-up .mjs chunk, not a plain node_modules file) and omits the
+      // package from the deployed function entirely — "Cannot find module"
+      // at runtime, one dependency at a time, until the whole tree is listed.
+      noExternal: [
+        'sanitize-html',
+        'htmlparser2',
+        'escape-string-regexp',
+        'is-plain-object',
+        'launder',
+        'parse-srcset',
+        'postcss',
+        'dayjs', // launder's dependency
+        'nanoid', // postcss's dependency
+        'picocolors', // postcss's dependency
+        'source-map-js', // postcss's dependency
+      ],
     },
     resolve: {
       alias: [
