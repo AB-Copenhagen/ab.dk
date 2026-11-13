@@ -203,7 +203,7 @@ export default function MobileMenu({
                         >
                           {item.label}
                           <span
-                            className="text-ab-green"
+                            className="text-white/60"
                             style={{
                               transform:
                                 expanded === item.href
