@@ -5,6 +5,7 @@ import PartnersNav from '@/components/partners/PartnersNav.astro';
 import heroImage from '@/assets/images/partners-hero-goal-celebration.jpg';
 import { fetchPartners, strapiMediaUrl, type StrapiPartner } from '@/lib/strapi/client';
 import { clampLogoSize } from '@/lib/partner-logo-size';
+import { withImageWidth } from '@/lib/utils';
 import { itemListSchema } from '@/lib/structured-data';
 
 /**
@@ -141,7 +142,7 @@ const partnersStructuredData = itemListSchema(
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
             <div class="flex items-center justify-center px-10 py-16 h-64 overflow-hidden">
               <Img
-                src={strapiMediaUrl(p.logo?.url)}
+                src={withImageWidth(strapiMediaUrl(p.logo?.url), 480) ?? ''}
                 alt={p.name}
                 width={p.logoSize.width}
                 height={p.logoSize.height}
@@ -178,7 +179,7 @@ const partnersStructuredData = itemListSchema(
             class="group relative flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-ab-green/50 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_10%,transparent)] transition-all">
             <div class="flex items-center justify-center px-6 py-10 h-40 overflow-hidden">
               <Img
-                src={strapiMediaUrl(p.logo?.url)}
+                src={withImageWidth(strapiMediaUrl(p.logo?.url), 480) ?? ''}
                 alt={p.name}
                 width={p.logoSize.width}
                 height={p.logoSize.height}
@@ -215,7 +216,7 @@ const partnersStructuredData = itemListSchema(
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
             <div class="flex items-center justify-center px-5 py-7 h-40 overflow-hidden">
               <Img
-                src={strapiMediaUrl(p.logo?.url)}
+                src={withImageWidth(strapiMediaUrl(p.logo?.url), 480) ?? ''}
                 alt={p.name}
                 width={p.logoSize.width}
                 height={p.logoSize.height}
@@ -252,7 +253,7 @@ const partnersStructuredData = itemListSchema(
             class="group relative flex flex-col bg-white border border-gray-100 rounded-[4px] overflow-hidden hover:border-ab-green/60 hover:shadow-[0_4px_20px_color-mix(in_srgb,var(--ab-green)_12%,transparent)] transition-all">
             <div class="flex items-center justify-center px-5 py-7 h-40 overflow-hidden">
               <Img
-                src={strapiMediaUrl(p.logo?.url)}
+                src={withImageWidth(strapiMediaUrl(p.logo?.url), 480) ?? ''}
                 alt={p.name}
                 width={p.logoSize.width}
                 height={p.logoSize.height}

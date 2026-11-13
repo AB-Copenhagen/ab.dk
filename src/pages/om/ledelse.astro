@@ -3,7 +3,7 @@ import Base from '@/layouts/Base.astro';
 import LeadershipPersonCard from '@/components/leadership/LeadershipPersonCard.astro';
 import BioLightbox from '@/components/leadership/BioLightbox.astro';
 import { fetchLeadership, fetchInvestors, strapiMediaUrl } from '@/lib/strapi/client';
-import { slugify } from '@/lib/utils';
+import { slugify, withImageWidth } from '@/lib/utils';
 
 export const prerender = false;
 
@@ -31,7 +31,7 @@ function toPerson(m: Awaited<ReturnType<typeof fetchLeadership>>[number]): Perso
   return {
     name: m.name,
     role: m.role,
-    photo: m.photo ? strapiMediaUrl(m.photo.url) : null,
+    photo: m.photo ? (withImageWidth(strapiMediaUrl(m.photo.url), 320) ?? null) : null,
     photoPos: m.photoPosition,
     bio: m.bio ?? null,
   };

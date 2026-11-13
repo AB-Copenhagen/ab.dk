@@ -4,6 +4,7 @@ import Img from '@/components/Img.astro';
 import { TIER_LABELS } from '@/data/partners';
 import { fetchPartnerBySlug, strapiMediaUrl } from '@/lib/strapi/client';
 import { breadcrumbSchema } from '@/lib/structured-data';
+import { withImageWidth } from '@/lib/utils';
 
 const { slug } = Astro.params;
 const partner = await fetchPartnerBySlug(slug ?? '', 'da');
@@ -59,7 +60,7 @@ const partnerStructuredData = [partnerSchema, partnerBreadcrumbs];
       <div class="border border-gray-100 w-full overflow-hidden">
         <div class="flex items-center justify-center bg-[#F8F8F8] px-12 py-14">
           <Img
-            src={strapiMediaUrl(partner.logo?.url)}
+            src={withImageWidth(strapiMediaUrl(partner.logo?.url), 640) ?? ''}
             alt={partner.name}
             class="max-h-36 max-w-[360px] w-full object-contain"
             loading="eager"

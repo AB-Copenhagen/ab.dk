@@ -2,6 +2,8 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { APIRoute } from 'astro';
 import sharp from 'sharp';
 
+import { createVariantCache, resolveRequestedWidth } from '@/lib/image-proxy';
+
 export const prerender = false;
 
 const BUCKET = import.meta.env.WASABI_BUCKET ?? 'ab-media';
@@ -18,21 +20,6 @@ const s3 = new S3Client({
   },
 });
 
-// Mirrors astro.config's Vercel imagesConfig.sizes — a `?w=` request snaps to one of
-// these instead of an arbitrary value, so the transcode cache below has a bounded key
-// space per object (an attacker varying `w` on every request can't force an unbounded
-// number of distinct resize+encode operations).
-const ALLOWED_WIDTHS = [
-  320, 400, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840,
-];
-
-function resolveRequestedWidth(raw: string | null): number | null {
-  if (!raw) return null;
-  const n = Number(raw);
-  if (!Number.isFinite(n) || n <= 0) return null;
-  return ALLOWED_WIDTHS.find((w) => w >= n) ?? ALLOWED_WIDTHS.at(-1)!;
-}
-
 // Above this source size, skip resize/transcode entirely and proxy the original bytes —
 // bounds worst-case CPU/memory per request regardless of what a caller asks for.
 const MAX_TRANSCODE_SOURCE_BYTES = 15 * 1024 * 1024;
@@ -44,25 +31,10 @@ const MAX_TRANSCODE_SOURCE_BYTES = 15 * 1024 * 1024;
 // unauthenticated, and a cache-busting query string defeats the CDN's own HTTP caching of
 // the response. Keyed on the object key/width/format, not the full request URL, so it
 // can't be bypassed that way. Bounded entry count keeps memory use predictable.
-interface CachedVariant {
-  body: Uint8Array;
-  contentType: string;
-  etag: string;
-}
 const MAX_CACHE_ENTRIES = 80;
-const variantCache = new Map<string, CachedVariant>();
-
-function cacheGet(key: string): CachedVariant | undefined {
-  return variantCache.get(key);
-}
-
-function cacheSet(key: string, value: CachedVariant): void {
-  if (variantCache.size >= MAX_CACHE_ENTRIES) {
-    const oldestKey = variantCache.keys().next().value;
-    if (oldestKey !== undefined) variantCache.delete(oldestKey);
-  }
-  variantCache.set(key, value);
-}
+const variantCache = createVariantCache(MAX_CACHE_ENTRIES);
+const cacheGet = variantCache.get;
+const cacheSet = variantCache.set;
 
 function notModified(etag: string, cacheControl: string): Response {
   return new Response(null, {

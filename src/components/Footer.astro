@@ -2,6 +2,7 @@
 import { fetchPartners, strapiMediaUrl } from '@/lib/strapi/client';
 import Img from '@/components/Img.astro';
 import { clampLogoSize } from '@/lib/partner-logo-size';
+import { withImageWidth } from '@/lib/utils';
 
 interface Props {
   locale?: string;
@@ -39,7 +40,7 @@ const eligiblePartners = (
   strapiPartners.length > 0
     ? strapiPartners.map((p) => ({
         name: p.name,
-        src: strapiMediaUrl(p.logo?.url),
+        src: withImageWidth(strapiMediaUrl(p.logo?.url), 480) ?? '',
         url: p.url ?? '',
         logoWidth: p.logoWidth,
         logoHeight: p.logoHeight,

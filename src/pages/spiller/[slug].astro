@@ -7,6 +7,7 @@ import PlayerSeasonStatsTable from '@/components/player/PlayerSeasonStatsTable.a
 import { fetchPlayerProfile, fetchABPlayers, fetchPlayerStats, aggregateSeasonStats } from '@/lib/si/client';
 import type { SIPlayerProfile, SISeasonStats } from '@/lib/si/client';
 import { fetchPlayerCmsData, resolvePlayerPhoto, strapiMediaUrl } from '@/lib/strapi/client';
+import { withImageWidth } from '@/lib/utils';
 import type { StrapiPlayer } from '@/lib/strapi/client';
 import { PENDING_PHOTO_SHIRT_NUMBERS, EXCLUDED_PLAYER_SLUGS, toSlug } from '@/lib/si/player-photos';
 import { findManualPlayer, manualPlayersAsSIPlayers } from '@/data/manual-players';
@@ -281,7 +282,7 @@ const playerStructuredData = [personSchema, playerBreadcrumbs];
       <!-- Full-width first image -->
       <div class="w-full overflow-hidden aspect-[16/7]">
         <img
-          src={galleryImages[0].src}
+          src={withImageWidth(galleryImages[0].src, 1920)}
           alt={galleryImages[0].alternativeText ?? displayName}
           class="w-full h-full object-cover"
         />
@@ -292,7 +293,7 @@ const playerStructuredData = [personSchema, playerBreadcrumbs];
           {galleryImages.slice(1, 4).map(img => (
             <div class="overflow-hidden aspect-square">
               <img
-                src={img.src}
+                src={withImageWidth(img.src, 640)}
                 alt={img.alternativeText ?? displayName}
                 class="w-full h-full object-cover"
               />
