@@ -52,6 +52,15 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    ssr: {
+      // sanitize-html depends on htmlparser2, which ships ESM-only (no CJS
+      // build) — left external, Astro's SSR output requires() it natively and
+      // Node throws ERR_REQUIRE_ESM, crashing every page that renders
+      // sanitized content (src/lib/sanitize.ts). Bundling both through Vite
+      // instead of requiring them from node_modules at runtime avoids the
+      // raw CJS require() entirely.
+      noExternal: ['sanitize-html', 'htmlparser2'],
+    },
     resolve: {
       alias: [
         // Explicit file-level aliases for extensionless TS/TSX imports.
