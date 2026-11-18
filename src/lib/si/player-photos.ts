@@ -40,15 +40,13 @@ export const EXCLUDED_PLAYER_SLUGS = new Set<string>([
   'emil-mygind', // Emil Mygind Jensen — retired, no Strapi row
 ]);
 
-// Shirt numbers to hide the photo for — either no photo exists anywhere yet
-// (14, 24: not on Wasabi, and SI's own player photo CDN only has a generic
-// ~2KB placeholder, unchanged since 2024), or a real photo exists (3, 4, 10,
-// 17) but it's from the old kit/season (Carlsberg-branded, pre-MYRIAD360), so
-// it's withheld until a current one is shot. Card keeps showing name,
-// position, and number regardless.
-export const PENDING_PHOTO_SHIRT_NUMBERS = new Set<number>([
-  3, 4, 10, 14, 17, 24,
-]);
+// Shirt numbers to hide the photo for (legacy fallback — only consulted when a
+// player has no Strapi row). A real photo exists for 3, 4, 10, 17 but it's from
+// the old kit/season (Carlsberg-branded, pre-MYRIAD360), so it's withheld until
+// a current one is shot. 14 and 24 were removed once SI's photo CDN got real
+// current-kit headshots for them. Card keeps showing name, position, and number
+// regardless.
+export const PENDING_PHOTO_SHIRT_NUMBERS = new Set<number>([3, 4, 10, 17]);
 
 export function getPlayerPhotoKey(
   name: string | null | undefined
