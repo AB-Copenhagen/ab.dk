@@ -1,5 +1,5 @@
-import posthog from 'posthog-js';
 import { PUBLIC_POSTHOG_KEY } from 'astro:env/client';
+import posthog from 'posthog-js';
 
 let initialized = false;
 
