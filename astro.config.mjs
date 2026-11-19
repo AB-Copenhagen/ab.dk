@@ -42,7 +42,8 @@ export default defineConfig({
         default: false,
       }),
       // PostHog project API token — public by design (ships in the client bundle), proxied
-      // through /ingest (see vercel.json) so the CSP never needs a third-party script-src entry.
+      // through /ingest (see src/pages/ingest/[...path].ts and vercel.json) so the CSP never
+      // needs a third-party script-src entry.
       PUBLIC_POSTHOG_KEY: envField.string({
         context: 'client',
         access: 'public',

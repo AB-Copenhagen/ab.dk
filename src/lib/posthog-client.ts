@@ -5,10 +5,12 @@ let initialized = false;
 
 /**
  * Loads PostHog product + web analytics (pageviews, autocapture, web vitals) — analytics only,
- * never session replay: disabled here via `disable_session_recording` AND at the PostHog project
- * level (`session_recording_opt_in: false`), as a second guard. Requests are proxied through
- * /ingest (see vercel.json) so posthog-js stays same-origin — no CSP script-src/connect-src entry
- * needed, and no ad-blocker interference.
+ * never session replay: disabled here via `disable_session_recording` as a client-side guard.
+ * Requests are proxied same-origin through /ingest — static SDK assets via the vercel.json
+ * rewrite, everything else (capture/decide/flags) via src/pages/ingest/[...path].ts (a plain
+ * vercel.json rewrite to us.i.posthog.com never actually fired for those extensionless paths
+ * in production) — so posthog-js never needs a third-party CSP entry and isn't caught by
+ * domain-based ad blockers.
  */
 export function initPostHog(): void {
   if (initialized || !PUBLIC_POSTHOG_KEY) return;
