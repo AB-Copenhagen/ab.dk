@@ -67,7 +67,7 @@ const photos = [
 >
 
   <!-- Hero -->
-  <div class="relative overflow-hidden h-[clamp(340px,40vw,480px)]">
+  <div class="relative overflow-hidden h-[clamp(280px,34vw,400px)]">
     <Img
       src="/images/hospitality-knud-lundberg-lounge.jpg"
       alt="Dining table set in the Knud Lundberg Lounge, overlooking the pitch"
@@ -84,15 +84,15 @@ const photos = [
   </div>
 
   <!-- Intro + Gallery + Lounges -->
-  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+  <section class="bg-white py-[clamp(32px,5vw,56px)]">
     <div class="max-w-7xl mx-auto px-8 lg:px-20">
 
       <!-- Intro -->
-      <div class="mb-14">
-        <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px]">
+      <div class="mb-10">
+        <div class="inline-flex items-center mb-4 bg-ab-beige rounded-full py-[7px] px-[18px]">
           <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">Gladsaxe Stadion</span>
         </div>
-        <h2 class="font-black text-[clamp(1.75rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-4 max-w-[26ch]">
+        <h2 class="font-black text-[clamp(1.75rem,3.5vw,2.5rem)] tracking-[-0.03em] text-[#111] mb-3 max-w-[26ch]">
           A Great Experience at Gladsaxe Stadium
         </h2>
         <p class="text-[1.05rem] leading-[1.75] text-[#444] max-w-[62ch]">
@@ -104,15 +104,15 @@ const photos = [
       </div>
 
       <!-- Match Day Experience -->
-      <div class="mb-20">
+      <div class="mb-14">
         <h2 class="font-black text-[clamp(1.4rem,2.8vw,2rem)] tracking-[-0.03em] text-[#111] mb-3">Match Day Experience</h2>
-        <p class="text-[0.95rem] leading-[1.75] text-[#666] max-w-[64ch] mb-10">
+        <p class="text-[0.95rem] leading-[1.75] text-[#666] max-w-[64ch] mb-7">
           From cheering in Section E with AB Forever to a special VIP
           atmosphere, we offer a variety of options to enjoy the match to
           suit your needs and budget.
         </p>
 
-        <div class="grid md:grid-cols-2 gap-x-8 gap-y-12">
+        <div class="grid md:grid-cols-2 gap-x-8 gap-y-10">
           {lounges.map((lounge) => (
             <div>
               <div class="relative aspect-[4/5] sm:aspect-[4/3] overflow-hidden mb-6">
@@ -145,7 +145,7 @@ const photos = [
       </div>
 
       <!-- Business and Networking / Celebrations and Parties -->
-      <div class="grid md:grid-cols-2 gap-8 mb-14">
+      <div class="grid md:grid-cols-2 gap-8 mb-10">
         <div>
           <div class="aspect-[16/10] overflow-hidden mb-6">
             <Img
@@ -194,7 +194,7 @@ const photos = [
       </div>
 
       <!-- Photo gallery -->
-      <div class="mb-14">
+      <div class="mb-10">
         <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-[#bbb] mb-3">Photos</p>
         <div class="venue-gallery">
           {photos.map((photo, i) => (
