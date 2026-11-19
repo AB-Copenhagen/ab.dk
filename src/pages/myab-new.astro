@@ -1,0 +1,409 @@
+---
+import AppScreenshotCarousel from '@/components/AppScreenshotCarousel.astro';
+import TierTableCell from '@/components/myab/TierTableCell.astro';
+import Img from '@/components/Img.astro';
+import Base from '@/layouts/Base.astro';
+import heroImage from '@/assets/images/pro-OPKh7A3o.webp';
+
+export const prerender = false;
+
+interface TierPitch {
+  id: 'free' | 'plus' | 'premium';
+  name: string;
+  price: string;
+  priceSuffix?: string;
+  pitch: string;
+  highlights: string[];
+  ctaLabel: string;
+}
+
+type CellValue = boolean | string;
+
+interface TableRow {
+  label: string;
+  free: CellValue;
+  plus: CellValue;
+  premium: CellValue;
+  footnote?: '*' | '**';
+}
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+const tiers: TierPitch[] = [
+  {
+    id: 'free',
+    name: 'Free',
+    price: 'Gratis',
+    pitch: 'Download appen og følg AB tæt — mobil-app og fan-nyhedsbrev, helt uden beregning.',
+    highlights: ['Mobil-app og profil', 'Fan-nyhedsbrev', 'Nyheder og kampresultater'],
+    ctaLabel: 'Kom i gang gratis',
+  },
+  {
+    id: 'plus',
+    name: 'Plus',
+    price: '118 kr.',
+    priceSuffix: '/md.',
+    pitch: 'Din faste kampbillet til hver hjemmekamp, plus medlemsindhold, rewards og eksklusive videoer.',
+    highlights: ['Billet til hjemmekampe', 'AB Rewards og eksklusive videoer', 'Kampreplays og reduceret billetgebyr'],
+    ctaLabel: 'Vælg Plus',
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    price: '188 kr.',
+    priceSuffix: '/md.',
+    pitch: 'Den fulde oplevelse — billet, mad, reserveret plads og VIP-fordele hele sæsonen.',
+    highlights: ['Billet til hjemme- og pokalkampe', 'Reserveret siddeplads og Memorial-medlemskort', 'Gratis AB-tallerken og partnertilbud'],
+    ctaLabel: 'Vælg Premium',
+  },
+];
+
+const tableRows: TableRow[] = [
+  { label: 'Mobil-app', free: true, plus: true, premium: true },
+  { label: 'Fan-nyhedsbrev', free: true, plus: true, premium: true },
+  { label: 'Eksklusive videoer', free: false, plus: true, premium: true },
+  { label: 'AB Rewards', free: false, plus: true, premium: true },
+  { label: 'Kampreplays', free: false, plus: true, premium: true },
+  { label: 'Reduceret billetgebyr', free: false, plus: true, premium: true },
+  { label: 'Overfør billet til en ven', free: false, plus: true, premium: true },
+  { label: 'Billet til hjemmekampe', free: false, plus: true, premium: true },
+  { label: 'Billet til pokalkampe', free: false, plus: false, premium: true },
+  { label: 'Reserveret siddeplads', free: false, plus: false, premium: true },
+  { label: 'Memorial-medlemskort', free: false, plus: false, premium: true },
+  { label: 'Eksklusive partnertilbud', free: false, plus: false, premium: true },
+  { label: 'AB-tallerken til hver kamp', free: false, plus: '75 kr.', premium: 'Gratis' },
+  { label: 'Limited edition-merchandise', free: false, plus: false, premium: true },
+  { label: 'Livestream af kampe', free: false, plus: false, premium: 'Ja (uden for EU)', footnote: '*' },
+];
+
+const faqItems: FaqItem[] = [
+  {
+    question: 'Hvordan opretter jeg et medlemskab?',
+    answer:
+      "Download MyAB-appen, opret en profil, og vælg det niveau, der passer til dig — Free, Plus eller Premium. Betaling foregår direkte i appen via App Store eller Google Play.",
+  },
+  {
+    question: 'Kan jeg skifte niveau senere?',
+    answer: 'Ja. Du kan til enhver tid opgradere eller nedgradere dit medlemskab inde i appen — ændringen gælder fra din næste betalingsperiode.',
+  },
+  {
+    question: 'Er der binding?',
+    answer: 'Nej, der er ingen binding. Du opsiger via dine App Store- eller Google Play-kontoindstillinger, og medlemskabet fortsætter frem til udgangen af den betalte periode.',
+  },
+  {
+    question: 'Kan jeg få en AB-tallerken, hvis jeg ikke er Premium-medlem?',
+    answer: 'Ja. Plus-medlemmer kan tilkøbe en AB-tallerken til 75 kr. pr. kamp. Som Premium-medlem er den inkluderet gratis til hver hjemmekamp.',
+  },
+  {
+    question: 'Gælder min kampbillet til pokalkampe?',
+    answer: 'Nej — Plus-billetten gælder kun hjemmekampe i ligaen. Premium-medlemmer får adgang til alle hjemmekampe, inklusive pokalkampe.',
+  },
+  {
+    question: 'Jeg bor uden for EU — kan jeg stadig følge AB?',
+    answer: 'Ja. Som Premium-medlem uden for EU får du livestream af alle kampe i stedet for en fysisk billet, så du aldrig går glip af en kamp.',
+  },
+  {
+    question: 'Hvor får jeg mit fysiske medlemskort?',
+    answer: "Som Premium-medlem modtager du dit Memorial-medlemskort med posten, når din første betaling er gennemført.",
+  },
+];
+
+const appShots = [
+  { src: '/images/myab-app-shot-1-home.jpg', alt: 'MyAB-appens forside med kommende kamp og nyheder' },
+  { src: '/images/myab-app-shot-2-wallet.jpg', alt: 'Billetter og medlemskort i MyAB Wallet' },
+  { src: '/images/myab-app-shot-3-competitions.jpg', alt: 'Deltag i konkurrencer om billetter og præmier' },
+  { src: '/images/myab-app-shot-4-matches.jpg', alt: "Se alle AB's kampe og køb billetter" },
+  { src: '/images/myab-app-shot-5-tv.jpg', alt: 'Se highlights og livestream i MyAB' },
+  { src: '/images/myab-app-shot-6-matchday.jpg', alt: 'Detaljeret kampinfo og stilling på kampdag' },
+];
+
+const membershipStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'MyAB Medlemskab',
+  brand: { '@type': 'Organization', name: 'Akademisk Boldklub' },
+  description: "MyAB medlemskab giver adgang til kampbilletter, eksklusivt indhold og medlemsfordele i AB's officielle fan-app.",
+  offers: tiers.map((tier) => ({
+    '@type': 'Offer',
+    name: tier.name,
+    price: tier.id === 'free' ? '0' : tier.price.replace(/\D/g, ''),
+    priceCurrency: 'DKK',
+    url: 'https://ab.dk/myab-new',
+  })),
+};
+---
+
+<Base
+  locale="da"
+  title="MyAB Medlemskab | AB 1889"
+  description="Bliv en del af Team AB med MyAB — vælg Free, Plus eller Premium og få kampbilletter, eksklusivt indhold og medlemsfordele i AB's fan-app."
+  structuredData={membershipStructuredData}
+  noindex>
+
+  <!-- Hero -->
+  <div class="relative overflow-hidden h-[clamp(480px,58vw,680px)]">
+    <Img
+      src={heroImage}
+      alt="AB-fans med grøn/hvide tørklæder på lægterne"
+      widths={[640, 1024, 1600, 2400]}
+      sizes="100vw"
+      class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.45] saturate-[0.85]"
+    />
+    <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.75)_0%,rgba(0,0,0,0.25)_55%,rgba(0,0,0,0.35)_100%)]"></div>
+    <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-14 max-w-7xl mx-auto w-full">
+      <div class="inline-flex items-center mb-6 bg-ab-beige rounded-full py-[7px] px-[18px] w-fit">
+        <span class="font-black text-[0.75rem] text-[#111] tracking-[0.1em] uppercase">MyAB Medlemskab</span>
+      </div>
+      <h1 class="font-black text-white leading-[0.95] tracking-[-0.03em] max-w-[18ch]" style="font-size:clamp(2.75rem,7vw,5.5rem)">
+        Bliv en del af <span class="text-ab-gold">Team AB</span>
+      </h1>
+      <p class="text-white/90 mt-6 max-w-[55ch]" style="font-size:clamp(1rem,1.6vw,1.1875rem);line-height:1.6">
+        MyAB er dit medlemskab i AB's officielle fan-app. Vælg Free, Plus eller
+        Premium, og få kampbilletter, eksklusivt indhold og medlemsfordele hele sæsonen.
+      </p>
+      <div class="flex flex-wrap items-center gap-4 mt-9">
+        <a href="#tiers" class="inline-flex items-center px-7 py-3.5 font-bold rounded-full bg-white text-[#111] text-[0.95rem] tracking-[-0.01em] hover:opacity-90 transition-opacity">
+          Se medlemskaber
+        </a>
+        <a href="/api/app" class="inline-flex items-center px-7 py-3.5 font-bold rounded-full border border-white/70 text-white text-[0.95rem] tracking-[-0.01em] hover:bg-white/10 transition-colors">
+          Download MyAB
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tier cards -->
+  <section id="tiers" class="bg-white py-[clamp(56px,8vw,96px)] scroll-mt-[calc(var(--nav-height,92px)+24px)]">
+    <div class="max-w-7xl mx-auto px-8 lg:px-20">
+      <div class="max-w-[60ch] mb-14">
+        <p class="font-black text-[0.75rem] uppercase tracking-[0.14em] text-ab-green mb-4">Medlemskaber</p>
+        <h2 class="font-black text-[#111] mb-5" style="font-size:clamp(1.75rem,4vw,3rem);letter-spacing:-0.03em">
+          Vælg dit niveau
+        </h2>
+        <p class="text-[#444] text-[1.0625rem] leading-[1.75]">
+          Tre måder at støtte AB på — fra gratis adgang til nyheder, til den
+          fulde oplevelse med kampbillet, mad og VIP-fordele.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6 items-stretch">
+        {tiers.map((tier) => (
+          <div
+            class:list={[
+              'flex flex-col rounded-lg overflow-hidden border',
+              tier.id === 'premium' ? 'bg-[#0A0A0A] border-[#0A0A0A] lg:scale-105 lg:shadow-2xl' : 'bg-white border-[#E5E7EB]',
+            ]}>
+            <div
+              class:list={[
+                'px-7 py-7',
+                tier.id === 'free' && 'bg-[#F2F2F0]',
+                tier.id === 'plus' && 'bg-ab-green',
+                tier.id === 'premium' && 'bg-[#0A0A0A]',
+              ]}>
+              <p
+                class:list={[
+                  'font-black text-[0.7rem] uppercase tracking-[0.14em] mb-3',
+                  tier.id === 'free' ? 'text-[#666]' : tier.id === 'plus' ? 'text-white/70' : 'text-ab-gold',
+                ]}>
+                MyAB
+              </p>
+              <h3
+                class:list={[
+                  'font-black text-[1.75rem] tracking-[-0.03em] mb-1',
+                  tier.id === 'free' ? 'text-[#111]' : 'text-white',
+                ]}>
+                {tier.name}
+              </h3>
+              <p class:list={['flex items-baseline gap-1.5', tier.id === 'free' ? 'text-[#111]' : 'text-white']}>
+                <span class="font-black text-[2rem] tracking-[-0.02em]">{tier.price}</span>
+                {tier.priceSuffix && <span class="text-sm font-bold opacity-70">{tier.priceSuffix}</span>}
+              </p>
+            </div>
+            <div class="flex flex-col flex-1 px-7 py-7">
+              <p
+                class:list={[
+                  'text-[0.9rem] leading-relaxed mb-6',
+                  tier.id === 'premium' ? 'text-white/70' : 'text-[#666]',
+                ]}>
+                {tier.pitch}
+              </p>
+              <ul class="space-y-2.5 mb-8">
+                {tier.highlights.map((item) => (
+                  <li class="flex items-start gap-2.5 text-[0.9rem] leading-snug">
+                    <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path
+                        d="M13.5 4.5 6.5 12 2.5 8"
+                        stroke={tier.id === 'premium' ? 'var(--ab-gold)' : 'var(--ab-green)'}
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    <span class={tier.id === 'premium' ? 'text-white/90' : 'text-[#333]'}>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="/api/app"
+                class:list={[
+                  'mt-auto inline-flex items-center justify-center px-6 py-3.5 font-bold rounded-full text-[0.9rem] tracking-[-0.01em] transition-opacity hover:opacity-85',
+                  tier.id === 'free' && 'bg-[#111] text-white',
+                  tier.id === 'plus' && 'bg-ab-green text-white',
+                  tier.id === 'premium' && 'bg-ab-gold text-[#111]',
+                ]}>
+                {tier.ctaLabel}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Comparison table -->
+      <div class="mt-16">
+        <div class="flex items-baseline justify-between gap-4 mb-6">
+          <h3 class="font-black text-[#111]" style="font-size:clamp(1.25rem,2.5vw,1.75rem);letter-spacing:-0.02em">
+            Sammenlign alle fordele
+          </h3>
+          <span class="lg:hidden shrink-0 text-[0.75rem] font-bold text-[#999]">Stryg for at se mere →</span>
+        </div>
+        <div class="overflow-x-auto border border-[#E5E7EB] rounded-lg">
+          <table class="w-full border-collapse min-w-[640px]">
+            <thead>
+              <tr>
+                <th class="bg-white"></th>
+                <th class="bg-[#F2F2F0] px-5 py-5 text-center">
+                  <span class="font-black text-[#111] text-[0.95rem] tracking-[-0.01em]">Free</span>
+                </th>
+                <th class="bg-ab-green px-5 py-5 text-center">
+                  <span class="font-black text-white text-[0.95rem] tracking-[-0.01em]">Plus</span>
+                </th>
+                <th class="bg-[#0A0A0A] px-5 py-5 text-center">
+                  <span class="font-black text-ab-gold text-[0.95rem] tracking-[-0.01em]">Premium</span>
+                </th>
+              </tr>
+              <tr>
+                <th class="bg-white border-b border-[#E5E7EB]"></th>
+                <th class="bg-[#F2F2F0] px-5 pb-5 text-center font-bold text-[#555] text-[0.85rem] border-b border-[#E5E7EB]">Gratis</th>
+                <th class="bg-ab-green px-5 pb-5 text-center font-bold text-white/85 text-[0.85rem] border-b border-ab-green">118 kr./md.</th>
+                <th class="bg-[#0A0A0A] px-5 pb-5 text-center font-bold text-white/70 text-[0.85rem] border-b border-[#0A0A0A]">188 kr./md.</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableRows.map((row, i) => (
+                <tr class:list={[i % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]']}>
+                  <td class:list={['px-5 py-3.5 text-[0.85rem] text-[#333] whitespace-nowrap border-b border-[#E5E7EB]', i % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]']}>
+                    {row.label}
+                    {row.footnote && <sup class="text-ab-green">{row.footnote}</sup>}
+                  </td>
+                  <td class="p-0 border-b border-[#E5E7EB]">
+                    <TierTableCell value={row.free} yesLabel="Ja" noLabel="Nej" />
+                  </td>
+                  <td class="p-0 border-b border-[#E5E7EB]">
+                    <TierTableCell value={row.plus} yesLabel="Ja" noLabel="Nej" />
+                  </td>
+                  <td class="p-0 border-b border-[#E5E7EB]">
+                    <TierTableCell value={row.premium} yesLabel="Ja" noLabel="Nej" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-5 space-y-1.5 text-[0.8rem] text-[#666] leading-relaxed">
+          <p>* Uden for EU erstatter livestream den fysiske kampbillet.</p>
+          <p class="font-bold text-[#333] pt-1">Ingen binding — skift eller opsig til enhver tid i appen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="bg-[#F2F2F0] border-t border-[#E5E7EB] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-3xl mx-auto px-8">
+      <h2 class="font-black mb-8 text-[#111]" style="font-size:clamp(1.5rem,3.5vw,2.25rem);letter-spacing:-0.03em">
+        Ofte stillede spørgsmål
+      </h2>
+      <div class="divide-y divide-gray-200 bg-white rounded-lg border border-[#E5E7EB] px-6">
+        {faqItems.map((item) => (
+          <details class="py-5 group">
+            <summary class="flex items-center justify-between gap-4 cursor-pointer text-sm font-bold text-[#111]" style="letter-spacing:-0.01em">
+              {item.question}
+              <span class="shrink-0 text-lg transition-transform group-open:rotate-45 text-ab-green">+</span>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed text-[#374151]">{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- App screenshots -->
+  <section class="bg-white py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-4xl mx-auto px-8 text-center">
+      <h2 class="font-black text-[#111] mb-4" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+        Se MyAB i aktion
+      </h2>
+      <p class="text-[#666] max-w-[50ch] mx-auto mb-10" style="font-size:1rem;line-height:1.6">
+        Billetter, nyheder, livestream og dit medlemskab — samlet ét sted.
+      </p>
+      <AppScreenshotCarousel shots={appShots} />
+    </div>
+  </section>
+
+  <!-- Final CTA / download -->
+  <section class="bg-[#0A0A0A] py-[clamp(48px,7vw,80px)]">
+    <div class="max-w-4xl mx-auto px-8 text-center">
+      <h2 class="font-black text-white max-w-[28ch] mx-auto mb-10" style="font-size:clamp(1.75rem,4vw,2.75rem);line-height:1.2;letter-spacing:-0.02em">
+        Klar til at blive en del af holdet?
+      </h2>
+
+      <a
+        href="/api/app"
+        aria-label="Download MyAB-appen"
+        class="inline-flex p-4 border border-white/20 bg-white/5 hover:border-ab-gold transition-colors"
+      >
+        <img
+          src="/api/qr/app.svg"
+          alt="QR-kode til download af MyAB-appen"
+          width="150"
+          height="150"
+          class="w-[150px] h-[150px]"
+          loading="lazy"
+        />
+      </a>
+      <p class="text-white/70 mt-6 mb-4" style="font-size:1rem;line-height:1.6">
+        Hent appen ved at åbne kameraet på din mobil. Ret det mod QR-koden, så
+        er du klar — eller hent den direkte via{' '}
+        <a
+          href="https://play.google.com/store/apps/details?id=dk.ab.club&hl=en_US&pli=1"
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label="Google Play"
+          class="inline-flex items-center gap-1 underline hover:text-ab-gold transition-colors text-white/90"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.344-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
+          Google Play
+        </a>{' '}
+        eller{' '}
+        <a
+          href="https://apps.apple.com/id/app/ab1889/id6760774439"
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label="Apple App Store"
+          class="inline-flex items-center gap-1 underline hover:text-ab-gold transition-colors text-white/90"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.63 0 2.89.06 4.383 2.19-.116.074-2.618 1.524-2.618 4.66 0 3.71 3.256 5.02 3.29 5.03z"/></svg>
+          Apple App Store
+        </a>.
+      </p>
+
+      <p class="text-white/40 text-[0.9rem] mt-8 max-w-[48ch] mx-auto" style="line-height:1.7">
+        MyAB findes udelukkende i AB's officielle fan-app.
+      </p>
+    </div>
+  </section>
+
+</Base>
