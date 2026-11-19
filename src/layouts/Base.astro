@@ -240,6 +240,11 @@ const GTM_ID = 'GTM-TGXD56HD';
     </script>
     <script>
       import { onConsentChange } from '@/lib/consent-gate-client';
+      import {
+        initPostHog,
+        enablePostHogCapturing,
+        disablePostHogCapturing,
+      } from '@/lib/posthog-client';
 
       onConsentChange('functional', () => {
         if (document.getElementById('vivenu-embed-script')) return;
@@ -269,6 +274,15 @@ const GTM_ID = 'GTM-TGXD56HD';
         'statistics',
         () => updateGtagConsent({ analytics_storage: 'granted' }),
         () => updateGtagConsent({ analytics_storage: 'denied' })
+      );
+
+      onConsentChange(
+        'statistics',
+        () => {
+          initPostHog();
+          enablePostHogCapturing();
+        },
+        () => disablePostHogCapturing()
       );
 
       onConsentChange(
