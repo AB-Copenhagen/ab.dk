@@ -83,6 +83,7 @@ const da: NavConfig = {
     { label: 'Truppen', href: '/truppen' },
     { label: 'Kampe', href: '/kampe' },
     { label: 'Nyheder', href: '/nyheder' },
+    { label: 'Gæsteoplevelser', href: '/hospitality' },
     {
       label: 'Om',
       href: '/om/historik',
@@ -102,7 +103,6 @@ const da: NavConfig = {
         { label: 'Fællesskab', href: '/faellesskab' },
         { label: 'Partnere', href: '/partnere' },
         { label: 'Arrangementer', href: '/events' },
-        { label: 'Gæsteoplevelser', href: '/hospitality' },
         { label: 'Locals by Locals', href: '/locals-by-locals' },
       ],
     },
@@ -126,6 +126,7 @@ const en: NavConfig = {
     { label: 'Squad', href: '/squad' },
     { label: 'Matches', href: '/matches' },
     { label: 'News', href: '/news' },
+    { label: 'Hospitality', href: '/hospitality' },
     {
       label: 'About',
       href: '/about/history',
@@ -145,7 +146,6 @@ const en: NavConfig = {
         { label: 'Community', href: '/community' },
         { label: 'Partners', href: '/partners' },
         { label: 'Events', href: '/events' },
-        { label: 'Hospitality', href: '/hospitality' },
         { label: 'Locals by Locals', href: '/locals-by-locals' },
       ],
     },
