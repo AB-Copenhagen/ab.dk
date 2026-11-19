@@ -1,9 +1,38 @@
 ---
 import Base from '@/layouts/Base.astro';
 import Img from '@/components/Img.astro';
-import heroImage from '@/assets/images/gladsaxe.webp';
 
 export const prerender = false;
+
+interface Lounge {
+  floor: string;
+  name: string;
+  image: string;
+  alt: string;
+  description: string;
+  included: string[];
+}
+
+const lounges: Lounge[] = [
+  {
+    floor: '1. sal',
+    name: 'Knud Lundberg Lounge',
+    image: '/images/hospitality-knud-lundberg-lounge.jpg',
+    alt: 'Dækket langbord i Knud Lundberg Lounge med udsigt til banen',
+    description:
+      'Nyd lækker, økologisk mad og drikke i en eksklusiv loungestemning, mens du suger stadionets elektriske atmosfære til dig.',
+    included: ['Økologisk mad og drikke hele kampdagen', 'Ny kaffe- og vinbar', 'Pladser med udsigt til banen'],
+  },
+  {
+    floor: '2. sal',
+    name: 'The Mad Owl Pub',
+    image: '/images/hospitality-mad-owl-pub.jpg',
+    alt: 'Dækket bord i The Mad Owl Pub',
+    description:
+      'Foretrækker du mere intime rammer? Vores pub byder på et godt udvalg af øl og har en scene til liveoptrædener — fællesskab uden for banen.',
+    included: ['Bredt udvalg af øl fra hele verden', 'Scene til liveoptrædener', 'Åben på udvalgte eventdage, se MyAB-appen'],
+  },
+];
 
 const photos = [
   {
@@ -32,15 +61,14 @@ const photos = [
 <Base locale="da" title="Gæsteoplevelser | AB 1889">
 
   <!-- Hero -->
-  <div class="relative overflow-hidden h-[clamp(240px,30vw,380px)]">
-    <img
-      src={heroImage.src}
-      alt="Gladsaxe Stadion gæsteoplevelser"
-      width={heroImage.width}
-      height={heroImage.height}
-      class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.45] saturate-[0.5]"
+  <div class="relative overflow-hidden h-[clamp(340px,40vw,480px)]">
+    <Img
+      src="/images/hospitality-knud-lundberg-lounge.jpg"
+      alt="Dækket langbord i Knud Lundberg Lounge med udsigt til banen"
+      loading="eager"
+      class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.6] saturate-[0.9]"
     />
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.1)_70%)]"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.8)_0%,rgba(0,0,0,0.15)_45%,rgba(0,0,0,0.3)_100%)]"></div>
     <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-10 max-w-7xl mx-auto w-full">
       <span class="inline-block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-3">Bliv involveret</span>
       <h1 class="font-black text-white text-[clamp(2.5rem,7vw,5.5rem)] tracking-[-0.04em] leading-[0.95]">
@@ -70,53 +98,57 @@ const photos = [
       </div>
 
       <!-- Match Day Experience -->
-      <div class="mb-14 bg-[#F2F2F0] p-6 sm:p-10">
+      <div class="mb-20">
         <h2 class="font-black text-[clamp(1.4rem,2.8vw,2rem)] tracking-[-0.03em] text-[#111] mb-3">Kampdagsoplevelse</h2>
-        <p class="text-[0.95rem] leading-[1.75] text-[#666] max-w-[64ch] mb-8">
+        <p class="text-[0.95rem] leading-[1.75] text-[#666] max-w-[64ch] mb-10">
           Fra at heppe med AB Forever i Sektion E til en særlig VIP-stemning
           — vi tilbyder en bred vifte af muligheder for at opleve kampen,
           der passer til dine behov og dit budget.
         </p>
 
-        <div class="grid md:grid-cols-2 gap-8">
-
-          <!-- Knud Lundberg Lounge -->
-          <div class="border border-[#E5E7EB] overflow-hidden bg-white">
-            <div class="bg-white border-b border-[#E5E7EB] px-6 py-5">
-              <span class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-green block mb-1">1. sal</span>
-              <h3 class="font-black text-[1.4rem] tracking-[-0.04em] text-[#111] leading-tight">Knud Lundberg Lounge</h3>
+        <div class="grid md:grid-cols-2 gap-x-8 gap-y-12">
+          {lounges.map((lounge) => (
+            <div>
+              <div class="relative aspect-[4/5] sm:aspect-[4/3] overflow-hidden mb-6">
+                <Img
+                  src={lounge.image}
+                  alt={lounge.alt}
+                  loading="lazy"
+                  class="absolute inset-0 w-full h-full object-cover"
+                />
+                <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.65)_0%,rgba(0,0,0,0)_55%)]"></div>
+                <div class="absolute bottom-0 left-0 p-6">
+                  <span class="block font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-neon mb-1.5">{lounge.floor}</span>
+                  <h3 class="font-black text-white text-[1.6rem] tracking-[-0.03em] leading-tight">{lounge.name}</h3>
+                </div>
+              </div>
+              <p class="text-[0.95rem] text-[#555] leading-relaxed mb-5">{lounge.description}</p>
+              <ul class="space-y-2">
+                {lounge.included.map((item) => (
+                  <li class="flex items-start gap-2.5 text-[0.88rem] text-[#333] leading-snug">
+                    <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M13.5 4.5 6.5 12 2.5 8" stroke="var(--ab-green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div class="p-6">
-              <p class="text-[0.9rem] text-[#555] leading-relaxed">
-                Nyd lækker, økologisk mad og drikke i en eksklusiv
-                loungestemning, mens du suger stadionets elektriske
-                atmosfære til dig. Nyt i år er en kaffebar og vinbar.
-              </p>
-            </div>
-          </div>
-
-          <!-- The Mad Owl Pub -->
-          <div class="border border-[#E5E7EB] overflow-hidden bg-white">
-            <div class="bg-white border-b border-[#E5E7EB] px-6 py-5">
-              <span class="font-black text-[0.65rem] uppercase tracking-[0.1em] text-ab-green block mb-1">2. sal</span>
-              <h3 class="font-black text-[1.4rem] tracking-[-0.04em] text-[#111] leading-tight">The Mad Owl Pub</h3>
-            </div>
-            <div class="p-6">
-              <p class="text-[0.9rem] text-[#555] leading-relaxed">
-                Foretrækker du mere intime rammer? Vores nye pub byder på et
-                godt udvalg af øl og har en scene til liveoptrædener — her
-                er der fællesskab uden for banen. Åben på udvalgte
-                eventdage, som annonceres i MyAB-appen.
-              </p>
-            </div>
-          </div>
-
+          ))}
         </div>
       </div>
 
       <!-- Business and Networking / Celebrations and Parties -->
       <div class="grid md:grid-cols-2 gap-8 mb-14">
         <div>
+          <div class="aspect-[16/10] overflow-hidden mb-6">
+            <Img
+              src="/images/hospitality-venue.jpg"
+              alt="Møderum med udsigt til Gladsaxe Stadion"
+              loading="lazy"
+              class="w-full h-full object-cover"
+            />
+          </div>
           <h2 class="font-black text-[clamp(1.4rem,2.8vw,2rem)] tracking-[-0.03em] text-[#111] mb-3">Erhverv og netværk</h2>
           <p class="text-[0.95rem] leading-[1.75] text-[#666]">
             Uanset om du planlægger et firmamøde, netværksarrangement,
@@ -127,6 +159,14 @@ const photos = [
         </div>
 
         <div>
+          <div class="aspect-[16/10] overflow-hidden mb-6">
+            <Img
+              src="/images/hospitality-event-space.jpg"
+              alt="Dækkede langborde klar til fest i Knud Lundberg Lounge"
+              loading="lazy"
+              class="w-full h-full object-cover"
+            />
+          </div>
           <h2 class="font-black text-[clamp(1.4rem,2.8vw,2rem)] tracking-[-0.03em] text-[#111] mb-3">Fejringer og fester</h2>
           <p class="text-[0.95rem] leading-[1.75] text-[#666] mb-6">
             Lounger er skabt til fejringer, og Knud Lundberg Lounge har plads
