@@ -23,6 +23,8 @@ interface Props {
    * independent CMS fields with no relation to each other). Absolute pathname, e.g. `/en/news/foo`.
    * Omit to fall back to the automatic prefix swap. */
   alternateLocalePath?: string;
+  /** Forces noindex/nofollow regardless of `ALLOW_SEARCH_INDEXING` — for unlisted test/preview pages. */
+  noindex?: boolean;
 }
 
 const {
@@ -35,6 +37,7 @@ const {
   ogType = 'website',
   structuredData,
   alternateLocalePath,
+  noindex = false,
 } = Astro.props;
 
 // Canonical/hreflang always point at the production domain. og:image, however, must be
@@ -148,7 +151,7 @@ const GTM_ID = 'GTM-TGXD56HD';
     <title>{title}</title>
     <meta name="description" content={description} />
     {
-      isSearchIndexingBlocked() && (
+      (isSearchIndexingBlocked() || noindex) && (
         <>
           <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
           <meta name="googlebot" content="noindex, nofollow" />

@@ -1,0 +1,25 @@
+---
+/**
+ * One cell of the MyAB tier-comparison table. `value` is either a plain
+ * yes/no flag or a short override string for a non-boolean perk (e.g. a
+ * paid add-on price, or a region-qualified "yes") — both render as a
+ * full-bleed colored cell, matching the brief's Yes/No comparison table.
+ */
+interface Props {
+  value: boolean | string;
+  yesLabel: string;
+  noLabel: string;
+}
+
+const { value, yesLabel, noLabel } = Astro.props;
+const isNo = value === false;
+const text = typeof value === 'string' ? value : isNo ? noLabel : yesLabel;
+---
+
+<div
+  class:list={[
+    'flex items-center justify-center h-full px-3 py-3.5 text-center text-[0.85rem] font-bold',
+    isNo ? 'bg-[#FBE4E4] text-[#8B2C2C]' : 'bg-[#E3F2E9] text-[#0F5132]',
+  ]}>
+  {text}
+</div>
