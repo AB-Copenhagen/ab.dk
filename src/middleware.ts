@@ -28,13 +28,13 @@ import { PREVIEW_COOKIE, runWithPreview } from '@/lib/preview-context';
 const BOT_USER_AGENT_PATTERN =
   /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegrambot|discordbot|slackbot|pinterestbot|ia_archiver|bingpreview/i;
 
-// Machine-readable endpoints (RSS, sitemap, robots) — these have no locale
-// cookie/redirect semantics of their own, but a browser opening one directly
+// Machine-readable endpoints (RSS, sitemap, robots, the PostHog ingest proxy) — these have
+// no locale cookie/redirect semantics of their own, but a browser opening one directly
 // still sends `Accept: text/html`, so they'd otherwise be caught by the
 // text/html check below and get 302'd to a locale-switched URL (e.g. bare
 // /feed → /en/feed) that has nothing to do with the visitor's actual intent.
 const NON_LOCALE_ROUTE_PATTERN =
-  /^\/(feed|en\/feed|rss\/[^/]+|sitemap\.xml|robots\.txt|(en\/)?wp-json\/.*)$/;
+  /^\/(feed|en\/feed|rss\/[^/]+|sitemap\.xml|robots\.txt|(en\/)?wp-json\/.*|ingest\/.*)$/;
 
 // Article detail pages have independent, per-locale slugs (DA/EN articles are
 // mostly unrelated Strapi entries — see src/pages/nyheder/[slug].astro), so
