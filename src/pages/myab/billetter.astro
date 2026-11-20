@@ -1,0 +1,17 @@
+---
+import Base from '@/layouts/Base.astro';
+import TicketsPage from '@/components/myab/TicketsPage.astro';
+
+export const prerender = false;
+
+// Middleware validates the session for this route (see GATED_PATHS in
+// src/middleware.ts) — if we reach here without a user, something's off,
+// so fall back to a login redirect, same defensive pattern as /konto/profil.
+if (!Astro.locals.user) {
+  return Astro.redirect('/konto?redirect=/myab/billetter');
+}
+---
+
+<Base locale="da" title="Mine billetter | AB 1889" noindex>
+  <TicketsPage locale="da" />
+</Base>

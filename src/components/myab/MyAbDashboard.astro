@@ -33,6 +33,8 @@ if (user?.userId && descope) {
 }
 
 const accountHref = locale === 'en' ? '/en/account/profile' : '/konto/profil';
+const ticketsHref = locale === 'en' ? '/en/myab/tickets' : '/myab/billetter';
+const ordersHref = locale === 'en' ? '/en/myab/orders' : '/myab/ordrer';
 // Per the /myab-new draft's own FAQ copy, membership is purchased and managed
 // entirely in-app (App Store / Google Play in-app purchase) — there is no web
 // checkout or self-service portal. EventBilletten is the subscription-of-record
@@ -51,9 +53,11 @@ const T = {
     membershipUpgrade: 'Se Plus & Premium',
     ticketsTitle: 'Mine billetter',
     ticketsComingSoon: 'Kommer snart — dine EventBilletten-billetter vil blive vist her.',
+    ticketsViewAll: 'Se mine billetter',
     ordersTitle: 'Mine ordrer',
     ordersEmpty: 'Ingen ordrer fundet i AB Store.',
     ordersNotConfigured: 'Ordrehistorik er ikke konfigureret endnu.',
+    ordersViewAll: 'Se alle ordrer',
     viewOrder: 'Se ordre',
     profileTitle: 'Profil & sikkerhed',
     profileBody: 'Opdater navn, e-mail og login-metoder.',
@@ -70,9 +74,11 @@ const T = {
     membershipUpgrade: 'See Plus & Premium',
     ticketsTitle: 'My tickets',
     ticketsComingSoon: "Coming soon — your EventBilletten tickets will show up here.",
+    ticketsViewAll: 'See my tickets',
     ordersTitle: 'My orders',
     ordersEmpty: 'No orders found in the AB Store.',
     ordersNotConfigured: 'Order history is not configured yet.',
+    ordersViewAll: 'See all orders',
     viewOrder: 'View order',
     profileTitle: 'Profile & security',
     profileBody: 'Update your name, email, and login methods.',
@@ -112,20 +118,23 @@ const ordersConfigured = Boolean(import.meta.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN)
     </div>
 
     <!-- My Tickets -->
-    <div id="tickets" class="bg-white border border-[#E5E7EB] p-6 flex flex-col scroll-mt-[calc(var(--nav-height,92px)+24px)]">
+    <div class="bg-white border border-[#E5E7EB] p-6 flex flex-col">
       <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ticketsTitle}</p>
-      <p class="text-sm text-[#666]">{T.ticketsComingSoon}</p>
+      <p class="text-sm text-[#666] mb-4">{T.ticketsComingSoon}</p>
+      <a href={ticketsHref} class="mt-auto text-sm font-black text-ab-green no-underline hover:underline">
+        {T.ticketsViewAll} →
+      </a>
     </div>
 
     <!-- My Orders -->
-    <div id="orders" class="bg-white border border-[#E5E7EB] p-6 flex flex-col sm:col-span-2 lg:col-span-1 scroll-mt-[calc(var(--nav-height,92px)+24px)]">
+    <div class="bg-white border border-[#E5E7EB] p-6 flex flex-col sm:col-span-2 lg:col-span-1">
       <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ordersTitle}</p>
       {!ordersConfigured ? (
         <p class="text-sm text-[#666]">{T.ordersNotConfigured}</p>
       ) : orders.length === 0 ? (
         <p class="text-sm text-[#666]">{T.ordersEmpty}</p>
       ) : (
-        <ul class="space-y-3">
+        <ul class="space-y-3 mb-4">
           {orders.slice(0, 5).map((order) => (
             <li class="flex items-center justify-between gap-3 text-sm">
               <div>
@@ -141,6 +150,9 @@ const ordersConfigured = Boolean(import.meta.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN)
           ))}
         </ul>
       )}
+      <a href={ordersHref} class="mt-auto text-sm font-black text-ab-green no-underline hover:underline">
+        {T.ordersViewAll} →
+      </a>
     </div>
 
     <!-- Profile & security -->

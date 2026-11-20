@@ -124,7 +124,14 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
   }
 
   // Descope session validation for auth-gated routes
-  const GATED_PATHS = ['/konto/profil', '/en/account/profile'];
+  const GATED_PATHS = [
+    '/konto/profil',
+    '/en/account/profile',
+    '/myab/billetter',
+    '/en/myab/tickets',
+    '/myab/ordrer',
+    '/en/myab/orders',
+  ];
   const isGated = GATED_PATHS.some(
     (p) =>
       context.url.pathname === p || context.url.pathname.startsWith(`${p}/`)
