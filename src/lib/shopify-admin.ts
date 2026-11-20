@@ -1,6 +1,12 @@
 import { CacheManager, FileCacheDriver } from '@datum-cloud/strapi-revalidate';
 
-const domain = import.meta.env.SHOPIFY_DOMAIN as string | undefined;
+// Tolerates a domain value that accidentally includes a URL scheme and/or
+// trailing slash — confirmed live (see shopify.ts for the same fix) that
+// this silently breaks the URL built below (https://https://... resolves
+// nowhere) and surfaced as a DNS lookup failure with no obvious cause.
+const domain = (import.meta.env.SHOPIFY_DOMAIN as string | undefined)
+  ?.replace(/^https?:\/\//, '')
+  .replace(/\/+$/, '');
 // Admin API credentials (different from the public Storefront token in
 // shopify.ts) — needs the read_orders + read_customers scopes. Never exposed
 // to the client; only called from server-rendered pages/API routes.
