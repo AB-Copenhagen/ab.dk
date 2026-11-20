@@ -33,3 +33,44 @@ export function sessionCookieOptions(maxAgeSeconds: number) {
     maxAge: maxAgeSeconds,
   };
 }
+
+export interface DescopeUserProfile {
+  name?: string;
+  givenName?: string;
+  middleName?: string;
+  familyName?: string;
+  createdAt?: Date;
+}
+
+/**
+ * One Management API lookup for profile fields the session JWT doesn't carry
+ * (first/last/full name, account creation time) — the session JWT only ever
+ * has `sub` plus whatever custom claims a JWT Template adds, and this repo's
+ * template doesn't surface name fields today. Call this once per page that
+ * needs them (e.g. the MyAB dashboard greeting), not on every request.
+ */
+export async function loadUserProfile(
+  userId: string
+): Promise<DescopeUserProfile> {
+  if (!descope) return {};
+
+  const { data } = await descope.management.user
+    .loadByUserId(userId)
+    .catch(() => ({ data: undefined }));
+  if (!data) return {};
+
+  const { createdTime } = data;
+  const createdAt =
+    typeof createdTime === 'number'
+      ? // Descope's createdTime is in Unix seconds; guard against a future ms-based value anyway.
+        new Date(createdTime > 1e12 ? createdTime : createdTime * 1000)
+      : undefined;
+
+  return {
+    name: data.name,
+    givenName: data.givenName,
+    middleName: data.middleName,
+    familyName: data.familyName,
+    createdAt,
+  };
+}
