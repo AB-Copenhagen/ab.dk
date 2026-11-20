@@ -1,5 +1,5 @@
 ---
-import { fetchMemberDataByEmail } from '@/lib/eventbilletten-admin';
+import { fetchMemberDataByEmail, groupTicketsByEvent } from '@/lib/eventbilletten-admin';
 import type { Locale } from '@/lib/i18n';
 
 export interface Props {
@@ -17,19 +17,21 @@ const ticketsConfigured = Boolean(import.meta.env.EVENTBILLETTEN_API_KEY);
 
 const dateFormat = locale === 'da' ? 'da-DK' : 'en-GB';
 
-// A ticket's `status` (VALID/INVALID/...) only tracks whether it's been used
-// or superseded — it says nothing about whether the match has already been
-// played, so grouping by status alone can show a long-past match as if it
-// were still upcoming. Group by the event's own date instead; a ticket with
-// no resolved event date falls into "past" rather than disappearing silently.
+// One card per event (a season ticket is many per-seat ticket rows for the
+// same match — billet.ab.dk's own "My Tickets" page groups the same way) and
+// "upcoming" judged from the event's own date — a ticket's status only
+// tracks whether it's been invalidated/superseded, not whether the match has
+// already been played. An event with no resolved date falls into "past"
+// rather than disappearing silently.
 const now = Date.now();
-const isUpcoming = (t: (typeof tickets)[number]) =>
-  t.eventStart ? new Date(t.eventStart).getTime() > now : false;
-const upcomingTickets = tickets
+const eventGroups = groupTicketsByEvent(tickets);
+const isUpcoming = (g: (typeof eventGroups)[number]) =>
+  g.eventStart ? new Date(g.eventStart).getTime() > now : false;
+const upcomingGroups = eventGroups
   .filter(isUpcoming)
   .sort((a, b) => new Date(a.eventStart!).getTime() - new Date(b.eventStart!).getTime());
-const pastTickets = tickets
-  .filter((t) => !isUpcoming(t))
+const pastGroups = eventGroups
+  .filter((g) => !isUpcoming(g))
   .sort((a, b) => new Date(b.eventStart ?? 0).getTime() - new Date(a.eventStart ?? 0).getTime());
 
 const T = {
@@ -52,13 +54,7 @@ const T = {
     ticketsTitle: 'Kommende billetter',
     pastTicketsTitle: 'Tidligere billetter',
     ticketsEmpty: 'Ingen billetter fundet.',
-    statusLabel: {
-      VALID: 'Gyldig',
-      INVALID: 'Ugyldig',
-      RESERVED: 'Reserveret',
-      DETAILSREQUIRED: 'Oplysninger mangler',
-      BLANK: 'Blank',
-    } as Record<string, string>,
+    ticketCount: (n: number) => (n === 1 ? '1 billet' : `${n} billetter`),
   },
   en: {
     title: 'My Tickets',
@@ -79,13 +75,7 @@ const T = {
     ticketsTitle: 'Upcoming tickets',
     pastTicketsTitle: 'Past tickets',
     ticketsEmpty: 'No tickets found.',
-    statusLabel: {
-      VALID: 'Valid',
-      INVALID: 'Invalid',
-      RESERVED: 'Reserved',
-      DETAILSREQUIRED: 'Details required',
-      BLANK: 'Blank',
-    } as Record<string, string>,
+    ticketCount: (n: number) => (n === 1 ? '1 ticket' : `${n} tickets`),
   },
 }[locale];
 ---
@@ -135,28 +125,27 @@ const T = {
           </div>
         )}
 
-        {tickets.length === 0 ? (
+        {eventGroups.length === 0 ? (
           <>
             <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ticketsTitle}</p>
             <p class="text-[#666]">{T.ticketsEmpty}</p>
           </>
         ) : (
           <>
-            {upcomingTickets.length > 0 && (
+            {upcomingGroups.length > 0 && (
               <div class="mb-10">
                 <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ticketsTitle}</p>
                 <ul class="divide-y divide-[#E5E7EB] border border-[#E5E7EB] rounded">
-                  {upcomingTickets.map((ticket) => (
+                  {upcomingGroups.map((group) => (
                     <li class="flex items-center justify-between gap-4 px-5 py-4">
                       <div>
-                        <p class="font-black text-[#111]">{ticket.eventName ?? ticket.ticketName}</p>
+                        <p class="font-black text-[#111]">{group.eventName ?? group.eventId}</p>
                         <p class="text-sm text-[#666]">
-                          {ticket.eventStart && new Date(ticket.eventStart).toLocaleDateString(dateFormat)}
-                          {ticket.seat && ` · ${ticket.seat}`}
+                          {group.eventStart && new Date(group.eventStart).toLocaleDateString(dateFormat)}
                         </p>
                       </div>
                       <p class="text-sm font-black text-[#111] shrink-0">
-                        {T.statusLabel[ticket.status] ?? ticket.status}
+                        {T.ticketCount(group.validCount)}
                       </p>
                     </li>
                   ))}
@@ -164,21 +153,20 @@ const T = {
               </div>
             )}
 
-            {pastTickets.length > 0 && (
+            {pastGroups.length > 0 && (
               <div>
                 <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-[#666] mb-3">{T.pastTicketsTitle}</p>
                 <ul class="divide-y divide-[#E5E7EB] border border-[#E5E7EB] rounded opacity-70">
-                  {pastTickets.map((ticket) => (
+                  {pastGroups.map((group) => (
                     <li class="flex items-center justify-between gap-4 px-5 py-4">
                       <div>
-                        <p class="font-black text-[#111]">{ticket.eventName ?? ticket.ticketName}</p>
+                        <p class="font-black text-[#111]">{group.eventName ?? group.eventId}</p>
                         <p class="text-sm text-[#666]">
-                          {ticket.eventStart && new Date(ticket.eventStart).toLocaleDateString(dateFormat)}
-                          {ticket.seat && ` · ${ticket.seat}`}
+                          {group.eventStart && new Date(group.eventStart).toLocaleDateString(dateFormat)}
                         </p>
                       </div>
                       <p class="text-sm font-black text-[#111] shrink-0">
-                        {T.statusLabel[ticket.status] ?? ticket.status}
+                        {T.ticketCount(group.validCount)}
                       </p>
                     </li>
                   ))}
