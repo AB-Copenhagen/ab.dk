@@ -8,8 +8,19 @@ const domain = (import.meta.env.SHOPIFY_DOMAIN as string | undefined)
   ?.replace(/^https?:\/\//, '')
   .replace(/\/+$/, '');
 // Admin API credentials (different from the public Storefront token in
-// shopify.ts) — needs the read_orders + read_customers scopes. Never exposed
+// shopify.ts) — needs read_customers, and read_orders is only enough for
+// orders from the last 60 days; grant read_all_orders too (Shopify's
+// distinct scope for older order history) or a fan's pre-existing purchases
+// will silently read back as "no orders found," not an error. Never exposed
 // to the client; only called from server-rendered pages/API routes.
+//
+// Authorization: the `email` passed to fetchOrdersByEmail below must only
+// ever be the caller's own verified identity (Astro.locals.user.email, set
+// exclusively by middleware.ts from the validated Descope session) — never a
+// value from a query param, form input, or anything else request-controlled.
+// There is currently no path that passes anything else, and there must not be
+// one added: this function has no concept of "whose order this is allowed to
+// be," only "whichever email you hand it."
 //
 // Two ways to authenticate, depending on how the custom app was created:
 //   - a static Admin API access token, copied once from Shopify admin →
