@@ -16,6 +16,15 @@ const staticAdminAccessToken = import.meta.env
 const clientId = import.meta.env.SHOPIFY_CLIENT_ID as string | undefined;
 const clientSecret = import.meta.env.SHOPIFY_CLIENT_SECRET as
   string | undefined;
+// The client_credentials token endpoint only works against the store's
+// permanent *.myshopify.com handle — confirmed live: pointing it at the
+// custom storefront domain (SHOPIFY_DOMAIN, e.g. shop.ab.dk) failed with a
+// 403 some of the time and an HTML error page (not JSON) the rest of the
+// time, since that domain isn't proxied for this particular path. Falls back
+// to `domain` only so a misconfigured deployment degrades to that same
+// failure rather than throwing on a missing variable — set this explicitly.
+const oauthDomain =
+  (import.meta.env.SHOPIFY_MYSHOPIFY_DOMAIN as string | undefined) ?? domain;
 
 export const shopifyOrdersConfigured = Boolean(
   domain && (staticAdminAccessToken || (clientId && clientSecret))
@@ -46,7 +55,7 @@ const CLIENT_CREDENTIALS_TOKEN_TTL = 86399 - 60;
 // authorization code), not supported here.
 async function fetchAccessTokenViaClientCredentials(): Promise<string | null> {
   try {
-    const res = await fetch(`https://${domain}/admin/oauth/access_token`, {
+    const res = await fetch(`https://${oauthDomain}/admin/oauth/access_token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
