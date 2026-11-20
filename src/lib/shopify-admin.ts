@@ -16,16 +16,6 @@ const staticAdminAccessToken = import.meta.env
 const clientId = import.meta.env.SHOPIFY_CLIENT_ID as string | undefined;
 const clientSecret = import.meta.env.SHOPIFY_CLIENT_SECRET as
   string | undefined;
-// The client_credentials token endpoint only works against the store's
-// permanent *.myshopify.com handle — confirmed live: pointing it at the
-// custom storefront domain (SHOPIFY_DOMAIN, e.g. shop.ab.dk) failed with a
-// 403 some of the time and an HTML error page (not JSON) the rest of the
-// time, since that domain isn't proxied for this particular path. Falls back
-// to `domain` only so a misconfigured deployment degrades to that same
-// failure rather than throwing on a missing variable — set this explicitly.
-const oauthDomain =
-  (import.meta.env.SHOPIFY_MYSHOPIFY_DOMAIN as string | undefined) ?? domain;
-
 export const shopifyOrdersConfigured = Boolean(
   domain && (staticAdminAccessToken || (clientId && clientSecret))
 );
@@ -53,9 +43,16 @@ const CLIENT_CREDENTIALS_TOKEN_TTL = 86399 - 60;
 // `shop_not_permitted: Client credentials cannot be performed on this shop`.
 // A store outside the org needs a different grant (token exchange or
 // authorization code), not supported here.
+//
+// Shopify's docs say this specific endpoint only works against the store's
+// permanent *.myshopify.com handle, not a custom/vanity domain — if
+// SHOPIFY_DOMAIN is set to one (e.g. shop.ab.dk) instead, confirmed live that
+// this fails with a 403 or an HTML error page rather than JSON. Set
+// SHOPIFY_DOMAIN to the real myshopify.com handle for this to work; Admin
+// GraphQL calls below work the same either way.
 async function fetchAccessTokenViaClientCredentials(): Promise<string | null> {
   try {
-    const res = await fetch(`https://${oauthDomain}/admin/oauth/access_token`, {
+    const res = await fetch(`https://${domain}/admin/oauth/access_token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
