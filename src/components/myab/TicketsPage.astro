@@ -17,6 +17,21 @@ const ticketsConfigured = Boolean(import.meta.env.EVENTBILLETTEN_API_KEY);
 
 const dateFormat = locale === 'da' ? 'da-DK' : 'en-GB';
 
+// A ticket's `status` (VALID/INVALID/...) only tracks whether it's been used
+// or superseded — it says nothing about whether the match has already been
+// played, so grouping by status alone can show a long-past match as if it
+// were still upcoming. Group by the event's own date instead; a ticket with
+// no resolved event date falls into "past" rather than disappearing silently.
+const now = Date.now();
+const isUpcoming = (t: (typeof tickets)[number]) =>
+  t.eventStart ? new Date(t.eventStart).getTime() > now : false;
+const upcomingTickets = tickets
+  .filter(isUpcoming)
+  .sort((a, b) => new Date(a.eventStart!).getTime() - new Date(b.eventStart!).getTime());
+const pastTickets = tickets
+  .filter((t) => !isUpcoming(t))
+  .sort((a, b) => new Date(b.eventStart ?? 0).getTime() - new Date(a.eventStart ?? 0).getTime());
+
 const T = {
   da: {
     title: 'Mine billetter',
@@ -34,7 +49,8 @@ const T = {
       'PENDING-CANCELLATION': 'Opsiges',
     } as Record<string, string>,
     nextBilling: (date: string) => `Næste betaling: ${date}`,
-    ticketsTitle: 'Mine billetter',
+    ticketsTitle: 'Kommende billetter',
+    pastTicketsTitle: 'Tidligere billetter',
     ticketsEmpty: 'Ingen billetter fundet.',
     statusLabel: {
       VALID: 'Gyldig',
@@ -60,7 +76,8 @@ const T = {
       'PENDING-CANCELLATION': 'Ending soon',
     } as Record<string, string>,
     nextBilling: (date: string) => `Next billing date: ${date}`,
-    ticketsTitle: 'My tickets',
+    ticketsTitle: 'Upcoming tickets',
+    pastTicketsTitle: 'Past tickets',
     ticketsEmpty: 'No tickets found.',
     statusLabel: {
       VALID: 'Valid',
@@ -118,26 +135,57 @@ const T = {
           </div>
         )}
 
-        <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ticketsTitle}</p>
         {tickets.length === 0 ? (
-          <p class="text-[#666]">{T.ticketsEmpty}</p>
+          <>
+            <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ticketsTitle}</p>
+            <p class="text-[#666]">{T.ticketsEmpty}</p>
+          </>
         ) : (
-          <ul class="divide-y divide-[#E5E7EB] border border-[#E5E7EB] rounded">
-            {tickets.map((ticket) => (
-              <li class="flex items-center justify-between gap-4 px-5 py-4">
-                <div>
-                  <p class="font-black text-[#111]">{ticket.eventName ?? ticket.ticketName}</p>
-                  <p class="text-sm text-[#666]">
-                    {ticket.eventStart && new Date(ticket.eventStart).toLocaleDateString(dateFormat)}
-                    {ticket.seat && ` · ${ticket.seat}`}
-                  </p>
-                </div>
-                <p class="text-sm font-black text-[#111] shrink-0">
-                  {T.statusLabel[ticket.status] ?? ticket.status}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <>
+            {upcomingTickets.length > 0 && (
+              <div class="mb-10">
+                <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ticketsTitle}</p>
+                <ul class="divide-y divide-[#E5E7EB] border border-[#E5E7EB] rounded">
+                  {upcomingTickets.map((ticket) => (
+                    <li class="flex items-center justify-between gap-4 px-5 py-4">
+                      <div>
+                        <p class="font-black text-[#111]">{ticket.eventName ?? ticket.ticketName}</p>
+                        <p class="text-sm text-[#666]">
+                          {ticket.eventStart && new Date(ticket.eventStart).toLocaleDateString(dateFormat)}
+                          {ticket.seat && ` · ${ticket.seat}`}
+                        </p>
+                      </div>
+                      <p class="text-sm font-black text-[#111] shrink-0">
+                        {T.statusLabel[ticket.status] ?? ticket.status}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {pastTickets.length > 0 && (
+              <div>
+                <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-[#666] mb-3">{T.pastTicketsTitle}</p>
+                <ul class="divide-y divide-[#E5E7EB] border border-[#E5E7EB] rounded opacity-70">
+                  {pastTickets.map((ticket) => (
+                    <li class="flex items-center justify-between gap-4 px-5 py-4">
+                      <div>
+                        <p class="font-black text-[#111]">{ticket.eventName ?? ticket.ticketName}</p>
+                        <p class="text-sm text-[#666]">
+                          {ticket.eventStart && new Date(ticket.eventStart).toLocaleDateString(dateFormat)}
+                          {ticket.seat && ` · ${ticket.seat}`}
+                        </p>
+                      </div>
+                      <p class="text-sm font-black text-[#111] shrink-0">
+                        {T.statusLabel[ticket.status] ?? ticket.status}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
         )}
       </>
     )}
