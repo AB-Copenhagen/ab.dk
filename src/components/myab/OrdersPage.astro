@@ -1,5 +1,5 @@
 ---
-import { fetchOrdersByEmail } from '@/lib/shopify-admin';
+import { fetchOrdersByEmail, shopifyOrdersConfigured as ordersConfigured } from '@/lib/shopify-admin';
 import type { Locale } from '@/lib/i18n';
 
 export interface Props {
@@ -11,7 +11,6 @@ const user = Astro.locals.user;
 const myabHref = locale === 'en' ? '/en/myab' : '/myab';
 
 const orders = user?.email ? await fetchOrdersByEmail(user.email).catch(() => []) : [];
-const ordersConfigured = Boolean(import.meta.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN);
 
 const T = {
   da: {

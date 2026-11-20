@@ -1,11 +1,25 @@
 import { CacheManager, FileCacheDriver } from '@datum-cloud/strapi-revalidate';
 
 const domain = import.meta.env.SHOPIFY_DOMAIN as string | undefined;
-// Admin API token (different credential from the public Storefront token in
+// Admin API credentials (different from the public Storefront token in
 // shopify.ts) — needs the read_orders + read_customers scopes. Never exposed
 // to the client; only called from server-rendered pages/API routes.
-const adminAccessToken = import.meta.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN as
+//
+// Two ways to authenticate, depending on how the custom app was created:
+//   - a static Admin API access token, copied once from Shopify admin →
+//     Settings → Apps and develop apps (legacy custom-app flow), OR
+//   - a client_id/client_secret pair from an app built on Shopify's Dev
+//     Dashboard, exchanged for a short-lived access token (see
+//     getAdminAccessToken below) since that flow issues no static token at all.
+const staticAdminAccessToken = import.meta.env
+  .SHOPIFY_ADMIN_API_ACCESS_TOKEN as string | undefined;
+const clientId = import.meta.env.SHOPIFY_CLIENT_ID as string | undefined;
+const clientSecret = import.meta.env.SHOPIFY_CLIENT_SECRET as
   string | undefined;
+
+export const shopifyOrdersConfigured = Boolean(
+  domain && (staticAdminAccessToken || (clientId && clientSecret))
+);
 
 const API_VERSION = '2024-01';
 
@@ -18,6 +32,56 @@ const cache = new CacheManager({
   fallback: new FileCacheDriver({ dir: `${CACHE_DIR}-fallback` }),
   defaultTtl: 60 * 2,
 });
+
+// Shopify's client_credentials grant always expires in exactly 24h
+// (`expires_in: 86399`, per Shopify's docs) with no refresh token — renewing
+// it just means sending the same request again. Cached just under that TTL
+// so a live request is never made with an already-expired token.
+const CLIENT_CREDENTIALS_TOKEN_TTL = 86399 - 60;
+
+// Only works when this app and the store are in the same Shopify
+// organization in the Dev Dashboard — Shopify rejects it otherwise with
+// `shop_not_permitted: Client credentials cannot be performed on this shop`.
+// A store outside the org needs a different grant (token exchange or
+// authorization code), not supported here.
+async function fetchAccessTokenViaClientCredentials(): Promise<string | null> {
+  try {
+    const res = await fetch(`https://${domain}/admin/oauth/access_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        client_id: clientId!,
+        client_secret: clientSecret!,
+      }),
+    });
+    if (!res.ok) {
+      console.error(
+        `[shopify-admin] client_credentials token request -> ${res.status} ${res.statusText}`
+      );
+      return null;
+    }
+    const json = (await res.json()) as { access_token?: string };
+    return json.access_token ?? null;
+  } catch (err) {
+    console.error(
+      '[shopify-admin] client_credentials token request threw',
+      err
+    );
+    return null;
+  }
+}
+
+/** Resolves an Admin API access token, preferring a static one if set. */
+async function getAdminAccessToken(): Promise<string | null> {
+  if (staticAdminAccessToken) return staticAdminAccessToken;
+  if (!domain || !clientId || !clientSecret) return null;
+  return cache.getWithFallback<string>(
+    'shopify-admin-oauth-token',
+    fetchAccessTokenViaClientCredentials,
+    { ttl: CLIENT_CREDENTIALS_TOKEN_TTL }
+  );
+}
 
 export interface ShopifyOrderSummary {
   id: string;
@@ -105,12 +169,15 @@ type OrdersByEmailData = {
 export async function fetchOrdersByEmail(
   email: string
 ): Promise<ShopifyOrderSummary[]> {
-  if (!domain || !adminAccessToken || !email.trim()) return [];
+  if (!shopifyOrdersConfigured || !email.trim()) return [];
 
   const key = await cacheKeyForEmail(email);
   const result = await cache.getWithFallback<OrdersByEmailData | null>(
     key,
     async () => {
+      const accessToken = await getAdminAccessToken();
+      if (!accessToken) return null;
+
       try {
         const res = await fetch(
           `https://${domain}/admin/api/${API_VERSION}/graphql.json`,
@@ -118,7 +185,7 @@ export async function fetchOrdersByEmail(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'X-Shopify-Access-Token': adminAccessToken,
+              'X-Shopify-Access-Token': accessToken,
             },
             body: JSON.stringify({
               query: ORDERS_BY_EMAIL_QUERY,
