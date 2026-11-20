@@ -9,7 +9,12 @@ import sanitizeHtml from 'sanitize-html';
  */
 export function sanitizeArticleHtml(html: string): string {
   return sanitizeHtml(html, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2']),
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+      'img',
+      'h1',
+      'h2',
+      'h3',
+    ]),
     allowedAttributes: {
       ...sanitizeHtml.defaults.allowedAttributes,
       img: ['src', 'alt', 'width', 'height', 'loading'],
@@ -22,6 +27,13 @@ export function sanitizeArticleHtml(html: string): string {
         { rel: 'noopener noreferrer' },
         true
       ),
+      // The article page itself renders the title as the page's one <h1> —
+      // a legacy editor's h1/h2 in the stored HTML was a subsection heading,
+      // not a second page title. Shift down a level so the hierarchy stays
+      // correct, same fix as the heading level shift in ArticleContent.tsx's
+      // Strapi Blocks renderer.
+      h1: 'h2',
+      h2: 'h3',
     },
   });
 }

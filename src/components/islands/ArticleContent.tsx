@@ -65,6 +65,19 @@ export default function ArticleContent({ content, strapiUrl }: Props) {
       <BlocksRenderer
         content={decoded}
         blocks={{
+          // Editors pick a heading level in Strapi's editor without knowing
+          // the page itself already renders the article title as the page's
+          // one <h1> — passing the level through as-is produced multiple
+          // <h1>s and out-of-order heading levels on the rendered page.
+          // Shift every level down by one (capped at h6) so an editor's
+          // "Heading 1" becomes this page's first subsection heading (h2),
+          // keeping the hierarchy correct without editors needing to know
+          // that convention.
+          heading: ({ children, level }) => {
+            const Tag = `h${Math.min(level + 1, 6)}` as
+              'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+            return <Tag>{children}</Tag>;
+          },
           image: ({ image }) => (
             <img
               src={
