@@ -1,6 +1,12 @@
 import { CacheManager, FileCacheDriver } from '@datum-cloud/strapi-revalidate';
 
-const domain = import.meta.env.SHOPIFY_DOMAIN as string | undefined;
+// Tolerates a domain value that accidentally includes a URL scheme and/or
+// trailing slash — confirmed live (see shopify.ts for the same fix) that
+// this silently breaks the URL built below (https://https://... resolves
+// nowhere) and surfaced as a DNS lookup failure with no obvious cause.
+const domain = (import.meta.env.SHOPIFY_DOMAIN as string | undefined)
+  ?.replace(/^https?:\/\//, '')
+  .replace(/\/+$/, '');
 // Admin API credentials (different from the public Storefront token in
 // shopify.ts) — needs read_customers, and read_orders is only enough for
 // orders from the last 60 days; grant read_all_orders too (Shopify's
@@ -27,7 +33,6 @@ const staticAdminAccessToken = import.meta.env
 const clientId = import.meta.env.SHOPIFY_CLIENT_ID as string | undefined;
 const clientSecret = import.meta.env.SHOPIFY_CLIENT_SECRET as
   string | undefined;
-
 export const shopifyOrdersConfigured = Boolean(
   domain && (staticAdminAccessToken || (clientId && clientSecret))
 );
@@ -55,6 +60,13 @@ const CLIENT_CREDENTIALS_TOKEN_TTL = 86399 - 60;
 // `shop_not_permitted: Client credentials cannot be performed on this shop`.
 // A store outside the org needs a different grant (token exchange or
 // authorization code), not supported here.
+//
+// Shopify's docs say this specific endpoint only works against the store's
+// permanent *.myshopify.com handle, not a custom/vanity domain — if
+// SHOPIFY_DOMAIN is set to one (e.g. shop.ab.dk) instead, confirmed live that
+// this fails with a 403 or an HTML error page rather than JSON. Set
+// SHOPIFY_DOMAIN to the real myshopify.com handle for this to work; Admin
+// GraphQL calls below work the same either way.
 async function fetchAccessTokenViaClientCredentials(): Promise<string | null> {
   try {
     const res = await fetch(`https://${domain}/admin/oauth/access_token`, {

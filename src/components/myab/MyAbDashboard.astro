@@ -1,7 +1,7 @@
 ---
 import { loadUserProfile } from '@/lib/descope-server';
 import { fetchOrdersByEmail, shopifyOrdersConfigured as ordersConfigured } from '@/lib/shopify-admin';
-import { fetchMemberDataByEmail } from '@/lib/eventbilletten-admin';
+import { fetchMemberDataByEmail, groupTicketsByEvent } from '@/lib/eventbilletten-admin';
 import { normalizeTier } from '@/lib/membership';
 import type { Locale } from '@/lib/i18n';
 
@@ -26,14 +26,18 @@ const fullName = profile.name ?? user?.name;
 const firstName = profile.givenName ?? fullName?.trim().split(/\s+/)[0];
 const memberSinceYear = profile.createdAt?.getFullYear();
 
-// `status: 'VALID'` only means "not yet invalidated/used" — it says nothing
-// about whether the match has already been played. A ticket for a past match
-// that was never scanned at the gate is still VALID, so "upcoming" has to be
-// judged from the event's own date; falls back to the status check only for
-// the rare ticket with no resolved event date to compare against.
+// Group into one card per event (a season ticket is many per-seat ticket
+// rows for the same match) and judge "upcoming" from the event's own date —
+// a ticket's status only tracks whether it's been invalidated/superseded,
+// not whether the match has already been played.
 const now = Date.now();
-const upcomingTickets = tickets.filter((t) =>
-  t.eventStart ? new Date(t.eventStart).getTime() > now : t.status === 'VALID'
+const eventGroups = groupTicketsByEvent(tickets);
+const upcomingEventGroups = eventGroups.filter(
+  (g) => g.eventStart && new Date(g.eventStart).getTime() > now
+);
+const upcomingTicketCount = upcomingEventGroups.reduce(
+  (sum, g) => sum + g.validCount,
+  0
 );
 const activeSubscription = subscriptions.find((s) => s.status === 'ACTIVE');
 
@@ -61,7 +65,7 @@ const T = {
     ticketsNotConfigured: 'Billetoversigt er ikke konfigureret endnu.',
     ticketsEmpty: 'Ingen kommende billetter fundet.',
     ticketsCount: (n: number) => (n === 1 ? '1 kommende billet' : `${n} kommende billetter`),
-    subscriptionActive: (plan: string) => `Aktivt abonnement: ${plan}`,
+    nextBilling: (date: string) => `Næste betaling: ${date}`,
     ticketsViewAll: 'Se mine billetter',
     ordersTitle: 'Mine ordrer',
     ordersEmpty: 'Ingen ordrer fundet i AB Store.',
@@ -86,7 +90,7 @@ const T = {
     ticketsNotConfigured: 'Ticket overview is not configured yet.',
     ticketsEmpty: 'No upcoming tickets found.',
     ticketsCount: (n: number) => (n === 1 ? '1 upcoming ticket' : `${n} upcoming tickets`),
-    subscriptionActive: (plan: string) => `Active subscription: ${plan}`,
+    nextBilling: (date: string) => `Next billing date: ${date}`,
     ticketsViewAll: 'See my tickets',
     ordersTitle: 'My orders',
     ordersEmpty: 'No orders found in the AB Store.',
@@ -121,7 +125,20 @@ const ticketsConfigured = Boolean(import.meta.env.EVENTBILLETTEN_API_KEY);
     <div class="bg-white border border-[#E5E7EB] p-6 flex flex-col">
       <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.membershipTitle}</p>
       <p class="font-black text-lg text-[#111] mb-2">{T.tierLabel[tier]}</p>
-      {tier === 'free' && <p class="text-sm text-[#666] mb-4">{T.membershipFreeHint}</p>}
+      {activeSubscription ? (
+        <>
+          <p class="text-sm font-black text-[#111]">
+            {activeSubscription.planName ?? activeSubscription.planId}
+          </p>
+          {activeSubscription.nextBillingDate && (
+            <p class="text-sm text-[#666] mb-4">
+              {T.nextBilling(new Date(activeSubscription.nextBillingDate).toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-GB'))}
+            </p>
+          )}
+        </>
+      ) : (
+        tier === 'free' && <p class="text-sm text-[#666] mb-4">{T.membershipFreeHint}</p>
+      )}
       <a
         href={manageMembershipHref}
         class="mt-auto inline-flex items-center justify-center rounded bg-ab-green px-4 py-2 text-sm font-black text-white no-underline transition-colors hover:bg-ab-green/90"
@@ -136,16 +153,9 @@ const ticketsConfigured = Boolean(import.meta.env.EVENTBILLETTEN_API_KEY);
       {!ticketsConfigured ? (
         <p class="text-sm text-[#666] mb-4">{T.ticketsNotConfigured}</p>
       ) : (
-        <>
-          {activeSubscription && (
-            <p class="text-sm font-black text-[#111] mb-1">
-              {T.subscriptionActive(activeSubscription.planName ?? activeSubscription.planId)}
-            </p>
-          )}
-          <p class="text-sm text-[#666] mb-4">
-            {upcomingTickets.length === 0 ? T.ticketsEmpty : T.ticketsCount(upcomingTickets.length)}
-          </p>
-        </>
+        <p class="text-sm text-[#666] mb-4">
+          {upcomingTicketCount === 0 ? T.ticketsEmpty : T.ticketsCount(upcomingTicketCount)}
+        </p>
       )}
       <a href={ticketsHref} class="mt-auto text-sm font-black text-ab-green no-underline hover:underline">
         {T.ticketsViewAll} →

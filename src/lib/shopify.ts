@@ -1,6 +1,13 @@
 import { CacheManager, FileCacheDriver } from '@datum-cloud/strapi-revalidate';
 
-const domain = import.meta.env.SHOPIFY_DOMAIN as string | undefined;
+// Tolerates a domain value that accidentally includes a URL scheme and/or
+// trailing slash (e.g. https://shop.ab.dk/, copied straight from a browser
+// address bar) — confirmed live that this silently breaks the URL built
+// below (https://https://... resolves nowhere, as "https" isn't a real host)
+// with no indication why, since fetch() failures here are swallowed below.
+const domain = (import.meta.env.SHOPIFY_DOMAIN as string | undefined)
+  ?.replace(/^https?:\/\//, '')
+  .replace(/\/+$/, '');
 const accessToken = import.meta.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN as
   string | undefined;
 
@@ -65,11 +72,20 @@ async function storefront<T>(
             body: JSON.stringify({ query, variables }),
           }
         );
-        if (!res.ok) return null;
+        if (!res.ok) {
+          console.error(
+            `[shopify] storefront GraphQL request -> ${res.status} ${res.statusText}`
+          );
+          return null;
+        }
         const json = (await res.json()) as GqlResponse<T>;
-        if (json.errors?.length) return null;
+        if (json.errors?.length) {
+          console.error('[shopify] storefront GraphQL errors', json.errors);
+          return null;
+        }
         return json.data;
-      } catch {
+      } catch (err) {
+        console.error('[shopify] storefront GraphQL request threw', err);
         return null;
       }
     },
