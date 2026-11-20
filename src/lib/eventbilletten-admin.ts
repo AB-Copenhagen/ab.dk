@@ -52,6 +52,46 @@ interface EventbillettenMemberData {
   subscriptions: EventbillettenSubscriptionSummary[];
 }
 
+export interface EventbillettenEventTicketGroup {
+  eventId: string;
+  eventName?: string;
+  eventStart?: string;
+  /**
+   * Tickets you currently hold for this event (status VALID) — NOT the total
+   * number ever issued. Confirmed live against billet.ab.dk's own "My
+   * Tickets" page: one historical order for 20 tickets to a single match
+   * shows there as "2 tickets", matching only the still-VALID rows (the
+   * other 18 are INVALID — reissued/transferred away, not "used at the
+   * gate"). Mirror that here rather than showing raw order size.
+   */
+  validCount: number;
+}
+
+/**
+ * Collapses raw per-seat ticket rows into one card per event, the way
+ * billet.ab.dk's own account pages present them — a season ticket or a
+ * group booking can mean dozens of individual ticket rows for one match.
+ * Events where every ticket has since been invalidated (fully transferred
+ * or superseded) are dropped entirely, again matching what billet.ab.dk
+ * itself shows.
+ */
+export function groupTicketsByEvent(
+  tickets: EventbillettenTicketSummary[]
+): EventbillettenEventTicketGroup[] {
+  const byEvent = new Map<string, EventbillettenEventTicketGroup>();
+  for (const ticket of tickets) {
+    const group = byEvent.get(ticket.eventId) ?? {
+      eventId: ticket.eventId,
+      eventName: ticket.eventName,
+      eventStart: ticket.eventStart,
+      validCount: 0,
+    };
+    if (ticket.status === 'VALID') group.validCount += 1;
+    byEvent.set(ticket.eventId, group);
+  }
+  return [...byEvent.values()].filter((group) => group.validCount > 0);
+}
+
 async function cacheKey(identifier: string): Promise<string> {
   const bytes = new TextEncoder().encode(identifier.trim().toLowerCase());
   const digest = await crypto.subtle.digest('SHA-256', bytes);
@@ -216,9 +256,14 @@ export async function fetchMemberDataByEmail(
       const customerId = await resolveCustomerId(email, knownCustomerId);
       if (!customerId) return empty;
 
+      // vivenu allows up to 1000 per page on both endpoints; a single season
+      // ticket already produces dozens of per-seat, per-match ticket rows
+      // (confirmed live: one order alone was 20 rows for one match), so 50
+      // risked silently truncating a season-ticket holder's list well before
+      // hitting a real plan or transaction limit.
       const [ticketsResult, subscriptionsResult] = await Promise.all([
         vivenuGet<VivenuListResponse<VivenuTicket>>(
-          `/tickets?customerId=${customerId}&top=50`
+          `/tickets?customerId=${customerId}&top=500`
         ),
         vivenuGet<VivenuListResponse<VivenuSubscription>>(
           `/subscriptions?customerId=${customerId}&top=50`
