@@ -54,10 +54,16 @@ export async function loadUserProfile(
 ): Promise<DescopeUserProfile> {
   if (!descope) return {};
 
-  const { data } = await descope.management.user
+  const { data, ok, error } = await descope.management.user
     .loadByUserId(userId)
-    .catch(() => ({ data: undefined }));
-  if (!data) return {};
+    .catch((err) => ({ data: undefined, ok: false, error: err }));
+  if (!data) {
+    // Logged (not swallowed) — a missing/invalid DESCOPE_MANAGEMENT_KEY fails
+    // exactly like this (ok: false, no thrown error) and otherwise degrades
+    // silently to the "Fan" greeting fallback with no trace in the logs.
+    if (!ok) console.error('[descope] loadUserProfile failed', error);
+    return {};
+  }
 
   const { createdTime } = data;
   const createdAt =

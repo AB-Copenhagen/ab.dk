@@ -15,7 +15,7 @@ const tier = normalizeTier(user?.currentTier);
 
 const orders = user?.email ? await fetchOrdersByEmail(user.email).catch(() => []) : [];
 const { tickets, subscriptions } = user?.email
-  ? await fetchMemberDataByEmail(user.email).catch(() => ({ tickets: [], subscriptions: [] }))
+  ? await fetchMemberDataByEmail(user.email, user.eventbillettenUuid).catch(() => ({ tickets: [], subscriptions: [] }))
   : { tickets: [], subscriptions: [] };
 
 // A single Management API lookup for the profile fields the session JWT doesn't

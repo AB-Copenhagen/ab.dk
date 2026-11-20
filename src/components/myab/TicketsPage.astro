@@ -11,7 +11,7 @@ const user = Astro.locals.user;
 const myabHref = locale === 'en' ? '/en/myab' : '/myab';
 
 const { tickets, subscriptions } = user?.email
-  ? await fetchMemberDataByEmail(user.email).catch(() => ({ tickets: [], subscriptions: [] }))
+  ? await fetchMemberDataByEmail(user.email, user.eventbillettenUuid).catch(() => ({ tickets: [], subscriptions: [] }))
   : { tickets: [], subscriptions: [] };
 const ticketsConfigured = Boolean(import.meta.env.EVENTBILLETTEN_API_KEY);
 

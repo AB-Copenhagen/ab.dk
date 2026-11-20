@@ -52,8 +52,8 @@ interface EventbillettenMemberData {
   subscriptions: EventbillettenSubscriptionSummary[];
 }
 
-async function cacheKeyForEmail(email: string): Promise<string> {
-  const bytes = new TextEncoder().encode(email.trim().toLowerCase());
+async function cacheKey(identifier: string): Promise<string> {
+  const bytes = new TextEncoder().encode(identifier.trim().toLowerCase());
   const digest = await crypto.subtle.digest('SHA-256', bytes);
   const hash = Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, '0'))
@@ -61,14 +61,24 @@ async function cacheKeyForEmail(email: string): Promise<string> {
   return `eventbilletten-admin-member-${hash}`;
 }
 
+// Logged (not swallowed) so a misconfigured/expired key or an unverified
+// endpoint shape shows up in Vercel's runtime logs instead of silently
+// rendering as "no tickets" forever — this integration hasn't been exercised
+// against a live account yet (see the caveat on fetchMemberDataByEmail below).
 async function vivenuGet<T>(path: string): Promise<T | null> {
   try {
     const res = await fetch(`${apiBaseUrl}${path}`, {
       headers: { Authorization: `Bearer ${apiKey}` },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(
+        `[eventbilletten-admin] GET ${path} -> ${res.status} ${res.statusText}`
+      );
+      return null;
+    }
     return (await res.json()) as T;
-  } catch {
+  } catch (err) {
+    console.error(`[eventbilletten-admin] GET ${path} threw`, err);
     return null;
   }
 }
@@ -120,7 +130,18 @@ interface VivenuSubscriptionPlan {
   name: string;
 }
 
-async function resolveCustomerId(email: string): Promise<string | null> {
+// A membership-linked fan already carries their vivenu customer ID as
+// Descope's `eventbillettenUuid` custom attribute (same one the
+// eventbilletten-webhook looks a user up by, in the other direction) — shown
+// to fans themselves as "MyAB Ticket ID" on the account page. Prefer it over
+// an email search: it's already on the session with no extra API call, and
+// sidesteps the unverified match semantics of `/customers/rich?email=`.
+// Falls back to email search for a fan who hasn't been linked yet.
+async function resolveCustomerId(
+  email: string,
+  knownCustomerId?: string
+): Promise<string | null> {
+  if (knownCustomerId) return knownCustomerId;
   const result = await vivenuGet<VivenuListResponse<VivenuCustomer>>(
     `/customers/rich?email=${encodeURIComponent(email)}&top=1`
   );
@@ -170,9 +191,11 @@ async function fetchPlanNamesByIds(
 }
 
 /**
- * Looks up a fan's EventBilletten tickets and subscriptions by email via
- * vivenu's Admin API — no second ticketing login, since this reuses the same
- * email already verified by the Descope session.
+ * Looks up a fan's EventBilletten tickets and subscriptions via vivenu's Admin
+ * API — by their linked vivenu customer ID (`eventbillettenUuid`, already on
+ * the Descope session) when available, falling back to an email search for a
+ * fan who hasn't been linked yet. No second ticketing login either way, since
+ * this reuses identity already verified by the Descope session.
  *
  * NOT verified against a live vivenu account yet; confirm the exact field
  * names and list-response shape (see the `docs`/`rows` fallback above and the
@@ -180,16 +203,17 @@ async function fetchPlanNamesByIds(
  * of "built from docs, not yet exercised live" caution as shopify-admin.ts.
  */
 export async function fetchMemberDataByEmail(
-  email: string
+  email: string,
+  knownCustomerId?: string
 ): Promise<EventbillettenMemberData> {
   const empty: EventbillettenMemberData = { tickets: [], subscriptions: [] };
-  if (!apiKey || !email.trim()) return empty;
+  if (!apiKey || (!email.trim() && !knownCustomerId)) return empty;
 
-  const key = await cacheKeyForEmail(email);
+  const key = await cacheKey(knownCustomerId ?? email);
   const result = await cache.getWithFallback<EventbillettenMemberData>(
     key,
     async () => {
-      const customerId = await resolveCustomerId(email);
+      const customerId = await resolveCustomerId(email, knownCustomerId);
       if (!customerId) return empty;
 
       const [ticketsResult, subscriptionsResult] = await Promise.all([
