@@ -1,8 +1,19 @@
 ---
 import AppScreenshotCarousel from '@/components/AppScreenshotCarousel.astro';
+import MyAbDashboard from '@/components/myab/MyAbDashboard.astro';
 import Base from '@/layouts/Base.astro';
+import { fetchCollectionType } from '@/lib/strapi/client';
 
 export const prerender = false;
+
+const user = Astro.locals.user;
+
+// Plus/Premium pricing tiers — reusing the dormant `Plan` Strapi content type
+// (price/perks/featured/CTA already shaped for this). Renders nothing extra
+// until AB's team actually publishes Plan entries — no fabricated pricing here.
+const plans = user
+  ? []
+  : await fetchCollectionType<any[]>('plans', { locale: 'en' }).catch(() => []);
 
 interface Group {
   title: string;
@@ -55,6 +66,41 @@ const groups: Group[] = [
   ogDescription="Get exclusive content, discounts and live streams with MyAB, the official fan membership from Akademisk Boldklub."
 >
 
+  {user && <MyAbDashboard locale="en" />}
+
+  {!user && plans.length > 0 && (
+    <section class="bg-white py-[clamp(48px,7vw,80px)] border-b border-[#E5E7EB]">
+      <div class="max-w-7xl mx-auto px-8 lg:px-20">
+        <h2 class="font-black mb-10 text-[#111]" style="font-size:clamp(1.5rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+          Choose your MyAB membership
+        </h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {plans.map((plan: any) => (
+            <div class={`border p-7 ${plan.featured ? 'border-ab-green border-2' : 'border-[#E5E7EB]'}`}>
+              <p class="font-black text-lg text-[#111] mb-1">{plan.name}</p>
+              {plan.sub_text && <p class="text-sm text-[#666] mb-3">{plan.sub_text}</p>}
+              {typeof plan.price === 'number' && (
+                <p class="font-black text-2xl text-[#111] mb-4">{plan.price} DKK</p>
+              )}
+              <ul class="space-y-2 mb-5">
+                {(plan.perks ?? []).map((perk: any) => (
+                  <li class="text-sm text-[#333]">{perk.text}</li>
+                ))}
+              </ul>
+              {plan.CTA?.URL && (
+                <a href={plan.CTA.URL} target={plan.CTA.target ?? '_self'} class="inline-flex items-center justify-center rounded bg-ab-green px-4 py-2 text-sm font-black text-white no-underline">
+                  {plan.CTA.text ?? 'Choose'}
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {!user && (
+  <Fragment>
   <!-- App download -->
   <section class="bg-white py-[clamp(48px,7vw,80px)]">
     <div class="max-w-4xl mx-auto px-8 text-center">
@@ -136,5 +182,7 @@ const groups: Group[] = [
       </div>
     </div>
   </section>
+  </Fragment>
+  )}
 
 </Base>
