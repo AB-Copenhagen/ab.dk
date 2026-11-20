@@ -26,7 +26,15 @@ const fullName = profile.name ?? user?.name;
 const firstName = profile.givenName ?? fullName?.trim().split(/\s+/)[0];
 const memberSinceYear = profile.createdAt?.getFullYear();
 
-const upcomingTickets = tickets.filter((t) => t.status === 'VALID');
+// `status: 'VALID'` only means "not yet invalidated/used" — it says nothing
+// about whether the match has already been played. A ticket for a past match
+// that was never scanned at the gate is still VALID, so "upcoming" has to be
+// judged from the event's own date; falls back to the status check only for
+// the rare ticket with no resolved event date to compare against.
+const now = Date.now();
+const upcomingTickets = tickets.filter((t) =>
+  t.eventStart ? new Date(t.eventStart).getTime() > now : t.status === 'VALID'
+);
 const activeSubscription = subscriptions.find((s) => s.status === 'ACTIVE');
 
 const accountHref = locale === 'en' ? '/en/account/profile' : '/konto/profil';
