@@ -1,0 +1,50 @@
+---
+import type { Locale } from '@/lib/i18n';
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const myabHref = locale === 'en' ? '/en/myab' : '/myab';
+
+const T = {
+  da: {
+    title: 'Mine billetter',
+    back: '← Tilbage til MyAB-konto',
+    body: 'Kommer snart — dine EventBilletten-billetter vil blive vist her.',
+    meanwhile: 'I mellemtiden kan du se og købe billetter på billet.ab.dk.',
+    cta: 'Gå til billet.ab.dk',
+  },
+  en: {
+    title: 'My Tickets',
+    back: '← Back to MyAB Account',
+    body: "Coming soon — your EventBilletten tickets will show up here.",
+    meanwhile: 'In the meantime, you can view and buy tickets at billet.ab.dk.',
+    cta: 'Go to billet.ab.dk',
+  },
+}[locale];
+---
+
+<section class="bg-white py-14">
+  <div class="max-w-3xl mx-auto px-8">
+    <a href={myabHref} class="inline-block mb-6 text-sm font-bold text-[#666] no-underline hover:text-ab-green transition-colors">
+      {T.back}
+    </a>
+    <h1 class="font-black text-[#111] mb-6" style="font-size:clamp(1.75rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+      {T.title}
+    </h1>
+    <div class="border border-[#E5E7EB] rounded p-8">
+      <p class="text-[#666] mb-4">{T.body}</p>
+      <p class="text-sm text-[#666] mb-5">{T.meanwhile}</p>
+      <a
+        href="https://billet.ab.dk/"
+        target="_blank"
+        rel="noreferrer"
+        class="inline-flex items-center justify-center rounded bg-ab-green px-5 py-2.5 text-sm font-black text-white no-underline transition-colors hover:bg-ab-green/90"
+      >
+        {T.cta}
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,72 @@
+---
+import { fetchOrdersByEmail } from '@/lib/shopify-admin';
+import type { Locale } from '@/lib/i18n';
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const user = Astro.locals.user;
+const myabHref = locale === 'en' ? '/en/myab' : '/myab';
+
+const orders = user?.email ? await fetchOrdersByEmail(user.email).catch(() => []) : [];
+const ordersConfigured = Boolean(import.meta.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN);
+
+const T = {
+  da: {
+    title: 'Mine ordrer',
+    back: '← Tilbage til MyAB-konto',
+    empty: 'Ingen ordrer fundet i AB Store.',
+    notConfigured: 'Ordrehistorik er ikke konfigureret endnu.',
+    viewOrder: 'Se ordre',
+  },
+  en: {
+    title: 'My Orders',
+    back: '← Back to MyAB Account',
+    empty: 'No orders found in the AB Store.',
+    notConfigured: 'Order history is not configured yet.',
+    viewOrder: 'View order',
+  },
+}[locale];
+---
+
+<section class="bg-white py-14">
+  <div class="max-w-3xl mx-auto px-8">
+    <a href={myabHref} class="inline-block mb-6 text-sm font-bold text-[#666] no-underline hover:text-ab-green transition-colors">
+      {T.back}
+    </a>
+    <h1 class="font-black text-[#111] mb-6" style="font-size:clamp(1.75rem,3.5vw,2.5rem);letter-spacing:-0.03em">
+      {T.title}
+    </h1>
+
+    {!ordersConfigured ? (
+      <p class="text-[#666]">{T.notConfigured}</p>
+    ) : orders.length === 0 ? (
+      <p class="text-[#666]">{T.empty}</p>
+    ) : (
+      <ul class="divide-y divide-[#E5E7EB] border border-[#E5E7EB] rounded">
+        {orders.map((order) => (
+          <li class="flex items-center justify-between gap-4 px-5 py-4">
+            <div>
+              <p class="font-black text-[#111]">{order.name}</p>
+              <p class="text-sm text-[#666]">
+                {new Date(order.processedAt).toLocaleDateString(locale === 'da' ? 'da-DK' : 'en-GB')}
+                {order.financialStatus && ` · ${order.financialStatus}`}
+                {order.fulfillmentStatus && ` · ${order.fulfillmentStatus}`}
+              </p>
+            </div>
+            <div class="flex items-center gap-4 shrink-0">
+              <p class="font-black text-[#111]">{order.totalPrice} {order.currencyCode}</p>
+              {order.statusPageUrl && (
+                <a href={order.statusPageUrl} target="_blank" rel="noreferrer" class="text-sm underline hover:text-ab-green transition-colors">
+                  {T.viewOrder}
+                </a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</section>

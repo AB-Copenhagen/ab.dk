@@ -1,0 +1,17 @@
+---
+import Base from '@/layouts/Base.astro';
+import OrdersPage from '@/components/myab/OrdersPage.astro';
+
+export const prerender = false;
+
+// Middleware validates the session for this route (see GATED_PATHS in
+// src/middleware.ts) — if we reach here without a user, something's off,
+// so fall back to a login redirect, same defensive pattern as /en/account/profile.
+if (!Astro.locals.user) {
+  return Astro.redirect('/en/account?redirect=/en/myab/orders');
+}
+---
+
+<Base locale="en" title="My Orders | AB 1889" noindex>
+  <OrdersPage locale="en" />
+</Base>
