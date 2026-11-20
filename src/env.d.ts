@@ -20,6 +20,9 @@ declare namespace App {
       name?: string;
       email?: string;
       picture?: string;
+      /** MyAB membership tier, mirrored from EventBilletten into Descope — see MEMBERSHIP_TIERS in @/lib/membership. Missing/unrecognized values are treated as 'free'. */
+      currentTier?: string;
+      eventbillettenUuid?: string;
     };
   }
 }

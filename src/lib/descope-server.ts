@@ -1,9 +1,16 @@
 import descopeSdk from '@descope/node-sdk';
 
 const descopeProjectId = import.meta.env.DESCOPE_PROJECT_ID;
+// Only needed for Management API calls (e.g. the EventBilletten webhook looking up
+// a user by their custom attribute and patching `currentTier`) — session
+// validation/refresh works without it.
+const descopeManagementKey = import.meta.env.DESCOPE_MANAGEMENT_KEY;
 
 export const descope = descopeProjectId
-  ? descopeSdk({ projectId: descopeProjectId })
+  ? descopeSdk({
+      projectId: descopeProjectId,
+      managementKey: descopeManagementKey,
+    })
   : null;
 
 const ONE_DAY_SECONDS = 60 * 60 * 24;

@@ -130,33 +130,36 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
       context.url.pathname === p || context.url.pathname.startsWith(`${p}/`)
   );
 
-  if (isGated) {
-    const loginUrl = locale === 'en' ? '/en/account' : '/konto';
-    // Clear the DS/DSR cookies whenever we bounce back to login — the login page only
-    // checks cookie *presence* to decide whether to skip straight to the profile page, so
-    // stale or invalid cookies left in place here would otherwise create a redirect loop
-    // between the two.
-    const redirectToLogin = () => {
-      context.cookies.delete('DS', { path: '/' });
-      context.cookies.delete('DSR', { path: '/' });
-      return context.redirect(
-        `${loginUrl}?redirect=${encodeURIComponent(context.url.pathname)}`
-      );
-    };
+  const loginUrl = locale === 'en' ? '/en/account' : '/konto';
+  // Clear the DS/DSR cookies whenever we bounce back to login — the login page only
+  // checks cookie *presence* to decide whether to skip straight to the profile page, so
+  // stale or invalid cookies left in place here would otherwise create a redirect loop
+  // between the two.
+  const redirectToLogin = () => {
+    context.cookies.delete('DS', { path: '/' });
+    context.cookies.delete('DSR', { path: '/' });
+    return context.redirect(
+      `${loginUrl}?redirect=${encodeURIComponent(context.url.pathname)}`
+    );
+  };
 
-    const sessionToken =
-      context.cookies.get('DS')?.value ??
-      context.request.headers.get('authorization')?.replace('Bearer ', '');
-    const refreshToken = context.cookies.get('DSR')?.value;
+  const sessionToken =
+    context.cookies.get('DS')?.value ??
+    context.request.headers.get('authorization')?.replace('Bearer ', '');
+  const refreshToken = context.cookies.get('DSR')?.value;
 
-    if (!sessionToken || !descope) {
-      return redirectToLogin();
-    }
-
+  if (!sessionToken || !descope) {
+    // No session at all is the normal anonymous-visitor case everywhere except
+    // GATED_PATHS, which require one to render at all.
+    if (isGated) return redirectToLogin();
+  } else {
     try {
       // The session JWT is short-lived by design — validateAndRefreshSession
       // transparently mints a new one from the refresh token once it expires,
-      // instead of forcing a fresh login on every visit past that window.
+      // instead of forcing a fresh login on every visit past that window. Run
+      // on every page (not just GATED_PATHS) so the nav's account dropdown,
+      // tier badge, and <MemberGate> content checks work site-wide, not just
+      // on the pages that require a session to render at all.
       const authInfo = await descope.validateAndRefreshSession(
         sessionToken,
         refreshToken
@@ -168,6 +171,16 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
         email: typeof claims.email === 'string' ? claims.email : undefined,
         picture:
           typeof claims.picture === 'string' ? claims.picture : undefined,
+        // Mirrored from EventBilletten via the webhook — see src/lib/membership.ts
+        // for how an unset/unrecognized value here falls back to 'free'.
+        currentTier:
+          typeof claims.currentTier === 'string'
+            ? claims.currentTier
+            : undefined,
+        eventbillettenUuid:
+          typeof claims.eventbillettenUuid === 'string'
+            ? claims.eventbillettenUuid
+            : undefined,
       };
 
       if (authInfo.jwt !== sessionToken) {
@@ -185,8 +198,12 @@ async function handleRequest(context: APIContext, next: MiddlewareNext) {
         );
       }
     } catch {
-      // Invalid or expired session with no usable refresh token — force re-authentication.
-      return redirectToLogin();
+      // Invalid or expired session with no usable refresh token. On a gated
+      // path this must force re-authentication; elsewhere, fall through as
+      // an anonymous visitor rather than bouncing every page on a stale cookie.
+      if (isGated) return redirectToLogin();
+      context.cookies.delete('DS', { path: '/' });
+      context.cookies.delete('DSR', { path: '/' });
     }
   }
 

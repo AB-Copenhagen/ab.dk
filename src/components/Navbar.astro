@@ -3,6 +3,7 @@ import MobileMenu from './islands/MobileMenu';
 import SearchModal from './islands/SearchModal';
 import { getNavConfig, isNavItemActive, isNavLeafActive } from '@/lib/nav-config';
 import { translate, switchLocalePath, type Locale } from '@/lib/i18n';
+import { normalizeTier } from '@/lib/membership';
 
 interface Props {
   locale?: Locale;
@@ -20,12 +21,15 @@ const currentPath = Astro.url.pathname;
 const daPath = locale === 'en' && alternateLocalePath ? alternateLocalePath : switchLocalePath(currentPath, 'da');
 const enPath = locale === 'da' && alternateLocalePath ? alternateLocalePath : switchLocalePath(currentPath, 'en');
 
-// Presence-only check for nav display purposes (not a security boundary — the actual
-// gated routes validate the session properly in middleware.ts). Skipped on prerendered
-// pages, which have no per-request cookies to read.
-const isLoggedIn = !Astro.isPrerendered && Boolean(Astro.cookies.get('DS')?.value);
+// Astro.locals.user is populated by middleware.ts for every request with a valid
+// session (not just GATED_PATHS) — real session state, not just cookie presence.
+const user = Astro.locals.user;
+const isLoggedIn = Boolean(user);
+const tier = normalizeTier(user?.currentTier);
+const tierBadge = tier === 'premium' ? 'Premium' : tier === 'plus' ? 'Plus' : null;
 const accountHref = enPrefix + (locale === 'en' ? '/account/profile' : '/konto/profil');
 const loginHref = enPrefix + (locale === 'en' ? '/account' : '/konto');
+const myabHref = enPrefix + '/myab';
 const authHref = isLoggedIn ? accountHref : loginHref;
 const authLabel = isLoggedIn ? nav.myAccount : nav.login;
 ---
@@ -78,6 +82,11 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
             href={authHref}
             class="flex items-center gap-2 text-white text-[15px] font-medium tracking-normal no-underline hover:opacity-70 transition-opacity">
             {authLabel}
+            {tierBadge && (
+              <span class="rounded-full bg-ab-gold px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-black">
+                {tierBadge}
+              </span>
+            )}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -106,7 +115,17 @@ const authLabel = isLoggedIn ? nav.myAccount : nav.login;
             </svg>
           </a>
           <div class="absolute top-full right-0 hidden group-hover:block z-50 pt-3">
-            <div class="min-w-[160px] shadow-2xl bg-[#004A3A] border-t-[3px] border-ab-beige">
+            <div class="min-w-[200px] shadow-2xl bg-[#004A3A] border-t-[3px] border-ab-beige">
+              <a
+                href={myabHref}
+                class="block w-full px-5 py-3 text-left font-black text-sm text-white/80 tracking-[-0.02em] no-underline transition-colors border-l-2 border-transparent hover:bg-white/10 hover:text-white">
+                {locale === 'da' ? 'Mit MyAB-medlemskab' : 'My MyAB membership'}
+              </a>
+              <a
+                href={accountHref}
+                class="block w-full px-5 py-3 text-left font-black text-sm text-white/80 tracking-[-0.02em] no-underline transition-colors border-l-2 border-transparent hover:bg-white/10 hover:text-white">
+                {locale === 'da' ? 'Min profil' : 'My profile'}
+              </a>
               <button
                 type="button"
                 id="nav-logout-btn"
