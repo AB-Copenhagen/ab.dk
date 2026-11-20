@@ -1,6 +1,6 @@
 ---
 import { loadUserProfile } from '@/lib/descope-server';
-import { fetchOrdersByEmail } from '@/lib/shopify-admin';
+import { fetchOrdersByEmail, shopifyOrdersConfigured as ordersConfigured } from '@/lib/shopify-admin';
 import { fetchMemberDataByEmail } from '@/lib/eventbilletten-admin';
 import { normalizeTier } from '@/lib/membership';
 import type { Locale } from '@/lib/i18n';
@@ -91,7 +91,6 @@ const T = {
   },
 }[locale];
 
-const ordersConfigured = Boolean(import.meta.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN);
 const ticketsConfigured = Boolean(import.meta.env.EVENTBILLETTEN_API_KEY);
 ---
 
