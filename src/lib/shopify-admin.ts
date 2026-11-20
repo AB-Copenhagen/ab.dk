@@ -126,11 +126,20 @@ export async function fetchOrdersByEmail(
             }),
           }
         );
-        if (!res.ok) return null;
+        if (!res.ok) {
+          console.error(
+            `[shopify-admin] orders GraphQL request -> ${res.status} ${res.statusText}`
+          );
+          return null;
+        }
         const json = (await res.json()) as GqlResponse<OrdersByEmailData>;
-        if (json.errors?.length) return null;
+        if (json.errors?.length) {
+          console.error('[shopify-admin] orders GraphQL errors', json.errors);
+          return null;
+        }
         return json.data;
-      } catch {
+      } catch (err) {
+        console.error('[shopify-admin] orders GraphQL request threw', err);
         return null;
       }
     },
