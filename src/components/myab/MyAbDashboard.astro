@@ -1,4 +1,5 @@
 ---
+import { descope } from '@/lib/descope-server';
 import { fetchOrdersByEmail } from '@/lib/shopify-admin';
 import { normalizeTier } from '@/lib/membership';
 import type { Locale } from '@/lib/i18n';
@@ -13,6 +14,24 @@ const tier = normalizeTier(user?.currentTier);
 
 const orders = user?.email ? await fetchOrdersByEmail(user.email).catch(() => []) : [];
 
+const firstName = user?.name?.trim().split(/\s+/)[0];
+
+// A single Management API lookup for the one field the session JWT doesn't carry
+// (account creation time) — scoped to this one dashboard view, not every page.
+let memberSinceYear: number | undefined;
+if (user?.userId && descope) {
+  const { data } = await descope.management.user
+    .loadByUserId(user.userId)
+    .catch(() => ({ data: undefined }));
+  const createdTime = data?.createdTime;
+  if (typeof createdTime === 'number') {
+    // Descope's createdTime is in Unix seconds; guard against a future ms-based value anyway.
+    memberSinceYear = new Date(
+      createdTime > 1e12 ? createdTime : createdTime * 1000
+    ).getFullYear();
+  }
+}
+
 const accountHref = locale === 'en' ? '/en/account/profile' : '/konto/profil';
 // Per the /myab-new draft's own FAQ copy, membership is purchased and managed
 // entirely in-app (App Store / Google Play in-app purchase) — there is no web
@@ -22,7 +41,9 @@ const manageMembershipHref = '/api/app';
 
 const T = {
   da: {
-    hello: (name: string) => `Hej, ${name}`,
+    hello: (name: string) => `Velkommen, ${name}!`,
+    fallbackName: 'Fan',
+    memberSince: (year: number) => `Medlem siden ${year}`,
     tierLabel: { free: 'Gratis', plus: 'MyAB Plus', premium: 'MyAB Premium' },
     membershipTitle: 'Medlemskab',
     membershipManage: 'Administrer medlemskab',
@@ -39,7 +60,9 @@ const T = {
     profileManage: 'Administrer profil',
   },
   en: {
-    hello: (name: string) => `Hi, ${name}`,
+    hello: (name: string) => `Welcome, ${name}!`,
+    fallbackName: 'Fan',
+    memberSince: (year: number) => `Member since ${year}`,
     tierLabel: { free: 'Free', plus: 'MyAB Plus', premium: 'MyAB Premium' },
     membershipTitle: 'Membership',
     membershipManage: 'Manage membership',
@@ -66,8 +89,9 @@ const ordersConfigured = Boolean(import.meta.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN)
       {T.tierLabel[tier]}
     </p>
     <h1 class="font-black text-[#111]" style="font-size:clamp(1.75rem,3.5vw,2.5rem);letter-spacing:-0.03em">
-      {T.hello(user?.name || user?.email || '')}
+      {T.hello(firstName || T.fallbackName)}
     </h1>
+    {memberSinceYear && <p class="mt-2 text-sm text-[#666]">{T.memberSince(memberSinceYear)}</p>}
   </div>
 </section>
 
@@ -88,13 +112,13 @@ const ordersConfigured = Boolean(import.meta.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN)
     </div>
 
     <!-- My Tickets -->
-    <div class="bg-white border border-[#E5E7EB] p-6 flex flex-col">
+    <div id="tickets" class="bg-white border border-[#E5E7EB] p-6 flex flex-col scroll-mt-[calc(var(--nav-height,92px)+24px)]">
       <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ticketsTitle}</p>
       <p class="text-sm text-[#666]">{T.ticketsComingSoon}</p>
     </div>
 
     <!-- My Orders -->
-    <div class="bg-white border border-[#E5E7EB] p-6 flex flex-col sm:col-span-2 lg:col-span-1">
+    <div id="orders" class="bg-white border border-[#E5E7EB] p-6 flex flex-col sm:col-span-2 lg:col-span-1 scroll-mt-[calc(var(--nav-height,92px)+24px)]">
       <p class="font-black text-[0.65rem] uppercase tracking-[0.14em] text-ab-green mb-3">{T.ordersTitle}</p>
       {!ordersConfigured ? (
         <p class="text-sm text-[#666]">{T.ordersNotConfigured}</p>
