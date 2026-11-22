@@ -1,9 +1,12 @@
 ---
-// Renders one ABTV video or playlist, gated by MyAB tier. Deliberately NOT
-// built on MemberGate or ConsentGatedIframe's locked-state behavior:
-// ConsentGatedIframe stashes the real embed URL in a `data-src` attribute
-// regardless of consent state (fine for its actual purpose — there's no
-// secrecy requirement, just "don't auto-load until consent"), and
+// Renders one ABTV video or playlist, gated by MyAB tier, as a YouTube-style
+// thumbnail card: a static thumbnail with a play button, which swaps for the
+// real embed on click, rather than pre-loading every embed on page load.
+//
+// Deliberately NOT built on MemberGate or ConsentGatedIframe's locked-state
+// behavior: ConsentGatedIframe stashes the real embed URL in a `data-src`
+// attribute regardless of consent state (fine for its actual purpose — there's
+// no secrecy requirement, just "don't auto-load until consent"), and
 // MemberGate's own docs warn its blur-slot approach ships the full gated
 // markup either way. Here the tier check happens server-side *before*
 // deciding what to render at all — a locked video never has its real
@@ -34,6 +37,7 @@ const COPY = {
   da: {
     plus: 'MyAB Plus',
     premium: 'MyAB Premium',
+    playlist: 'Playliste',
     loggedOutTitle: (tier: string) => `Kun for ${tier}-medlemmer`,
     loggedOutCta: 'Log ind',
     upgradeTitle: (tier: string) => `Opgrader til ${tier}`,
@@ -42,6 +46,7 @@ const COPY = {
   en: {
     plus: 'MyAB Plus',
     premium: 'MyAB Premium',
+    playlist: 'Playlist',
     loggedOutTitle: (tier: string) => `${tier} members only`,
     loggedOutCta: 'Log in',
     upgradeTitle: (tier: string) => `Upgrade to ${tier}`,
@@ -51,49 +56,90 @@ const COPY = {
 
 const t = COPY[locale ?? 'da'];
 const tierLabel = video.requiredTier === 'premium' ? t.premium : t.plus;
+const embedUrl = video.isPlaylist
+  ? `https://www.youtube.com/embed/videoseries?list=${video.youtubeId}`
+  : `https://www.youtube.com/embed/${video.youtubeId}`;
 ---
 
-<div>
-  <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">{caption}</p>
+<div class="abtv-card">
   {unlocked ? (
-    video.isPlaylist ? (
-      <ConsentGatedIframe
-        src={`https://www.youtube.com/embed/videoseries?list=${video.youtubeId}`}
-        title={caption}
-        locale={locale}
-      />
-    ) : (
-      <ConsentGatedIframe
-        src={`https://www.youtube.com/embed/${video.youtubeId}`}
-        title={caption}
-        locale={locale}
-      />
-    )
+    <>
+      <button
+        type="button"
+        class="abtv-play-btn group relative block w-full aspect-video overflow-hidden rounded-xl bg-[#111]"
+        aria-label={caption}
+      >
+        {!video.isPlaylist && (
+          <img
+            src={youTubeThumbnailUrl(video.youtubeId)}
+            alt={caption}
+            class="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
+        )}
+        {video.isPlaylist && (
+          <span class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-black">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="1"/><path d="M21 8v8M17 9v6"/></svg>
+          </span>
+        )}
+        <span class="absolute inset-0 bg-black/20 group-hover:bg-black/35 transition-colors"></span>
+        <span class="absolute inset-0 flex items-center justify-center">
+          <span class="flex size-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-105">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#111" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </span>
+        </span>
+        {video.isPlaylist && (
+          <span class="absolute bottom-2 right-2 rounded bg-black/75 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+            {t.playlist}
+          </span>
+        )}
+      </button>
+      <div class="abtv-embed hidden">
+        <ConsentGatedIframe src={embedUrl} title={caption} locale={locale} />
+      </div>
+    </>
   ) : (
-    <div class="relative w-full rounded-lg overflow-hidden bg-black" style="aspect-ratio:16/9;">
+    <a
+      href={isLoggedIn ? myabUrl : `${loginUrl}?redirect=${redirectParam}`}
+      class="group relative block w-full aspect-video overflow-hidden rounded-xl bg-[#111] no-underline"
+    >
       {!video.isPlaylist && (
         <img
           src={youTubeThumbnailUrl(video.youtubeId)}
           alt={caption}
-          class="absolute inset-0 w-full h-full object-cover opacity-50"
+          class="absolute inset-0 w-full h-full object-cover opacity-40"
           loading="lazy"
         />
       )}
-      <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center bg-black/60">
-        <span class="inline-flex size-10 items-center justify-center rounded-full bg-ab-green">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center bg-black/55">
+        <span class="inline-flex size-9 items-center justify-center rounded-full bg-ab-green">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </span>
-        <p class="text-xs font-black uppercase tracking-widest text-ab-gold">{tierLabel}</p>
-        <h3 class="text-base font-black text-white">
+        <p class="text-[0.65rem] font-black uppercase tracking-widest text-ab-gold">{tierLabel}</p>
+        <p class="text-xs font-bold text-white leading-snug">
           {isLoggedIn ? t.upgradeTitle(tierLabel) : t.loggedOutTitle(tierLabel)}
-        </h3>
-        <a
-          href={isLoggedIn ? myabUrl : `${loginUrl}?redirect=${redirectParam}`}
-          class="inline-flex items-center justify-center rounded bg-ab-green px-5 py-2.5 text-sm font-black text-white no-underline transition-colors hover:bg-ab-green/90"
-        >
-          {isLoggedIn ? t.upgradeCta : t.loggedOutCta}
-        </a>
+        </p>
       </div>
-    </div>
+    </a>
+  )}
+  <p class="mt-3 text-sm font-bold text-[#111] leading-snug line-clamp-2">{caption}</p>
+  {!unlocked && (
+    <p class="mt-0.5 text-xs font-semibold text-ab-gold">
+      {isLoggedIn ? t.upgradeCta : t.loggedOutCta}
+    </p>
   )}
 </div>
+
+<script>
+  // Event delegation at the document level — one listener covers every
+  // .abtv-play-btn on the page regardless of how many VideoCard instances
+  // render, and Astro dedupes this script to a single inclusion either way.
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.abtv-play-btn');
+    if (!btn) return;
+    const embed = btn.parentElement?.querySelector<HTMLElement>('.abtv-embed');
+    if (!embed) return;
+    embed.classList.remove('hidden');
+    btn.remove();
+  });
+</script>
