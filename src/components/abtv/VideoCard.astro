@@ -1,17 +1,13 @@
 ---
 // Renders one ABTV video or playlist, gated by MyAB tier, as a YouTube-style
-// thumbnail card: a static thumbnail with a play button, which swaps for the
-// real embed on click, rather than pre-loading every embed on page load.
+// thumbnail card linking to its own watch page (src/pages/abtv/[documentId].astro)
+// — matching how youtube.com itself behaves, a grid thumbnail always
+// navigates rather than expanding inline.
 //
-// Deliberately NOT built on MemberGate or ConsentGatedIframe's locked-state
-// behavior: ConsentGatedIframe stashes the real embed URL in a `data-src`
-// attribute regardless of consent state (fine for its actual purpose — there's
-// no secrecy requirement, just "don't auto-load until consent"), and
-// MemberGate's own docs warn its blur-slot approach ships the full gated
-// markup either way. Here the tier check happens server-side *before*
-// deciding what to render at all — a locked video never has its real
-// youtubeId/embed URL anywhere in the response HTML, only a static thumbnail.
-import ConsentGatedIframe from '@/components/ConsentGatedIframe.astro';
+// The tier check happens server-side *before* deciding what to render at
+// all: a locked video's link goes to login/upgrade, never to its own watch
+// page, so its real youtubeId is never reachable by a visitor who shouldn't
+// see it.
 import { hasTier } from '@/lib/membership';
 import { youTubeThumbnailUrl } from '@/lib/video';
 import type { StrapiAbtvVideo } from '@/lib/strapi/client';
@@ -31,6 +27,7 @@ const caption = locale === 'en' ? video.captionEn : video.captionDa;
 
 const loginUrl = locale === 'en' ? '/en/account' : '/konto';
 const myabUrl = locale === 'en' ? '/en/myab' : '/myab';
+const watchUrl = `${locale === 'en' ? '/en/abtv' : '/abtv'}/${video.documentId}`;
 const redirectParam = encodeURIComponent(Astro.url.pathname);
 
 const COPY = {
@@ -56,48 +53,36 @@ const COPY = {
 
 const t = COPY[locale ?? 'da'];
 const tierLabel = video.requiredTier === 'premium' ? t.premium : t.plus;
-const embedUrl = video.isPlaylist
-  ? `https://www.youtube.com/embed/videoseries?list=${video.youtubeId}`
-  : `https://www.youtube.com/embed/${video.youtubeId}`;
 ---
 
 <div class="abtv-card">
   {unlocked ? (
-    <>
-      <button
-        type="button"
-        class="abtv-play-btn group relative block w-full aspect-video overflow-hidden rounded-xl bg-[#111]"
-        aria-label={caption}
-      >
-        {!video.isPlaylist && (
-          <img
-            src={youTubeThumbnailUrl(video.youtubeId)}
-            alt={caption}
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-        )}
-        {video.isPlaylist && (
-          <span class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-black">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="1"/><path d="M21 8v8M17 9v6"/></svg>
-          </span>
-        )}
-        <span class="absolute inset-0 bg-black/20 group-hover:bg-black/35 transition-colors"></span>
-        <span class="absolute inset-0 flex items-center justify-center">
-          <span class="flex size-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-105">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#111" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-          </span>
+    <a href={watchUrl} class="group relative block w-full aspect-video overflow-hidden rounded-xl bg-[#111] no-underline" aria-label={caption}>
+      {!video.isPlaylist && (
+        <img
+          src={youTubeThumbnailUrl(video.youtubeId)}
+          alt={caption}
+          class="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      )}
+      {video.isPlaylist && (
+        <span class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-black">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="1"/><path d="M21 8v8M17 9v6"/></svg>
         </span>
-        {video.isPlaylist && (
-          <span class="absolute bottom-2 right-2 rounded bg-black/75 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
-            {t.playlist}
-          </span>
-        )}
-      </button>
-      <div class="abtv-embed hidden">
-        <ConsentGatedIframe src={embedUrl} title={caption} locale={locale} />
-      </div>
-    </>
+      )}
+      <span class="absolute inset-0 bg-black/20 group-hover:bg-black/35 transition-colors"></span>
+      <span class="absolute inset-0 flex items-center justify-center">
+        <span class="flex size-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-105">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#111" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        </span>
+      </span>
+      {video.isPlaylist && (
+        <span class="absolute bottom-2 right-2 rounded bg-black/75 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+          {t.playlist}
+        </span>
+      )}
+    </a>
   ) : (
     <a
       href={isLoggedIn ? myabUrl : `${loginUrl}?redirect=${redirectParam}`}
@@ -129,17 +114,3 @@ const embedUrl = video.isPlaylist
     </p>
   )}
 </div>
-
-<script>
-  // Event delegation at the document level — one listener covers every
-  // .abtv-play-btn on the page regardless of how many VideoCard instances
-  // render, and Astro dedupes this script to a single inclusion either way.
-  document.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest('.abtv-play-btn');
-    if (!btn) return;
-    const embed = btn.parentElement?.querySelector<HTMLElement>('.abtv-embed');
-    if (!embed) return;
-    embed.classList.remove('hidden');
-    btn.remove();
-  });
-</script>

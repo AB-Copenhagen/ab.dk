@@ -144,7 +144,13 @@ export function youTubeVideoSchema(
 ) {
   const match = embed.embedCode.match(YOUTUBE_ID_RE);
   const videoId = match?.[1] ?? match?.[2];
-  if (!videoId) return null;
+  // A playlist embed (`embed/videoseries?list=...`) matches this regex too —
+  // "videoseries" happens to be exactly 11 characters, the same length as a
+  // real video ID — but a VideoObject describes a single video, not a
+  // playlist, and building one here would carry a bogus thumbnail/embedUrl
+  // with the real `?list=` id silently dropped. No correct VideoObject
+  // exists for a playlist, so this returns null like any other non-match.
+  if (!videoId || videoId === 'videoseries') return null;
 
   const name = embed.caption ?? 'AB 1889 video';
   return {
