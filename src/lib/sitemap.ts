@@ -38,7 +38,7 @@ const STATIC_ROUTES: [string, string][] = [
   ['/products', '/en/products'],
   ['/kampdag', '/en/matchday'],
   ['/myab', '/en/myab'],
-  ['/abtv', '/en/abtv'],
+  ['/abtv/browse', '/en/abtv/browse'],
   ['/privatlivspolitik', '/en/privacy-policy'],
   ['/returpolitik', '/en/refund-and-returns-policy'],
 ];
