@@ -1,7 +1,41 @@
 ---
 import Base from '@/layouts/Base.astro';
-import ConsentGatedIframe from '@/components/ConsentGatedIframe.astro';
+import VideoCard from '@/components/abtv/VideoCard.astro';
+import { fetchAbtvVideos, type StrapiAbtvVideo } from '@/lib/strapi/client';
+import { itemListSchema, youTubeVideoSchema } from '@/lib/structured-data';
 export const prerender = false;
+
+const videos = await fetchAbtvVideos();
+
+const bySection = (section: StrapiAbtvVideo['section']) =>
+  videos.filter((v) => v.section === section);
+
+const SECTIONS: { key: StrapiAbtvVideo['section']; heading: string }[] = [
+  { key: 'trending', heading: 'Nyt & Trending' },
+  { key: 'season', heading: 'Genoplev sæsonen' },
+  { key: 'behind_the_scenes', heading: 'Bag om kulisserne' },
+];
+
+// Only publicly-accessible videos are discoverable here — a locked video's
+// real embed never reaches the page (see VideoCard.astro), so it's left out
+// of both the ItemList and the per-video VideoObject entries rather than
+// advertising a URL that isn't actually servable to an anonymous crawler.
+const publicVideos = videos.filter((v) => v.requiredTier === 'free');
+const videoSchemas = publicVideos
+  .map((v) =>
+    youTubeVideoSchema(
+      {
+        embedCode: v.isPlaylist
+          ? `https://www.youtube.com/embed/videoseries?list=${v.youtubeId}`
+          : `https://www.youtube.com/embed/${v.youtubeId}`,
+        caption: v.captionDa,
+      },
+      v.uploadDate ?? new Date().toISOString()
+    )
+  )
+  .filter((schema): schema is NonNullable<typeof schema> => schema !== null);
+
+const abtvStructuredData = [itemListSchema('ABTV', videoSchemas), ...videoSchemas];
 ---
 
 <Base
@@ -10,6 +44,7 @@ export const prerender = false;
   description="Stream match highlights, recaps and exclusive player interviews on ABTV — Akademisk Boldklub's official video channel."
   ogTitle="ABTV – AB's Official Video Hub"
   ogDescription="Catch every goal, recap and behind-the-scenes moment from Akademisk Boldklub on ABTV."
+  structuredData={abtvStructuredData}
 >
 
   <!-- ── Hero ──────────────────────────────────────────────────────── -->
@@ -28,105 +63,25 @@ export const prerender = false;
     </div>
   </section>
 
-  <!-- ── Nyt & Trending ────────────────────────────────────────────── -->
-  <section class="bg-[#111] text-white py-14 px-8 lg:px-16">
-    <div class="max-w-7xl mx-auto">
-      <h2 class="font-black tracking-[-0.04em] normal-case mb-10"
-          style="font-size: clamp(2rem, 5vw, 3.5rem);">
-        Nyt &amp; Trending
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Boldcast</p>
-          <ConsentGatedIframe
-            src="https://www.youtube.com/embed/videoseries?si=1byEawIDTnPjup4y&list=PLI_1pixkexw71QCbHe4gxmj_CItaFUQCO"
-            title="Boldcast playlist"
-            locale="da"
-          />
+  {SECTIONS.map(({ key, heading }, i) => {
+    const sectionVideos = bySection(key);
+    if (sectionVideos.length === 0) return null;
+    return (
+      <section class:list={['text-white py-14 px-8 lg:px-16', i % 2 === 0 ? 'bg-[#111]' : 'bg-[#0d0d0d]']}>
+        <div class="max-w-7xl mx-auto">
+          <h2 class="font-black tracking-[-0.04em] normal-case mb-10"
+              style="font-size: clamp(2rem, 5vw, 3.5rem);">
+            {heading}
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {sectionVideos.map((video) => (
+              <VideoCard video={video} locale="da" />
+            ))}
+          </div>
         </div>
-        <div>
-          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">AB Squad Stories</p>
-          <ConsentGatedIframe
-            src="https://www.youtube.com/embed/videoseries?si=3o6AO_Sadv4-9gjD&list=PLI_1pixkexw7XCJKP94KNezrHAPG5dai_"
-            title="AB Squad Stories playlist"
-            locale="da"
-          />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Genoplev sæsonen ───────────────────────────────────────────── -->
-  <section class="bg-[#0d0d0d] text-white py-14 px-8 lg:px-16">
-    <div class="max-w-7xl mx-auto">
-      <h2 class="font-black tracking-[-0.04em] normal-case mb-10"
-          style="font-size: clamp(2rem, 5vw, 3.5rem);">
-        Genoplev sæsonen
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Inside AB's Historic Season</p>
-          <ConsentGatedIframe
-            src="https://www.youtube.com/embed/RBpLV4HiS9E?si=QHAV1231whvmKTYP"
-            title="Inside AB's historic season"
-            locale="da"
-          />
-        </div>
-        <div>
-          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">A Season to Remember</p>
-          <ConsentGatedIframe
-            src="https://www.youtube.com/embed/YroeMSqcppo?si=gTONbkU1xEVdwX2e"
-            title="A season to remember"
-            locale="da"
-          />
-        </div>
-        <div>
-          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Nummer Et</p>
-          <ConsentGatedIframe
-            src="https://www.youtube.com/embed/vsXpLavqXGQ?si=IBXGgl-FNwmwXafl"
-            title="Nummer Et"
-            locale="da"
-          />
-        </div>
-        <div>
-          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">We Know What We're Playing For</p>
-          <ConsentGatedIframe
-            src="https://www.youtube.com/embed/lCwpCNwcNis?si=rHy8q6ItynC36u4-"
-            title="We know what we're playing for"
-            locale="da"
-          />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Bag om kulisserne ─────────────────────────────────────────── -->
-  <section class="bg-[#111] text-white py-14 px-8 lg:px-16">
-    <div class="max-w-7xl mx-auto">
-      <h2 class="font-black tracking-[-0.04em] normal-case mb-10"
-          style="font-size: clamp(2rem, 5vw, 3.5rem);">
-        Bag om kulisserne
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Interviews</p>
-          <ConsentGatedIframe
-            src="https://www.youtube.com/embed/videoseries?si=4Sab20h5PiUk8oO7&list=PLI_1pixkexw7_joKCyMFcAWOTE-mEEclp"
-            title="Interviews playlist"
-            locale="da"
-          />
-        </div>
-        <div>
-          <p class="text-white/50 text-xs font-black tracking-[0.12em] uppercase mb-3">Quick Fire</p>
-          <ConsentGatedIframe
-            src="https://www.youtube.com/embed/videoseries?si=d3bf2RGYgXvcU837&list=PLI_1pixkexw7QHBoCnYbf1QRv8LaaBDtB"
-            title="Quick fire playlist"
-            locale="da"
-          />
-        </div>
-      </div>
-    </div>
-  </section>
+      </section>
+    );
+  })}
 
   <!-- ── YouTube CTA ───────────────────────────────────────────────── -->
   <section class="bg-ab-green text-white py-14 px-8 lg:px-16">

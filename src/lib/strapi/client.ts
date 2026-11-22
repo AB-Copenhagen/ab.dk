@@ -2,6 +2,7 @@ import { strapi } from '@strapi/client';
 import { cache } from '@/lib/strapi-revalidate';
 import { isPreviewEnabled } from '@/lib/preview-context';
 import { normalizeApostrophes } from '@/lib/utils';
+import type { MembershipTier } from '@/lib/membership';
 import {
   getPlayerPhotoUrl,
   getSIPlayerPhotoUrl,
@@ -773,6 +774,29 @@ export async function fetchVenuesByOpponentTeamId(): Promise<Map<number, StrapiV
     pagination: { pageSize: 100 },
   }).catch(() => []);
   return new Map(results.map((venue) => [venue.opponentTeamId, venue]));
+}
+
+// ── ABTV videos ────────────────────────────────────────────────────────────────
+
+export interface StrapiAbtvVideo {
+  captionDa: string;
+  captionEn: string;
+  youtubeId: string;
+  isPlaylist: boolean;
+  section: 'trending' | 'season' | 'behind_the_scenes';
+  requiredTier: MembershipTier;
+  uploadDate?: string;
+  sortOrder: number;
+}
+
+/** Fetch all published, non-hidden ABTV videos, ordered by section then sortOrder. */
+export async function fetchAbtvVideos(): Promise<StrapiAbtvVideo[]> {
+  return fetchCollectionType<StrapiAbtvVideo[]>('abtv-videos', {
+    filters: { hidden: { $eq: false } },
+    sort: ['section:asc', 'sortOrder:asc'],
+    status: 'published',
+    pagination: { pageSize: 100 },
+  }).catch(() => []);
 }
 
 // ── Hero slider ────────────────────────────────────────────────────────────────

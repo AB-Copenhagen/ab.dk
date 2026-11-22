@@ -19,6 +19,32 @@ export function breadcrumbSchema(items: BreadcrumbItem[]) {
   };
 }
 
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+/**
+ * Builds a schema.org FAQPage from question/answer pairs — lets AI answer
+ * engines and search rich results lift the Q&A straight out of structured
+ * data instead of having to parse it out of prose. `answer` should be plain
+ * text (no HTML markup).
+ */
+export function faqPageSchema(items: FaqItem[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+}
+
 /**
  * Builds a schema.org ItemList for a listing page (squad, fixtures, partners)
  * out of already-built schema.org objects (each with at least `@type`, `name`
@@ -104,10 +130,17 @@ const YOUTUBE_ID_RE =
  * video ID can be found in its embed code. `approximateUploadDate` is a
  * best-effort fallback (e.g. the match date) — the CMS doesn't store the
  * video's real publish date.
+ *
+ * `isAccessibleForFree` defaults to true (the common case — a public embed).
+ * Pass `false` for a membership-gated video: it's a `CreativeWork`-level
+ * property that `VideoObject` inherits, and is Google's documented signal for
+ * paywalled content — no `hasPart`/`cssSelector` needed, since that pattern
+ * is for a *partial*-page text paywall, not a video that's gated outright.
  */
 export function youTubeVideoSchema(
   embed: { embedCode: string; caption?: string },
-  approximateUploadDate: string
+  approximateUploadDate: string,
+  isAccessibleForFree = true
 ) {
   const match = embed.embedCode.match(YOUTUBE_ID_RE);
   const videoId = match?.[1] ?? match?.[2];
@@ -122,5 +155,6 @@ export function youTubeVideoSchema(
     thumbnailUrl: [`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`],
     uploadDate: approximateUploadDate,
     embedUrl: `https://www.youtube.com/embed/${videoId}`,
+    ...(isAccessibleForFree ? {} : { isAccessibleForFree: false }),
   };
 }

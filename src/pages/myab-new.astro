@@ -4,6 +4,7 @@ import TierTableCell from '@/components/myab/TierTableCell.astro';
 import Img from '@/components/Img.astro';
 import Base from '@/layouts/Base.astro';
 import heroImage from '@/assets/images/pro-OPKh7A3o.webp';
+import { faqPageSchema, type FaqItem } from '@/lib/structured-data';
 
 export const prerender = false;
 
@@ -25,11 +26,6 @@ interface TableRow {
   plus: CellValue;
   premium: CellValue;
   footnote?: '*' | '**';
-}
-
-interface FaqItem {
-  question: string;
-  answer: string;
 }
 
 const tiers: TierPitch[] = [
@@ -140,7 +136,7 @@ const membershipStructuredData = {
   locale="da"
   title="MyAB Medlemskab | AB 1889"
   description="Bliv en del af Team AB med MyAB — vælg Free, Plus eller Premium og få kampbilletter, eksklusivt indhold og medlemsfordele i AB's fan-app."
-  structuredData={membershipStructuredData}
+  structuredData={[membershipStructuredData, faqPageSchema(faqItems)]}
   noindex>
 
   <!-- Hero -->
@@ -151,6 +147,8 @@ const membershipStructuredData = {
       widths={[640, 1024, 1600, 2400]}
       sizes="100vw"
       class="absolute inset-0 w-full h-full object-cover object-center brightness-[0.45] saturate-[0.85]"
+      loading="eager"
+      fetchpriority="high"
     />
     <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.75)_0%,rgba(0,0,0,0.25)_55%,rgba(0,0,0,0.35)_100%)]"></div>
     <div class="relative h-full flex flex-col justify-end px-8 lg:px-16 pb-14 max-w-7xl mx-auto w-full">
