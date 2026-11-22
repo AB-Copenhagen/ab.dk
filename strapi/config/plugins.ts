@@ -44,8 +44,12 @@ export default ({ env }: { env: (key: string, fallback?: string) => string }) =>
       },
     },
   },
-  // Dev-only: exposes Strapi content types/services over MCP for AI assistants.
-  // Explicitly disabled in config/env/production/plugins.ts — never enable in production.
+  // Exposes Strapi content types/services over MCP for AI assistants. The
+  // plugin's own routes run with Strapi auth disabled and never check the
+  // Authorization header at all — its only real access control is the
+  // `allowedIPs` policy below, which fails OPEN (allows every IP) if left
+  // unset. config/env/production/plugins.ts locks this down to specific
+  // IPs; never enable in production without allowedIPs set there too.
   mcp: {
     enabled: true,
     config: {
