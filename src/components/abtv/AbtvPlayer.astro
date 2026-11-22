@@ -123,10 +123,14 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
       placeholder?.classList.add('hidden');
       loadYouTubeApiOnce(() => {
         if (!window.YT) return;
-        new window.YT.Player(uid as string, {
+        // Build the options object so `videoId` is entirely ABSENT for a
+        // playlist, not present-with-value-undefined — `{ videoId: undefined }`
+        // still has the key, and the IFrame API appears to key off presence
+        // rather than truthiness, silently failing to load anything for
+        // every playlist entry when the key is there but empty.
+        const playerOptions: Record<string, unknown> = {
           width: '100%',
           height: '100%',
-          videoId: isPlaylist ? undefined : videoId,
           playerVars: isPlaylist ? { listType: 'playlist', list: videoId } : {},
           events: {
             onReady: fillContainer,
@@ -137,7 +141,9 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
               }
             },
           },
-        });
+        };
+        if (!isPlaylist) playerOptions.videoId = videoId;
+        new window.YT.Player(uid as string, playerOptions);
       });
     }
 
