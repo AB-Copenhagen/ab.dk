@@ -94,7 +94,7 @@ const redirectParam = encodeURIComponent(Astro.url.pathname);
           )}
           <h1 class="mt-4 font-black text-[#111] text-xl md:text-2xl tracking-[-0.02em]">{caption}</h1>
         </div>
-        <PlaylistRail videos={sectionVideos} locale="da" />
+        <PlaylistRail currentVideo={video} allVideos={allVideos} locale="da" />
       </div>
     </div>
   </div>
