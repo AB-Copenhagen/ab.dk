@@ -36,7 +36,7 @@ const videoSchema = youTubeVideoSchema(
 );
 
 const abtvBreadcrumbs = breadcrumbSchema([
-  { name: 'ABTV', url: 'https://ab.dk/en/abtv' },
+  { name: 'ABTV', url: 'https://ab.dk/en/abtv/browse' },
   { name: caption, url: pageUrl },
 ]);
 
@@ -63,7 +63,7 @@ const redirectParam = encodeURIComponent(Astro.url.pathname);
 >
   <div class="bg-white px-8 lg:px-16 py-8">
     <div class="max-w-7xl mx-auto">
-      <a href="/en/abtv" class="inline-flex items-center gap-1 text-sm font-bold text-[#6B7280] hover:text-ab-green transition-colors mb-4">
+      <a href="/en/abtv/browse" class="inline-flex items-center gap-1 text-sm font-bold text-[#6B7280] hover:text-ab-green transition-colors mb-4">
         ← ABTV
       </a>
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
