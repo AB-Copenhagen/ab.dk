@@ -28,9 +28,17 @@ export function normalizeApostrophes(str: string): string {
     .replace(/[‘’ʼ]/g, "'");
 }
 
+// Cuts at the last whole word before `length` rather than a blind substring,
+// so a meta description never ends mid-word/mid-number (e.g. "frem til juni
+// 2...") — that broken look shows up verbatim in both SERP snippets and
+// anything an AI engine quotes as the page's summary.
 export const truncate = (text: string | null | undefined, length: number) => {
   if (!text) return '';
-  return text.length > length ? `${text.substring(0, length)}...` : text;
+  if (text.length <= length) return text;
+  const cut = text.slice(0, length);
+  const lastSpace = cut.lastIndexOf(' ');
+  const trimmed = (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trimEnd();
+  return `${trimmed}...`;
 };
 
 /** Returns a new array with `arr`'s items in random order (Fisher–Yates). */
