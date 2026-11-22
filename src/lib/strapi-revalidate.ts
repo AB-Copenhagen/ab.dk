@@ -60,6 +60,7 @@ const TAG_MAP: Record<string, string[]> = {
   'api::leadership-member.leadership-member': ['leadership-members'],
   'api::investor.investor': ['investors'],
   'api::staff.staff': ['staff-members'],
+  'api::abtv-video.abtv-video': ['abtv-videos'],
 };
 
 // Webhook handler — wired up but optional. Configure a Strapi webhook entry
