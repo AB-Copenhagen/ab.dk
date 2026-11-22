@@ -267,3 +267,41 @@ address.
 > Restart Strapi after the first deploy so it picks up the new content type, and grant the
 > Public role `find`/`findOne` permissions for Venue in Strapi admin (Settings → Users &
 > Permissions → Roles → Public) — new content types aren't auto-granted public read access.
+
+## Managing ABTV videos (Strapi)
+
+The **ABTV Video** content type (`api::abtv-video.abtv-video`) drives `/abtv` and
+`/en/abtv`'s video grid. Not localized — captions are plain `captionDa`/`captionEn`
+fields on a single row, not separate per-locale entries, since most captions (show names,
+English documentary titles) are identical across both languages anyway; fill in both
+fields with the same text when no real translation is needed.
+
+| Field          | Description                                                                                          |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| `captionDa`    | Caption shown above the embed on the Danish page                                                     |
+| `captionEn`    | Caption shown above the embed on the English page                                                    |
+| `youtubeId`    | The 11-char video ID, or the playlist ID when `isPlaylist` is set                                    |
+| `isPlaylist`   | Whether `youtubeId` is a playlist ID (`embed/videoseries?list=...`) vs a single video (`embed/{id}`) |
+| `section`      | Which page section it appears in: `trending` / `season` / `behind_the_scenes`                        |
+| `requiredTier` | Membership tier needed to watch: `free` / `plus` / `premium` — defaults to `free`                    |
+| `uploadDate`   | Approximate publish date, feeds the video's `VideoObject.uploadDate`                                 |
+| `sortOrder`    | Ascending display order within its section                                                           |
+| `hidden`       | Remove the video from the page without deleting it                                                   |
+
+**Gating is real, not cosmetic, only for content that isn't already public elsewhere.**
+All 8 videos migrated from the old hardcoded page are public YouTube channel content, so
+they're seeded as `requiredTier: free` — setting a public video's tier above `free` would
+just hide something anyone can already find on YouTube. Reserve `plus`/`premium` for
+videos that are genuinely unlisted/exclusive. A gated video's real `youtubeId`/embed URL
+is never rendered into the page's HTML for a visitor who doesn't meet the tier (see
+`src/components/abtv/VideoCard.astro`) — only a static thumbnail and an upgrade CTA are,
+and it's excluded from the page's `ItemList`/`VideoObject` structured data so it's never
+advertised as a URL an anonymous crawler could actually fetch.
+
+A one-off script (`scripts/seed-abtv-videos.mjs`) migrated the videos previously
+hardcoded in `src/pages/abtv.astro` into Strapi. New videos going forward are entered
+directly in Strapi admin.
+
+> Restart Strapi after the first deploy so it picks up the new content type, and grant the
+> Public role `find`/`findOne` permissions for ABTV Video in Strapi admin (Settings → Users
+> & Permissions → Roles → Public) — new content types aren't auto-granted public read access.

@@ -1,0 +1,53 @@
+{
+  "kind": "collectionType",
+  "collectionName": "abtv_videos",
+  "info": {
+    "singularName": "abtv-video",
+    "pluralName": "abtv-videos",
+    "displayName": "ABTV Video"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "captionDa": {
+      "type": "string",
+      "required": true
+    },
+    "captionEn": {
+      "type": "string",
+      "required": true
+    },
+    "youtubeId": {
+      "type": "string",
+      "required": true
+    },
+    "isPlaylist": {
+      "type": "boolean",
+      "default": false
+    },
+    "section": {
+      "type": "enumeration",
+      "enum": ["trending", "season", "behind_the_scenes"],
+      "required": true
+    },
+    "requiredTier": {
+      "type": "enumeration",
+      "enum": ["free", "plus", "premium"],
+      "default": "free",
+      "required": true
+    },
+    "uploadDate": {
+      "type": "date"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 0
+    },
+    "hidden": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
