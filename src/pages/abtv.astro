@@ -2,7 +2,8 @@
 import Base from '@/layouts/Base.astro';
 import VideoCard from '@/components/abtv/VideoCard.astro';
 import { fetchAbtvVideos, type StrapiAbtvVideo } from '@/lib/strapi/client';
-import { itemListSchema, youTubeVideoSchema } from '@/lib/structured-data';
+import { itemListSchema } from '@/lib/structured-data';
+import { youTubeThumbnailUrl } from '@/lib/video';
 export const prerender = false;
 
 const videos = await fetchAbtvVideos();
@@ -17,25 +18,21 @@ const SECTIONS: { key: StrapiAbtvVideo['section']; heading: string }[] = [
 ];
 
 // Only publicly-accessible videos are discoverable here — a locked video's
-// real embed never reaches the page (see VideoCard.astro), so it's left out
-// of both the ItemList and the per-video VideoObject entries rather than
-// advertising a URL that isn't actually servable to an anonymous crawler.
+// watch page renders an upsell panel instead of the real player, so it's
+// left out of the ItemList rather than advertising a URL whose content isn't
+// actually viewable by an anonymous crawler. Each item points at this
+// video's own watch page (src/pages/abtv/[documentId].astro), which carries
+// the full VideoObject schema for that specific video — this list stays
+// lightweight rather than duplicating that detail here.
 const publicVideos = videos.filter((v) => v.requiredTier === 'free');
-const videoSchemas = publicVideos
-  .map((v) =>
-    youTubeVideoSchema(
-      {
-        embedCode: v.isPlaylist
-          ? `https://www.youtube.com/embed/videoseries?list=${v.youtubeId}`
-          : `https://www.youtube.com/embed/${v.youtubeId}`,
-        caption: v.captionDa,
-      },
-      v.uploadDate ?? new Date().toISOString()
-    )
-  )
-  .filter((schema): schema is NonNullable<typeof schema> => schema !== null);
+const videoListItems = publicVideos.map((v) => ({
+  '@type': 'VideoObject',
+  name: v.captionDa,
+  url: `https://ab.dk/abtv/${v.documentId}`,
+  ...(v.isPlaylist ? {} : { thumbnailUrl: [youTubeThumbnailUrl(v.youtubeId)] }),
+}));
 
-const abtvStructuredData = [itemListSchema('ABTV', videoSchemas), ...videoSchemas];
+const abtvStructuredData = [itemListSchema('ABTV', videoListItems)];
 ---
 
 <Base

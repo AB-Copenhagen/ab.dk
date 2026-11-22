@@ -1,0 +1,129 @@
+---
+// The ABTV watch page's main player. Unlike ConsentGatedIframe (a plain
+// iframe whose `src` is swapped in once consent is granted), this uses the
+// YouTube IFrame Player API so autoplay-next can react to the real ENDED
+// player event — a bare iframe has no event hook for "this video finished".
+import type { StrapiAbtvVideo } from '@/lib/strapi/client';
+import type { Locale } from '@/lib/i18n';
+
+interface Props {
+  video: StrapiAbtvVideo;
+  locale?: Locale;
+  /** Where to navigate on ENDED when autoplay is on. null disables autoplay-next entirely (e.g. only one video in the section). */
+  nextVideoUrl: string | null;
+}
+
+const { video, locale = 'da', nextVideoUrl } = Astro.props;
+
+const t = {
+  da: {
+    message: 'Denne video er indlejret fra YouTube og kræver samtykke til markedsførings- og mediecookies.',
+    enable: 'Aktiver og se video',
+  },
+  en: {
+    message: 'This video is embedded from YouTube and requires consent for marketing/media cookies.',
+    enable: 'Enable and watch',
+  },
+}[locale];
+
+const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  class="abtv-player relative w-full rounded-lg overflow-hidden bg-black"
+  style="aspect-ratio:16/9;"
+  data-uid={uid}
+  data-video-id={video.youtubeId}
+  data-is-playlist={video.isPlaylist ? '1' : ''}
+  data-next-url={nextVideoUrl ?? ''}
+>
+  <div class="abtv-player-placeholder absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center bg-[#111]">
+    <p class="text-white/70 text-sm max-w-[40ch]">{t.message}</p>
+    <button
+      type="button"
+      class="abtv-player-enable font-black text-sm px-5 py-2.5 bg-ab-green text-white tracking-[-0.01em] hover:opacity-90 transition-opacity"
+    >
+      {t.enable}
+    </button>
+  </div>
+  <div id={uid} class="absolute inset-0 hidden"></div>
+</div>
+
+<script>
+  import { onConsentChange } from '@/lib/consent-gate-client';
+
+  declare global {
+    interface Window {
+      YT?: {
+        Player: new (el: string, opts: Record<string, unknown>) => unknown;
+        PlayerState: { ENDED: number };
+      };
+      onYouTubeIframeAPIReady?: () => void;
+    }
+  }
+
+  function loadYouTubeApiOnce(onReady: () => void) {
+    if (window.YT?.Player) {
+      onReady();
+      return;
+    }
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      previous?.();
+      onReady();
+    };
+    if (!document.getElementById('youtube-iframe-api')) {
+      const script = document.createElement('script');
+      script.id = 'youtube-iframe-api';
+      script.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(script);
+    }
+  }
+
+  function autoplayEnabled(): boolean {
+    try {
+      return localStorage.getItem('abtv-autoplay') !== 'false';
+    } catch {
+      return true;
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('.abtv-player').forEach((wrapper) => {
+    const uid = wrapper.dataset.uid;
+    const videoId = wrapper.dataset.videoId;
+    const isPlaylist = wrapper.dataset.isPlaylist === '1';
+    const nextUrl = wrapper.dataset.nextUrl || null;
+    if (!uid || !videoId) return;
+
+    const placeholder = wrapper.querySelector<HTMLElement>('.abtv-player-placeholder');
+    const enableBtn = wrapper.querySelector<HTMLButtonElement>('.abtv-player-enable');
+    const target = document.getElementById(uid);
+    if (!placeholder || !target) return;
+
+    function reveal() {
+      if (!target) return;
+      target.classList.remove('hidden');
+      placeholder?.classList.add('hidden');
+      loadYouTubeApiOnce(() => {
+        if (!window.YT) return;
+        new window.YT.Player(uid as string, {
+          videoId: isPlaylist ? undefined : videoId,
+          playerVars: isPlaylist ? { listType: 'playlist', list: videoId } : {},
+          events: {
+            onStateChange: (e: { data: number }) => {
+              if (!window.YT) return;
+              if (e.data === window.YT.PlayerState.ENDED && nextUrl && autoplayEnabled()) {
+                window.location.href = nextUrl;
+              }
+            },
+          },
+        });
+      });
+    }
+
+    onConsentChange('marketing', reveal);
+    enableBtn?.addEventListener('click', () => {
+      (window as unknown as { abOpenCookieSettings?: () => void }).abOpenCookieSettings?.();
+    });
+  });
+</script>

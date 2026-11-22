@@ -779,6 +779,8 @@ export async function fetchVenuesByOpponentTeamId(): Promise<Map<number, StrapiV
 // ── ABTV videos ────────────────────────────────────────────────────────────────
 
 export interface StrapiAbtvVideo {
+  id: number;
+  documentId: string;
   captionDa: string;
   captionEn: string;
   youtubeId: string;
@@ -797,6 +799,17 @@ export async function fetchAbtvVideos(): Promise<StrapiAbtvVideo[]> {
     status: 'published',
     pagination: { pageSize: 100 },
   }).catch(() => []);
+}
+
+/** Fetch a single ABTV video by its Strapi documentId, for the dedicated watch page. */
+export async function fetchAbtvVideoByDocumentId(
+  documentId: string
+): Promise<StrapiAbtvVideo | null> {
+  const results = await fetchCollectionType<StrapiAbtvVideo[]>('abtv-videos', {
+    filters: { documentId: { $eq: documentId }, hidden: { $eq: false } },
+    status: 'published',
+  }).catch(() => []);
+  return results[0] ?? null;
 }
 
 // ── Hero slider ────────────────────────────────────────────────────────────────
