@@ -62,6 +62,23 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
     }
   }
 
+  interface YTReadyEvent {
+    target: { getIframe: () => HTMLIFrameElement };
+  }
+
+  // YT.Player replaces the target element with its own <iframe>, sized by
+  // literal `width`/`height` HTML attributes (640x390 if unset) — the
+  // original div's `absolute inset-0` classes don't carry over to that new
+  // node, so without this the player renders as a small fixed-size box
+  // instead of filling the 16:9 wrapper. Force it to fill on ready.
+  function fillContainer(event: YTReadyEvent) {
+    const el = event.target.getIframe();
+    el.style.position = 'absolute';
+    el.style.inset = '0';
+    el.style.width = '100%';
+    el.style.height = '100%';
+  }
+
   function loadYouTubeApiOnce(onReady: () => void) {
     if (window.YT?.Player) {
       onReady();
@@ -107,9 +124,12 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
       loadYouTubeApiOnce(() => {
         if (!window.YT) return;
         new window.YT.Player(uid as string, {
+          width: '100%',
+          height: '100%',
           videoId: isPlaylist ? undefined : videoId,
           playerVars: isPlaylist ? { listType: 'playlist', list: videoId } : {},
           events: {
+            onReady: fillContainer,
             onStateChange: (e: { data: number }) => {
               if (!window.YT) return;
               if (e.data === window.YT.PlayerState.ENDED && nextUrl && autoplayEnabled()) {
