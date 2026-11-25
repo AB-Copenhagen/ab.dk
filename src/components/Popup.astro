@@ -10,6 +10,12 @@ interface Props {
 
 const { locale = 'da', popups } = Astro.props;
 
+// "/" and "/en" are each a locale's homepage, but under this site's i18n routing
+// (Danish unprefixed, English under /en/...) they're ALSO the path prefix for that
+// locale's entire site — so they can't use the generic prefix-matching rule below
+// without ending up matching every page in that locale, not just its homepage.
+const LOCALE_ROOTS = new Set(['/', '/en']);
+
 function matchesPath(pagePaths: string | undefined, pathname: string): boolean {
   const prefixes = (pagePaths ?? '')
     .split(',')
@@ -17,11 +23,9 @@ function matchesPath(pagePaths: string | undefined, pathname: string): boolean {
     .filter(Boolean);
   if (prefixes.length === 0) return true;
   return prefixes.some((prefix) => {
-    // "/" is every path's prefix, so it has to mean "the root page only" rather than
-    // prefix-matching — otherwise a "/" entry (e.g. targeting the Danish homepage)
-    // would match every page on the site. Non-root prefixes still need a trailing
-    // slash boundary so "/en" doesn't also match an unrelated "/english-..." path.
-    if (prefix === '/') return pathname === '/';
+    if (LOCALE_ROOTS.has(prefix)) return pathname === prefix;
+    // Non-root prefixes still need a trailing slash boundary so "/en" doesn't also
+    // match an unrelated "/english-..." path.
     return pathname === prefix || pathname.startsWith(`${prefix}/`);
   });
 }
