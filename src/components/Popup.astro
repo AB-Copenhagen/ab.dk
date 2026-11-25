@@ -1,0 +1,145 @@
+---
+import type { Locale } from '@/lib/i18n';
+import { translate } from '@/lib/i18n';
+import type { StrapiPopup } from '@/lib/strapi/client';
+
+interface Props {
+  locale?: Locale;
+  popups: StrapiPopup[];
+}
+
+const { locale = 'da', popups } = Astro.props;
+
+function matchesPath(pagePaths: string | undefined, pathname: string): boolean {
+  const prefixes = (pagePaths ?? '')
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (prefixes.length === 0) return true;
+  return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(prefix));
+}
+
+const now = Date.now();
+const pathname = Astro.url.pathname;
+
+// Picks the single best-matching popup for this page/date, by sortOrder — showing more
+// than one at once would just be two overlays stacked on top of each other, so editors
+// rely on sortOrder (and toggling isActive) rather than any server-side "only one at a
+// time" validation.
+const popup = popups
+  .filter((p) => {
+    if (p.startDate && new Date(p.startDate).getTime() > now) return false;
+    if (p.endDate && new Date(p.endDate).getTime() < now) return false;
+    return matchesPath(p.pagePaths, pathname);
+  })
+  .sort((a, b) => a.sortOrder - b.sortOrder)[0];
+---
+
+{popup && (
+  <div
+    id="ab-popup-overlay"
+    class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/60 p-5"
+    role="dialog"
+    aria-modal="true"
+    aria-label={popup.headline}
+    data-document-id={popup.documentId}
+    data-display-frequency={popup.displayFrequency}
+    data-frequency-days={popup.frequencyDays}
+  >
+    <div class="relative w-full max-w-md bg-white rounded-[12px] overflow-hidden shadow-2xl">
+      <button
+        type="button"
+        id="ab-popup-close"
+        aria-label={translate(locale, 'popupClose')}
+        class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      {popup.image && (
+        <img
+          src={popup.image.url}
+          alt=""
+          class="w-full h-44 object-cover"
+          width={popup.image.width}
+          height={popup.image.height}
+        />
+      )}
+
+      <div class="p-6">
+        <h2 class="font-black uppercase tracking-[-0.01em] text-xl text-[#111] mb-2">
+          {popup.headline}
+        </h2>
+        {popup.body && (
+          <p class="text-sm text-[#444] leading-relaxed mb-5 whitespace-pre-line">{popup.body}</p>
+        )}
+        {popup.ctaLabel && popup.ctaUrl && (
+          <a href={popup.ctaUrl} class={`btn btn-md ${popup.ctaVariant}`}>
+            {popup.ctaLabel}
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+<script>
+  const overlay = document.getElementById('ab-popup-overlay');
+  if (overlay) {
+    const documentId = overlay.dataset.documentId!;
+    const displayFrequency = overlay.dataset.displayFrequency as
+      | 'once_per_session'
+      | 'once_per_day'
+      | 'once_per_n_days'
+      | 'every_visit';
+    const frequencyDays = Number(overlay.dataset.frequencyDays) || 7;
+    const cookieName = `ab_popup_seen_${documentId}`;
+
+    function readCookie(name: string): string | undefined {
+      const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+      return match ? match[1] : undefined;
+    }
+
+    // Omitting max-age makes it a true session cookie (cleared when the browser fully
+    // closes, not just on tab close) — the correct cookie equivalent of "once per session".
+    function writeCookie(name: string, maxAgeSeconds: number | undefined) {
+      const maxAge = maxAgeSeconds != null ? `max-age=${maxAgeSeconds}; ` : '';
+      document.cookie = `${name}=1; path=/; ${maxAge}SameSite=Lax`;
+    }
+
+    function show() {
+      overlay!.classList.remove('hidden');
+      overlay!.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    function hide() {
+      overlay!.classList.add('hidden');
+      overlay!.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    const alreadySeen = Boolean(readCookie(cookieName));
+    if (displayFrequency === 'every_visit' || !alreadySeen) {
+      show();
+      // Stamped at impression time (not only on explicit dismissal), so a visitor who
+      // navigates away without closing it doesn't get it again every page load either.
+      if (displayFrequency === 'once_per_day') writeCookie(cookieName, 60 * 60 * 24);
+      else if (displayFrequency === 'once_per_n_days') writeCookie(cookieName, 60 * 60 * 24 * frequencyDays);
+      else if (displayFrequency === 'once_per_session') writeCookie(cookieName, undefined);
+    }
+
+    document.getElementById('ab-popup-close')?.addEventListener('click', hide);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) hide();
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hide();
+    });
+
+    // Exposed globally for QA/editors to re-trigger a popup without clearing cookies,
+    // mirroring window.abOpenCookieSettings in CookieConsentBanner.astro.
+    (window as unknown as { abOpenPopup: () => void }).abOpenPopup = show;
+  }
+</script>

@@ -309,6 +309,7 @@ export const t: Record<Locale, Record<string, string>> = {
     notFoundHome: 'Til forsiden',
     notFoundSitemap: 'Sitemap',
     notFoundLlms: 'Sideoversigt for AI-agenter (llms.txt)',
+    popupClose: 'Luk',
   },
   en: {
     home: 'Home',
@@ -457,6 +458,7 @@ export const t: Record<Locale, Record<string, string>> = {
     notFoundHome: 'Back to homepage',
     notFoundSitemap: 'Sitemap',
     notFoundLlms: 'AI-agent page index (llms.txt)',
+    popupClose: 'Close',
   },
 };
 

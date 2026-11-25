@@ -305,3 +305,44 @@ directly in Strapi admin.
 > Restart Strapi after the first deploy so it picks up the new content type, and grant the
 > Public role `find`/`findOne` permissions for ABTV Video in Strapi admin (Settings → Users
 > & Permissions → Roles → Public) — new content types aren't auto-granted public read access.
+
+## Managing popups (Strapi)
+
+The **Popup** content type (`api::popup.popup`) drives a sitewide modal for specials,
+offers, and featured content — mounted once in `src/layouts/Base.astro`, so it can appear
+over any page. Localized (da/en) like Hero Slide: non-localized fields (scheduling,
+targeting, frequency, image, `ctaVariant`) are shared across locales automatically — only
+`headline`, `body`, `ctaLabel`, and `ctaUrl` need separate DA/EN text.
+
+| Field               | Localized | Description                                                                                                      |
+| ------------------- | :-------: | ---------------------------------------------------------------------------------------------------------------- |
+| `name`              |    no     | Admin-only label — not shown on the site                                                                         |
+| `isActive`          |    no     | Manual on/off switch — turn off instead of deleting to pause a popup                                             |
+| `startDate`         |    no     | Optional — popup is eligible only from this date onward                                                          |
+| `endDate`           |    no     | Optional — popup stops being eligible after this date                                                            |
+| `pagePaths`         |    no     | Comma-separated path prefixes (e.g. `/,/en` for the homepage only, both locales). Empty = eligible on every page |
+| `displayFrequency`  |    no     | How often a visitor sees it once shown: `once_per_session` / `once_per_day` / `once_per_n_days` / `every_visit`  |
+| `frequencyDays`     |    no     | Only used when `displayFrequency = once_per_n_days`                                                              |
+| `sortOrder`         |    no     | When more than one popup matches a page/date, the lowest `sortOrder` wins — only one is ever shown at a time     |
+| `image`             |    no     | Optional banner image at the top of the popup                                                                    |
+| `headline`          |    yes    |                                                                                                                  |
+| `body`              |    yes    | Short supporting text, optional                                                                                  |
+| `ctaLabel`/`ctaUrl` |    yes    | Button text/link — omit either to render the popup with no CTA button                                            |
+| `ctaVariant`        |    no     | `btn-beige` / `btn-green` / `btn-dark`, same styling as Hero Slide CTAs                                          |
+
+**Dismissal/frequency is cookie-based** (`ab_popup_seen_<documentId>`), following the same
+pattern as `CookieConsentBanner.astro` — no server-side "has this visitor seen it" check,
+since most pages are statically prerendered and have no per-request cookies to read. The
+cookie is stamped at impression time (as soon as it's shown), not only when explicitly
+closed, so a visitor who ignores it and navigates away doesn't see it again within the
+same frequency window either. There's no content-type-level enforcement of "only one
+active popup per page" — if two overlapping popups both match, only the lower-`sortOrder`
+one renders, so editors should toggle `isActive` off on the one they don't want showing
+rather than relying on validation to catch it.
+
+New popups are entered directly in Strapi admin — there's no legacy hardcoded popup to
+migrate, so no seed script.
+
+> Restart Strapi after the first deploy so it picks up the new content type, and grant the
+> Public role `find`/`findOne` permissions for Popup in Strapi admin (Settings → Users &
+> Permissions → Roles → Public) — new content types aren't auto-granted public read access.
