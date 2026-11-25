@@ -16,7 +16,14 @@ function matchesPath(pagePaths: string | undefined, pathname: string): boolean {
     .map((p) => p.trim())
     .filter(Boolean);
   if (prefixes.length === 0) return true;
-  return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(prefix));
+  return prefixes.some((prefix) => {
+    // "/" is every path's prefix, so it has to mean "the root page only" rather than
+    // prefix-matching — otherwise a "/" entry (e.g. targeting the Danish homepage)
+    // would match every page on the site. Non-root prefixes still need a trailing
+    // slash boundary so "/en" doesn't also match an unrelated "/english-..." path.
+    if (prefix === '/') return pathname === '/';
+    return pathname === prefix || pathname.startsWith(`${prefix}/`);
+  });
 }
 
 const now = Date.now();
