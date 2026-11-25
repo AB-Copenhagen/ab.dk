@@ -314,6 +314,14 @@ over any page. Localized (da/en) like Hero Slide: non-localized fields (scheduli
 targeting, frequency, image, `ctaVariant`) are shared across locales automatically — only
 `headline`, `body`, `ctaLabel`, and `ctaUrl` need separate DA/EN text.
 
+**Important:** Strapi requires a separate row per locale for a popup to appear on that
+locale's pages at all — this applies even to non-localized fields, and bit us in practice
+(a popup created only as a `da` row rendered fine on Danish pages and silently showed
+nothing on `/en/*`, with no error anywhere). After creating/editing the entry, use Strapi
+admin's **"Fill in from another locale"** action (top of the entry editor) to create the
+other locale's row, fill in its `headline`/`body`/`ctaLabel`, and **publish both** — not
+just the one you started with.
+
 | Field               | Localized | Description                                                                                                      |
 | ------------------- | :-------: | ---------------------------------------------------------------------------------------------------------------- |
 | `name`              |    no     | Admin-only label — not shown on the site                                                                         |
