@@ -852,6 +852,45 @@ export async function fetchHeroSlides(locale: string): Promise<StrapiHeroSlide[]
   }).catch(() => []);
 }
 
+// ── Popups ─────────────────────────────────────────────────────────────────────
+
+export interface StrapiPopup {
+  documentId: string;
+  name: string;
+  isActive: boolean;
+  startDate?: string;
+  endDate?: string;
+  /** Comma-separated list of path prefixes this popup is restricted to (e.g. "/,/en" for the
+   *  homepage only, in both locales). Empty/omitted means it's eligible on every page. */
+  pagePaths?: string;
+  displayFrequency: 'once_per_session' | 'once_per_day' | 'once_per_n_days' | 'every_visit';
+  /** Only used when displayFrequency is 'once_per_n_days'. */
+  frequencyDays: number;
+  sortOrder: number;
+  image?: StrapiHeroSlideMedia;
+  headline: string;
+  body?: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  ctaVariant: 'btn-beige' | 'btn-green' | 'btn-dark';
+}
+
+/**
+ * Fetch every `isActive` popup, resolved to `locale`. Deliberately does not push the
+ * start/end date window into the Strapi `filters` query (an "empty or in-range" condition
+ * needs a nested $or per field, and this collection is always small) — the caller filters
+ * by date and by the current page's path instead, picking the best (lowest sortOrder) match.
+ */
+export async function fetchActivePopups(locale: string): Promise<StrapiPopup[]> {
+  return fetchCollectionType<StrapiPopup[]>('popups', {
+    locale,
+    filters: { isActive: { $eq: true } },
+    sort: ['sortOrder:asc'],
+    populate: { image: { fields: ['url', 'width', 'height'] } },
+    pagination: { pageSize: 50 },
+  }).catch(() => []);
+}
+
 // ── Leadership ─────────────────────────────────────────────────────────────────
 
 export interface StrapiLeadershipMemberPhoto {

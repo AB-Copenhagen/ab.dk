@@ -2,11 +2,13 @@
 import Navbar from '@/components/Navbar.astro';
 import Footer from '@/components/Footer.astro';
 import CookieConsentBanner from '@/components/CookieConsentBanner.astro';
+import Popup from '@/components/Popup.astro';
 import '@/styles/global.css';
 import { isSearchIndexingBlocked } from '@/lib/config/seo';
 import { switchLocalePath } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import { CONSENT_COOKIE_NAME, parseConsent, hasConsent } from '@/lib/consent';
+import { fetchActivePopups } from '@/lib/strapi/client';
 
 interface Props {
   title?: string;
@@ -121,6 +123,8 @@ const vivenuConsented = Astro.isPrerendered
 // tracking the moment they grant statistics consent. Mirrors the setup used by other Danish
 // clubs (e.g. lyngby-boldklub.dk, via MonsterInsights + the Cookiez consent plugin).
 const GTM_ID = 'GTM-TGXD56HD';
+
+const popups = await fetchActivePopups(locale);
 ---
 
 <!doctype html>
@@ -224,6 +228,7 @@ const GTM_ID = 'GTM-TGXD56HD';
     </main>
     <Footer locale={locale} />
     <CookieConsentBanner locale={locale} />
+    <Popup locale={locale} popups={popups} />
     <script>
       import { initBotId } from 'botid/client/core';
 
