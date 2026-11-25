@@ -83,7 +83,12 @@ const popup = popups
           <p class="text-sm text-[#444] leading-relaxed mb-5 whitespace-pre-line">{popup.body}</p>
         )}
         {popup.ctaLabel && popup.ctaUrl && (
-          <a href={popup.ctaUrl} class={`btn btn-md ${popup.ctaVariant}`}>
+          <a
+            href={popup.ctaUrl}
+            class={`btn btn-md ${popup.ctaVariant}`}
+            target={popup.ctaUrl.startsWith('http') ? '_blank' : undefined}
+            rel={popup.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+          >
             {popup.ctaLabel}
           </a>
         )}
