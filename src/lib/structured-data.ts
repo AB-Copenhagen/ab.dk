@@ -164,3 +164,26 @@ export function youTubeVideoSchema(
     ...(isAccessibleForFree ? {} : { isAccessibleForFree: false }),
   };
 }
+
+/**
+ * Builds a schema.org VideoObject for a media.ab.dk (SAMS) embed. Unlike the YouTube
+ * variant, there's no CDN thumbnail convention to derive — `thumbnailUrl` is only
+ * included when an editor uploaded one in Strapi (see StrapiAbtvVideo.thumbnail).
+ */
+export function samsVideoSchema(
+  embed: { embedUrl: string; caption?: string; thumbnailUrl?: string },
+  approximateUploadDate: string,
+  isAccessibleForFree = true
+) {
+  const name = embed.caption ?? 'AB 1889 video';
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name,
+    description: embed.caption ?? name,
+    ...(embed.thumbnailUrl ? { thumbnailUrl: [embed.thumbnailUrl] } : {}),
+    uploadDate: approximateUploadDate,
+    embedUrl: embed.embedUrl,
+    ...(isAccessibleForFree ? {} : { isAccessibleForFree: false }),
+  };
+}

@@ -53,14 +53,24 @@ const COPY = {
 
 const t = COPY[locale ?? 'da'];
 const tierLabel = video.requiredTier === 'premium' ? t.premium : t.plus;
+
+// YouTube videos get a free CDN thumbnail by ID; SAMS has no public poster
+// endpoint yet, so its thumbnail only exists if an editor uploaded one in
+// Strapi. Playlists never show a per-item thumbnail (gradient + icon instead).
+const thumbnailSrc =
+  video.videoSource === 'sams'
+    ? (video.thumbnail?.url ?? null)
+    : video.youtubeId
+      ? youTubeThumbnailUrl(video.youtubeId)
+      : null;
 ---
 
 <div class="abtv-card">
   {unlocked ? (
     <a href={watchUrl} class="group relative block w-full aspect-video overflow-hidden rounded-xl bg-[#111] no-underline" aria-label={caption}>
-      {!video.isPlaylist && (
+      {!video.isPlaylist && thumbnailSrc && (
         <img
-          src={youTubeThumbnailUrl(video.youtubeId)}
+          src={thumbnailSrc}
           alt={caption}
           class="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
@@ -88,9 +98,9 @@ const tierLabel = video.requiredTier === 'premium' ? t.premium : t.plus;
       href={isLoggedIn ? myabUrl : `${loginUrl}?redirect=${redirectParam}`}
       class="group relative block w-full aspect-video overflow-hidden rounded-xl bg-[#111] no-underline"
     >
-      {!video.isPlaylist && (
+      {!video.isPlaylist && thumbnailSrc && (
         <img
-          src={youTubeThumbnailUrl(video.youtubeId)}
+          src={thumbnailSrc}
           alt={caption}
           class="absolute inset-0 w-full h-full object-cover opacity-40"
           loading="lazy"

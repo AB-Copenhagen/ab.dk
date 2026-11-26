@@ -783,7 +783,14 @@ export interface StrapiAbtvVideo {
   documentId: string;
   captionDa: string;
   captionEn: string;
-  youtubeId: string;
+  videoSource: 'youtube' | 'sams';
+  /** Required when videoSource is 'youtube'. */
+  youtubeId?: string;
+  /** Required when videoSource is 'sams' — the bare token from the DAM's "Embed" panel. */
+  samsEmbedToken?: string;
+  /** SAMS videos only — no public poster endpoint exists yet in SAMS, so the grid/rail
+   *  thumbnail is an editor-uploaded image rather than derived automatically. */
+  thumbnail?: StrapiHeroSlideMedia;
   isPlaylist: boolean;
   section: 'trending' | 'season' | 'behind_the_scenes';
   requiredTier: MembershipTier;
@@ -791,12 +798,15 @@ export interface StrapiAbtvVideo {
   sortOrder: number;
 }
 
+const ABTV_VIDEO_POPULATE = { thumbnail: { fields: ['url', 'width', 'height'] } };
+
 /** Fetch all published, non-hidden ABTV videos, ordered by section then sortOrder. */
 export async function fetchAbtvVideos(): Promise<StrapiAbtvVideo[]> {
   return fetchCollectionType<StrapiAbtvVideo[]>('abtv-videos', {
     filters: { hidden: { $eq: false } },
     sort: ['section:asc', 'sortOrder:asc'],
     status: 'published',
+    populate: ABTV_VIDEO_POPULATE,
     pagination: { pageSize: 100 },
   }).catch(() => []);
 }
@@ -808,6 +818,7 @@ export async function fetchAbtvVideoByDocumentId(
   const results = await fetchCollectionType<StrapiAbtvVideo[]>('abtv-videos', {
     filters: { documentId: { $eq: documentId }, hidden: { $eq: false } },
     status: 'published',
+    populate: ABTV_VIDEO_POPULATE,
   }).catch(() => []);
   return results[0] ?? null;
 }
