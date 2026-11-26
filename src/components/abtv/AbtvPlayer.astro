@@ -23,6 +23,10 @@ interface Props {
 
 const { video, locale = 'da', nextVideoUrl } = Astro.props;
 
+// Rows created before `videoSource` existed have it as null in Strapi — the
+// schema's `default: 'youtube'` only applies to new rows, not retroactively.
+const videoSource = video.videoSource ?? 'youtube';
+
 const COPY = {
   da: {
     youtube: {
@@ -46,7 +50,7 @@ const COPY = {
   },
 }[locale];
 
-const t = COPY[video.videoSource];
+const t = COPY[videoSource];
 const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
@@ -54,7 +58,7 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
   class="abtv-player relative w-full rounded-lg overflow-hidden bg-black"
   style="aspect-ratio:16/9;"
   data-uid={uid}
-  data-video-source={video.videoSource}
+  data-video-source={videoSource}
   data-video-id={video.youtubeId ?? ''}
   data-is-playlist={video.isPlaylist ? '1' : ''}
   data-next-url={nextVideoUrl ?? ''}
@@ -68,7 +72,7 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
       {t.enable}
     </button>
   </div>
-  {video.videoSource === 'youtube' ? (
+  {videoSource === 'youtube' ? (
     <div id={uid} class="absolute inset-0 hidden"></div>
   ) : (
     <iframe
