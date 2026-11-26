@@ -276,17 +276,31 @@ fields on a single row, not separate per-locale entries, since most captions (sh
 English documentary titles) are identical across both languages anyway; fill in both
 fields with the same text when no real translation is needed.
 
-| Field          | Description                                                                                          |
-| -------------- | ---------------------------------------------------------------------------------------------------- |
-| `captionDa`    | Caption shown above the embed on the Danish page                                                     |
-| `captionEn`    | Caption shown above the embed on the English page                                                    |
-| `youtubeId`    | The 11-char video ID, or the playlist ID when `isPlaylist` is set                                    |
-| `isPlaylist`   | Whether `youtubeId` is a playlist ID (`embed/videoseries?list=...`) vs a single video (`embed/{id}`) |
-| `section`      | Which page section it appears in: `trending` / `season` / `behind_the_scenes`                        |
-| `requiredTier` | Membership tier needed to watch: `free` / `plus` / `premium` — defaults to `free`                    |
-| `uploadDate`   | Approximate publish date, feeds the video's `VideoObject.uploadDate`                                 |
-| `sortOrder`    | Ascending display order within its section                                                           |
-| `hidden`       | Remove the video from the page without deleting it                                                   |
+| Field            | Description                                                                                                                                                                                        |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `captionDa`      | Caption shown above the embed on the Danish page                                                                                                                                                   |
+| `captionEn`      | Caption shown above the embed on the English page                                                                                                                                                  |
+| `videoSource`    | `youtube` or `sams` — picks which of the two fields below is read                                                                                                                                  |
+| `youtubeId`      | `videoSource = youtube` only — the 11-char video ID, or the playlist ID when `isPlaylist` is set                                                                                                   |
+| `samsEmbedToken` | `videoSource = sams` only — the bare token from media.ab.dk's (SAMS DAM) "Embed" panel, i.e. just the `{token}` segment of `https://media.ab.dk/embed/{token}`, not the full URL                   |
+| `thumbnail`      | `videoSource = sams` only — grid/rail thumbnail image. SAMS has no public poster endpoint, so this must be uploaded by hand (YouTube videos get a free thumbnail from `i.ytimg.com` automatically) |
+| `isPlaylist`     | Whether `youtubeId` is a playlist ID (`embed/videoseries?list=...`) vs a single video (`embed/{id}`) — youtube only; sams videos are always single                                                 |
+| `section`        | Which page section it appears in: `trending` / `season` / `behind_the_scenes`                                                                                                                      |
+| `requiredTier`   | Membership tier needed to watch: `free` / `plus` / `premium` — defaults to `free`                                                                                                                  |
+| `uploadDate`     | Approximate publish date, feeds the video's `VideoObject.uploadDate`                                                                                                                               |
+| `sortOrder`      | Ascending display order within its section                                                                                                                                                         |
+| `hidden`         | Remove the video from the page without deleting it                                                                                                                                                 |
+
+**Two video sources, two different cookie-consent categories.** A YouTube embed is gated
+behind `marketing` consent (YouTube sets third-party ad-tracking cookies); a media.ab.dk
+(SAMS) embed is gated behind `functional` consent instead, since it's AB's own domain, not
+a third-party tracker — see `src/components/abtv/AbtvPlayer.astro`.
+
+**SAMS videos don't support autoplay-next.** media.ab.dk's embed widget
+(`embed/player.js`) only exposes `play`/`pause`/`onResize` — no "video ended" event — so
+the watch page's autoplay-to-next-video behavior (built on YouTube's IFrame API `ENDED`
+state) only fires for `videoSource: youtube`. A SAMS video's "Senere"/"Up next" rail still
+works for manually clicking to the next video.
 
 **Gating is real, not cosmetic, only for content that isn't already public elsewhere.**
 All 8 videos migrated from the old hardcoded page are public YouTube channel content, so

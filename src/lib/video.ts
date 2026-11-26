@@ -10,3 +10,8 @@ export function extractYouTubeId(urlOrEmbed: string): string | null {
 export function youTubeThumbnailUrl(id: string): string {
   return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 }
+
+/** media.ab.dk's (SAMS) chromeless embed page for a given embed token. */
+export function samsEmbedUrl(token: string): string {
+  return `https://media.ab.dk/embed/${token}`;
+}

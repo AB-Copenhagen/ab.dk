@@ -4,7 +4,8 @@ import AbtvPlayer from '@/components/abtv/AbtvPlayer.astro';
 import PlaylistRail from '@/components/abtv/PlaylistRail.astro';
 import { fetchAbtvVideoByDocumentId, fetchAbtvVideos } from '@/lib/strapi/client';
 import { hasTier } from '@/lib/membership';
-import { breadcrumbSchema, youTubeVideoSchema } from '@/lib/structured-data';
+import { breadcrumbSchema, youTubeVideoSchema, samsVideoSchema } from '@/lib/structured-data';
+import { samsEmbedUrl } from '@/lib/video';
 export const prerender = false;
 
 const { documentId } = Astro.params;
@@ -25,15 +26,30 @@ const sectionVideos = allVideos.filter(
 const nextVideoUrl = sectionVideos.length > 0 ? `/en/abtv/${sectionVideos[0].documentId}` : null;
 
 const pageUrl = `https://ab.dk/en/abtv/${video.documentId}`;
-const embedUrl = video.isPlaylist
-  ? `https://www.youtube.com/embed/videoseries?list=${video.youtubeId}`
-  : `https://www.youtube.com/embed/${video.youtubeId}`;
 
-const videoSchema = youTubeVideoSchema(
-  { embedCode: embedUrl, caption },
-  video.uploadDate ?? new Date().toISOString(),
-  video.requiredTier === 'free'
-);
+const videoSchema =
+  video.videoSource === 'sams'
+    ? video.samsEmbedToken
+      ? samsVideoSchema(
+          {
+            embedUrl: samsEmbedUrl(video.samsEmbedToken),
+            caption,
+            thumbnailUrl: video.thumbnail?.url,
+          },
+          video.uploadDate ?? new Date().toISOString(),
+          video.requiredTier === 'free'
+        )
+      : null
+    : youTubeVideoSchema(
+        {
+          embedCode: video.isPlaylist
+            ? `https://www.youtube.com/embed/videoseries?list=${video.youtubeId}`
+            : `https://www.youtube.com/embed/${video.youtubeId}`,
+          caption,
+        },
+        video.uploadDate ?? new Date().toISOString(),
+        video.requiredTier === 'free'
+      );
 
 const abtvBreadcrumbs = breadcrumbSchema([
   { name: 'ABTV', url: 'https://ab.dk/en/abtv/browse' },

@@ -1,31 +1,52 @@
 ---
-// The ABTV watch page's main player. Unlike ConsentGatedIframe (a plain
-// iframe whose `src` is swapped in once consent is granted), this uses the
-// YouTube IFrame Player API so autoplay-next can react to the real ENDED
-// player event — a bare iframe has no event hook for "this video finished".
+// The ABTV watch page's main player, supporting two video sources:
+//
+// - youtube: uses the YouTube IFrame Player API (not a bare iframe) so
+//   autoplay-next can react to the real ENDED player event.
+// - sams: media.ab.dk's (SAMS DAM) embed — a plain iframe + its player.js
+//   widget, which auto-resizes the iframe to its real content height.
+//   SAMS's widget only exposes play/pause/onResize, no "ended" event, so
+//   autoplay-next doesn't apply to sams videos (see docs/embed-integration.md
+//   in AB-Copenhagen/SAMS) — the wrapper's fixed 16:9 aspect-ratio is
+//   released on reveal so player.js can resize the box without fighting an
+//   absolutely-positioned, forced-fill iframe like the YouTube one uses.
+import { samsEmbedUrl } from '@/lib/video';
 import type { StrapiAbtvVideo } from '@/lib/strapi/client';
 import type { Locale } from '@/lib/i18n';
 
 interface Props {
   video: StrapiAbtvVideo;
   locale?: Locale;
-  /** Where to navigate on ENDED when autoplay is on. null disables autoplay-next entirely (e.g. only one video in the section). */
+  /** Where to navigate on ENDED when autoplay is on. null disables autoplay-next entirely (e.g. only one video in the section). Only honored for youtube videos. */
   nextVideoUrl: string | null;
 }
 
 const { video, locale = 'da', nextVideoUrl } = Astro.props;
 
-const t = {
+const COPY = {
   da: {
-    message: 'Denne video er indlejret fra YouTube og kræver samtykke til markedsførings- og mediecookies.',
-    enable: 'Aktiver og se video',
+    youtube: {
+      message: 'Denne video er indlejret fra YouTube og kræver samtykke til markedsførings- og mediecookies.',
+      enable: 'Aktiver og se video',
+    },
+    sams: {
+      message: 'Denne video kræver samtykke til funktionelle cookies.',
+      enable: 'Aktiver og se video',
+    },
   },
   en: {
-    message: 'This video is embedded from YouTube and requires consent for marketing/media cookies.',
-    enable: 'Enable and watch',
+    youtube: {
+      message: 'This video is embedded from YouTube and requires consent for marketing/media cookies.',
+      enable: 'Enable and watch',
+    },
+    sams: {
+      message: 'This video requires consent for functional cookies.',
+      enable: 'Enable and watch',
+    },
   },
 }[locale];
 
+const t = COPY[video.videoSource];
 const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
@@ -33,7 +54,8 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
   class="abtv-player relative w-full rounded-lg overflow-hidden bg-black"
   style="aspect-ratio:16/9;"
   data-uid={uid}
-  data-video-id={video.youtubeId}
+  data-video-source={video.videoSource}
+  data-video-id={video.youtubeId ?? ''}
   data-is-playlist={video.isPlaylist ? '1' : ''}
   data-next-url={nextVideoUrl ?? ''}
 >
@@ -46,7 +68,18 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
       {t.enable}
     </button>
   </div>
-  <div id={uid} class="absolute inset-0 hidden"></div>
+  {video.videoSource === 'youtube' ? (
+    <div id={uid} class="absolute inset-0 hidden"></div>
+  ) : (
+    <iframe
+      id={uid}
+      class="hidden w-full"
+      style="border:0;display:block;"
+      data-sams-embed
+      data-src={samsEmbedUrl(video.samsEmbedToken ?? '')}
+      allowfullscreen
+    ></iframe>
+  )}
 </div>
 
 <script>
@@ -59,6 +92,11 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
         PlayerState: { ENDED: number };
       };
       onYouTubeIframeAPIReady?: () => void;
+      SamsEmbed?: {
+        play: (iframe?: HTMLIFrameElement) => void;
+        pause: (iframe?: HTMLIFrameElement) => void;
+        onResize: (cb: (iframe: HTMLIFrameElement, height: number) => void) => void;
+      };
     }
   }
 
@@ -97,6 +135,15 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
     }
   }
 
+  function loadSamsPlayerScriptOnce() {
+    if (document.getElementById('sams-embed-player')) return;
+    const script = document.createElement('script');
+    script.id = 'sams-embed-player';
+    script.src = 'https://media.ab.dk/embed/player.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }
+
   function autoplayEnabled(): boolean {
     try {
       return localStorage.getItem('abtv-autoplay') !== 'false';
@@ -107,19 +154,20 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
 
   document.querySelectorAll<HTMLElement>('.abtv-player').forEach((wrapper) => {
     const uid = wrapper.dataset.uid;
+    const videoSource = wrapper.dataset.videoSource;
     const videoId = wrapper.dataset.videoId;
     const isPlaylist = wrapper.dataset.isPlaylist === '1';
     const nextUrl = wrapper.dataset.nextUrl || null;
-    if (!uid || !videoId) return;
+    if (!uid) return;
 
     const placeholder = wrapper.querySelector<HTMLElement>('.abtv-player-placeholder');
     const enableBtn = wrapper.querySelector<HTMLButtonElement>('.abtv-player-enable');
     const target = document.getElementById(uid);
     if (!placeholder || !target) return;
 
-    function reveal() {
-      if (!target) return;
-      target.classList.remove('hidden');
+    function revealYouTube() {
+      if (!videoId) return;
+      target!.classList.remove('hidden');
       placeholder?.classList.add('hidden');
       loadYouTubeApiOnce(() => {
         if (!window.YT) return;
@@ -147,7 +195,20 @@ const uid = `abtv-player-${Math.random().toString(36).slice(2, 9)}`;
       });
     }
 
-    onConsentChange('marketing', reveal);
+    function revealSams() {
+      const iframe = target as HTMLIFrameElement;
+      if (!iframe.src) iframe.src = iframe.dataset.src ?? '';
+      // Hand sizing over to player.js — a fixed aspect-ratio box would fight
+      // its own resize-to-content-height behavior.
+      wrapper.style.aspectRatio = '';
+      iframe.classList.remove('hidden');
+      placeholder?.classList.add('hidden');
+      loadSamsPlayerScriptOnce();
+    }
+
+    onConsentChange(videoSource === 'sams' ? 'functional' : 'marketing', () =>
+      videoSource === 'sams' ? revealSams() : revealYouTube()
+    );
     enableBtn?.addEventListener('click', () => {
       (window as unknown as { abOpenCookieSettings?: () => void }).abOpenCookieSettings?.();
     });

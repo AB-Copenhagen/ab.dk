@@ -19,9 +19,22 @@
       "type": "string",
       "required": true
     },
-    "youtubeId": {
-      "type": "string",
+    "videoSource": {
+      "type": "enumeration",
+      "enum": ["youtube", "sams"],
+      "default": "youtube",
       "required": true
+    },
+    "youtubeId": {
+      "type": "string"
+    },
+    "samsEmbedToken": {
+      "type": "string"
+    },
+    "thumbnail": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
     },
     "isPlaylist": {
       "type": "boolean",

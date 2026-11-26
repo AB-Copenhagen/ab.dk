@@ -25,12 +25,16 @@ const SECTIONS: { key: StrapiAbtvVideo['section']; heading: string }[] = [
 // the full VideoObject schema for that specific video — this list stays
 // lightweight rather than duplicating that detail here.
 const publicVideos = videos.filter((v) => v.requiredTier === 'free');
-const videoListItems = publicVideos.map((v) => ({
-  '@type': 'VideoObject',
-  name: v.captionDa,
-  url: `https://ab.dk/abtv/${v.documentId}`,
-  ...(v.isPlaylist ? {} : { thumbnailUrl: [youTubeThumbnailUrl(v.youtubeId)] }),
-}));
+const videoListItems = publicVideos.map((v) => {
+  const thumbnailUrl =
+    v.videoSource === 'sams' ? v.thumbnail?.url : v.youtubeId ? youTubeThumbnailUrl(v.youtubeId) : undefined;
+  return {
+    '@type': 'VideoObject',
+    name: v.captionDa,
+    url: `https://ab.dk/abtv/${v.documentId}`,
+    ...(!v.isPlaylist && thumbnailUrl ? { thumbnailUrl: [thumbnailUrl] } : {}),
+  };
+});
 
 const abtvStructuredData = [itemListSchema('ABTV', videoListItems)];
 ---

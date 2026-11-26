@@ -59,6 +59,14 @@ function caption(video: StrapiAbtvVideo) {
 function unlocked(video: StrapiAbtvVideo) {
   return hasTier(user?.currentTier, video.requiredTier);
 }
+// See VideoCard.astro's identical comment — SAMS has no public poster endpoint yet.
+function thumbnailSrc(video: StrapiAbtvVideo) {
+  return video.videoSource === 'sams'
+    ? (video.thumbnail?.url ?? null)
+    : video.youtubeId
+      ? youTubeThumbnailUrl(video.youtubeId)
+      : null;
+}
 ---
 
 <div class="flex flex-col gap-8">
@@ -74,9 +82,9 @@ function unlocked(video: StrapiAbtvVideo) {
       {upNext.map((video) => (
         <a href={`${watchBase}/${video.documentId}`} class="flex gap-3 group no-underline">
           <span class="relative w-32 shrink-0 aspect-video overflow-hidden rounded-md bg-[#111]">
-            {!video.isPlaylist && (
+            {!video.isPlaylist && thumbnailSrc(video) && (
               <img
-                src={youTubeThumbnailUrl(video.youtubeId)}
+                src={thumbnailSrc(video)}
                 alt={caption(video)}
                 class:list={['absolute inset-0 w-full h-full object-cover', !unlocked(video) && 'opacity-40']}
                 loading="lazy"
@@ -108,9 +116,9 @@ function unlocked(video: StrapiAbtvVideo) {
         {section.videos.map((video) => (
           <a href={`${watchBase}/${video.documentId}`} class="flex gap-3 group no-underline">
             <span class="relative w-32 shrink-0 aspect-video overflow-hidden rounded-md bg-[#111]">
-              {!video.isPlaylist && (
+              {!video.isPlaylist && thumbnailSrc(video) && (
                 <img
-                  src={youTubeThumbnailUrl(video.youtubeId)}
+                  src={thumbnailSrc(video)}
                   alt={caption(video)}
                   class:list={['absolute inset-0 w-full h-full object-cover', !unlocked(video) && 'opacity-40']}
                   loading="lazy"
