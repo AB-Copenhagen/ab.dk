@@ -1,5 +1,7 @@
 import type { Core } from '@strapi/strapi';
 
+import { formatSearchLabel } from './api/article/content-types/article/lifecycles';
+
 // Custom controller actions (unlike core CRUD actions like find/findOne)
 // never get an auto-created users-permissions row, so the Public role has no
 // way to be granted access to them through the schema alone — `auth: false`
@@ -44,6 +46,77 @@ async function fixContentManagerDisplayFields(strapi: Core.Strapi) {
     strapi.log.info(
       `[bootstrap] Fixed ${uid} display field: mainField was "${previous}", now "${mainField}"`
     );
+  }
+}
+
+// Same idea as DISPLAY_FIELD_FIXES, but for a relation field's display
+// *inside a component* (e.g. the `article` relation on the
+// `match.article-link` component used by Match Content's `articleLinks`) —
+// also DB-stored Content Manager config (`metadatas.<field>.edit/list.
+// mainField`), under a separate `components` service/store namespace, same
+// production-only CTB lock applies. Points the article-link relation picker
+// at `searchLabel` ("YYYY-MM-DD - Title") instead of the bare, often
+// similar/truncated article title.
+const COMPONENT_RELATION_DISPLAY_FIELD_FIXES: Array<{
+  uid: string;
+  field: string;
+  mainField: string;
+}> = [{ uid: 'match.article-link', field: 'article', mainField: 'searchLabel' }];
+
+async function fixComponentRelationDisplayFields(strapi: Core.Strapi) {
+  const componentsService = strapi.plugin('content-manager').service('components');
+
+  for (const { uid, field, mainField } of COMPONENT_RELATION_DISPLAY_FIELD_FIXES) {
+    const component = strapi.components[uid];
+    if (!component) continue;
+
+    const config = await componentsService.findConfiguration(component);
+    const fieldMeta = config.metadatas?.[field] ?? {};
+    if (fieldMeta.edit?.mainField === mainField && fieldMeta.list?.mainField === mainField) {
+      continue;
+    }
+
+    const previous = fieldMeta.edit?.mainField;
+    await componentsService.updateConfiguration(component, {
+      ...config,
+      metadatas: {
+        ...config.metadatas,
+        [field]: {
+          ...fieldMeta,
+          edit: { ...fieldMeta.edit, mainField },
+          list: { ...fieldMeta.list, mainField },
+        },
+      },
+    });
+    strapi.log.info(
+      `[bootstrap] Fixed ${uid}.${field} relation display field: mainField was "${previous}", now "${mainField}"`
+    );
+  }
+}
+
+// `searchLabel` is kept current going forward by the article lifecycles
+// (afterCreate/afterUpdate), but that only fires on new saves — existing
+// rows need a one-time backfill, same "schema defaults don't retroactively
+// backfill existing rows" limitation documented elsewhere in this app.
+// Cheap no-op pass once every row is caught up.
+async function backfillArticleSearchLabels(strapi: Core.Strapi) {
+  const articles = (await strapi.db.query('api::article.article').findMany({
+    select: ['id', 'title', 'originalPublishedAt', 'searchLabel'],
+  })) as Array<{
+    id: number;
+    title: unknown;
+    originalPublishedAt: unknown;
+    searchLabel: unknown;
+  }>;
+
+  for (const article of articles) {
+    const label = formatSearchLabel(article.title, article.originalPublishedAt);
+    if (!label || label === article.searchLabel) continue;
+
+    await strapi.db.query('api::article.article').update({
+      where: { id: article.id },
+      data: { searchLabel: label },
+    });
   }
 }
 
@@ -92,6 +165,12 @@ export default {
     });
     await fixContentManagerDisplayFields(strapi).catch((err) => {
       strapi.log.error('Failed to fix Content Manager display fields', err);
+    });
+    await fixComponentRelationDisplayFields(strapi).catch((err) => {
+      strapi.log.error('Failed to fix component relation display fields', err);
+    });
+    await backfillArticleSearchLabels(strapi).catch((err) => {
+      strapi.log.error('Failed to backfill article search labels', err);
     });
   },
 };
