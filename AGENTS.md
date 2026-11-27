@@ -38,6 +38,35 @@ Conventions live in `.cursor/rules/` — single source of truth for Cursor and C
 
 Claude Code reads `CLAUDE.md` at the repo root, which imports this file and all `.cursor/rules/*.mdc` files. Run `/memory` in a session to verify loaded files.
 
+## Known dependency constraints (don't bump blindly)
+
+Dependabot opens a PR for these on its own schedule but they're **ignored on major
+versions** in `.github/dependabot.yml` — don't merge a manual major bump either without
+re-checking the blocker below first.
+
+- **`strapi/`'s `react` / `react-dom` / `react-router-dom` are pinned to major versions
+  Strapi 5.x itself requires** (`^18.0.0` / `^18.0.0` / `^6.30.3` as of Strapi 5.64.0,
+  via `@strapi/strapi`, `@strapi/admin`, and `@strapi/design-system`'s own
+  `peerDependencies`). Bumping any of these past what Strapi's admin build declares
+  breaks the admin panel build — confirmed directly: react-dom 19 alone fails with a
+  "react and react-dom must have the exact same version" build error, and
+  react-router-dom 7 builds but Strapi's own tooling logs an explicit incompatibility
+  warning against its required `^6.0.0`. As of November 2026 there's no Strapi v6 and no
+  announced React 19 support — this is an upstream blocker, not something fixable in
+  this repo. Revisit once a Strapi release actually supports it.
+- **Root app's `typescript`**: 6.x/7.x is the new Go-based compiler rewrite
+  (`typescript-go`), a different tool from the 5.x TS compiler, not a routine major bump.
+  CI genuinely fails on it (5.9.3 → 7.0.2 broke `npm run check`/build in Dependabot PR
+  #310). Needs a deliberate, evaluated upgrade once Astro/the rest of the toolchain has
+  caught up, not an auto-merged PR.
+
+**Why CI passing on a `strapi/` Dependabot PR isn't proof it's safe:** the root
+`ci.yaml` workflow only typechecks/builds the Astro app — it never runs `yarn build`
+inside `strapi/`. A green check on a `strapi/`-directory PR means nothing about whether
+the Strapi admin panel itself still builds. Validate those manually (`cd strapi && yarn
+install --frozen-lockfile && yarn build`, ideally in a disposable `git worktree`) before
+merging, independent of the CI status.
+
 ## Key paths
 
 ```
