@@ -7,7 +7,7 @@ export default () => ({
   mcp: {
     enabled: true,
     config: {
-      allowedIPs: ['108.201.2.223', '2600:1700:97b8:12f:701e:5141:32e0:8017'],
+      allowedIPs: ['147.185.158.143'],
       session: {
         type: 'memory',
       },
