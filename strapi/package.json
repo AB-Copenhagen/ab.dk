@@ -35,7 +35,7 @@
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
     "styled-components": "^6.0.0",
-    "uuid": "^10.0.0"
+    "uuid": "^14.0.3"
   },
   "author": {
     "name": "A Strapi developer"
