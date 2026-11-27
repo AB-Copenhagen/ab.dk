@@ -9,6 +9,12 @@ updates:
     groups:
       minor-and-patch:
         update-types: ['minor', 'patch']
+    ignore:
+      # TypeScript 7 is the new Go-based compiler rewrite, not a routine
+      # major bump — needs a deliberate, evaluated upgrade (Astro/tooling
+      # support, etc.), not an auto-rebased PR. See AGENTS.md.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     open-pull-requests-limit: 5
     labels: ['dependencies']
 
@@ -24,6 +30,17 @@ updates:
       strapi-core:
         patterns: ['@strapi/*']
         update-types: ['patch']
+    ignore:
+      # Strapi 5.x's admin panel peer-pins React 18 / react-router-dom 6
+      # (@strapi/strapi, @strapi/admin, @strapi/design-system) — a major
+      # bump here breaks the admin build until Strapi itself supports it.
+      # See AGENTS.md "Strapi's React version pin" for details.
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-dom'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-router-dom'
+        update-types: ['version-update:semver-major']
     open-pull-requests-limit: 5
     labels: ['dependencies', 'strapi']
 
