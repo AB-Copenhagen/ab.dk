@@ -41,7 +41,12 @@ const DESCOPE_PROJECT_ID = import.meta.env.DESCOPE_PROJECT_ID ?? '';
           const refreshJwt = e.detail?.refreshJwt;
           const redirectParam = new URLSearchParams(location.search).get('redirect');
           // Block absolute/protocol-relative redirect targets — only ever navigate back into this site.
-          const isSafeRelativePath = (url) => url.startsWith('/') && !url.startsWith('//');
+          // Keep in sync with isSafeRelativePath() in src/lib/utils.ts — this
+          // is:inline script can't import it.
+          const isSafeRelativePath = (url) => {
+            const normalized = url.replace(/\\/g, '/');
+            return normalized.startsWith('/') && !normalized.startsWith('//');
+          };
           const target = redirectParam && isSafeRelativePath(redirectParam) ? redirectParam : '/en/account/profile';
           if (!sessionJwt) return;
 

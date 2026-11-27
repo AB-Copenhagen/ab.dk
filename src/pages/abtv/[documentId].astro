@@ -27,8 +27,13 @@ const nextVideoUrl = sectionVideos.length > 0 ? `/abtv/${sectionVideos[0].docume
 
 const pageUrl = `https://ab.dk/abtv/${video.documentId}`;
 
-const videoSchema =
-  video.videoSource === 'sams'
+// Only ever build this with the real embed URL when the video is actually
+// unlocked for this visitor — JSON-LD renders into the page's raw HTML
+// regardless of what the player UI shows, so a gated video's real embedUrl
+// must never reach this schema for a visitor who hasn't unlocked it.
+const videoSchema = !unlocked
+  ? null
+  : video.videoSource === 'sams'
     ? video.samsEmbedToken
       ? samsVideoSchema(
           {

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { timingSafeEqual } from 'node:crypto';
 
 import { descope } from '@/lib/descope-server';
 import { MEMBERSHIP_TIERS } from '@/lib/membership';
@@ -22,11 +23,16 @@ interface SubscriptionChangedPayload {
 // this check for signature verification against their docs before relying on it.
 // Likewise, confirm the exact payload field names below (eventbillettenUuid, tier)
 // against their actual webhook schema — these are our side's assumed shape.
+/** Constant-time comparison — a naive `!==` leaks timing information proportional to how many leading bytes match, letting an attacker brute-force the secret byte-by-byte. */
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+}
+
 export const POST: APIRoute = async ({ request }) => {
-  if (
-    !WEBHOOK_SECRET ||
-    request.headers.get('authorization') !== `Bearer ${WEBHOOK_SECRET}`
-  ) {
+  const authHeader = request.headers.get('authorization') ?? '';
+  if (!WEBHOOK_SECRET || !safeEqual(authHeader, `Bearer ${WEBHOOK_SECRET}`)) {
     return new Response('Unauthorized', { status: 401 });
   }
 

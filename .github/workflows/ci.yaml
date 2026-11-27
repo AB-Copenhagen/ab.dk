@@ -7,6 +7,9 @@ on:
       - main
       - astro-migration
 
+permissions:
+  contents: read
+
 jobs:
   check:
     name: Typecheck, build & format
