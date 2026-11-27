@@ -55,6 +55,21 @@ function sanitizeError(err: unknown): string {
 }
 
 /**
+ * The preview (draft) path below intentionally skips the cache/fallback
+ * wrapper so an editor always sees fresh draft content — but that also means
+ * it skips the try/catch that sanitizes errors before logging. Without this,
+ * a raw HTTPError (Authorization header included) thrown here propagates as
+ * an uncaught exception straight into Vercel's runtime error capture.
+ */
+async function withSanitizedErrors<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    throw new Error(sanitizeError(err));
+  }
+}
+
+/**
  * Retries transient Strapi failures (503s under load, the client's own 10s
  * request timeout aborting) with a short backoff — Strapi Cloud bursts of
  * concurrent requests routinely 503 for a moment and then recover, so most
@@ -90,7 +105,7 @@ export async function fetchCollectionType<T = unknown[]>(
   // Draft content must never be written to the shared cache — it isn't keyed on
   // draft/published status, so caching here would either leak drafts to public
   // visitors or serve stale published data back to the previewing editor.
-  if (preview) return withRetry(doFetch);
+  if (preview) return withSanitizedErrors(() => withRetry(doFetch));
   // Must resolve to `null` (never throw) on failure — `CacheManager.getWithFallback`
   // only falls back to the last-known-good cached copy when the fetcher returns
   // `null`; a thrown error would otherwise skip the fallback and bubble up as an
@@ -137,7 +152,7 @@ export async function fetchCollectionTypeWithMeta<T = unknown[]>(
       .find({ ...options, status: preview ? 'draft' : 'published' } as never);
     return { data: res.data as T, pagination: (res.meta as { pagination: StrapiPagination })?.pagination };
   };
-  if (preview) return withRetry(doFetch);
+  if (preview) return withSanitizedErrors(() => withRetry(doFetch));
   const fetcher = async () => {
     try {
       return await withRetry(doFetch);
@@ -179,7 +194,7 @@ export async function fetchSingleType<T = unknown>(
       throw err;
     }
   };
-  if (preview) return withRetry(doFetch);
+  if (preview) return withSanitizedErrors(() => withRetry(doFetch));
   const fetcher = async () => {
     try {
       return await withRetry(doFetch);
@@ -205,7 +220,7 @@ export async function fetchDocument<T = unknown>(
       .findOne(documentId, { ...options, status: preview ? 'draft' : 'published' } as never);
     return data as T;
   };
-  if (preview) return withRetry(doFetch);
+  if (preview) return withSanitizedErrors(() => withRetry(doFetch));
   const fetcher = async () => {
     try {
       return await withRetry(doFetch);

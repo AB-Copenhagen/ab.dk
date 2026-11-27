@@ -117,9 +117,14 @@ export function withImageWidth(
  * Only allow redirecting back into this site — blocks a `?redirect=`/`?url=`
  * query param being used as an open redirect (`//evil.com` is protocol-relative
  * and still leaves the site, so it's rejected alongside absolute URLs).
+ * Backslashes are normalized to forward slashes first: browsers treat a
+ * leading `/\` the same as `//` when resolving a redirect target, so
+ * `/\evil.com` would otherwise slip past the `//` check and still leave the
+ * site.
  */
 export function isSafeRelativePath(url: string): boolean {
-  return url.startsWith('/') && !url.startsWith('//');
+  const normalized = url.replace(/\\/g, '/');
+  return normalized.startsWith('/') && !normalized.startsWith('//');
 }
 
 /** Escape HTML special characters before interpolating untrusted input into an HTML string. */

@@ -102,9 +102,15 @@ export const POST: APIRoute = async ({ request }) => {
     // is actually visible in Vercel's runtime logs instead of only ever
     // showing up as a generic "something went wrong" in the browser.
     console.error(`[api/contact] sendMail failed (topic=${topic}):`, message);
-    return new Response(JSON.stringify({ success: false, error: message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // Generic message to the client — the real detail is logged above, not
+    // returned, since it can include internal error text (e.g. a Mailgun
+    // rejection reason) not meant for an end user.
+    return new Response(
+      JSON.stringify({ success: false, error: 'Failed to send message' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 };

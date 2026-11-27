@@ -70,9 +70,15 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : 'Unknown error';
-    return new Response(JSON.stringify({ success: false, error: errMessage }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error('[api/event-inquiry] failed:', errMessage);
+    // Generic message to the client — the real detail is logged above, not
+    // returned, since it can include internal error text not meant for an end user.
+    return new Response(
+      JSON.stringify({ success: false, error: 'Failed to submit inquiry' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 };

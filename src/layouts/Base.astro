@@ -181,7 +181,9 @@ const popups = await fetchActivePopups(locale);
     <link rel="alternate" hreflang="en" href={hreflangEnUrl} />
     <link rel="alternate" hreflang="x-default" href={hreflangDaUrl} />
     {structuredDataList.map((schema) => (
-      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      // Escape `<` so a CMS-editor-controlled field (caption/title/bio) containing
+      // the literal string `</script>` can't close this tag early and inject markup.
+      <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
     ))}
     {vivenuConsented && (
       <script is:inline id="vivenu-embed-script" src="https://vivenu.com/web/deliver/js/v1/embed.js"></script>

@@ -1,0 +1,39 @@
+version: 2
+updates:
+  # Root Astro app
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    groups:
+      minor-and-patch:
+        update-types: ['minor', 'patch']
+    open-pull-requests-limit: 5
+    labels: ['dependencies']
+
+  # Strapi CMS (separate lockfile/ecosystem)
+  - package-ecosystem: 'npm'
+    directory: '/strapi'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    groups:
+      minor-and-patch:
+        update-types: ['minor', 'patch']
+      strapi-core:
+        patterns: ['@strapi/*']
+        update-types: ['patch']
+    open-pull-requests-limit: 5
+    labels: ['dependencies', 'strapi']
+
+  # GitHub Actions used in workflows
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    groups:
+      actions:
+        update-types: ['minor', 'patch']
+    labels: ['dependencies', 'github-actions']
