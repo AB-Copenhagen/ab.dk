@@ -19,7 +19,7 @@ jobs:
         # this action receives two secrets as inputs, and a re-tagged/compromised
         # release of a low-adoption third-party action is a real supply-chain
         # vector (see the tj-actions/changed-files incident).
-        uses: digital-blueprint/gitlab-pipeline-trigger-action@7fef6b4967aef68a1671ccf42a6e45f7a27487d8 # v1.2.0
+        uses: digital-blueprint/gitlab-pipeline-trigger-action@4b9a6f546e3321481b63d46be58c5c7b2312eeb8 # v1.4.5
         with:
           trigger_token: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
           access_token: ${{ secrets.GITLAB_API_TOKEN }}
